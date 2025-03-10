@@ -6,40 +6,94 @@
         xmlns:local="clr-namespace:Mams.views"
         mc:Ignorable="d"
         Title="MainWindow" 
-        Height="450" Width="800" 
-        MinHeight="450" MinWidth="800">
+        Height="600" Width="1000" 
+        MinHeight="600" MinWidth="1000">
     <Grid>
         <!--Page-->
         <Grid x:Name="page_grid" Background="#FFF6DEDE">
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*" MaxHeight="200"/>
                 <RowDefinition Height="9*"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*" MaxHeight="50"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            
+
+            <!--Header-->
+            <Grid x:Name="header_grid" Grid.Row="0" Background="Gray">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition MaxHeight="50"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label x:Name="title_page_lbl" Content="Page Title" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <!--Header Menu-->
+                <Grid x:Name="header_menu_grid" Grid.Row="1" Background="#FFE25F5F">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <!--Home Menu-->
+                    <Grid x:Name="home_menu_grid" Grid.Row="0" Background="#FFE25F5F">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="home_menu_btn" Content="Home" Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" MinHeight="40" MinWidth="40"/>
+                    </Grid>
+                    
+                    <!--Searchbar-->
+                    <Grid x:Name="searchbar_grid" Grid.Column="1" Background="#FFE25F5F" MaxWidth="500">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox x:Name="searchbar_cmbBox" Grid.Column="0" Margin="50,0,0,0" VerticalAlignment="Center"/>
+                        <TextBox x:Name="searchbar_txtBox" Grid.Column="1" Margin="1,0,50,0" VerticalAlignment="Center"/>
+                        <ListView x:Name="searchbar_listView" Grid.Column="1" Margin="1,35,50,0" Height="150" VerticalAlignment="Top" Visibility="Hidden"/>
+                    </Grid>
+                    <!--Searchbar-->
+                </Grid>
+                <!--Header Menu-->
+            </Grid>
+            <!--Header-->
+
+
             <!--Body-->
-            <Grid x:Name="body_grid" Grid.Row="1" Background="White">
+            <Grid x:Name="body_grid" Grid.Row="1" Background="#FFFFDCDC">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="2*" MaxWidth="200"/> <!--For menu-->
+                    <ColumnDefinition Width="10*"/> <!--For content-->                    
                 </Grid.ColumnDefinitions>
-                
+
                 <!--Menu-->
-                <Grid x:Name="menu_grid" Grid.Column="0" MaxWidth="200" Background="#FFB4B4B4" Margin="10,0,0,0" HorizontalAlignment="Left">
+                <Grid x:Name="menu_grid" Grid.Column="0" Background="#FFB4B4B4" Margin="10,0,0,0">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
+                    
                     <!--Menu Buttons-->
-                    <Grid x:Name="menu_btn_grid" Grid.Column="0" Background="#FFD9D9D9" MaxWidth="200" MaxHeight="400" VerticalAlignment="Top">
+                    <Grid x:Name="menu_btn_grid" Grid.Column="0" Background="#FFD9D9D9" MinHeight="300" MaxHeight="400" VerticalAlignment="Top">
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition/>
@@ -59,8 +113,36 @@
                         <Button x:Name="menu_button3" Content="Menu Button" Grid.Row="4" Margin="3"/>
                         <Button x:Name="menu_button4" Content="Menu Button" Grid.Row="5" Margin="3"/>
                     </Grid>
+                    <!--Menu Buttons-->
                 </Grid>
+                <!--Menu-->
+
+                <!--Content-->
+                <Grid x:Name="content_grid" Grid.Column="1" Background="#FFFFDCDC">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Label x:Name="content_label" Content="Content" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+                <!--Content-->
             </Grid>
+            <!--Body-->
+
+            <!--Footer-->
+            <Grid x:Name="footer_grid" Grid.Row="3" Background="#FF832B2B">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+            </Grid>
+            <!--Footer-->
         </Grid>
+        <!--Page-->
     </Grid>
+    <!--Grid-->
 </Window>
