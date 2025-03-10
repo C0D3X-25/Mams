@@ -4,27 +4,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mams.views"
+        xmlns:userControls="clr-namespace:Mams.views.userControls"
         mc:Ignorable="d"
         Title="MainWindow" 
         Height="600" Width="1000" 
         MinHeight="600" MinWidth="1000">
     <Grid>
-        <!--Page-->
+        <!--Page is 12* per 12*-->
         <Grid x:Name="page_grid" Background="#FFF6DEDE">
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*" MaxHeight="200"/>
+                <RowDefinition Height="2*" MaxHeight="100"/>
                 <RowDefinition Height="9*"/>
                 <RowDefinition Height="1*" MaxHeight="50"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="12*"/>
             </Grid.ColumnDefinitions>
 
             <!--Header-->
             <Grid x:Name="header_grid" Grid.Row="0" Background="Gray">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
-                    <RowDefinition MaxHeight="50"/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -84,41 +85,11 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Menu-->
-                <Grid x:Name="menu_grid" Grid.Column="0" Background="#FFB4B4B4" Margin="10,0,0,0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <!--Menu Buttons-->
-                    <Grid x:Name="menu_btn_grid" Grid.Column="0" Background="#FFD9D9D9" MinHeight="300" MaxHeight="400" VerticalAlignment="Top">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Label x:Name="menu_label" Content="Menu" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        <Button x:Name="menu_button0" Content="Menu Button" Grid.Row="1" Margin="3"/>
-                        <Button x:Name="menu_button1" Content="Menu Button" Grid.Row="2" Margin="3"/>
-                        <Button x:Name="menu_button2" Content="Menu Button" Grid.Row="3" Margin="3"/>
-                        <Button x:Name="menu_button3" Content="Menu Button" Grid.Row="4" Margin="3"/>
-                        <Button x:Name="menu_button4" Content="Menu Button" Grid.Row="5" Margin="3"/>
-                    </Grid>
-                    <!--Menu Buttons-->
-                </Grid>
-                <!--Menu-->
+                <userControls:UCMenu x:Name="page_menu"></userControls:UCMenu>
+
 
                 <!--Content-->
-                <Grid x:Name="content_grid" Grid.Column="1" Background="#FFFFDCDC">
+                <Grid x:Name="content_grid" Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>

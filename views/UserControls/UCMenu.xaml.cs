@@ -13,16 +13,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Mams.views.UserControls
-{
-    /// <summary>
-    /// Interaction logic for UCMenu.xaml
-    /// </summary>
-    public partial class UCMenu : UserControl
-    {
-        public UCMenu()
-        {
-            InitializeComponent();
-        }
+namespace Mams.views.userControls;
+
+/// <summary>
+/// Interaction logic for UCMenu.xaml
+/// </summary>
+public partial class UCMenu : UserControl {
+    public UCMenu() {
+        InitializeComponent();
     }
 }
