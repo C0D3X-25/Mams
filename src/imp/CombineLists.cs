@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project_Mams.src.imp;
+namespace Mams.src.imp;
 
 public static class CombineLists {
 

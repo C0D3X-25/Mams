@@ -1,8 +1,8 @@
-﻿using Project_Mams.src.interfaces;
-using MySql.Data.MySqlClient;
+﻿using Mams.interfaces;
+using MySqlConnector;
 using System.Data;
 
-namespace Project_Mams.src.models;
+namespace Mams.models;
 
 /// <summary>
 /// Base class for all Classes who need to search items in the DB.

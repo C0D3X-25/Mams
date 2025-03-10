@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project_Mams.src.interfaces;
+namespace Mams.interfaces;
 
 interface IGetTable {
     DataTable? getTable();

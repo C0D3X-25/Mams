@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project_Mams.src.items;
+namespace Mams.items;
 
 public abstract class ABaseItem {
     protected int tryConvertToID(int id) {

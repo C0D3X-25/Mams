@@ -1,12 +1,13 @@
-﻿using MySql.Data.MySqlClient;
+﻿using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
-namespace Project_Mams.src.models;
+namespace Mams.models;
 
 public static class GetTableModel {
 
@@ -29,7 +30,7 @@ public static class GetTableModel {
             return data_table;
         }
         catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.Code} - {ex.Message}");
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return null;
         }
     }

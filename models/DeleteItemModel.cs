@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
-using Project_Mams.src.interfaces;
+using MySqlConnector;
+using Mams.interfaces;
+using System.Windows;
 
-namespace Project_Mams.src.models;
+namespace Mams.models;
 
 public static class DeleteItemModel {
 
@@ -22,7 +23,7 @@ public static class DeleteItemModel {
             return true;
         }
         catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.Code} - {ex.Message}");
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return false;
         }
     }

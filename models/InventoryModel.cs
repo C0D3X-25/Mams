@@ -1,10 +1,11 @@
-﻿using Project_Mams.src.interfaces;
-using MySql.Data.MySqlClient;
+﻿using Mams.interfaces;
+using MySqlConnector;
 using System.Data;
-using Project_Mams.src.items;
-using Project_Mams.src.imp;
+using Mams.items;
+using Mams.src.imp;
+using System.Windows;
 
-namespace Project_Mams.src.models;
+namespace Mams.models;
 
 public class InventoryModel : 
     ABaseSearchModel, 
@@ -75,7 +76,7 @@ public class InventoryModel :
             return true;
         }
         catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.Code} - {ex.Message}");
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return false;
         }
     }
@@ -120,7 +121,7 @@ public class InventoryModel :
             return null;
         }
         catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.Code} - {ex.Message}");
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return null;
         }
     }

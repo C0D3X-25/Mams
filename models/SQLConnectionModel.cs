@@ -1,13 +1,13 @@
-﻿using Project_Mams.src.enume;
-using MySql.Data.MySqlClient;
+﻿using Mams.enums;
+using MySqlConnector;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Windows;
 
-namespace Project_Mams.src.models;
+namespace Mams.models;
 
 
 public class SQLConnectionModel {
@@ -38,7 +38,7 @@ public class SQLConnectionModel {
         }
         catch (MySqlException e) {
             MessageBox.Show("Failed to connect to the database.\n" +
-                $"Code:   {e.Code}\n" +
+                $"Code:   {e.ErrorCode}\n" +
                 $"Number: {e.Number}\n" +
                 $"Data:   {e.Data}\n" +
                 $"State:  {e.SqlState}\n" +

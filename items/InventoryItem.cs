@@ -1,7 +1,6 @@
-using Org.BouncyCastle.Crypto.Modes.Gcm;
-using Project_Mams.src.items;
+using Mams.items;
 
-namespace Project_Mams.src.items;
+namespace Mams.items;
    
 public class InventoryItem : ABaseItem {
     public int m_id { get; private set; } = 0;

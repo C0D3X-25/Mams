@@ -1,6 +1,6 @@
-﻿using Project_Mams.src.items;
+﻿using Mams.items;
 
-namespace Project_Mams.src.interfaces;
+namespace Mams.interfaces;
 
 interface ISearchItemsByDate : ISearchItems {
     List<string> searchItemsByDate(string search);

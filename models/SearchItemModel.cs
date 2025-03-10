@@ -1,12 +1,13 @@
-﻿using MySql.Data.MySqlClient;
-using Project_Mams.src.models;
+﻿using MySqlConnector;
+using Mams.models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
-namespace Project_Mams.src.models;
+namespace Mams.models;
 
 public class SearchItemModel : ABaseModel {
 
@@ -67,7 +68,7 @@ public class SearchItemModel : ABaseModel {
             return results;
         }
         catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.Code} - {ex.Message}");
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return results;
         }
     }
