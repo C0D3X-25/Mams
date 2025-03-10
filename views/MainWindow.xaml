@@ -5,9 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mams.views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" 
+        Height="450" Width="800" 
+        MinHeight="450" MinWidth="800">
     <Grid>
-        <Grid>
+        <!--Page-->
+        <Grid x:Name="page_grid" Background="#FFF6DEDE">
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*"/>
                 <RowDefinition Height="9*"/>
@@ -16,7 +19,48 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Content="Button" HorizontalAlignment="Left" Height="26" Margin="66,36,0,0" VerticalAlignment="Top" Width="134"/>
+            
+            <!--Body-->
+            <Grid x:Name="body_grid" Grid.Row="1" Background="White">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="10*"/>
+                </Grid.ColumnDefinitions>
+                
+                <!--Menu-->
+                <Grid x:Name="menu_grid" Grid.Column="0" MaxWidth="200" Background="#FFB4B4B4" Margin="10,0,0,0" HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <!--Menu Buttons-->
+                    <Grid x:Name="menu_btn_grid" Grid.Column="0" Background="#FFD9D9D9" MaxWidth="200" MaxHeight="400" VerticalAlignment="Top">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label x:Name="menu_label" Content="Menu" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        <Button x:Name="menu_button0" Content="Menu Button" Grid.Row="1" Margin="3"/>
+                        <Button x:Name="menu_button1" Content="Menu Button" Grid.Row="2" Margin="3"/>
+                        <Button x:Name="menu_button2" Content="Menu Button" Grid.Row="3" Margin="3"/>
+                        <Button x:Name="menu_button3" Content="Menu Button" Grid.Row="4" Margin="3"/>
+                        <Button x:Name="menu_button4" Content="Menu Button" Grid.Row="5" Margin="3"/>
+                    </Grid>
+                </Grid>
+            </Grid>
         </Grid>
     </Grid>
 </Window>
