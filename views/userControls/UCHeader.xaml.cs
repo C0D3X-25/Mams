@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Mams.views.userControls
 {
     /// <summary>
-    /// Interaction logic for UCHeaderSearchBar.xaml
+    /// Interaction logic for UCHeader.xaml
     /// </summary>
-    public partial class UCHeaderSearchBar : UserControl
+    public partial class UCHeader : UserControl
     {
-        public UCHeaderSearchBar()
+        public UCHeader()
         {
             InitializeComponent();
         }

@@ -22,49 +22,10 @@
             </Grid.ColumnDefinitions>
 
             <!--Header-->
-            <Grid x:Name="header_grid" Grid.Row="0" Background="Gray">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Label x:Name="title_page_lbl" Content="Page Title" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-
-                <!--Header Menu-->
-                <Grid x:Name="header_menu_grid" Grid.Row="1" Background="#FFE25F5F">
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-
-                    <!--Home Menu-->
-                    <Grid x:Name="home_menu_grid" Grid.Row="0" Background="#FFE25F5F">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <Button x:Name="home_menu_btn" Content="Home" Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" MinHeight="40" MinWidth="40"/>
-                    </Grid>
-                    
-                    <!--Searchbar-->
-                    <userControls:UCHeaderSearchBar x:Name="header_searchBar" Grid.Column="1">
-                        
-                    </userControls:UCHeaderSearchBar>
-                    <!--Searchbar-->
-
-                </Grid>
-                <!--Header Menu-->
-            </Grid>
+            <userControls:UCHeader x:Name="header" Grid.Row="0">
+                
+            </userControls:UCHeader>
             <!--Header-->
-
 
             <!--Body-->
             <Grid x:Name="body_grid" Grid.Row="1">
