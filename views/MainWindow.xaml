@@ -11,7 +11,7 @@
         MinHeight="600" MinWidth="1000">
     <Grid>
         <!--Page is 12* per 12*-->
-        <Grid x:Name="page_grid" Background="#FFF6DEDE">
+        <Grid x:Name="page_grid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*" MaxHeight="100"/>
                 <RowDefinition Height="9*"/>
@@ -67,7 +67,7 @@
 
 
             <!--Body-->
-            <Grid x:Name="body_grid" Grid.Row="1" Background="#FFFFDCDC">
+            <Grid x:Name="body_grid" Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
@@ -97,7 +97,7 @@
             <!--Body-->
 
             <!--Footer-->
-            <userControls:UCFooter x:Name="footer">
+            <userControls:UCFooter x:Name="footer" Grid.Row="2">
                 
             </userControls:UCFooter>
             <!--Footer-->
