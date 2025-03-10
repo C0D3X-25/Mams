@@ -55,19 +55,11 @@
                     </Grid>
                     
                     <!--Searchbar-->
-                    <Grid x:Name="searchbar_grid" Grid.Column="1" Background="#FFE25F5F" MaxWidth="500">
-                        <Grid.RowDefinitions>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <ComboBox x:Name="searchbar_cmbBox" Grid.Column="0" Margin="50,0,0,0" VerticalAlignment="Center"/>
-                        <TextBox x:Name="searchbar_txtBox" Grid.Column="1" Margin="1,0,50,0" VerticalAlignment="Center"/>
-                        <ListView x:Name="searchbar_listView" Grid.Column="1" Margin="1,35,50,0" Height="150" VerticalAlignment="Top" Visibility="Hidden"/>
-                    </Grid>
+                    <userControls:UCHeaderSearchBar x:Name="header_searchBar" Grid.Column="1">
+                        
+                    </userControls:UCHeaderSearchBar>
                     <!--Searchbar-->
+
                 </Grid>
                 <!--Header Menu-->
             </Grid>
@@ -85,8 +77,10 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Menu-->
-                <userControls:UCMenu x:Name="page_menu"></userControls:UCMenu>
-
+                <userControls:UCMenu x:Name="pages_menu">
+                    
+                </userControls:UCMenu>
+                <!--Menu-->
 
                 <!--Content-->
                 <Grid x:Name="content_grid" Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
