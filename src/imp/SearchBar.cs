@@ -1,209 +1,155 @@
-﻿//using Mams.models;
-//using System;
-//using System.Collections.Generic;
-//using System.Configuration;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
-//using System.Windows.Controls;
-
-//namespace Mams.src.imp;
-
-///// <summary>
-///// Handles search functionality with a text box input and ListView display of results.
-///// </summary>
-//public class SearchBar {
-    
-//    private readonly TextBox _m_txt_box;
-//    private readonly ListView _m_list_view;
-//    private ABaseSearchModel? _m_model;
-//    private readonly System.Windows.Forms.Timer _m_search_timer = new();
-//    private const UInt16 _m_min_text_length_to_start_search = 1;
-//    private const UInt16 _m_delay_ms_between_search = 100;
-//    private bool _m_search_selected = false;
-//    private bool _m_is_item_selected = false;
+﻿using Mams.models;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
 
 
-//    /// <summary>
-//    /// Initializes a new instance of the SearchBar class.
-//    /// </summary>
-//    /// <param name="model">The data model to use for searches</param>
-//    /// <param name="txt_box">The TextBox control for search input</param>
-//    /// <param name="list_view">The ListView control to display search results</param>
-//    public SearchBar(ABaseSearchModel model, TextBox txt_box, ListView list_view) {
-//        _m_model = model;
-//        _m_txt_box = txt_box;
-//        _m_list_view = list_view;
+namespace Mams.src.imp;
 
-//        setSearchTimer();
-//    }
+/// <summary>
+/// Handles search functionality with a text box input and ListView display of results.
+/// </summary>
+public class SearchBar {
+    private readonly TextBox _m_txt_box;
+    private readonly ListView _m_list_view;
+    private ABaseSearchModel? _m_model;
+    private readonly DispatcherTimer _m_search_timer;
+    private const UInt16 _m_min_text_length_to_start_search = 1;
+    private const UInt16 _m_delay_ms_between_search = 100;
+    private bool _m_search_selected = false;
+    private bool _m_is_item_selected = false;
 
-//    /// <summary>
-//    /// Initializes a new instance of the SearchBar class, only the Controls.
-//    /// </summary>
-//    /// <param name="txt_box">The TextBox control for search input</param>
-//    /// <param name="list_view">The ListView control to display search results</param>
-//    public SearchBar(TextBox txt_box, ListView list_view) {
-//        _m_txt_box = txt_box;
-//        _m_list_view = list_view;
+    /// <summary>
+    /// Initializes a new instance of the SearchBar class.
+    /// </summary>
+    /// <param name="model">The data model to use for searches</param>
+    /// <param name="txt_box">The TextBox control for search input</param>
+    /// <param name="list_view">The ListView control to display search results</param>
+    public SearchBar(ABaseSearchModel model, TextBox txt_box, ListView list_view) {
+        _m_model = model;
+        _m_txt_box = txt_box;
+        _m_list_view = list_view;
+        _m_search_timer = new DispatcherTimer();
+        setSearchTimer();
+    }
 
-//        setSearchTimer();
-//    }
+    /// <summary>
+    /// Initializes a new instance of the SearchBar class, only the Controls.
+    /// </summary>
+    /// <param name="txt_box">The TextBox control for search input</param>
+    /// <param name="list_view">The ListView control to display search results</param>
+    public SearchBar(TextBox txt_box, ListView list_view) {
+        _m_txt_box = txt_box;
+        _m_list_view = list_view;
+        _m_search_timer = new DispatcherTimer();
+        setSearchTimer();
+    }
 
-//    /// <summary>
-//    /// Initializes the model of the instance.
-//    /// </summary>
-//    /// <param name="model">The data model to use for searches</param>
-//    public void setModel(ABaseSearchModel model) {
-//        _m_model = model;
-//    }
+    public void setModel(ABaseSearchModel model) {
+        _m_model = model;
+    }
 
-//    /// <summary>
-//    /// Clears the search bar and hides the ListView.
-//    /// </summary>
-//    public void clearSearchBar() {
-//        _m_txt_box.Text = string.Empty;
-//        _m_search_selected = false;
-//        _m_is_item_selected = false;
-//    }
+    public void clearSearchBar() {
+        _m_txt_box.Text = string.Empty;
+        _m_search_selected = false;
+        _m_is_item_selected = false;
+    }
 
+    public void txtBox_TextChanged(object sender, TextChangedEventArgs e) {
+        if (_m_is_item_selected) {
+            _m_is_item_selected = false;
+            return;
+        }
 
-//    /// <summary>
-//    /// Event handler for TextBox text changes. Initiates search after delay if conditions are met.
-//    /// </summary>
-//    /// <param name="sender">The source of the event</param>
-//    /// <param name="e">Event arguments</param>
-//    public void txtBox_TextChanged(object sender, EventArgs e) {
+        if (_m_txt_box.Text.Length >= _m_min_text_length_to_start_search
+            && !_m_search_selected) {
 
-//        // This is here because when selecting an item, the txtBox change and start a new search
-//        if (_m_is_item_selected) {
-//            _m_is_item_selected = false;
-//            return;
-//        }
+            _m_search_timer.Stop();
+            _m_search_timer.Start();
+        }
+        else {
+            _m_search_selected = false;
+            _m_list_view.Visibility = Visibility.Collapsed;
+        }
+    }
 
-//        if (_m_txt_box.Text.Length >= _m_min_text_length_to_start_search
-//            && !_m_search_selected) {
+    public void listView_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        if (_m_list_view.SelectedItem != null) {
+            _m_search_selected = true;
+            _m_is_item_selected = true;
+            _m_txt_box.Text = _m_list_view.SelectedItem.ToString();
+            _m_list_view.Items.Clear();
+            _m_list_view.Visibility = Visibility.Collapsed;
+            clearSearchBar();
+        }
+    }
 
-//            _m_search_timer.Stop();
-//            _m_search_timer.Start(); // trigger the search after delay
-//        }
-//        else {
-//            _m_search_selected = false;
-//            _m_list_view.Visible = false;
-//        }
-//    }
+    public void listView_MouseMove(object sender, MouseEventArgs e) {
+        Point mousePosition = e.GetPosition(_m_list_view);
+        HitTestResult result = VisualTreeHelper.HitTest(_m_list_view, mousePosition);
 
+        ListViewItem? hoveredItem = null;
+        DependencyObject? current = result?.VisualHit;
+        while (current != null) {
+            if (current is ListViewItem item) {
+                hoveredItem = item;
+                break;
+            }
+            current = VisualTreeHelper.GetParent(current);
+        }
 
-//    /// <summary>
-//    /// Event handler for ListView item selection changes.
-//    /// Updates TextBox with selected item and hides the ListView.
-//    /// </summary>
-//    /// <param name="sender">The source of the event</param>
-//    /// <param name="e">Event arguments containing the selected item information</param>
-//    public void listView_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e) {
-//        if (e.IsSelected && e.Item != null) {
-//            _m_search_selected = true;
-//            _m_is_item_selected = true;
-//            _m_txt_box.Text = e.Item.Text;
-//            _m_list_view.EndUpdate();
-//            _m_list_view.Items.Clear();
-//            _m_list_view.Visible = false;
-//            clearSearchBar();
-//        }
-//    }
+        // Reset all items to default style
+        foreach (object item in _m_list_view.Items) {
+            ListViewItem? container = _m_list_view.ItemContainerGenerator.ContainerFromItem(item) as ListViewItem;
+            if (container != null && container != hoveredItem) {
+                container.Background = Brushes.Transparent;
+                container.Foreground = SystemColors.WindowTextBrush;
+            }
+        }
 
+        // Highlight hovered item
+        if (hoveredItem != null) {
+            hoveredItem.Background = SystemColors.HighlightBrush;
+            hoveredItem.Foreground = SystemColors.HighlightTextBrush;
+        }
+    }
 
-//    /// <summary>
-//    /// Event handler for mouse movement over the ListView.
-//    /// Highlights the item under the mouse cursor and resets others.
-//    /// </summary>
-//    /// <param name="sender">The source of the event</param>
-//    /// <param name="e">Mouse event arguments containing cursor position</param>
-//    public void listView_MouseMove(object sender, MouseEventArgs e) {
+    private void setSearchTimer() {
+        _m_search_timer.Interval = TimeSpan.FromMilliseconds(_m_delay_ms_between_search);
+        _m_search_timer.Tick += searchTimerTick;
+    }
 
-//        ListViewItem? hovered_item = _m_list_view.HitTest(e.Location).Item;
+    private void searchTimerTick(object? sender, EventArgs e) {
+        _m_search_timer.Stop();
+        updateSearchResults();
+    }
 
-//        // Reset all items to default colors first
-//        foreach (ListViewItem item in _m_list_view.Items) {
-//            if (item != hovered_item) {
-//                item.BackColor = _m_list_view.BackColor;
-//                item.ForeColor = _m_list_view.ForeColor;
-//                item.UseItemStyleForSubItems = true;
-//            }
-//        }
+    private void updateSearchResults() {
+        string search_text = _m_txt_box.Text.Trim();
 
-//        // Highlight the hovered item if any
-//        if (hovered_item != null) {
-//            hovered_item.BackColor = SystemColors.Highlight;
-//            hovered_item.ForeColor = SystemColors.HighlightText;
-//            hovered_item.UseItemStyleForSubItems = true;
-//        }
-//    }
+        if (search_text.Length >= _m_min_text_length_to_start_search && _m_model != null) {
+            var results = _m_model.searchItems(search_text);
 
+            _m_list_view.Items.Clear();
 
-//    /// <summary>
-//    /// Configures the search timer with specified interval and event handler.
-//    /// </summary>
-//    private void setSearchTimer() {
-//        _m_search_timer.Interval = _m_delay_ms_between_search;
-//        _m_search_timer.Tick += searchTimerTick;
-//    }
+            foreach (var result in results) {
+                _m_list_view.Items.Add(result);
+            }
 
+            if (results.Count > 0) {
+                // Calculate desired height based on items (using approximate item height)
+                const double estimated_item_height = 25; // Typical height for a list item
+                double desired_height = Math.Min(results.Count * estimated_item_height, 10 * estimated_item_height);
 
-//    /// <summary>
-//    /// Event handler for search timer tick events.
-//    /// Stops the timer and triggers search result update.
-//    /// </summary>
-//    /// <param name="sender">The source of the event</param>
-//    /// <param="e">Event arguments</param>
-//    private void searchTimerTick(object? sender, EventArgs e) {
-//        _m_search_timer.Stop();
-//        updateSearchResults();
-//    }
-
-
-//    /// <summary>
-//    /// Updates the ListView with search results from the database based on the current TextBox content.
-//    /// Adjusts the ListView size and visibility based on the results.
-//    /// </summary>
-//    /// <remarks>
-//    /// This method:
-//    /// - Retrieves search results from the model if search text meets minimum length
-//    /// - Updates the ListView items with the results
-//    /// - Adjusts ListView height based on number of results
-//    /// - Shows/hides ListView based on whether results were found
-//    /// </remarks>
-//    private void updateSearchResults() {
-//        string search_text = _m_txt_box.Text.Trim();
-
-//        if (search_text.Length >= _m_min_text_length_to_start_search && _m_model != null) {
-//            var results = _m_model.searchItems(search_text);
-
-//            _m_list_view.BeginUpdate();
-//            _m_list_view.Items.Clear();
-
-//            foreach (var result in results) {
-//                _m_list_view.Items.Add(new ListViewItem(result));
-//            }
-
-//            if (results.Count > 0) {
-//                // Calculate item height including padding
-//                int itemHeight = _m_list_view.GetItemRect(0).Height;
-
-//                // Calculate total height (items + borders)
-//                int totalHeight = (itemHeight * Math.Min(results.Count, 10)) + 4;
-
-//                // Update size while maintaining width
-//                _m_list_view.Size = new Size(_m_list_view.Width, totalHeight);
-
-//                _m_list_view.Visible = true;
-//                _m_list_view.BringToFront();
-//            }
-//            else {
-//                _m_list_view.Visible = false;
-//            }
-
-//            _m_list_view.EndUpdate();
-//        }
-//    }
-//}
+                _m_list_view.Height = desired_height;
+                _m_list_view.Visibility = Visibility.Visible;
+                Panel.SetZIndex(_m_list_view, 1000);
+            }
+            else {
+                _m_list_view.Visibility = Visibility.Collapsed;
+            }
+        }
+    }
+}

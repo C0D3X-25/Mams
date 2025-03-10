@@ -13,10 +13,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Mams.views
+namespace Mams.views.pages
 {
     /// <summary>
-    /// Interaction logic for TemplatePage.xaml
+    /// Interaction logic for templatePage.xaml
     /// </summary>
     public partial class TemplatePage : Page
     {

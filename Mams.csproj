@@ -16,8 +16,4 @@
     <None Include="schemas\MLD.simp.user" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="views\pages\" />
-  </ItemGroup>
-
 </Project>

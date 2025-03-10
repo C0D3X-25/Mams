@@ -9,61 +9,6 @@
         Title="MainWindow" 
         Height="600" Width="1000" 
         MinHeight="600" MinWidth="1000">
-    <Grid>
-        <!--Page is 12* per 12*-->
-        <Grid x:Name="page_grid">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="2*" MaxHeight="100"/>
-                <RowDefinition Height="9*"/>
-                <RowDefinition Height="1*" MaxHeight="50"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="12*"/>
-            </Grid.ColumnDefinitions>
 
-            <!--Header-->
-            <userControls:UCHeader x:Name="header" Grid.Row="0">
-                
-            </userControls:UCHeader>
-            <!--Header-->
-
-            <!--Body-->
-            <Grid x:Name="body_grid" Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" MaxWidth="200"/> <!--For menu-->
-                    <ColumnDefinition Width="10*"/> <!--For content-->                    
-                </Grid.ColumnDefinitions>
-
-                <!--Menu-->
-                <userControls:UCMenu x:Name="pages_menu">
-                    
-                </userControls:UCMenu>
-                <!--Menu-->
-
-                <!--Content-->
-                <Grid x:Name="content_grid" Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Label x:Name="content_label" Content="Content" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Grid>
-                <!--Content-->
-            </Grid>
-            <!--Body-->
-
-            <!--Footer-->
-            <userControls:UCFooter x:Name="footer" Grid.Row="2">
-                
-            </userControls:UCFooter>
-            <!--Footer-->
-        </Grid>
-        <!--Page-->
-    </Grid>
-    <!--Grid-->
+    <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
 </Window>
