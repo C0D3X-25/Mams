@@ -97,14 +97,9 @@
             <!--Body-->
 
             <!--Footer-->
-            <Grid x:Name="footer_grid" Grid.Row="3" Background="#FF832B2B">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-            </Grid>
+            <userControls:UCFooter x:Name="footer">
+                
+            </userControls:UCFooter>
             <!--Footer-->
         </Grid>
         <!--Page-->
