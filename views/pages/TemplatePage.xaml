@@ -54,6 +54,32 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Label x:Name="content_label" Content="Content" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                    <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="10*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!--Label + TextBox-->
+                        <userControls:UCLabelTextBox x:Name="labelTextBox0" Grid.Row="0" Grid.Column="0">
+                            
+                        </userControls:UCLabelTextBox>
+                        <!--Label + TextBox-->
+                        
+                        
+                        <!--Label + TextBoxSearch-->
+                        <userControls:UCLabelTextBoxSearch x:Name="labelTextBoxSearch0" Grid.Row="1" Grid.Column="0" >
+                            
+                        </userControls:UCLabelTextBoxSearch>
+                        <!--Label + TextBoxSearch-->
+                    </Grid>
                 </Grid>
                 <!--Content-->
             </Grid>

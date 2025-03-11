@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Mams.views.userControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="350" d:DesignWidth="150">
     <!--Menu-->
     <Grid x:Name="menu_grid" Grid.Column="0" Background="#FFB4B4B4" Margin="10,3,3,3">
         <Grid.RowDefinitions>
@@ -29,12 +29,12 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Label x:Name="menu_label" Content="Menu" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Button x:Name="menu_button0" Content="Menu Button" Grid.Row="1" Margin="3"/>
-            <Button x:Name="menu_button1" Content="Menu Button" Grid.Row="2" Margin="3"/>
-            <Button x:Name="menu_button2" Content="Menu Button" Grid.Row="3" Margin="3"/>
-            <Button x:Name="menu_button3" Content="Menu Button" Grid.Row="4" Margin="3"/>
-            <Button x:Name="menu_button4" Content="Menu Button" Grid.Row="5" Margin="3"/>
+            <Label x:Name="menu_label" Content="Menu" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button x:Name="pageNav_fee_btn" Content="Ajouter Frais" Grid.Row="1" FontSize="16" Margin="3"/>
+            <Button x:Name="pageNav_profit_btn" Content="Ajouter Bénéfices" Grid.Row="2" FontSize="16" Margin="3"/>
+            <Button x:Name="pageNav_clients_btn" Content="Liste Clients" Grid.Row="3" FontSize="16" Margin="3"/>
+            <Button x:Name="pageNav_lots_btn" Content="Liste Lots" Grid.Row="4" FontSize="16" Margin="3"/>
+            <Button x:Name="pageNav_products_btn" Content="Liste Produits" Grid.Row="5" FontSize="16" Margin="3"/>
         </Grid>
         <!--Menu Buttons-->
     </Grid>
