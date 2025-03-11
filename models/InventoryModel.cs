@@ -1,8 +1,8 @@
-﻿using Mams.interfaces;
-using MySqlConnector;
-using System.Data;
-using Mams.items;
+﻿using MySqlConnector;
 using Mams.src.imp;
+using Mams.interfaces;
+using Mams.items;
+using System.Data;
 using System.Windows;
 
 namespace Mams.models;
@@ -32,6 +32,7 @@ public class InventoryModel :
         return CombineLists.getCombinedList(new() {
             searchItemsByID(search),
             searchItemsByName(search)
+            
         });
     }
 

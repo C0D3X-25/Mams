@@ -1,17 +1,5 @@
-﻿using Mams.views.pages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Mams.src.ctrl;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Mams.views;
 
@@ -20,10 +8,10 @@ namespace Mams.views;
 /// </summary>
 public partial class MainWindow : Window {
 
-
+    public readonly PageNavigationManager m_page_navigation;
 
     public MainWindow() {
         InitializeComponent();
-        MainFrame.Navigate(new TemplatePage());
+        m_page_navigation = new(MainFrame);
     }
 }

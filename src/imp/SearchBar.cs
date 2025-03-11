@@ -12,6 +12,7 @@ namespace Mams.src.imp;
 /// Handles search functionality with a text box input and ListView display of results.
 /// </summary>
 public class SearchBar {
+
     private readonly TextBox _m_txt_box;
     private readonly ListView _m_list_view;
     private ABaseSearchModel? _m_model;
@@ -140,8 +141,8 @@ public class SearchBar {
 
             if (results.Count > 0) {
                 // Calculate desired height based on items (using approximate item height)
-                const double estimated_item_height = 25; // Typical height for a list item
-                double desired_height = Math.Min(results.Count * estimated_item_height, 10 * estimated_item_height);
+                const double estimated_item_height = 25;
+                double desired_height = Math.Min(results.Count * estimated_item_height, 9 * estimated_item_height);
 
                 _m_list_view.Height = desired_height;
                 _m_list_view.Visibility = Visibility.Visible;

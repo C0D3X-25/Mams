@@ -51,7 +51,7 @@
                 </Grid.ColumnDefinitions>
                 
                 <ComboBox x:Name="searchbar_cmbBox" Grid.Column="0" Margin="50,0,0,0" VerticalAlignment="Center"/>
-                <TextBox x:Name="searchbar_txtBox" Grid.Column="1" Margin="1,0,50,0" VerticalAlignment="Center" TextChanged="searchbar_txtBox_TextChanged"/>
+                <TextBox x:Name="searchbar_txtBox" Grid.Column="1" Margin="1,0,50,0" FontSize="16" VerticalAlignment="Center" TextChanged="searchbar_txtBox_TextChanged"/>
                 
                 <!-- Popup for ListView -->
                 <Popup x:Name="searchPopup" 
@@ -63,7 +63,6 @@
                        PopupAnimation="Slide">
                     <ListView x:Name="searchbar_listView"
                             Width="{Binding ElementName=searchbar_txtBox, Path=ActualWidth}"
-                            MaxHeight="150"
                             Background="White"
                             BorderBrush="Gray"
                             BorderThickness="1"/>

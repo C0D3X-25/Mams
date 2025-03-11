@@ -9,7 +9,7 @@ namespace Mams.models;
 /// </summary>
 /// 
 public abstract class ABaseSearchModel : ABaseModel, ISearchItems {
-
+    
     protected readonly SearchItemModel _m_search_model = new();
 
     // Definition is passed to derived Classes
