@@ -8,7 +8,7 @@ namespace Mams.views;
 /// </summary>
 public partial class MainWindow : Window {
 
-    public readonly PageNavigationManager m_page_navigation;
+    public readonly PageNavigationController m_page_navigation;
 
     public MainWindow() {
         InitializeComponent();

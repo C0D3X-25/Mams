@@ -6,19 +6,19 @@ using System.Windows.Media;
 using System.Windows.Threading;
 
 
-namespace Mams.src.imp;
+namespace Mams.src.ctrl;
 
 /// <summary>
 /// Handles search functionality with a text box input and ListView display of results.
 /// </summary>
-public class SearchBar {
+public class SearchBarController {
 
     private readonly TextBox _m_txt_box;
     private readonly ListView _m_list_view;
     private ABaseSearchModel? _m_model;
     private readonly DispatcherTimer _m_search_timer;
-    private const UInt16 _m_min_text_length_to_start_search = 1;
-    private const UInt16 _m_delay_ms_between_search = 100;
+    private const ushort _m_min_text_length_to_start_search = 1;
+    private const ushort _m_delay_ms_between_search = 100;
     private bool _m_search_selected = false;
     private bool _m_is_item_selected = false;
 
@@ -28,10 +28,11 @@ public class SearchBar {
     /// <param name="model">The data model to use for searches</param>
     /// <param name="txt_box">The TextBox control for search input</param>
     /// <param name="list_view">The ListView control to display search results</param>
-    public SearchBar(ABaseSearchModel model, TextBox txt_box, ListView list_view) {
+    public SearchBarController(ABaseSearchModel model, TextBox txt_box, ListView list_view) {
         _m_model = model;
         _m_txt_box = txt_box;
         _m_list_view = list_view;
+        _m_list_view.FontSize = 16;
         _m_search_timer = new DispatcherTimer();
         setSearchTimer();
     }
@@ -41,7 +42,7 @@ public class SearchBar {
     /// </summary>
     /// <param name="txt_box">The TextBox control for search input</param>
     /// <param name="list_view">The ListView control to display search results</param>
-    public SearchBar(TextBox txt_box, ListView list_view) {
+    public SearchBarController(TextBox txt_box, ListView list_view) {
         _m_txt_box = txt_box;
         _m_list_view = list_view;
         _m_search_timer = new DispatcherTimer();
@@ -140,9 +141,12 @@ public class SearchBar {
             }
 
             if (results.Count > 0) {
-                // Calculate desired height based on items (using approximate item height)
-                const double estimated_item_height = 25;
-                double desired_height = Math.Min(results.Count * estimated_item_height, 9 * estimated_item_height);
+                // Calculate desired height based on items
+                const double ESTIMATED_ITEM_HEIGHT = 27;
+
+                // Calculate height based on actual number of items, but cap at 10
+                int items_to_show = Math.Min(results.Count, 10);
+                double desired_height = items_to_show * ESTIMATED_ITEM_HEIGHT + 3;
 
                 _m_list_view.Height = desired_height;
                 _m_list_view.Visibility = Visibility.Visible;

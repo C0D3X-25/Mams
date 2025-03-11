@@ -3,11 +3,11 @@ using System.Windows.Controls;
 
 namespace Mams.src.ctrl;
 
-public class PageNavigationManager {
+public class PageNavigationController {
 
     private readonly Frame? _m_frame;
 
-    public PageNavigationManager(Frame frame) {
+    public PageNavigationController(Frame frame) {
         _m_frame = frame;
         navigateToHomePage();
     }

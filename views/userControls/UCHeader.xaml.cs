@@ -1,5 +1,5 @@
 ﻿using Mams.models;
-using Mams.src.imp;
+using Mams.src.ctrl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +23,11 @@ namespace Mams.views.userControls;
 public partial class UCHeader : UserControl {
 
     private readonly ABaseSearchModel _m_model = new InventoryModel();
-    private readonly SearchBar? _m_search_bar;
+    private readonly SearchBarController? _m_search_bar;
 
     public UCHeader() {
         InitializeComponent();
-        _m_search_bar = new SearchBar(_m_model, searchbar_txtBox, searchbar_listView);
+        _m_search_bar = new SearchBarController(_m_model, searchbar_txtBox, searchbar_listView);
     }
 
     private void searchbar_txtBox_TextChanged(object sender, TextChangedEventArgs e) {
