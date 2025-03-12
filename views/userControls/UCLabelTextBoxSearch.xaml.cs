@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Mams.models;
+using Mams.src.ctrl;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,16 +15,28 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Mams.views.userControls
-{
-    /// <summary>
-    /// Interaction logic for UCLabelTextBoxSearch.xaml
-    /// </summary>
-    public partial class UCLabelTextBoxSearch : UserControl
-    {
-        public UCLabelTextBoxSearch()
-        {
-            InitializeComponent();
-        }
+namespace Mams.views.userControls;
+
+/// <summary>
+/// Interaction logic for UCLabelTextBoxSearch.xaml
+/// </summary>
+public partial class UCLabelTextBoxSearch : UserControl {
+
+    private readonly ABaseSearchModel _m_model = new InventoryModel();
+    private readonly SearchBarController? _m_search_bar;
+
+    public UCLabelTextBoxSearch() {
+        InitializeComponent();
+        _m_search_bar = new SearchBarController(_m_model, this);
+
     }
+
+    private void textBoxSearch_txtBox_TextChanged(object sender, TextChangedEventArgs e) {
+        _m_search_bar?.txtBox_TextChanged(sender, e);
+    }
+
+    private void searchbar_listView_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        _m_search_bar?.listView_SelectionChanged(sender, e);
+    }
+
 }

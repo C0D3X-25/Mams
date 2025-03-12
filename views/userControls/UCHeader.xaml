@@ -65,7 +65,10 @@
                             Width="{Binding ElementName=searchbar_txtBox, Path=ActualWidth}"
                             Background="White"
                             BorderBrush="Gray"
-                            BorderThickness="1"/>
+                            BorderThickness="1"
+                            FontSize="16"
+                            SelectionChanged="searchbar_listView_SelectionChanged"
+                            />
                 </Popup>
             </Grid>
             <!--Searchbar-->

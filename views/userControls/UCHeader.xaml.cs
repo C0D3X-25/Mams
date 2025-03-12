@@ -27,11 +27,15 @@ public partial class UCHeader : UserControl {
 
     public UCHeader() {
         InitializeComponent();
-        _m_search_bar = new SearchBarController(_m_model, searchbar_txtBox, searchbar_listView);
+        _m_search_bar = new SearchBarController(_m_model, this);
     }
 
     private void searchbar_txtBox_TextChanged(object sender, TextChangedEventArgs e) {
         _m_search_bar?.txtBox_TextChanged(sender, e);
-        searchPopup.IsOpen = !string.IsNullOrEmpty(searchbar_txtBox.Text);
+    }
+
+    private void searchbar_listView_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        _m_search_bar?.listView_SelectionChanged(sender, e);
+        //_m_search_bar?.clearSearchBar(); // Uncomment later !
     }
 }

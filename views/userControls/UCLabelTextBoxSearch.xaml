@@ -16,22 +16,25 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         
-        <Label x:Name="textBoxSearch_label0" Grid.Column="0" Grid.Row="0" Content="Label for textBoxSearch" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <TextBox x:Name="textBoxSearch_txtBox0" Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Margin="5,0,5,0" FontSize="16" VerticalAlignment="Center"/>
+        <Label x:Name="textBoxSearch_label" Grid.Column="0" Grid.Row="0" Content="Label for textBoxSearch" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBox x:Name="textBoxSearch_txtBox" Grid.Column="1" Grid.Row="0" TextWrapping="Wrap" Margin="5,0,5,0" FontSize="16" VerticalAlignment="Center" TextChanged="textBoxSearch_txtBox_TextChanged"/>
         
         <!-- Popup for ListView -->
         <Popup x:Name="searchPopup" 
                         Grid.Column="1" 
-                        PlacementTarget="{Binding ElementName=searchbar_txtBox}"
+                        PlacementTarget="{Binding ElementName=textBoxSearch_txtBox}"
                         Placement="Bottom"
                         AllowsTransparency="True"
                         StaysOpen="False"
                         PopupAnimation="Slide">
             <ListView x:Name="searchbar_listView"
-                            Width="{Binding ElementName=searchbar_txtBox, Path=ActualWidth}"
+                            Width="{Binding ElementName=textBoxSearch_txtBox, Path=ActualWidth}"
                             Background="White"
                             BorderBrush="Gray"
-                            BorderThickness="1"/>
+                            BorderThickness="1"
+                            FontSize="16"
+                            SelectionChanged="searchbar_listView_SelectionChanged"
+            />
         </Popup>
     </Grid>
     <!--Label + TextBoxSearch-->

@@ -1,6 +1,8 @@
 ﻿using Mams.models;
+using Mams.views.userControls;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -15,6 +17,7 @@ public class SearchBarController {
 
     private readonly TextBox _m_txt_box;
     private readonly ListView _m_list_view;
+    private readonly Popup _m_popup;
     private ABaseSearchModel? _m_model;
     private readonly DispatcherTimer _m_search_timer;
     private const ushort _m_min_text_length_to_start_search = 1;
@@ -28,23 +31,29 @@ public class SearchBarController {
     /// <param name="model">The data model to use for searches</param>
     /// <param name="txt_box">The TextBox control for search input</param>
     /// <param name="list_view">The ListView control to display search results</param>
-    public SearchBarController(ABaseSearchModel model, TextBox txt_box, ListView list_view) {
+    public SearchBarController(ABaseSearchModel model, TextBox txt_box, ListView list_view, Popup popup) {
         _m_model = model;
         _m_txt_box = txt_box;
         _m_list_view = list_view;
-        _m_list_view.FontSize = 16;
+        _m_popup = popup;
         _m_search_timer = new DispatcherTimer();
         setSearchTimer();
     }
 
-    /// <summary>
-    /// Initializes a new instance of the SearchBar class, only the Controls.
-    /// </summary>
-    /// <param name="txt_box">The TextBox control for search input</param>
-    /// <param name="list_view">The ListView control to display search results</param>
-    public SearchBarController(TextBox txt_box, ListView list_view) {
-        _m_txt_box = txt_box;
-        _m_list_view = list_view;
+    public SearchBarController(ABaseSearchModel model, UCLabelTextBoxSearch textBox_search) {
+        _m_model = model;
+        _m_txt_box = textBox_search.textBoxSearch_txtBox;
+        _m_list_view = textBox_search.searchbar_listView;
+        _m_popup = textBox_search.searchPopup;
+        _m_search_timer = new DispatcherTimer();
+        setSearchTimer();
+    }
+
+    public SearchBarController(ABaseSearchModel model, UCHeader textBox_search) {
+        _m_model = model;
+        _m_txt_box = textBox_search.searchbar_txtBox;
+        _m_list_view = textBox_search.searchbar_listView;
+        _m_popup = textBox_search.searchPopup;
         _m_search_timer = new DispatcherTimer();
         setSearchTimer();
     }
@@ -59,11 +68,14 @@ public class SearchBarController {
         _m_is_item_selected = false;
     }
 
+    //_m_popup.IsOpen = !string.IsNullOrEmpty(_m_txt_box.Text); // used ??
+
     public void txtBox_TextChanged(object sender, TextChangedEventArgs e) {
         if (_m_is_item_selected) {
             _m_is_item_selected = false;
             return;
         }
+
 
         if (_m_txt_box.Text.Length >= _m_min_text_length_to_start_search
             && !_m_search_selected) {
@@ -74,6 +86,7 @@ public class SearchBarController {
         else {
             _m_search_selected = false;
             _m_list_view.Visibility = Visibility.Collapsed;
+            _m_popup.IsOpen = false;
         }
     }
 
@@ -84,39 +97,40 @@ public class SearchBarController {
             _m_txt_box.Text = _m_list_view.SelectedItem.ToString();
             _m_list_view.Items.Clear();
             _m_list_view.Visibility = Visibility.Collapsed;
-            clearSearchBar();
+            _m_popup.IsOpen = false;
         }
     }
 
-    public void listView_MouseMove(object sender, MouseEventArgs e) {
-        Point mousePosition = e.GetPosition(_m_list_view);
-        HitTestResult result = VisualTreeHelper.HitTest(_m_list_view, mousePosition);
+    // PROBABLY NOT REQUIRED IN WPF
+    //public void listView_MouseMove(object sender, MouseEventArgs e) {
+    //    Point mousePosition = e.GetPosition(_m_list_view);
+    //    HitTestResult result = VisualTreeHelper.HitTest(_m_list_view, mousePosition);
 
-        ListViewItem? hoveredItem = null;
-        DependencyObject? current = result?.VisualHit;
-        while (current != null) {
-            if (current is ListViewItem item) {
-                hoveredItem = item;
-                break;
-            }
-            current = VisualTreeHelper.GetParent(current);
-        }
+    //    ListViewItem? hoveredItem = null;
+    //    DependencyObject? current = result?.VisualHit;
+    //    while (current != null) {
+    //        if (current is ListViewItem item) {
+    //            hoveredItem = item;
+    //            break;
+    //        }
+    //        current = VisualTreeHelper.GetParent(current);
+    //    }
 
-        // Reset all items to default style
-        foreach (object item in _m_list_view.Items) {
-            ListViewItem? container = _m_list_view.ItemContainerGenerator.ContainerFromItem(item) as ListViewItem;
-            if (container != null && container != hoveredItem) {
-                container.Background = Brushes.Transparent;
-                container.Foreground = SystemColors.WindowTextBrush;
-            }
-        }
+    //    // Reset all items to default style
+    //    foreach (object item in _m_list_view.Items) {
+    //        ListViewItem? container = _m_list_view.ItemContainerGenerator.ContainerFromItem(item) as ListViewItem;
+    //        if (container != null && container != hoveredItem) {
+    //            container.Background = Brushes.Transparent;
+    //            container.Foreground = SystemColors.WindowTextBrush;
+    //        }
+    //    }
 
-        // Highlight hovered item
-        if (hoveredItem != null) {
-            hoveredItem.Background = SystemColors.HighlightBrush;
-            hoveredItem.Foreground = SystemColors.HighlightTextBrush;
-        }
-    }
+    //    // Highlight hovered item
+    //    if (hoveredItem != null) {
+    //        hoveredItem.Background = SystemColors.HighlightBrush;
+    //        hoveredItem.Foreground = SystemColors.HighlightTextBrush;
+    //    }
+    //}
 
     private void setSearchTimer() {
         _m_search_timer.Interval = TimeSpan.FromMilliseconds(_m_delay_ms_between_search);
@@ -150,10 +164,12 @@ public class SearchBarController {
 
                 _m_list_view.Height = desired_height;
                 _m_list_view.Visibility = Visibility.Visible;
+                _m_popup.IsOpen = true;
                 Panel.SetZIndex(_m_list_view, 1000);
             }
             else {
                 _m_list_view.Visibility = Visibility.Collapsed;
+                _m_popup.IsOpen = false;
             }
         }
     }
