@@ -37,5 +37,6 @@ public partial class UCHeader : UserControl {
     private void searchbar_listView_SelectionChanged(object sender, SelectionChangedEventArgs e) {
         _m_search_bar?.listView_SelectionChanged(sender, e);
         //_m_search_bar?.clearSearchBar(); // Uncomment later !
+        // Invoke event to parent to update the page
     }
 }
