@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Mams.src.ctrl;
+using Mams.views.pages;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Mams.views.userControls;
 
@@ -19,7 +9,15 @@ namespace Mams.views.userControls;
 /// Interaction logic for UCMenu.xaml
 /// </summary>
 public partial class UCMenu : UserControl {
+
+    private readonly MainWindow? _m_window;
     public UCMenu() {
         InitializeComponent();
+
+        _m_window = Window.GetWindow(this) as MainWindow;
+
+        pageNav_clients_btn.Click += (sender, e) => {
+            _m_window?.m_page_navigation.navigateToPage(new ListClientPage());
+        };
     }
 }

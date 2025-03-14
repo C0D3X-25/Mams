@@ -30,6 +30,11 @@ public partial class UCHeader : UserControl {
         _m_search_bar = new SearchBarController(_m_model, this);
     }
 
+    public string? pageTitle {
+        get { return title_page_lbl.Content.ToString(); }
+        set { title_page_lbl.Content = value; }
+    }
+
     private void searchbar_txtBox_TextChanged(object sender, TextChangedEventArgs e) {
         _m_search_bar?.txtBox_TextChanged(sender, e);
     }

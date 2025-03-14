@@ -16,10 +16,13 @@ using System.Windows.Shapes;
 namespace Mams.views.pages;
 
 /// <summary>
-/// Interaction logic for templatePage.xaml
+/// Interaction logic for ResumePage.xaml
 /// </summary>
-public partial class TemplatePage : Page {
-    public TemplatePage() {
+public partial class ResumePage : Page
+{
+    public ResumePage()
+    {
         InitializeComponent();
+        header.pageTitle = "Résumé";
     }
 }

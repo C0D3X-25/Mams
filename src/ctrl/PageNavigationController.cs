@@ -13,7 +13,7 @@ public class PageNavigationController {
     }
 
     public void navigateToHomePage() {
-        _m_frame?.Navigate(new TemplatePage());
+        _m_frame?.Navigate(new ResumePage());
     }
 
     public void navigateToPage(Page page) {

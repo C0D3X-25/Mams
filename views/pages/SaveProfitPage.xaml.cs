@@ -13,13 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Mams.views.pages;
-
-/// <summary>
-/// Interaction logic for templatePage.xaml
-/// </summary>
-public partial class TemplatePage : Page {
-    public TemplatePage() {
-        InitializeComponent();
+namespace Mams.views.pages
+{
+    /// <summary>
+    /// Interaction logic for SaveProfitPage.xaml
+    /// </summary>
+    public partial class SaveProfitPage : Page
+    {
+        public SaveProfitPage()
+        {
+            InitializeComponent();
+        }
     }
 }
