@@ -61,13 +61,14 @@
                             <RowDefinition Height="1*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"/>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
                         <!--Left Grid-->
-                        <Grid Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right">
+                        <Grid Grid.Column="0" Grid.Row="1" 
+                              HorizontalAlignment="Right"
+                              Margin="0,0,25,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
                                 <RowDefinition Height="1*"/>
@@ -98,7 +99,9 @@
                         </Grid>
 
                         <!--Right Grid-->
-                        <Grid Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left">
+                        <Grid Grid.Column="1" Grid.Row="1" 
+                              HorizontalAlignment="Left"
+                              Margin="25,0,0,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
                                 <RowDefinition Height="1*"/>
@@ -128,15 +131,13 @@
                             </userControls:UCLabelTextBox>
                         </Grid>
 
-
-
-
                         <!--Save Button-->
                         <Button x:Name="save_client_btn" 
                                 Content="Enregistrer" 
                                 Grid.Column="2" Grid.Row="5" 
-                                Height="30" Width="100"
+                                Height="30" Width="120"
                                 HorizontalAlignment="Right"
+                                Margin="0,0,50,0"
                                 FontSize="16">
                             
                         </Button>
@@ -145,8 +146,9 @@
                         <Button x:Name="return_client_btn" 
                                 Content="Retour" 
                                 Grid.Column="0" Grid.Row="5" 
-                                Height="30" Width="100"
+                                Height="30" Width="120"
                                 HorizontalAlignment="Left"
+                                Margin="50,0,0,0"
                                 FontSize="16">
 
                         </Button>
