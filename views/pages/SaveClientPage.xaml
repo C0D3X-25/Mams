@@ -53,13 +53,12 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label x:Name="content_label" Content="Content" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
                     <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="5">
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="9*"/>
                             <RowDefinition Height="1*"/>
-                            <RowDefinition Height="1*"/>
-                            <RowDefinition Height="10*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/>
@@ -67,7 +66,90 @@
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
 
+                        <!--Left Grid-->
+                        <Grid Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="6*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
 
+                            <!--Name-->
+                            <userControls:UCLabelTextBox
+                            x:Name="client_name"
+                            Grid.Row="0">
+                            </userControls:UCLabelTextBox>
+
+                            <!--Email-->
+                            <userControls:UCLabelTextBox
+                            x:Name="client_email"
+                            Grid.Row="1">
+                            </userControls:UCLabelTextBox>
+
+                            <!--ID-->
+                            <userControls:UCLabelTextBox
+                            x:Name="client_id"
+                            Grid.Row="2">
+                            </userControls:UCLabelTextBox>
+                        </Grid>
+
+                        <!--Right Grid-->
+                        <Grid Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="6*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <!--Address-->
+                            <userControls:UCLabelTextBox
+                            x:Name="client_address"
+                            Grid.Column="2" Grid.Row="1">
+                            </userControls:UCLabelTextBox>
+
+                            <!--City-->
+                            <userControls:UCLabelTextBox
+                            x:Name="client_city"
+                            Grid.Column="2" Grid.Row="2">
+                            </userControls:UCLabelTextBox>
+
+                            <!--Phone-->
+                            <userControls:UCLabelTextBox
+                            x:Name="client_phone"
+                            Grid.Column="2" Grid.Row="3">
+                            </userControls:UCLabelTextBox>
+                        </Grid>
+
+
+
+
+                        <!--Save Button-->
+                        <Button x:Name="save_client_btn" 
+                                Content="Enregistrer" 
+                                Grid.Column="2" Grid.Row="5" 
+                                Height="30" Width="100"
+                                HorizontalAlignment="Right"
+                                FontSize="16">
+                            
+                        </Button>
+
+                        <!--Return Button-->
+                        <Button x:Name="return_client_btn" 
+                                Content="Retour" 
+                                Grid.Column="0" Grid.Row="5" 
+                                Height="30" Width="100"
+                                HorizontalAlignment="Left"
+                                FontSize="16">
+
+                        </Button>
                     </Grid>
                 </Grid>
                 <!--Content-->

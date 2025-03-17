@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="350" d:DesignWidth="150">
     <!--Menu-->
-    <Grid x:Name="menu_grid" Grid.Column="0" Background="#FFB4B4B4" Margin="10,3,3,3">
+    <Grid Grid.Column="0" Background="#FFB4B4B4" Margin="10,3,3,3">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
@@ -16,7 +16,7 @@
         </Grid.ColumnDefinitions>
 
         <!--Menu Buttons-->
-        <Grid x:Name="menu_btn_grid" Grid.Column="0" Background="#FFD9D9D9" MinHeight="300" MaxHeight="400" VerticalAlignment="Top">
+        <Grid Grid.Column="0" Background="#FFD9D9D9" MinHeight="300" MaxHeight="400" VerticalAlignment="Top">
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -32,9 +32,9 @@
             <Label x:Name="menu_label" Content="Menu" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Button x:Name="pageNav_fee_btn" Content="Ajouter Frais" Grid.Row="1" FontSize="16" Margin="3"/>
             <Button x:Name="pageNav_profit_btn" Content="Ajouter Bénéfices" Grid.Row="2" FontSize="16" Margin="3"/>
-            <Button x:Name="pageNav_clients_btn" Content="Liste Clients" Grid.Row="3" FontSize="16" Margin="3"/>
-            <Button x:Name="pageNav_lots_btn" Content="Liste Lots" Grid.Row="4" FontSize="16" Margin="3"/>
-            <Button x:Name="pageNav_products_btn" Content="Liste Produits" Grid.Row="5" FontSize="16" Margin="3"/>
+            <Button x:Name="pageNav_clients_btn" Content="Clients" Grid.Row="3" FontSize="16" Margin="3"/>
+            <Button x:Name="pageNav_lots_btn" Content="Lots" Grid.Row="4" FontSize="16" Margin="3"/>
+            <Button x:Name="pageNav_products_btn" Content="Produits" Grid.Row="5" FontSize="16" Margin="3"/>
         </Grid>
         <!--Menu Buttons-->
     </Grid>
