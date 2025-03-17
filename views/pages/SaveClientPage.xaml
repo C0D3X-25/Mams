@@ -112,19 +112,19 @@
                             <!--Address-->
                             <userControls:UCLabelTextBox
                             x:Name="client_address"
-                            Grid.Column="2" Grid.Row="1">
+                            Grid.Row="0">
                             </userControls:UCLabelTextBox>
 
                             <!--City-->
                             <userControls:UCLabelTextBox
                             x:Name="client_city"
-                            Grid.Column="2" Grid.Row="2">
+                            Grid.Row="1">
                             </userControls:UCLabelTextBox>
 
                             <!--Phone-->
                             <userControls:UCLabelTextBox
                             x:Name="client_phone"
-                            Grid.Column="2" Grid.Row="3">
+                            Grid.Row="2">
                             </userControls:UCLabelTextBox>
                         </Grid>
 
