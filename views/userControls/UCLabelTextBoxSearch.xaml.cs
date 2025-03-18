@@ -25,6 +25,17 @@ public partial class UCLabelTextBoxSearch : UserControl {
     private readonly ABaseSearchModel _m_model = new InventoryModel();
     private readonly SearchBarController? _m_search_bar;
 
+    public string label {
+        get { return (string)GetValue(labelProperty); }
+        set { SetValue(labelProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for label.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty labelProperty =
+        DependencyProperty.Register("label", typeof(string), typeof(UCLabelTextBoxSearch), new PropertyMetadata("Label to change text"));
+
+
+
     public UCLabelTextBoxSearch() {
         InitializeComponent();
         _m_search_bar = new SearchBarController(_m_model, this);

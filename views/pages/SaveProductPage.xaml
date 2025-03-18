@@ -22,7 +22,10 @@
             </Grid.ColumnDefinitions>
 
             <!--Header-->
-            <userControls:UCHeader x:Name="header" Grid.Row="0">
+            <userControls:UCHeader 
+                x:Name="header" 
+                Grid.Row="0"
+                title="Produit">
 
             </userControls:UCHeader>
             <!--Header-->
@@ -40,7 +43,8 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Menu-->
-                <userControls:UCMenu x:Name="pages_menu">
+                <userControls:UCMenu
+                    x:Name="pages_menu">
 
                 </userControls:UCMenu>
                 <!--Menu-->
@@ -91,19 +95,22 @@
                                 <!--Name-->
                                 <userControls:UCLabelTextBox
                                     x:Name="product_name"
-                                    Grid.Row="0">
+                                    Grid.Row="0"
+                                    label="Nom*">
                                 </userControls:UCLabelTextBox>
 
                                 <!--Category-->
                                 <userControls:UCLabelTextBox
                                     x:Name="product_category"
-                                    Grid.Row="1">
+                                    Grid.Row="1"
+                                    label="Catégorie*">
                                 </userControls:UCLabelTextBox>
 
                                 <!--ID-->
                                 <userControls:UCLabelTextBox
                                     x:Name="product_id"
-                                    Grid.Row="2">
+                                    Grid.Row="2"
+                                    label="ID">
                                 </userControls:UCLabelTextBox>
                             </Grid>
 
@@ -124,19 +131,22 @@
                                 <!--Type-->
                                 <userControls:UCLabelTextBox
                                     x:Name="product_type"
-                                    Grid.Row="0">
+                                    Grid.Row="0"
+                                    label="Type*">
                                 </userControls:UCLabelTextBox>
 
                                 <!--Shape-->
                                 <userControls:UCLabelTextBox
                                     x:Name="product_shape"
-                                    Grid.Row="1">
+                                    Grid.Row="1"
+                                    label="Forme">
                                 </userControls:UCLabelTextBox>
 
                                 <!--Weight-->
                                 <userControls:UCLabelTextBox
                                     x:Name="product_weight"
-                                    Grid.Row="2">
+                                    Grid.Row="2"
+                                    label="Poid">
                                 </userControls:UCLabelTextBox>
                             </Grid>
                         </Grid>

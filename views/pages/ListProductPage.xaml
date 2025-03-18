@@ -24,7 +24,8 @@
             <!--Header-->
             <userControls:UCHeader 
                 x:Name="header"  
-                Grid.Row="0">
+                Grid.Row="0"
+                title="Liste Produits">
 
             </userControls:UCHeader>
             <!--Header-->

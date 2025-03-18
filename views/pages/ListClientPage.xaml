@@ -22,7 +22,10 @@
             </Grid.ColumnDefinitions>
 
             <!--Header-->
-            <userControls:UCHeader x:Name="header" Grid.Row="0">
+            <userControls:UCHeader 
+                x:Name="header" 
+                Grid.Row="0"
+                title="Liste Clients">
 
             </userControls:UCHeader>
             <!--Header-->

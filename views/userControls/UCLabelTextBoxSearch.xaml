@@ -19,7 +19,7 @@
         
         <Label x:Name="textBoxSearch_label" 
                Grid.Column="0" Grid.Row="0" 
-               Content="Label for textBoxSearch" 
+               Content="{Binding label, ElementName=root}" 
                FontSize="16" 
                VerticalAlignment="Center" HorizontalAlignment="Right"/>
         <TextBox x:Name="textBoxSearch_txtBox" 
