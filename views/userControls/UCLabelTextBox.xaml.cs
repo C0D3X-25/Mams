@@ -13,16 +13,28 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Mams.views.userControls
-{
-    /// <summary>
-    /// Interaction logic for UCLabelTextBox.xaml
-    /// </summary>
-    public partial class UCLabelTextBox : UserControl
+namespace Mams.views.userControls;
+
+/// <summary>
+/// Interaction logic for UCLabelTextBox.xaml
+/// </summary>
+public partial class UCLabelTextBox : UserControl {
+
+
+
+    public string label {
+        get { return (string)GetValue(labelProperty); }
+        set { SetValue(labelProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for label.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty labelProperty =
+        DependencyProperty.Register("label", typeof(string), typeof(UCLabelTextBox), new PropertyMetadata("label to change text"));
+
+
+
+    public UCLabelTextBox()
     {
-        public UCLabelTextBox()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

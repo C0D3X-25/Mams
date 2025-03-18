@@ -25,14 +25,22 @@ public partial class UCHeader : UserControl {
     private readonly ABaseSearchModel _m_model = new InventoryModel();
     private readonly SearchBarController? _m_search_bar;
 
+
+
+    public string title {
+        get { return (string)GetValue(titleProperty); }
+        set { SetValue(titleProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for title.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty titleProperty =
+        DependencyProperty.Register("title", typeof(string), typeof(UCHeader), new PropertyMetadata("Page Title"));
+
+
+
     public UCHeader() {
         InitializeComponent();
         _m_search_bar = new SearchBarController(_m_model, this);
-    }
-
-    public string? pageTitle {
-        get { return title_page_lbl.Content.ToString(); }
-        set { title_page_lbl.Content = value; }
     }
 
     private void searchbar_txtBox_TextChanged(object sender, TextChangedEventArgs e) {

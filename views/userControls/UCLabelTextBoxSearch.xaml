@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:Mams.views.userControls"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    
     <!--Label + TextBoxSearch-->
     <Grid>
         <Grid.RowDefinitions>

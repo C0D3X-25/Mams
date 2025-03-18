@@ -23,6 +23,5 @@ public partial class ResumePage : Page
     public ResumePage()
     {
         InitializeComponent();
-        header.pageTitle = "Résumé";
     }
 }

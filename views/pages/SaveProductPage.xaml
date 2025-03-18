@@ -62,73 +62,83 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
-                            <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-
-                        <!--Left Grid-->
-                        <Grid Grid.Column="0" Grid.Row="1" 
-                              HorizontalAlignment="Right"
-                              Margin="0,0,25,0">
+                        
+                        <!--Fields--> 
+                        <Grid Grid.Row="1">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="6*"/>
+                                <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <!--Name-->
-                            <userControls:UCLabelTextBox
-                                x:Name="product_name"
-                                Grid.Row="0">
-                            </userControls:UCLabelTextBox>
-
-                            <!--Category-->
-                            <userControls:UCLabelTextBox
-                                x:Name="product_category"
-                                Grid.Row="1">
-                            </userControls:UCLabelTextBox>
-
-                            <!--ID-->
-                            <userControls:UCLabelTextBox
-                                x:Name="product_id"
-                                Grid.Row="2">
-                            </userControls:UCLabelTextBox>
-                        </Grid>
-
-                        <!--Right Grid-->
-                        <Grid Grid.Column="1" Grid.Row="1" 
-                              HorizontalAlignment="Left"
-                              Margin="25,0,0,0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="1*"/>
-                                <RowDefinition Height="6*"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
+                            
+                            <!--Left Grid-->
+                            <Grid Grid.Column="0" Grid.Row="1" 
+                                  HorizontalAlignment="Right"
+                                  Margin="0,0,25,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="6*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
 
-                            <!--Type-->
-                            <userControls:UCLabelTextBox
-                                x:Name="product_type"
-                                Grid.Row="0">
-                            </userControls:UCLabelTextBox>
+                                <!--Name-->
+                                <userControls:UCLabelTextBox
+                                    x:Name="product_name"
+                                    Grid.Row="0">
+                                </userControls:UCLabelTextBox>
 
-                            <!--Shape-->
-                            <userControls:UCLabelTextBox
-                                x:Name="product_shape"
-                                Grid.Row="1">
-                            </userControls:UCLabelTextBox>
+                                <!--Category-->
+                                <userControls:UCLabelTextBox
+                                    x:Name="product_category"
+                                    Grid.Row="1">
+                                </userControls:UCLabelTextBox>
 
-                            <!--Weight-->
-                            <userControls:UCLabelTextBox
-                                x:Name="product_weight"
-                                Grid.Row="2">
-                            </userControls:UCLabelTextBox>
+                                <!--ID-->
+                                <userControls:UCLabelTextBox
+                                    x:Name="product_id"
+                                    Grid.Row="2">
+                                </userControls:UCLabelTextBox>
+                            </Grid>
+
+                            <!--Right Grid-->
+                            <Grid Grid.Column="1" Grid.Row="1" 
+                                  HorizontalAlignment="Left"
+                                  Margin="25,0,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="6*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <!--Type-->
+                                <userControls:UCLabelTextBox
+                                    x:Name="product_type"
+                                    Grid.Row="0">
+                                </userControls:UCLabelTextBox>
+
+                                <!--Shape-->
+                                <userControls:UCLabelTextBox
+                                    x:Name="product_shape"
+                                    Grid.Row="1">
+                                </userControls:UCLabelTextBox>
+
+                                <!--Weight-->
+                                <userControls:UCLabelTextBox
+                                    x:Name="product_weight"
+                                    Grid.Row="2">
+                                </userControls:UCLabelTextBox>
+                            </Grid>
                         </Grid>
 
                         <!-- Abort Save Buttons-->

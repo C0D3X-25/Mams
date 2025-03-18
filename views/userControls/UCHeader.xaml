@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Mams.views.userControls"
              mc:Ignorable="d" 
-             d:DesignHeight="100" d:DesignWidth="1000">
+             d:DesignHeight="100" d:DesignWidth="1000"
+             x:Name="root">
     
     <!--Header-->
     <Grid x:Name="header_grid" Grid.Row="0" Background="Gray">
@@ -16,7 +17,14 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Label x:Name="title_page_lbl" Content="Page Title" FontSize="25" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        
+        <!--Title-->
+        <Label x:Name="title_page_lbl" 
+               Content="{Binding title, ElementName=root}" 
+               FontSize="25" FontWeight="Bold" 
+               HorizontalAlignment="Center" VerticalAlignment="Center">
+            
+        </Label>
 
         <!--Header Menu-->
         <Grid x:Name="header_menu_grid" Grid.Row="1" Background="#FFE25F5F">
