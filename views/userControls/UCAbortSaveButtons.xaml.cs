@@ -27,7 +27,6 @@ public partial class UCAbortSaveButtons : UserControl {
         set { SetValue(label_left_buttonProperty, value); }
     }
 
-    // Using a DependencyProperty as the backing store for label_left_button.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty label_left_buttonProperty =
         DependencyProperty.Register("label_left_button", typeof(string), typeof(UCAbortSaveButtons), new PropertyMetadata("Annuler"));
 
@@ -36,9 +35,27 @@ public partial class UCAbortSaveButtons : UserControl {
         set { SetValue(label_right_buttonProperty, value); }
     }
 
-    // Using a DependencyProperty as the backing store for label_right_button.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty label_right_buttonProperty =
         DependencyProperty.Register("label_right_button", typeof(string), typeof(UCAbortSaveButtons), new PropertyMetadata("Enregistrer"));
+
+
+    public ICommand LeftButtonCommand {
+        get { return (ICommand)GetValue(LeftButtonCommandProperty); }
+        set { SetValue(LeftButtonCommandProperty, value); }
+    }
+
+    public static readonly DependencyProperty LeftButtonCommandProperty =
+        DependencyProperty.Register("LeftButtonCommand", typeof(ICommand), typeof(UCAbortSaveButtons));
+
+    public ICommand RightButtonCommand {
+        get { return (ICommand)GetValue(RightButtonCommandProperty); }
+        set { SetValue(RightButtonCommandProperty, value); }
+    }
+
+    public static readonly DependencyProperty RightButtonCommandProperty =
+        DependencyProperty.Register("RightButtonCommand", typeof(ICommand), typeof(UCAbortSaveButtons));
+    
+
 
 
     public UCAbortSaveButtons()

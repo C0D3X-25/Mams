@@ -1,4 +1,5 @@
-﻿using Mams.views.pages;
+﻿using Mams.commands;
+using Mams.views.pages;
 using System.Windows.Controls;
 
 namespace Mams.src.ctrl;
