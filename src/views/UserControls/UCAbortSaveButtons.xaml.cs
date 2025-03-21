@@ -20,8 +20,6 @@ namespace Mams.src.views.userControls;
 /// </summary>
 public partial class UCAbortSaveButtons : UserControl {
 
-
-
     public string label_left_button {
         get { return (string)GetValue(label_left_buttonProperty); }
         set { SetValue(label_left_buttonProperty, value); }

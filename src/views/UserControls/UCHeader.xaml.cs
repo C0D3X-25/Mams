@@ -11,7 +11,7 @@ namespace Mams.src.views.userControls;
 public partial class UCHeader : UserControl {
 
     private readonly ABaseSearchModel _m_model = new InventoryModel();
-    private readonly SearchBarController? _m_search_bar;
+    private readonly SearchBarModel? _m_search_bar;
 
     public string title {
         get { return (string)GetValue(titleProperty); }
@@ -26,7 +26,7 @@ public partial class UCHeader : UserControl {
         InitializeComponent();
         this.Loaded += UCHeader_Loaded; // need to wait for the window to be loaded
 
-        _m_search_bar = new SearchBarController(_m_model, this);
+        _m_search_bar = new SearchBarModel(_m_model, this);
     }
 
     private void UCHeader_Loaded(object sender, RoutedEventArgs e) {

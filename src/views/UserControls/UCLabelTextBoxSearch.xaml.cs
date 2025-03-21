@@ -23,7 +23,7 @@ namespace Mams.src.views.userControls;
 public partial class UCLabelTextBoxSearch : UserControl {
 
     private readonly ABaseSearchModel _m_model = new InventoryModel();
-    private readonly SearchBarController? _m_search_bar;
+    private readonly SearchBarModel? _m_search_bar;
 
     public string label {
         get { return (string)GetValue(labelProperty); }
@@ -38,7 +38,7 @@ public partial class UCLabelTextBoxSearch : UserControl {
 
     public UCLabelTextBoxSearch() {
         InitializeComponent();
-        _m_search_bar = new SearchBarController(_m_model, this);
+        _m_search_bar = new SearchBarModel(_m_model, this);
 
     }
 

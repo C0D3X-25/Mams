@@ -16,9 +16,9 @@ public class UCMenuController {
     public ICommand m_navigate_list_lot_command { get; set; }
     public ICommand m_navigate_list_product_command { get; set; }
 
-    public UCMenuController(PageNavigationController pageNavigation) {
+    public UCMenuController(PageNavigationController page_navigation) {
 
-        _m_page_navigation = pageNavigation;
+        _m_page_navigation = page_navigation;
 
         m_navigate_fee_command = new RelayCommand(navigateToFee);
         m_navigate_profit_command = new RelayCommand(navigateToProfit);

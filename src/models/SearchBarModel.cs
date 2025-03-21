@@ -1,19 +1,16 @@
-﻿using Mams.src.models;
-using Mams.src.views.userControls;
+﻿using Mams.src.views.userControls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 
-namespace Mams.src.controllers;
+namespace Mams.src.models;
 
 /// <summary>
 /// Handles search functionality with a text box input and ListView display of results.
 /// </summary>
-public class SearchBarController {
+public class SearchBarModel {
 
     private readonly TextBox _m_txt_box;
     private readonly ListView _m_list_view;
@@ -31,7 +28,7 @@ public class SearchBarController {
     /// <param name="model">The data model to use for searches</param>
     /// <param name="txt_box">The TextBox control for search input</param>
     /// <param name="list_view">The ListView control to display search results</param>
-    public SearchBarController(ABaseSearchModel model, TextBox txt_box, ListView list_view, Popup popup) {
+    public SearchBarModel(ABaseSearchModel model, TextBox txt_box, ListView list_view, Popup popup) {
         _m_model = model;
         _m_txt_box = txt_box;
         _m_list_view = list_view;
@@ -40,7 +37,7 @@ public class SearchBarController {
         setSearchTimer();
     }
 
-    public SearchBarController(ABaseSearchModel model, UCLabelTextBoxSearch textBox_search) {
+    public SearchBarModel(ABaseSearchModel model, UCLabelTextBoxSearch textBox_search) {
         _m_model = model;
         _m_txt_box = textBox_search.textBoxSearch_txtBox;
         _m_list_view = textBox_search.searchbar_listView;
@@ -49,7 +46,7 @@ public class SearchBarController {
         setSearchTimer();
     }
 
-    public SearchBarController(ABaseSearchModel model, UCHeader textBox_search) {
+    public SearchBarModel(ABaseSearchModel model, UCHeader textBox_search) {
         _m_model = model;
         _m_txt_box = textBox_search.searchbar_txtBox;
         _m_list_view = textBox_search.searchbar_listView;
