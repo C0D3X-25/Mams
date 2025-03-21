@@ -65,14 +65,12 @@ public class SearchBarModel {
         _m_is_item_selected = false;
     }
 
-    //_m_popup.IsOpen = !string.IsNullOrEmpty(_m_txt_box.Text); // used ??
-
     public void txtBox_TextChanged(object sender, TextChangedEventArgs e) {
+
         if (_m_is_item_selected) {
             _m_is_item_selected = false;
             return;
         }
-
 
         if (_m_txt_box.Text.Length >= _m_min_text_length_to_start_search
             && !_m_search_selected) {
@@ -97,37 +95,6 @@ public class SearchBarModel {
             _m_popup.IsOpen = false;
         }
     }
-
-    // PROBABLY NOT REQUIRED IN WPF
-    //public void listView_MouseMove(object sender, MouseEventArgs e) {
-    //    Point mousePosition = e.GetPosition(_m_list_view);
-    //    HitTestResult result = VisualTreeHelper.HitTest(_m_list_view, mousePosition);
-
-    //    ListViewItem? hoveredItem = null;
-    //    DependencyObject? current = result?.VisualHit;
-    //    while (current != null) {
-    //        if (current is ListViewItem item) {
-    //            hoveredItem = item;
-    //            break;
-    //        }
-    //        current = VisualTreeHelper.GetParent(current);
-    //    }
-
-    //    // Reset all items to default style
-    //    foreach (object item in _m_list_view.Items) {
-    //        ListViewItem? container = _m_list_view.ItemContainerGenerator.ContainerFromItem(item) as ListViewItem;
-    //        if (container != null && container != hoveredItem) {
-    //            container.Background = Brushes.Transparent;
-    //            container.Foreground = SystemColors.WindowTextBrush;
-    //        }
-    //    }
-
-    //    // Highlight hovered item
-    //    if (hoveredItem != null) {
-    //        hoveredItem.Background = SystemColors.HighlightBrush;
-    //        hoveredItem.Foreground = SystemColors.HighlightTextBrush;
-    //    }
-    //}
 
     private void setSearchTimer() {
         _m_search_timer.Interval = TimeSpan.FromMilliseconds(_m_delay_ms_between_search);
