@@ -27,7 +27,7 @@
         </Label>
 
         <!--Header Menu-->
-        <Grid x:Name="header_menu_grid" Grid.Row="1" Background="#FFE25F5F">
+        <Grid Grid.Row="1" Background="#FFE25F5F">
             <Grid.RowDefinitions>
                 <RowDefinition/>
             </Grid.RowDefinitions>
@@ -37,7 +37,7 @@
             </Grid.ColumnDefinitions>
 
             <!--Home Menu-->
-            <Grid x:Name="home_menu_grid" Grid.Row="0" Background="#FFE25F5F">
+            <Grid Grid.Row="0" Background="#FFE25F5F">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
@@ -45,11 +45,16 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="home_menu_btn" Content="Home" Grid.Column="0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" MinHeight="40" MinWidth="40"/>
+                <Button 
+                    Content="Home" 
+                    Grid.Column="0" Margin="10,0,0,0" 
+                    VerticalAlignment="Center" HorizontalAlignment="Left" 
+                    MinHeight="40" MinWidth="40"
+                    Command="{Binding m_navigate_homepage_command}"/>
             </Grid>
 
             <!--Searchbar-->
-            <Grid x:Name="searchbar_grid" Grid.Column="1" Background="#FFE25F5F" MaxWidth="500" VerticalAlignment="Center">
+            <Grid Grid.Column="1" Background="#FFE25F5F" MaxWidth="500" VerticalAlignment="Center">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
@@ -75,8 +80,9 @@
                             BorderBrush="Gray"
                             BorderThickness="1"
                             FontSize="16"
-                            SelectionChanged="searchbar_listView_SelectionChanged"
-                            />
+                            SelectionChanged="searchbar_listView_SelectionChanged">
+                        
+                    </ListView>
                 </Popup>
             </Grid>
             <!--Searchbar-->

@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Mams.src.views.userControls"
              mc:Ignorable="d" 
-             d:DesignHeight="40" d:DesignWidth="130">
+             d:DesignHeight="40" d:DesignWidth="130"
+             x:Name="root">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>

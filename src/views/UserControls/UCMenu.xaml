@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Mams.src.views.userControls"
              mc:Ignorable="d" 
-             d:DesignHeight="350" d:DesignWidth="150">
+             d:DesignHeight="350" d:DesignWidth="150"
+             x:Name="root">
     <!--Menu-->
     <Grid Grid.Column="0" Background="#FFB4B4B4" Margin="10,3,3,3">
         <Grid.RowDefinitions>
@@ -29,12 +30,40 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Label x:Name="menu_label" Content="Menu" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Button x:Name="pageNav_fee_btn" Content="Ajouter Frais" Grid.Row="1" FontSize="16" Margin="3"/>
-            <Button x:Name="pageNav_profit_btn" Content="Ajouter Bénéfices" Grid.Row="2" FontSize="16" Margin="3"/>
-            <Button x:Name="pageNav_clients_btn" Content="Clients" Grid.Row="3" FontSize="16" Margin="3"/>
-            <Button x:Name="pageNav_lots_btn" Content="Lots" Grid.Row="4" FontSize="16" Margin="3"/>
-            <Button x:Name="pageNav_products_btn" Content="Produits" Grid.Row="5" FontSize="16" Margin="3"/>
+            <Label 
+                Content="Menu" 
+                FontSize="20" 
+                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button 
+                Content="Ajouter Frais" 
+                Grid.Row="1" 
+                FontSize="16" 
+                Margin="3"
+                Command="{Binding m_navigate_fee_command}"/>
+            <Button 
+                Content="Ajouter Bénéfices" 
+                Grid.Row="2" 
+                FontSize="16" 
+                Margin="3"
+                Command="{Binding m_navigate_profit_command}"/>
+            <Button 
+                Content="Clients"
+                Grid.Row="3"
+                FontSize="16"
+                Margin="3"
+                Command="{Binding m_navigate_list_client_command}"/>
+            <Button 
+                Content="Lots"
+                Grid.Row="4"
+                FontSize="16" 
+                Margin="3"
+                Command="{Binding m_navigate_list_lot_command}"/>
+            <Button 
+                Content="Produits" 
+                Grid.Row="5" 
+                FontSize="16" 
+                Margin="3"
+                Command="{Binding m_navigate_list_product_command}"/>
         </Grid>
         <!--Menu Buttons-->
     </Grid>

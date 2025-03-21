@@ -10,14 +10,17 @@ namespace Mams.src.views.userControls;
 /// </summary>
 public partial class UCMenu : UserControl {
 
-    private readonly MainWindow? _m_window;
     public UCMenu() {
         InitializeComponent();
+        this.Loaded += UCMenu_Loaded; // need to wait for the window to be loaded
+    }
 
-        _m_window = Window.GetWindow(this) as MainWindow;
+    private void UCMenu_Loaded(object sender, RoutedEventArgs e) {
+        MainWindow? _m_window = Window.GetWindow(this) as MainWindow;
 
-        pageNav_clients_btn.Click += (sender, e) => {
-            _m_window?.m_page_navigation.navigateToPage(new ListClientPage());
-        };
+        if (_m_window != null) {
+            UCMenuController menu_controller = new(_m_window.m_page_navigation);
+            this.DataContext = menu_controller;
+        }
     }
 }

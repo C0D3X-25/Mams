@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Mams.src.views.pages"
       xmlns:userControls="clr-namespace:Mams.src.views.userControls"
       mc:Ignorable="d" 
-      d:DesignHeight="466.071" d:DesignWidth="849.362"
+      d:DesignHeight="600" d:DesignWidth="1000"
       Title="TemplatePage">
 
     <Grid>
