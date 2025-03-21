@@ -1,7 +1,7 @@
+DROP DATABASE IF EXISTS mams_db;
 CREATE DATABASE IF NOT EXISTS mams_db;
 USE mams_db;
 
-DROP TABLE IF EXISTS clients;
 CREATE TABLE IF NOT EXISTS clients (
     client_id INT PRIMARY KEY AUTO_INCREMENT,
     client_name VARCHAR(50) NOT NULL,
@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS clients (
     client_archive DATETIME
 );
 
-DROP TABLE IF EXISTS receipts;
 CREATE TABLE IF NOT EXISTS receipts (
     receipt_id INT PRIMARY KEY AUTO_INCREMENT,
     receipt_total_price DECIMAL(9,2) NOT NULL,
@@ -20,35 +19,30 @@ CREATE TABLE IF NOT EXISTS receipts (
     fk_client_id INT NOT NULL REFERENCES clients(client_id)
 );
 
-DROP TABLE IF EXISTS products_types;
 CREATE TABLE IF NOT EXISTS products_types (
     product_type_id INT PRIMARY KEY AUTO_INCREMENT,
     product_type_name VARCHAR(100) NOT NULL,
     product_type_archive DATETIME
 );
 
-DROP TABLE IF EXISTS products_categories;
 CREATE TABLE IF NOT EXISTS products_categories (
     product_category_id INT PRIMARY KEY AUTO_INCREMENT,
     product_category_name VARCHAR(100) NOT NULL,
     product_category_archive DATETIME
 );
 
-DROP TABLE IF EXISTS products_shapes;
 CREATE TABLE IF NOT EXISTS products_shapes (
     product_shape_id INT PRIMARY KEY AUTO_INCREMENT,
     product_shape_name VARCHAR(100) NOT NULL,
     product_shape_archive DATETIME
 );
 
-DROP TABLE IF EXISTS beehives;
 CREATE TABLE IF NOT EXISTS beehives (
     beehive_id INT PRIMARY KEY AUTO_INCREMENT,
     beehive_name VARCHAR(50) NOT NULL,
     beehive_archive DATETIME
 );
 
-DROP TABLE IF EXISTS products_lots;
 CREATE TABLE IF NOT EXISTS products_lots (
     product_lot_id INT PRIMARY KEY AUTO_INCREMENT,
     product_lot_nbr INT NOT NULL,
@@ -57,7 +51,6 @@ CREATE TABLE IF NOT EXISTS products_lots (
     fk_beehive_id INT REFERENCES beehives(beehive_id)
 );
 
-DROP TABLE IF EXISTS products;
 CREATE TABLE IF NOT EXISTS products (
     product_id INT PRIMARY KEY AUTO_INCREMENT,
     product_name VARCHAR(100) NOT NULL,
@@ -69,7 +62,6 @@ CREATE TABLE IF NOT EXISTS products (
     fk_product_lot_id INT REFERENCES products_lots(product_lot_id)
 );
 
-DROP TABLE IF EXISTS receipts_products;
 CREATE TABLE IF NOT EXISTS receipts_products (
     receipt_product_id INT PRIMARY KEY AUTO_INCREMENT,
     receipt_product_quantity INT,

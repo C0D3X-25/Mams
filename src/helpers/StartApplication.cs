@@ -1,11 +1,11 @@
-﻿using Mams.models;
+﻿using Mams.src.models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mams.src.imp;
+namespace Mams.src.helpers;
 
 public static class StartApplication {
     

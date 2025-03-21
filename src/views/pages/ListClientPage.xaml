@@ -76,6 +76,24 @@
                                 <ColumnDefinition Width="8*"/>
                                 <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
+
+                            <ListView 
+                                Grid.Column="1" 
+                                Margin="0,0,0,10"
+                                FontSize="14"
+                                ItemsSource="{Binding m_clients}">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding client_id}"/>
+                                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding client_name}"/>
+                                        <GridViewColumn Header="Téléphone" DisplayMemberBinding="{Binding client_phone}"/>
+                                        <GridViewColumn Header="email" DisplayMemberBinding="{Binding client_email}"/>
+                                        <GridViewColumn Header="Ville" DisplayMemberBinding="{Binding client_city}"/>
+                                        <GridViewColumn Header="Adresse" DisplayMemberBinding="{Binding client_address}"/>
+                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding client_archive}"/>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
                         </Grid>
                         
                         

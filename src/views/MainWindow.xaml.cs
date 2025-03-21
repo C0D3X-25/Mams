@@ -11,7 +11,7 @@ public partial class MainWindow : Window {
     public readonly PageNavigationController m_page_navigation;
 
     public MainWindow() {
-        StartApplication.launchServices();
+        //StartApplication.launchServices();
         InitializeComponent();
         m_page_navigation = new(MainFrame);
     }

@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using Mams.src.controllers;
+using System.Windows.Controls;
 
 namespace Mams.src.views.pages
 {
@@ -10,6 +11,8 @@ namespace Mams.src.views.pages
         public ListClientPage()
         {
             InitializeComponent();
+            ListClientPageController controller = new();
+            this.DataContext = controller;
         }
     }
 }

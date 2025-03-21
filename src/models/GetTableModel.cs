@@ -1,6 +1,8 @@
-﻿using MySqlConnector;
+﻿using Mams.src.items;
+using MySqlConnector;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -33,5 +35,34 @@ public static class GetTableModel {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return null;
         }
+    }
+
+    public static ObservableCollection<T> getTableData<T>(ABaseModel model, string table) where T : ABaseItem, new() {
+        ObservableCollection<T> items = new();
+        DataTable? data_table = getTable(model, table);
+
+        if (data_table != null) {
+            try {
+                foreach (DataRow row in data_table.Rows) {
+                    T item = new();
+                    foreach (DataColumn col in data_table.Columns) {
+                        var value = row[col.ColumnName];
+                        if (value != DBNull.Value) {
+                            var property = typeof(T).GetProperty(col.ColumnName);
+                            if (property != null) {
+                                property.SetValue(item, Convert.ChangeType(value, property.PropertyType));
+                            }
+                        }
+                    }
+                    items.Add(item);
+                }
+            }
+            catch (Exception ex) {
+                MessageBox.Show($"Error converting data: {ex.Message}");
+                return new ObservableCollection<T>();
+            }
+        }
+
+        return items;
     }
 }
