@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="Mams.src.views.userControls.UCLabelTextBoxSearch"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Mams.src.views.userControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             x:Name="root">
+    
+    <!--Label + TextBoxSearch-->
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <Label x:Name="textBoxSearch_label" 
+               Grid.Column="0" Grid.Row="0" 
+               Content="{Binding label, ElementName=root}" 
+               FontSize="16" 
+               VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <TextBox x:Name="textBoxSearch_txtBox" 
+                 Grid.Column="1" Grid.Row="0" 
+                 TextWrapping="Wrap" 
+                 Margin="5,0,5,0" 
+                 FontSize="16" 
+                 VerticalAlignment="Center" 
+                 TextChanged="textBoxSearch_txtBox_TextChanged"/>
+        
+        <!-- Popup for ListView -->
+        <Popup x:Name="searchPopup" 
+                        Grid.Column="1" 
+                        PlacementTarget="{Binding ElementName=textBoxSearch_txtBox}"
+                        Placement="Bottom"
+                        AllowsTransparency="True"
+                        StaysOpen="False"
+                        PopupAnimation="Slide">
+            <ListView x:Name="searchbar_listView"
+                            Width="{Binding ElementName=textBoxSearch_txtBox, Path=ActualWidth}"
+                            Background="White"
+                            BorderBrush="Gray"
+                            BorderThickness="1"
+                            FontSize="16"
+                            SelectionChanged="searchbar_listView_SelectionChanged"
+            />
+        </Popup>
+    </Grid>
+    <!--Label + TextBoxSearch-->
+</UserControl>

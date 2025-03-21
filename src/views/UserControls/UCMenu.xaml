@@ -1,0 +1,71 @@
+﻿<UserControl x:Class="Mams.src.views.userControls.UCMenu"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Mams.src.views.userControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="350" d:DesignWidth="150"
+             x:Name="root">
+    <!--Menu-->
+    <Grid Grid.Column="0" Background="#FFB4B4B4" Margin="10,3,3,3">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <!--Menu Buttons-->
+        <Grid Grid.Column="0" Background="#FFD9D9D9" MinHeight="300" MaxHeight="400" VerticalAlignment="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Label 
+                Content="Menu" 
+                FontSize="20" 
+                HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button 
+                Content="Ajouter Frais" 
+                Grid.Row="1" 
+                FontSize="16" 
+                Margin="3"
+                Command="{Binding m_navigate_fee_command}"/>
+            <Button 
+                Content="Ajouter Bénéfices" 
+                Grid.Row="2" 
+                FontSize="16" 
+                Margin="3"
+                Command="{Binding m_navigate_profit_command}"/>
+            <Button 
+                Content="Clients"
+                Grid.Row="3"
+                FontSize="16"
+                Margin="3"
+                Command="{Binding m_navigate_list_client_command}"/>
+            <Button 
+                Content="Lots"
+                Grid.Row="4"
+                FontSize="16" 
+                Margin="3"
+                Command="{Binding m_navigate_list_lot_command}"/>
+            <Button 
+                Content="Produits" 
+                Grid.Row="5" 
+                FontSize="16" 
+                Margin="3"
+                Command="{Binding m_navigate_list_product_command}"/>
+        </Grid>
+        <!--Menu Buttons-->
+    </Grid>
+    <!--Menu-->
+</UserControl>
