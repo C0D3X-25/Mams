@@ -20,44 +20,40 @@ namespace Mams.src.views.userControls;
 /// </summary>
 public partial class UCAbortSaveButtons : UserControl {
 
+    public UCAbortSaveButtons() {
+        InitializeComponent();
+    }
+
+
     public string label_left_button {
         get { return (string)GetValue(label_left_buttonProperty); }
         set { SetValue(label_left_buttonProperty, value); }
     }
-
     public static readonly DependencyProperty label_left_buttonProperty =
         DependencyProperty.Register("label_left_button", typeof(string), typeof(UCAbortSaveButtons), new PropertyMetadata("Annuler"));
+
 
     public string label_right_button {
         get { return (string)GetValue(label_right_buttonProperty); }
         set { SetValue(label_right_buttonProperty, value); }
     }
-
     public static readonly DependencyProperty label_right_buttonProperty =
         DependencyProperty.Register("label_right_button", typeof(string), typeof(UCAbortSaveButtons), new PropertyMetadata("Enregistrer"));
 
 
-    public ICommand LeftButtonCommand {
-        get { return (ICommand)GetValue(LeftButtonCommandProperty); }
-        set { SetValue(LeftButtonCommandProperty, value); }
+    public ICommand left_button_command {
+        get { return (ICommand)GetValue(left_button_commandProperty); }
+        set { SetValue(left_button_commandProperty, value); }
     }
+    public static readonly DependencyProperty left_button_commandProperty =
+        DependencyProperty.Register("left_button_command", typeof(ICommand), typeof(UCAbortSaveButtons));
 
-    public static readonly DependencyProperty LeftButtonCommandProperty =
-        DependencyProperty.Register("LeftButtonCommand", typeof(ICommand), typeof(UCAbortSaveButtons));
 
-    public ICommand RightButtonCommand {
-        get { return (ICommand)GetValue(RightButtonCommandProperty); }
-        set { SetValue(RightButtonCommandProperty, value); }
+    public ICommand right_button_command {
+        get { return (ICommand)GetValue(right_button_commandProperty); }
+        set { SetValue(right_button_commandProperty, value); }
     }
-
-    public static readonly DependencyProperty RightButtonCommandProperty =
-        DependencyProperty.Register("RightButtonCommand", typeof(ICommand), typeof(UCAbortSaveButtons));
+    public static readonly DependencyProperty right_button_commandProperty =
+        DependencyProperty.Register("right_button_command", typeof(ICommand), typeof(UCAbortSaveButtons));
     
-
-
-
-    public UCAbortSaveButtons()
-    {
-        InitializeComponent();
-    }
 }

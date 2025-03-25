@@ -1,4 +1,4 @@
-﻿<Page x:Class="Mams.src.views.pages.ListClientPage"
+﻿<Page xmlns:UserControls="clr-namespace:Mams.src.views.userControls"  x:Class="Mams.src.views.pages.ListClientPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -66,15 +66,16 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
-
+                        
+                        <!--List of the clients-->
                         <Grid Grid.Row="1">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="8*"/>
-                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
 
                             <ListView 
@@ -87,7 +88,7 @@
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding client_id}"/>
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding client_name}"/>
                                         <GridViewColumn Header="Téléphone" DisplayMemberBinding="{Binding client_phone}"/>
-                                        <GridViewColumn Header="email" DisplayMemberBinding="{Binding client_email}"/>
+                                        <GridViewColumn Header="Email" DisplayMemberBinding="{Binding client_email}"/>
                                         <GridViewColumn Header="Ville" DisplayMemberBinding="{Binding client_city}"/>
                                         <GridViewColumn Header="Adresse" DisplayMemberBinding="{Binding client_address}"/>
                                         <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding client_archive}"/>
@@ -95,8 +96,14 @@
                                 </ListView.View>
                             </ListView>
                         </Grid>
-                        
-                        
+
+                        <!--Add new Client Buttons-->
+                        <userControls:UCAddNewButton
+                            Grid.Row="2"
+                            label_add_new_button="Ajouter un client"
+                            add_new_command="{Binding }">
+                            
+                        </userControls:UCAddNewButton>
                     </Grid>
                 </Grid>
                 <!--Content-->

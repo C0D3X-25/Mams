@@ -154,8 +154,8 @@
                         <!--Abort Save Buttons-->
                         <userControls:UCAbortSaveButtons
                             Grid.Column="0" Grid.Row="2"
-                            LeftButtonCommand="{Binding m_abort_command}"
-                            RightButtonCommand="{Binding m_save_command}">
+                            left_button_command="{Binding m_abort_command}"
+                            right_button_command="{Binding m_save_command}">
 
                         </userControls:UCAbortSaveButtons>
                         

@@ -91,7 +91,28 @@ INSERT INTO clients (client_name, client_phone, client_email, client_city, clien
 ('Sarah Johnson', '+44 7812 345678', 'sarah.j@email.com', 'Liverpool', NULL, '2024-02-25 09:15:00'),
 ('The Hive Café', '+44 20 5678 9012', 'manager@thehivecafe.co.uk', 'Cardiff', '22 Beekeeper Street, CF10 1DD', NULL),
 ('Robert Thompson', NULL, 'robert.t@email.com', 'Leeds', '31 Natural Lane, LS1 5ND', NULL),
-('Organic Corner Shop', '+44 20 6789 0123', 'hello@organiccorner.co.uk', 'Newcastle', NULL, NULL);
+('Organic Corner Shop', '+44 20 6789 0123', 'hello@organiccorner.co.uk', 'Newcastle', NULL, NULL),
+('Bee Happy Store', '+44 20 7890 1234', 'info@beehappystore.co.uk', 'London', '10 Honey Street, EC1A 1BB', NULL),
+('Natures Best', NULL, 'contact@naturesbest.com', 'Birmingham', '5 Green Lane, B1 1TF', NULL),
+('Olivia Brown', '+44 7890 234567', NULL, 'Manchester', '23 Flower Road, M1 2WD', '2024-03-10 10:00:00'),
+('Healthy Hive', '+44 20 8901 2345', 'sales@healthyhive.co.uk', 'Edinburgh', NULL, NULL),
+('Michael Smith', NULL, NULL, 'Glasgow', '12 Meadow Lane, G1 2QZ', NULL),
+('Pure Honey Co.', '+44 20 9012 3456', 'orders@purehoneyco.com', 'Bristol', '7 Sweet Street, BS1 4DF', '2024-02-15 12:00:00'),
+('Laura Green', '+44 7812 456789', 'laura.green@email.com', 'Liverpool', '9 Bee Avenue, L1 2WD', NULL),
+('The Honey Pot', '+44 20 1234 5678', 'manager@thehoneypot.co.uk', 'Cardiff', NULL, NULL),
+('David Johnson', NULL, 'david.j@email.com', 'Leeds', '14 Natural Lane, LS1 5ND', '2024-01-20 09:30:00'),
+('Organic Delights', '+44 20 2345 6789', NULL, 'Newcastle', '3 Organic Street, NE1 4DF', NULL),
+('Bee Pure', '+44 20 3456 7890', 'info@beepure.co.uk', 'London', NULL, NULL),
+('Honey Haven', NULL, 'contact@honeyhaven.com', 'Birmingham', '8 Sweet Lane, B1 1TF', '2024-03-01 11:00:00'),
+('Sophia White', '+44 7890 345678', 'sophia.white@email.com', 'Manchester', NULL, NULL),
+('Golden Nectar', '+44 20 4567 8901', 'sales@goldennectar.co.uk', 'Edinburgh', '6 Nectar Road, EH1 1TH', NULL),
+('Daniel Brown', NULL, NULL, 'Glasgow', '11 Honeycomb Street, G1 2QZ', '2024-02-25 14:00:00'),
+('Sweet Harvest', '+44 20 5678 9012', 'orders@sweetharvest.com', 'Bristol', NULL, NULL),
+('Emily Davis', '+44 7812 567890', 'emily.davis@email.com', 'Liverpool', '5 Bee Lane, L1 2WD', NULL),
+('The Honey Shop', '+44 20 6789 0123', 'manager@thehoneyshop.co.uk', 'Cardiff', '2 Honey Street, CF10 1DD', '2024-01-15 10:00:00'),
+('Robert Brown', NULL, 'robert.b@email.com', 'Leeds', NULL, NULL),
+('Natural Honey', '+44 20 7890 1234', 'hello@naturalhoney.co.uk', 'Newcastle', '1 Pure Street, NE1 4DF', NULL);
+
 
 -- Insert data into receipts
 INSERT INTO receipts (receipt_total_price, receipt_date_sold, fk_client_id) VALUES

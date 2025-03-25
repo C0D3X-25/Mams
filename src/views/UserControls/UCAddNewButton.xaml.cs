@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Mams.src.views.UserControls;
+namespace Mams.src.views.userControls;
 
 /// <summary>
 /// Interaction logic for UCAddNewButton.xaml
@@ -21,14 +21,14 @@ public partial class UCAddNewButton : UserControl {
         set { SetValue(label_add_new_buttonProperty, value); }
     }
     public static readonly DependencyProperty label_add_new_buttonProperty =
-        DependencyProperty.Register("label_add_new_button", typeof(string), typeof(UCAddNewButtonController), new PropertyMetadata("Ajouter"));
+        DependencyProperty.Register("label_add_new_button", typeof(string), typeof(UCAddNewButton), new PropertyMetadata("Ajouter"));
 
     public ICommand add_new_command {
         get { return (ICommand)GetValue(add_new_commandProperty); }
         set { SetValue(add_new_commandProperty, value); }
     }
     public static readonly DependencyProperty add_new_commandProperty =
-        DependencyProperty.Register("add_new_command", typeof(ICommand), typeof(UCAddNewButtonController));
+        DependencyProperty.Register("add_new_command", typeof(ICommand), typeof(UCAddNewButton));
 
 
     private void UCAddNew_Loaded(object sender, RoutedEventArgs e) {
