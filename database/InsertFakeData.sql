@@ -1,6 +1,28 @@
 USE mams_db;
 
--- Insert data into products_types
+-- Insert data into entities (including mixed supplier-client entities)
+INSERT INTO entities (entity_name, entity_phone, entity_email, entity_city, entity_address, entity_archive) VALUES
+('Johnson Grocery', '+44 20 1234 5678', 'orders@johnsongrocery.com', 'London', '15 Market Street, EC1A 1BB', NULL),
+('Natural Foods Ltd', '+44 20 2345 6789', 'purchasing@naturalfoods.co.uk', 'Birmingham', '27 Organic Way, B1 1TF', NULL),
+('Green Health Store', '+44 20 3456 7890', 'contact@greenhealthstore.co.uk', 'Edinburgh', '8 Wellness Road, EH1 1TH', NULL),
+('Wholesome Market', '+44 20 4567 8901', 'orders@wholesomemarket.com', 'Bristol', '53 Pure Street, BS1 4DF', NULL),
+('Honey Harvest Suppliers', '+44 20 8765 4321', 'sales@honeyharvest.com', 'Manchester', '12 Supplier Street, M1 3AB', NULL),
+('Bee World Distributors', '+44 20 9876 5432', 'info@beeworld.co.uk', 'Birmingham', '25 Distribution Road, B2 2CD', NULL),
+('Sweet Nectar Imports', '+44 20 7654 3210', 'contact@sweetnectar.com', 'London', '8 Import Avenue, EC2 4EF', '2024-02-15 12:00:00'),
+('Organic Bee Collective', '+44 20 6543 2109', 'hello@organicbee.co.uk', 'Edinburgh', '15 Green Lane, EH2 5GH', NULL),
+-- Three entities that will be both suppliers and clients
+('Dual Purpose Honey Co.', '+44 20 1111 2222', 'info@dualpurposehoney.com', 'Manchester', '10 Crossover Street, M2 3CD', NULL),
+('Versatile Bee Products', '+44 20 3333 4444', 'sales@versatilebee.co.uk', 'Liverpool', '22 Flexible Road, L4 5EF', NULL),
+('Hybrid Honey Traders', '+44 20 5555 6666', 'contact@hybridhoney.com', 'Glasgow', '7 Exchange Lane, G5 6GH', NULL);
+
+-- Insert these same entities into both suppliers and clients
+INSERT INTO suppliers (fk_entity_id) VALUES
+(5), (6), (7), (8), (9), (10), (11);
+
+INSERT INTO clients (fk_entity_id) VALUES
+(1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11);
+
+-- Insert data into products_types (same as previous)
 INSERT INTO products_types (product_type_name, product_type_archive) VALUES
 ('Raw Honey', NULL),
 ('Creamed Honey', NULL),
@@ -11,7 +33,7 @@ INSERT INTO products_types (product_type_name, product_type_archive) VALUES
 ('Royal Jelly', NULL),
 ('Beeswax Products', NULL);
 
--- Insert data into products_categories
+-- Insert data into products_categories (same as previous)
 INSERT INTO products_categories (product_category_name, product_category_archive) VALUES
 ('Spring Collection', NULL),
 ('Summer Collection', NULL),
@@ -22,7 +44,7 @@ INSERT INTO products_categories (product_category_name, product_category_archive
 ('Gift Collection', NULL),
 ('Natural Remedies', '2024-03-01 11:20:00');
 
--- Insert data into products_shapes
+-- Insert data into products_shapes (same as previous)
 INSERT INTO products_shapes (product_shape_name, product_shape_archive) VALUES
 ('Jar', NULL),
 ('Bottle', NULL),
@@ -33,7 +55,7 @@ INSERT INTO products_shapes (product_shape_name, product_shape_archive) VALUES
 ('Comb Frame', NULL),
 ('Honeycomb Section', NULL);
 
--- Insert data into beehives
+-- Insert data into beehives (same as previous)
 INSERT INTO beehives (beehive_name, beehive_archive) VALUES
 ('Wildflower Meadow', NULL),
 ('Orchard Grove', NULL),
@@ -44,7 +66,7 @@ INSERT INTO beehives (beehive_name, beehive_archive) VALUES
 ('Valley Apiary', '2024-01-10 16:45:00'),
 ('Clover Fields', NULL);
 
--- Insert data into products_lots
+-- Insert data into products_lots (same as previous)
 INSERT INTO products_lots (product_lot_nbr, product_lot_year, fk_beehive_id, product_lot_archive) VALUES
 (101, 2024, 1, NULL),
 (102, 2024, 2, NULL),
@@ -57,7 +79,7 @@ INSERT INTO products_lots (product_lot_nbr, product_lot_year, fk_beehive_id, pro
 (201, 2023, 1, '2024-03-05 09:40:00'),
 (202, 2023, 2, NULL);
 
--- Insert data into products
+-- Insert data into products (same as previous)
 INSERT INTO products (product_name, product_weight, fk_product_category_id, fk_product_type_id, fk_product_shape_id, fk_product_lot_id, product_archive) VALUES
 ('Wildflower Raw Honey', 500, 1, 1, 1, 1, NULL),
 ('Acacia Creamed Honey', 350, 2, 2, 1, 2, NULL),
@@ -80,52 +102,30 @@ INSERT INTO products (product_name, product_weight, fk_product_category_id, fk_p
 ('Chestnut Honey', 500, 3, 1, 1, 9, NULL),
 ('Thyme Honey', NULL, 1, 1, 2, 10, NULL);
 
--- Insert data into clients
-INSERT INTO clients (client_name, client_phone, client_email, client_city, client_address, client_archive) VALUES
-('Johnson Grocery', '+44 20 1234 5678', 'orders@johnsongrocery.com', 'London', '15 Market Street, EC1A 1BB', NULL),
-('Natural Foods Ltd', '+44 20 2345 6789', 'purchasing@naturalfoods.co.uk', 'Birmingham', '27 Organic Way, B1 1TF', NULL),
-('Emma Wilson', '+44 7890 123456', 'emma.wilson@email.com', 'Manchester', '42 Bee Lane, M1 2WD', '2024-01-30 13:25:00'),
-('Green Health Store', '+44 20 3456 7890', 'contact@greenhealthstore.co.uk', 'Edinburgh', '8 Wellness Road, EH1 1TH', NULL),
-('James Mitchell', '+44 7901 234567', NULL, 'Glasgow', '19 Honey Avenue, G1 2QZ', NULL),
-('Wholesome Market', '+44 20 4567 8901', 'orders@wholesomemarket.com', 'Bristol', '53 Pure Street, BS1 4DF', NULL),
-('Sarah Johnson', '+44 7812 345678', 'sarah.j@email.com', 'Liverpool', NULL, '2024-02-25 09:15:00'),
-('The Hive Café', '+44 20 5678 9012', 'manager@thehivecafe.co.uk', 'Cardiff', '22 Beekeeper Street, CF10 1DD', NULL),
-('Robert Thompson', NULL, 'robert.t@email.com', 'Leeds', '31 Natural Lane, LS1 5ND', NULL),
-('Organic Corner Shop', '+44 20 6789 0123', 'hello@organiccorner.co.uk', 'Newcastle', NULL, NULL),
-('Bee Happy Store', '+44 20 7890 1234', 'info@beehappystore.co.uk', 'London', '10 Honey Street, EC1A 1BB', NULL),
-('Natures Best', NULL, 'contact@naturesbest.com', 'Birmingham', '5 Green Lane, B1 1TF', NULL),
-('Olivia Brown', '+44 7890 234567', NULL, 'Manchester', '23 Flower Road, M1 2WD', '2024-03-10 10:00:00'),
-('Healthy Hive', '+44 20 8901 2345', 'sales@healthyhive.co.uk', 'Edinburgh', NULL, NULL),
-('Michael Smith', NULL, NULL, 'Glasgow', '12 Meadow Lane, G1 2QZ', NULL),
-('Pure Honey Co.', '+44 20 9012 3456', 'orders@purehoneyco.com', 'Bristol', '7 Sweet Street, BS1 4DF', '2024-02-15 12:00:00'),
-('Laura Green', '+44 7812 456789', 'laura.green@email.com', 'Liverpool', '9 Bee Avenue, L1 2WD', NULL),
-('The Honey Pot', '+44 20 1234 5678', 'manager@thehoneypot.co.uk', 'Cardiff', NULL, NULL),
-('David Johnson', NULL, 'david.j@email.com', 'Leeds', '14 Natural Lane, LS1 5ND', '2024-01-20 09:30:00'),
-('Organic Delights', '+44 20 2345 6789', NULL, 'Newcastle', '3 Organic Street, NE1 4DF', NULL),
-('Bee Pure', '+44 20 3456 7890', 'info@beepure.co.uk', 'London', NULL, NULL),
-('Honey Haven', NULL, 'contact@honeyhaven.com', 'Birmingham', '8 Sweet Lane, B1 1TF', '2024-03-01 11:00:00'),
-('Sophia White', '+44 7890 345678', 'sophia.white@email.com', 'Manchester', NULL, NULL),
-('Golden Nectar', '+44 20 4567 8901', 'sales@goldennectar.co.uk', 'Edinburgh', '6 Nectar Road, EH1 1TH', NULL),
-('Daniel Brown', NULL, NULL, 'Glasgow', '11 Honeycomb Street, G1 2QZ', '2024-02-25 14:00:00'),
-('Sweet Harvest', '+44 20 5678 9012', 'orders@sweetharvest.com', 'Bristol', NULL, NULL),
-('Emily Davis', '+44 7812 567890', 'emily.davis@email.com', 'Liverpool', '5 Bee Lane, L1 2WD', NULL),
-('The Honey Shop', '+44 20 6789 0123', 'manager@thehoneyshop.co.uk', 'Cardiff', '2 Honey Street, CF10 1DD', '2024-01-15 10:00:00'),
-('Robert Brown', NULL, 'robert.b@email.com', 'Leeds', NULL, NULL),
-('Natural Honey', '+44 20 7890 1234', 'hello@naturalhoney.co.uk', 'Newcastle', '1 Pure Street, NE1 4DF', NULL);
-
-
 -- Insert data into receipts
-INSERT INTO receipts (receipt_total_price, receipt_date_sold, fk_client_id) VALUES
-(124.50, '2024-01-15 10:23:45', 1),
-(76.80, '2024-01-22 14:35:12', 3),
-(198.25, '2024-01-30 09:15:27', 2),
-(45.00, '2024-02-05 16:42:38', 5),
-(312.75, '2024-02-12 11:30:05', 6),
-(87.20, '2024-02-20 15:18:54', 4),
-(156.40, '2024-02-28 10:05:32', 7),
-(234.60, '2024-03-05 13:45:29', 1),
-(67.90, '2024-03-10 09:22:17', 8),
-(189.30, '2024-03-12 14:55:03', 10);
+INSERT INTO receipts (receipt_total_price, receipt_date_sold) VALUES
+(124.50, '2024-01-15 10:23:45'),
+(76.80, '2024-01-22 14:35:12'),
+(198.25, '2024-01-30 09:15:27'),
+(45.00, '2024-02-05 16:42:38'),
+(312.75, '2024-02-12 11:30:05'),
+(87.20, '2024-02-20 15:18:54'),
+(156.40, '2024-02-28 10:05:32'),
+(234.60, '2024-03-05 13:45:29'),
+(67.90, '2024-03-10 09:22:17'),
+(189.30, '2024-03-12 14:55:03');
+
+-- Insert data into suppliers_receipts
+INSERT INTO suppliers_receipts (fk_supplier_id, fk_receipt_id) VALUES
+(1, 1), (2, 2), (3, 3), (4, 4),
+(5, 5), (6, 6), (7, 7), (8, 8),
+(9, 9), (10, 10);
+
+-- Insert data into clients_receipts
+INSERT INTO clients_receipts (fk_client_id, fk_receipt_id) VALUES
+(1, 1), (2, 2), (3, 3), (4, 4),
+(5, 5), (6, 6), (7, 7), (8, 8),
+(9, 9), (10, 10);
 
 -- Insert data into receipts_products
 INSERT INTO receipts_products (receipt_product_quantity, receipt_product_unity_price, fk_product_id, fk_receipt_id) VALUES

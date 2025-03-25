@@ -2,21 +2,40 @@ DROP DATABASE IF EXISTS mams_db;
 CREATE DATABASE IF NOT EXISTS mams_db;
 USE mams_db;
 
+CREATE TABLE IF NOT EXISTS entities (
+    entity_id INT PRIMARY KEY AUTO_INCREMENT,
+    entity_name VARCHAR(50) NOT NULL,
+    entity_phone VARCHAR(25),
+    entity_email VARCHAR(255),
+    entity_city VARCHAR(50),
+    entity_address VARCHAR(255),
+    entity_archive DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS suppliers (
+    supplier_id INT PRIMARY KEY AUTO_INCREMENT,
+    fk_entity_id INT NOT NULL REFERENCES entities(entity_id)
+);
+
 CREATE TABLE IF NOT EXISTS clients (
     client_id INT PRIMARY KEY AUTO_INCREMENT,
-    client_name VARCHAR(50) NOT NULL,
-    client_phone VARCHAR(25),
-    client_email VARCHAR(255),
-    client_city VARCHAR(50),
-    client_address VARCHAR(255),
-    client_archive DATETIME
+    fk_entity_id INT NOT NULL REFERENCES entities(entity_id)
 );
 
 CREATE TABLE IF NOT EXISTS receipts (
     receipt_id INT PRIMARY KEY AUTO_INCREMENT,
     receipt_total_price DECIMAL(9,2) NOT NULL,
-    receipt_date_sold DATETIME NOT NULL,
-    fk_client_id INT NOT NULL REFERENCES clients(client_id)
+    receipt_date_sold DATETIME NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS suppliers_receipts(
+    fk_supplier_id INT NOT NULL REFERENCES suppliers(supplier_id),
+    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+);
+
+CREATE TABLE IF NOT EXISTS clients_receipts(
+    fk_client_id INT NOT NULL REFERENCES clients(client_id),
+    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
 );
 
 CREATE TABLE IF NOT EXISTS products_types (
