@@ -85,13 +85,13 @@
                                 ItemsSource="{Binding m_clients}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding client_id}"/>
-                                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding client_name}"/>
-                                        <GridViewColumn Header="Téléphone" DisplayMemberBinding="{Binding client_phone}"/>
-                                        <GridViewColumn Header="Email" DisplayMemberBinding="{Binding client_email}"/>
-                                        <GridViewColumn Header="Ville" DisplayMemberBinding="{Binding client_city}"/>
-                                        <GridViewColumn Header="Adresse" DisplayMemberBinding="{Binding client_address}"/>
-                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding client_archive}"/>
+                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding entity_id}"/>
+                                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding entity_name}"/>
+                                        <GridViewColumn Header="Téléphone" DisplayMemberBinding="{Binding entity_phone}"/>
+                                        <GridViewColumn Header="Email" DisplayMemberBinding="{Binding entity_email}"/>
+                                        <GridViewColumn Header="Ville" DisplayMemberBinding="{Binding entity_city}"/>
+                                        <GridViewColumn Header="Adresse" DisplayMemberBinding="{Binding entity_address}"/>
+                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding entity_archive}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -101,7 +101,7 @@
                         <userControls:UCAddNewButton
                             Grid.Row="2"
                             label_add_new_button="Ajouter un client"
-                            add_new_command="{Binding }">
+                            add_new_command="{Binding}">
                             
                         </userControls:UCAddNewButton>
                     </Grid>

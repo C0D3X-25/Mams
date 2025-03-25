@@ -14,12 +14,12 @@ namespace Mams.src.controllers;
 
 public class ListClientPageController {
 
-    public ObservableCollection<ClientItem> m_clients { get; set; }
+    public ObservableCollection<EntityItem> m_clients { get; set; }
 
     public ICommand m_add_new_client_command { get; set; }
 
     public ListClientPageController() {
-        ClientModel client_model = new();
+        EntityModel client_model = new();
         m_clients = client_model.getTable();
         m_add_new_client_command = new RelayCommand(navigateToSaveClient);
     }
