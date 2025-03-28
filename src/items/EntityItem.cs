@@ -1,8 +1,9 @@
-﻿namespace Mams.src.items;
+﻿using System.ComponentModel;
 
-public class EntityItem : ABaseItem {
+namespace Mams.src.items;
 
-    public int entity_id { get; set; }
+public class EntityItem : ABaseItem{
+    public int entity_id { get; set; } = 0;
     public string entity_name { get; set; } = String.Empty;
     public string entity_phone { get; set; } = String.Empty;
     public string entity_email { get; set; } = String.Empty;

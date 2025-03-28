@@ -98,12 +98,16 @@
                         </Grid>
 
                         <!--Add new Client Buttons-->
-                        <userControls:UCAddNewButton
+                        <Button 
                             Grid.Row="2"
-                            label_add_new_button="Ajouter un client"
-                            add_new_command="{Binding}">
-                            
-                        </userControls:UCAddNewButton>
+                            Content="Ajouter un client"
+                            Command="{Binding m_add_new_client_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,50,0"
+                            FontSize="16"
+                        ></Button>
                     </Grid>
                 </Grid>
                 <!--Content-->

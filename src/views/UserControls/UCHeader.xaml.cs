@@ -10,7 +10,7 @@ namespace Mams.src.views.userControls;
 /// </summary>
 public partial class UCHeader : UserControl {
 
-    private readonly ABaseSearchModel _m_model = new InventoryModel();
+    private readonly ABaseSearchModel _m_model = new EntityModel();
     private readonly SearchBarModel? _m_search_bar;
 
     public string title {

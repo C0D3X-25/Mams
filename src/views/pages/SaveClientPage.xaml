@@ -96,22 +96,27 @@
                                 <userControls:UCLabelTextBox
                                     x:Name="client_name"
                                     Grid.Row="0"
-                                    label="Nom*">
-                                </userControls:UCLabelTextBox>
+                                    label="Nom*"
+                                    text="{Binding m_client.entity_name}"
+
+                                ></userControls:UCLabelTextBox>
 
                                 <!--Email-->
                                 <userControls:UCLabelTextBox
                                     x:Name="client_email"
                                     Grid.Row="1"
-                                    label="Email">
-                                </userControls:UCLabelTextBox>
+                                    label="Email"
+                                    text="{Binding m_client.entity_email}"
+                                ></userControls:UCLabelTextBox>
 
                                 <!--ID-->
                                 <userControls:UCLabelTextBox
                                     x:Name="client_id"
                                     Grid.Row="2"
-                                    label="ID">
-                                </userControls:UCLabelTextBox>
+                                    label="ID"
+                                    text="{Binding m_client.entity_id}"
+                                    
+                                ></userControls:UCLabelTextBox>
                             </Grid>
 
                             <!--Right Grid-->
@@ -132,33 +137,52 @@
                                 <userControls:UCLabelTextBox
                                     x:Name="client_address"
                                     Grid.Row="0"
-                                    label="Adresse">
-                                </userControls:UCLabelTextBox>
+                                    label="Adresse"
+                                    text="{Binding m_client.entity_address}"
+                                    
+                                ></userControls:UCLabelTextBox>
 
                                 <!--City-->
                                 <userControls:UCLabelTextBox
                                     x:Name="client_city"
                                     Grid.Row="1"
-                                    label="Ville">
-                                </userControls:UCLabelTextBox>
+                                    label="Ville"
+                                    text="{Binding m_client.entity_city}"
+                                ></userControls:UCLabelTextBox>
 
                                 <!--Phone-->
                                 <userControls:UCLabelTextBox
                                     x:Name="client_phone"
                                     Grid.Row="2"
-                                    label="N° Téléphone">
-                                </userControls:UCLabelTextBox>
+                                    label="N° Téléphone"
+                                    text="{Binding m_client.entity_phone}"
+                                    
+                                ></userControls:UCLabelTextBox>
                             </Grid>
                         </Grid>
 
                         <!--Abort Save Buttons-->
-                        <userControls:UCAbortSaveButtons
-                            Grid.Column="0" Grid.Row="2"
-                            left_button_command="{Binding m_abort_command}"
-                            right_button_command="{Binding m_save_command}">
+                        <Button 
+                            Grid.Row="2"
+                            Content="Enregistrer"
+                            Command="{Binding m_save_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,50,0"
+                            FontSize="16"
+                        ></Button>
 
-                        </userControls:UCAbortSaveButtons>
-                        
+                        <Button 
+                            Grid.Row="2"
+                            Content="Annuler"
+                            Command="{Binding m_abort_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Margin="50,0,0,0"
+                            FontSize="16"
+                        ></Button>
                     </Grid>
                 </Grid>
                 <!--Content-->
