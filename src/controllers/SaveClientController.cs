@@ -1,5 +1,6 @@
 ﻿using Mams.src.commands;
 using Mams.src.items;
+using Mams.src.models;
 using Mams.src.views.pages;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,7 @@ namespace Mams.src.controllers;
 public class SaveClientController : ABaseController {
 
     private readonly PageNavigationController _m_page_navigation;
+    private readonly EntityModel _m_entity_model;
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
 
@@ -68,6 +70,7 @@ public class SaveClientController : ABaseController {
 
     public SaveClientController(PageNavigationController page_navigation) {
         _m_page_navigation = page_navigation;
+        _m_entity_model = new();
         _m_client = new EntityItem();
         m_save_command = new RelayCommand(saveClient, canSaveClient);
         m_abort_command = new RelayCommand(abortClient);
@@ -78,8 +81,8 @@ public class SaveClientController : ABaseController {
         return !string.IsNullOrEmpty(m_client.entity_name);
     }
     private void saveClient(object? obj) {
-
-        MessageBox.Show("Client saved");
+        _m_entity_model.saveItem(m_client);
+        _m_page_navigation.navigateTo(new ListClientPage());
     }
 
 
