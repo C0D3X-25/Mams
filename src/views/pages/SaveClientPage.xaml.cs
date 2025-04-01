@@ -13,7 +13,7 @@ public partial class SaveClientPage : Page {
 
     public SaveClientPage(int id_client = 0) {
         InitializeComponent();
-        this.Loaded += pageLoaded; // need to wait for the window to be loaded
+        this.Loaded += pageLoaded;
         this._m_id_client = id_client;
     }
 

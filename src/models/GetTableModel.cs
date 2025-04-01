@@ -13,30 +13,6 @@ namespace Mams.src.models;
 
 public static class GetTableModel {
 
-    /// <summary>
-    /// Get all data from a table.
-    /// </summary>
-    /// <param name="table">The name of the table</param>
-    /// <returns></returns>
-    public static DataTable? getTable(ABaseModel model, string table) {
-
-        using MySqlConnection? conn = model._m_conn.openConnection();
-
-        DataTable data_table = new();
-
-        try {
-            using MySqlCommand cmd = new($"SELECT * FROM {table}", conn);
-            using MySqlDataReader reader = cmd.ExecuteReader();
-            data_table.Load(reader);
-
-            return data_table;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return null;
-        }
-    }
-
     public static ObservableCollection<T> getTableData<T>(ABaseModel model, string table) where T : ABaseItem, new() {
         ObservableCollection<T> items = new();
         DataTable? data_table = getTable(model, table);
@@ -64,5 +40,26 @@ public static class GetTableModel {
         }
 
         return items;
+    }
+
+    private static DataTable? getTable(ABaseModel model, string table) {
+
+        using MySqlConnection? conn = model._m_conn.openConnection();
+
+        DataTable data_table = new();
+
+        string query = String.Empty;
+
+        try {
+                using MySqlCommand cmd = new($"SELECT * FROM {table};", conn);
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                data_table.Load(reader);
+
+                return data_table;
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return null;
+            }
     }
 }

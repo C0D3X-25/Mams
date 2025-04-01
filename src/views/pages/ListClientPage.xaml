@@ -67,6 +67,19 @@
                             <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
                         
+                        <!--CheckBox Archived-->
+                        <CheckBox 
+                            Grid.Row="0"
+                            Content="Afficher les clients archivés"
+                            IsChecked="{Binding m_are_clients_archived, UpdateSourceTrigger=PropertyChanged}"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Margin="0,0,50,0"
+                            FontSize="16">
+                            
+                        </CheckBox>
+                        
                         <!--List of the clients-->
                         <Grid Grid.Row="1">
                             <Grid.RowDefinitions>

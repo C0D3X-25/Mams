@@ -91,13 +91,6 @@ public class EntityModel :
                     entity_city = reader.GetSafeValue<string>(_m_COL_CITY, string.Empty),
                     entity_address = reader.GetSafeValue<string>(_m_COL_ADDRESS, string.Empty),
                     entity_archive = reader.GetSafeValue<DateTime>(_m_COL_ARCHIVE, DateTime.MinValue).ToString()
-                    //entity_id = reader.GetInt32(_m_COL_ID),
-                    //entity_name = reader.IsDBNull(reader.GetOrdinal(_m_COL_NAME)) ? string.Empty : reader.GetString(reader.GetOrdinal(_m_COL_NAME)),
-                    //entity_phone = reader.IsDBNull(reader.GetOrdinal(_m_COL_PHONE)) ? string.Empty : reader.GetString(reader.GetOrdinal(_m_COL_PHONE)),
-                    //entity_email = reader.IsDBNull(reader.GetOrdinal(_m_COL_EMAIL)) ? string.Empty : reader.GetString(reader.GetOrdinal(_m_COL_EMAIL)),
-                    //entity_city = reader.IsDBNull(reader.GetOrdinal(_m_COL_CITY)) ? string.Empty : reader.GetString(reader.GetOrdinal(_m_COL_CITY)),
-                    //entity_address = reader.IsDBNull(reader.GetOrdinal(_m_COL_ADDRESS)) ? string.Empty : reader.GetString(reader.GetOrdinal(_m_COL_ADDRESS)),
-                    //entity_archive = reader.IsDBNull(reader.GetOrdinal(_m_COL_ARCHIVE)) ? DateTime.MinValue.ToString() : reader.GetDateTime(reader.GetOrdinal(_m_COL_ARCHIVE)).ToString()
                 };
             }
             return null;

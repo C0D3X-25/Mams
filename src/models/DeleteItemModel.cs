@@ -6,7 +6,7 @@ namespace Mams.src.models;
 public static class DeleteItemModel {
 
     // Static method
-    public static bool deleteItem(ABaseModel model,  string id, string table_id,string table) {
+    public static bool deleteItem(ABaseModel model, string id, string table_id, string table, bool hard_delete) {
 
         using MySqlConnection? conn = model._m_conn.openConnection();
 

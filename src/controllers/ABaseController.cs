@@ -10,6 +10,8 @@ using System.Windows;
 namespace Mams.src.controllers;
 
 public abstract class ABaseController : INotifyPropertyChanged {
+
+
     public event PropertyChangedEventHandler? PropertyChanged;
 
     protected void onPropertyChanged([CallerMemberName] string? propertyName = null) {
