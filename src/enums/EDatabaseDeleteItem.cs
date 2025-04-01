@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Mams.src.enums;
 
-enum EDatabaseDeleteItem {
+public enum EDatabaseDeleteItem {
     SOFT_DELETE,
-    HARD_DELETE
+    HARD_DELETE,
+    RESTORE
 }

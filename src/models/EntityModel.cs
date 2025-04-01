@@ -23,7 +23,7 @@ public class EntityModel :
 
 
     public bool deleteItem(string id) {
-        return DeleteItemModel.deleteItem(this, id, _m_COL_ID, _m_TBL_NAME);
+        return DeleteItemModel.deleteItem(this, id,_m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME);
     }
     public bool deleteItem(int id) {
         return deleteItem(id.ToString());
