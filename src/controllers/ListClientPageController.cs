@@ -2,17 +2,12 @@
 using Mams.src.items;
 using Mams.src.models;
 using Mams.src.views.pages;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Mams.src.controllers;
 
-public class ListClientPageController {
+public class ListClientPageController : ABaseController {
 
     private readonly PageNavigationController _m_page_navigation;
     public ObservableCollection<EntityItem> m_clients { get; set; }

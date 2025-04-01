@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -48,34 +49,30 @@ namespace Mams.src.controllers;
 //        return !string.IsNullOrEmpty(_m_client.entity_name);
 //    }
 
-public class SaveClientController : INotifyPropertyChanged {
+public class SaveClientController : ABaseController {
+
     private readonly PageNavigationController _m_page_navigation;
-    private EntityItem _client;
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
 
-    public event PropertyChangedEventHandler? PropertyChanged;
 
+    private EntityItem _m_client;
     public EntityItem m_client {
-        get => _client;
+        get => _m_client;
         set {
-            _client = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(m_client)));
+            _m_client = value;
+            onPropertyChanged();
         }
     }
 
+
     public SaveClientController(PageNavigationController page_navigation) {
         _m_page_navigation = page_navigation;
-        _client = new EntityItem();
-        m_client.PropertyChanged += Client_PropertyChanged; // Subscribe to client property changes
+        _m_client = new EntityItem();
         m_save_command = new RelayCommand(saveClient, canSaveClient);
         m_abort_command = new RelayCommand(abortClient);
     }
 
-    private void Client_PropertyChanged(object? sender, PropertyChangedEventArgs e) {
-        // Refresh the command's CanExecute state
-        (m_save_command as RelayCommand)?.RaiseCanExecuteChanged();
-    }
 
     private bool canSaveClient(object? obj) {
         return !string.IsNullOrEmpty(m_client.entity_name);

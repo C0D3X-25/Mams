@@ -20,30 +20,25 @@ namespace Mams.src.views.userControls;
 /// </summary>
 public partial class UCLabelTextBox : UserControl {
 
-
+    public UCLabelTextBox() {
+        InitializeComponent();
+    }
 
     public string label {
         get { return (string)GetValue(labelProperty); }
         set { SetValue(labelProperty, value); }
     }
-    // Using a DependencyProperty as the backing store for label.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty labelProperty =
-        DependencyProperty.Register("label", typeof(string), typeof(UCLabelTextBox), new PropertyMetadata("label to change text"));
-
-
+        DependencyProperty.Register("label", typeof(string), typeof(UCLabelTextBox),
+            new PropertyMetadata("label to change text"));
 
     public string text {
         get { return (string)GetValue(textProperty); }
         set { SetValue(textProperty, value); }
     }
-    // Using a DependencyProperty as the backing store for text.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty textProperty =
-        DependencyProperty.Register("text", typeof(string), typeof(UCLabelTextBox));
-
-      
-
-    public UCLabelTextBox()
-    {
-        InitializeComponent();
-    }
+        DependencyProperty.Register("text", typeof(string), typeof(UCLabelTextBox),
+            new FrameworkPropertyMetadata(default(string),
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault |
+                FrameworkPropertyMetadataOptions.Journal));
 }

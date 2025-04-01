@@ -97,7 +97,7 @@
                                     x:Name="client_name"
                                     Grid.Row="0"
                                     label="Nom*"
-                                    text="{Binding m_client.entity_name}"
+                                    text="{Binding m_client.entity_name, UpdateSourceTrigger=PropertyChanged}"
 
                                 ></userControls:UCLabelTextBox>
 
@@ -106,7 +106,7 @@
                                     x:Name="client_email"
                                     Grid.Row="1"
                                     label="Email"
-                                    text="{Binding m_client.entity_email}"
+                                    text="{Binding m_client.entity_email, UpdateSourceTrigger=PropertyChanged}"
                                 ></userControls:UCLabelTextBox>
 
                                 <!--ID-->
@@ -114,7 +114,7 @@
                                     x:Name="client_id"
                                     Grid.Row="2"
                                     label="ID"
-                                    text="{Binding m_client.entity_id}"
+                                    text="{Binding m_client.entity_id, UpdateSourceTrigger=PropertyChanged}"
                                     
                                 ></userControls:UCLabelTextBox>
                             </Grid>
@@ -138,7 +138,7 @@
                                     x:Name="client_address"
                                     Grid.Row="0"
                                     label="Adresse"
-                                    text="{Binding m_client.entity_address}"
+                                    text="{Binding m_client.entity_address, UpdateSourceTrigger=PropertyChanged}"
                                     
                                 ></userControls:UCLabelTextBox>
 
@@ -147,7 +147,7 @@
                                     x:Name="client_city"
                                     Grid.Row="1"
                                     label="Ville"
-                                    text="{Binding m_client.entity_city}"
+                                    text="{Binding m_client.entity_city, UpdateSourceTrigger=PropertyChanged}"
                                 ></userControls:UCLabelTextBox>
 
                                 <!--Phone-->
@@ -155,7 +155,7 @@
                                     x:Name="client_phone"
                                     Grid.Row="2"
                                     label="N° Téléphone"
-                                    text="{Binding m_client.entity_phone}"
+                                    text="{Binding m_client.entity_phone, UpdateSourceTrigger=PropertyChanged}"
                                     
                                 ></userControls:UCLabelTextBox>
                             </Grid>
