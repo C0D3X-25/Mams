@@ -82,7 +82,8 @@
                                 Grid.Column="1" 
                                 Margin="0,0,0,10"
                                 FontSize="14"
-                                ItemsSource="{Binding m_clients}">
+                                ItemsSource="{Binding m_clients}"
+                                SelectedItem="{Binding m_selected_client}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding entity_id}"/>
@@ -96,6 +97,31 @@
                                 </ListView.View>
                             </ListView>
                         </Grid>
+
+                        <!--Delete Buttons-->
+                        <Button 
+                            Grid.Row="2"
+                            Content="Supprimer"
+                            Command="{Binding m_delete_client_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="left" VerticalAlignment="Center"
+                            Margin="50,0,0,0"
+                            FontSize="16"
+                            Background="IndianRed"
+                        ></Button>
+
+                        <!--Modifiy Buttons-->
+                        <Button 
+                            Grid.Row="2"
+                            Content="Modifier"
+                            Command="{Binding m_modify_client_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,200,0"
+                            FontSize="16"
+                        ></Button>
 
                         <!--Add new Client Buttons-->
                         <Button 

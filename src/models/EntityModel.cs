@@ -1,4 +1,5 @@
-﻿using Mams.src.interfaces;
+﻿using Mams.src.helpers;
+using Mams.src.interfaces;
 using Mams.src.items;
 using MySqlConnector;
 using System.Collections.ObjectModel;
@@ -18,17 +19,93 @@ public class EntityModel :
     private const string _m_COL_EMAIL = "entity_email";
     private const string _m_COL_CITY = "entity_city";
     private const string _m_COL_ADDRESS = "entity_address";
+    private const string _m_COL_ARCHIVE = "entity_archive";
+
 
     public bool deleteItem(string id) {
-        throw new NotImplementedException();
+        return DeleteItemModel.deleteItem(this, id, _m_COL_ID, _m_TBL_NAME);
+    }
+    public bool deleteItem(int id) {
+        return deleteItem(id.ToString());
     }
 
-    public bool deleteItem(int id) {
-        throw new NotImplementedException();
-    }
 
     public EntityItem? getItem(string search) {
         throw new NotImplementedException();
+
+        //using MySqlConnection? conn = _m_conn.openConnection();
+
+        //try {
+        //    // First try exact name match
+        //    using MySqlCommand cmd = new(
+        //        $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_QUANTITY} " +
+        //        $"FROM {_m_TBL_NAME} " +
+        //        $"WHERE {_m_COL_NAME} = @search " +
+        //        $"UNION " +
+        //        $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_QUANTITY} " +
+        //        $"FROM {_m_TBL_NAME} " +
+        //        $"WHERE {_m_COL_ID} = @search AND NOT EXISTS (" +
+        //            $"SELECT 1 FROM {_m_TBL_NAME} WHERE {_m_COL_NAME} = @search" +
+        //        $") LIMIT 1;",
+        //        conn
+        //    );
+
+        //    cmd.Parameters.AddWithValue("@search", search);
+        //    using MySqlDataReader reader = cmd.ExecuteReader();
+
+        //    if (reader.Read()) {
+        //        return new InventoryItem(
+        //            reader.GetInt32(_m_COL_ID),
+        //            reader.GetString(_m_COL_NAME),
+        //            reader.GetInt32(_m_COL_QUANTITY)
+        //        );
+        //    }
+        //    return null;
+        //}
+        //catch (MySqlException ex) {
+        //    MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+        //    return null;
+        //}
+    }
+
+    public EntityItem? getItemByID(string id) {
+        using MySqlConnection? conn = _m_conn.openConnection();
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}, {_m_COL_ARCHIVE} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_ID} = @id ",
+                conn
+            );
+
+            cmd.Parameters.AddWithValue("@id", id);
+            using MySqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read()) {
+                return new EntityItem {
+                    entity_id = reader.GetSafeValue<int>(_m_COL_ID),
+                    entity_name = reader.GetSafeValue<string>(_m_COL_NAME, string.Empty),
+                    entity_phone = reader.GetSafeValue<string>(_m_COL_PHONE, string.Empty),
+                    entity_email = reader.GetSafeValue<string>(_m_COL_EMAIL, string.Empty),
+                    entity_city = reader.GetSafeValue<string>(_m_COL_CITY, string.Empty),
+                    entity_address = reader.GetSafeValue<string>(_m_COL_ADDRESS, string.Empty),
+                    entity_archive = reader.GetSafeValue<DateTime>(_m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                    //entity_id = reader.GetInt32(_m_COL_ID),
+                    //entity_name = reader.IsDBNull(reader.GetOrdinal(_m_COL_NAME)) ? string.Empty : reader.GetString(reader.GetOrdinal(_m_COL_NAME)),
+                    //entity_phone = reader.IsDBNull(reader.GetOrdinal(_m_COL_PHONE)) ? string.Empty : reader.GetString(reader.GetOrdinal(_m_COL_PHONE)),
+                    //entity_email = reader.IsDBNull(reader.GetOrdinal(_m_COL_EMAIL)) ? string.Empty : reader.GetString(reader.GetOrdinal(_m_COL_EMAIL)),
+                    //entity_city = reader.IsDBNull(reader.GetOrdinal(_m_COL_CITY)) ? string.Empty : reader.GetString(reader.GetOrdinal(_m_COL_CITY)),
+                    //entity_address = reader.IsDBNull(reader.GetOrdinal(_m_COL_ADDRESS)) ? string.Empty : reader.GetString(reader.GetOrdinal(_m_COL_ADDRESS)),
+                    //entity_archive = reader.IsDBNull(reader.GetOrdinal(_m_COL_ARCHIVE)) ? DateTime.MinValue.ToString() : reader.GetDateTime(reader.GetOrdinal(_m_COL_ARCHIVE)).ToString()
+                };
+            }
+            return null;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return null;
+        }
     }
 
     public ObservableCollection<EntityItem> getTable() {

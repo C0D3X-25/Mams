@@ -9,9 +9,12 @@ namespace Mams.src.views.pages;
 /// </summary>
 public partial class SaveClientPage : Page {
 
-    public SaveClientPage() {
+    private readonly int _m_id_client = 0;
+
+    public SaveClientPage(int id_client = 0) {
         InitializeComponent();
         this.Loaded += pageLoaded; // need to wait for the window to be loaded
+        this._m_id_client = id_client;
     }
 
 
@@ -19,7 +22,7 @@ public partial class SaveClientPage : Page {
         MainWindow? _m_window = Window.GetWindow(this) as MainWindow;
 
         if (_m_window != null) {
-            SaveClientController controller = new(_m_window.m_page_navigation);
+            SaveClientController controller = new(_m_window.m_page_navigation, _m_id_client);
             this.DataContext = controller;
         }
     }
