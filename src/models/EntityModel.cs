@@ -1,4 +1,5 @@
-﻿using Mams.src.helpers;
+﻿using Mams.src.enums;
+using Mams.src.helpers;
 using Mams.src.interfaces;
 using Mams.src.items;
 using MySqlConnector;
@@ -22,11 +23,11 @@ public class EntityModel :
     private const string _m_COL_ARCHIVE = "entity_archive";
 
 
-    public bool deleteItem(string id) {
-        return DeleteItemModel.deleteItem(this, id,_m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME);
+    public bool deleteItem(string id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
+        return DeleteItemModel.deleteItem(this, id,_m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
-    public bool deleteItem(int id) {
-        return deleteItem(id.ToString());
+    public bool deleteItem(int id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
+        return deleteItem(id.ToString(), delete_type);
     }
 
 

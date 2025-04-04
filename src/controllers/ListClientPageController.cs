@@ -1,4 +1,5 @@
 ﻿using Mams.src.commands;
+using Mams.src.enums;
 using Mams.src.items;
 using Mams.src.models;
 using Mams.src.views.pages;
@@ -18,15 +19,26 @@ public class ListClientPageController : ABaseController {
     public ICommand m_delete_client_command { get; set; }
 
 
-    private bool _m_are_clients_archived = false;
+    private bool _m_is_checkbox_show_archived_clicked = false;
     public bool m_are_clients_archived {
-        get { return _m_are_clients_archived; }
+        get { return _m_is_checkbox_show_archived_clicked; }
         set { 
-            _m_are_clients_archived = value;
+            _m_is_checkbox_show_archived_clicked = value;
             onPropertyChanged();
             updateClients();
         }
     }
+
+
+    private string _m_delete_button;
+    public string m_delete_button {
+        get { return _m_delete_button; }
+        set {
+            _m_delete_button = value;
+            onPropertyChanged();
+        }
+    }
+
 
 
     private ObservableCollection<EntityItem>? _m_clients;
@@ -51,6 +63,7 @@ public class ListClientPageController : ABaseController {
 
     public ListClientPageController(PageNavigationController page_navigation) {
         _m_page_navigation = page_navigation;
+        _m_delete_button = "Supprimer";
         updateClients();
         m_add_new_client_command = new RelayCommand(navigateToSaveClient);
         m_modify_client_command = new RelayCommand(navigateToModifyClient, isClientSelected);
@@ -61,15 +74,17 @@ public class ListClientPageController : ABaseController {
 
         var all_clients = _m_client_model.getTable();
 
-        if (!_m_are_clients_archived) {
+        if (!_m_is_checkbox_show_archived_clicked) {
             m_clients = new ObservableCollection<EntityItem>(
                 all_clients.Where(c => c.entity_archive == String.Empty)
             );
+            m_delete_button = "Supprimer";
         }
         else {
             m_clients = new ObservableCollection<EntityItem>(
                 all_clients.Where(c => c.entity_archive != String.Empty)
             );
+            m_delete_button = "Restaurer";
         }
     }
 
@@ -93,7 +108,12 @@ public class ListClientPageController : ABaseController {
 
     private void deleteClient(object? obj) {
         if (_m_selected_client != null) {
-            _m_client_model.deleteItem(_m_selected_client.entity_id);
+            if (_m_is_checkbox_show_archived_clicked) {
+                _m_client_model.deleteItem(_m_selected_client.entity_id, EDatabaseDeleteItem.RESTORE);
+            }
+            else {
+                _m_client_model.deleteItem(_m_selected_client.entity_id);
+            }
             updateClients();
         }
     }

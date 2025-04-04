@@ -6,13 +6,13 @@ using System.Windows.Input;
 namespace Mams.src.controllers;
 
 
-public class UCAddNewButtonController : DependencyObject  {
+public class z_UCAddNewButtonController : DependencyObject  {
 
     public readonly PageNavigationController _m_page_navigation;
 
     public ICommand m_navigate_command { get; set; }
 
-    public UCAddNewButtonController(PageNavigationController page_navigation) {
+    public z_UCAddNewButtonController(PageNavigationController page_navigation) {
 
         _m_page_navigation = page_navigation;
 

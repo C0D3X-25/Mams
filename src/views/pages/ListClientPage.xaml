@@ -114,7 +114,7 @@
                         <!--Delete Buttons-->
                         <Button 
                             Grid.Row="2"
-                            Content="Supprimer"
+                            Content="{Binding m_delete_button}"
                             Command="{Binding m_delete_client_command}"
                             Height="30" Width="130"
                             MaxHeight="30" MaxWidth="130"

@@ -35,7 +35,7 @@ public partial class UCAddNewButton : UserControl {
         MainWindow? main_window = Window.GetWindow(this) as MainWindow;
 
         if (main_window != null) {
-            UCAddNewButtonController add_new_controller = new(main_window.m_page_navigation);
+            z_UCAddNewButtonController add_new_controller = new(main_window.m_page_navigation);
             this.DataContext = add_new_controller;
         }
     }
