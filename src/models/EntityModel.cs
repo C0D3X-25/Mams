@@ -69,6 +69,7 @@ public class EntityModel :
         //}
     }
 
+
     public EntityItem? getItemByID(string id) {
         using MySqlConnection? conn = _m_conn.openConnection();
 
@@ -102,9 +103,11 @@ public class EntityModel :
         }
     }
 
+
     public ObservableCollection<EntityItem> getTable() {
         return GetTableModel.getTableData<EntityItem>(this, _m_TBL_NAME);
     }
+
 
     public bool saveItem(EntityItem item) {
         using MySqlConnection? conn = _m_conn.openConnection();
@@ -112,6 +115,11 @@ public class EntityModel :
         string query = String.Empty;
 
         if (item.entity_id == 0) {
+
+            if (checkIfEntityExists(item.entity_name)) {
+                return false;
+            }
+
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}) " +
                 $"VALUES (@name, @phone, @email, @city, @address)";
         }
@@ -140,11 +148,33 @@ public class EntityModel :
         }
     }
 
+
     public override List<string> searchItems(string search) {
         throw new NotImplementedException();
     }
 
+
     public List<string> searchItemsByName(string search) {
         throw new NotImplementedException();
+    }
+
+
+    private bool checkIfEntityExists(string name) {
+
+        using MySqlConnection? conn = _m_conn.openConnection();
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT COUNT(*) FROM {_m_TBL_NAME} WHERE {_m_COL_NAME} = @name",
+                conn
+            );
+            cmd.Parameters.AddWithValue("@name", name);
+            int count = Convert.ToInt32(cmd.ExecuteScalar());
+            return count > 0;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return false;
+        }
     }
 }

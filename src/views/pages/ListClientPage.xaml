@@ -71,7 +71,7 @@
                         <CheckBox 
                             Grid.Row="0"
                             Content="Afficher les clients archivés"
-                            IsChecked="{Binding m_are_clients_archived, UpdateSourceTrigger=PropertyChanged}"
+                            IsChecked="{Binding m_is_checkbox_show_archived_clicked, UpdateSourceTrigger=PropertyChanged}"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             VerticalContentAlignment="Center"
@@ -114,7 +114,7 @@
                         <!--Delete Buttons-->
                         <Button 
                             Grid.Row="2"
-                            Content="{Binding m_delete_button}"
+                            Content="{Binding m_delete_button_text}"
                             Command="{Binding m_delete_client_command}"
                             Height="30" Width="130"
                             MaxHeight="30" MaxWidth="130"
