@@ -95,8 +95,8 @@
                                 Grid.Column="1" 
                                 Margin="0,0,0,10"
                                 FontSize="14"
-                                ItemsSource="{Binding m_clients}"
-                                SelectedItem="{Binding m_selected_client}">
+                                ItemsSource="{Binding m_list_items}"
+                                SelectedItem="{Binding m_selected_item}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding entity_id}"/>
@@ -115,7 +115,7 @@
                         <Button 
                             Grid.Row="2"
                             Content="{Binding m_delete_button_text}"
-                            Command="{Binding m_delete_client_command}"
+                            Command="{Binding m_delete_item_command}"
                             Height="30" Width="130"
                             MaxHeight="30" MaxWidth="130"
                             HorizontalAlignment="left" VerticalAlignment="Center"
@@ -128,7 +128,7 @@
                         <Button 
                             Grid.Row="2"
                             Content="Modifier"
-                            Command="{Binding m_modify_client_command}"
+                            Command="{Binding m_modify_item_command}"
                             Height="30" Width="130"
                             MaxHeight="30" MaxWidth="130"
                             HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -140,7 +140,7 @@
                         <Button 
                             Grid.Row="2"
                             Content="Ajouter un client"
-                            Command="{Binding m_add_new_client_command}"
+                            Command="{Binding m_add_new_item_command}"
                             Height="30" Width="130"
                             MaxHeight="30" MaxWidth="130"
                             HorizontalAlignment="Right" VerticalAlignment="Center"

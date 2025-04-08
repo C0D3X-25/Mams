@@ -15,12 +15,12 @@ namespace Mams.src.controllers;
 public class ListClientPageController : ABaseController {
 
     private readonly PageNavigationController _m_page_navigation;
-    private readonly EntityModel _m_client_model = new();
+    private readonly EntityModel _m_item_model = new();
 
 
-    public ICommand m_add_new_client_command { get; set; }
-    public ICommand m_modify_client_command { get; set; }
-    public ICommand m_delete_client_command { get; set; }
+    public ICommand m_add_new_item_command { get; set; }
+    public ICommand m_modify_item_command { get; set; }
+    public ICommand m_delete_item_command { get; set; }
 
     private bool _m_is_checkbox_show_archived_clicked = false;
     public bool m_is_checkbox_show_archived_clicked {
@@ -28,7 +28,7 @@ public class ListClientPageController : ABaseController {
         set {
             _m_is_checkbox_show_archived_clicked = value;
             onPropertyChanged();
-            updateListClients();
+            updateListItems();
         }
     }
 
@@ -41,20 +41,20 @@ public class ListClientPageController : ABaseController {
         }
     }
 
-    private ObservableCollection<EntityItem>? _m_clients;
-    public ObservableCollection<EntityItem>? m_clients {
-        get { return _m_clients; }
+    private ObservableCollection<EntityItem>? _m_list_items;
+    public ObservableCollection<EntityItem>? m_list_items {
+        get { return _m_list_items; }
         set {
-            _m_clients = value;
+            _m_list_items = value;
             onPropertyChanged();
         }
     }
 
-    private EntityItem? _m_selected_client;
-    public EntityItem? m_selected_client {
-        get { return _m_selected_client; }
+    private EntityItem? _m_selected_item;
+    public EntityItem? m_selected_item {
+        get { return _m_selected_item; }
         set {
-            _m_selected_client = value;
+            _m_selected_item = value;
             onPropertyChanged();
         }
     }
@@ -66,27 +66,27 @@ public class ListClientPageController : ABaseController {
     public ListClientPageController(PageNavigationController page_navigation) {
         _m_page_navigation = page_navigation;
         _m_delete_button_text = "";
-        updateListClients();
-        m_add_new_client_command = new RelayCommand(navigateToSaveClient);
-        m_modify_client_command = new RelayCommand(navigateToModifyClient, isClientSelected);
-        m_delete_client_command = new RelayCommand(deleteClient, isClientSelected);
+        updateListItems();
+        m_add_new_item_command = new RelayCommand(navigateToSavePage);
+        m_modify_item_command = new RelayCommand(navigateToModifyItem, isItemSelected);
+        m_delete_item_command = new RelayCommand(deleteRestoreItem, isItemSelected);
     }
 
     /// <summary>
     /// Updates the list of clients based on the archive status filter
     /// </summary>
-    private void updateListClients() {
-        var all_clients = _m_client_model.getTable();
+    private void updateListItems() {
+        var all_items = _m_item_model.getTable();
 
         if (!_m_is_checkbox_show_archived_clicked) {
-            m_clients = new ObservableCollection<EntityItem>(
-                all_clients.Where(client => client.entity_archive == String.Empty)
+            m_list_items = new ObservableCollection<EntityItem>(
+                all_items.Where(item => item.entity_archive == String.Empty)
             );
             m_delete_button_text = "Supprimer";
         }
         else {
-            m_clients = new ObservableCollection<EntityItem>(
-                all_clients.Where(client => client.entity_archive != String.Empty)
+            m_list_items = new ObservableCollection<EntityItem>(
+                all_items.Where(item => item.entity_archive != String.Empty)
             );
             m_delete_button_text = "Restaurer";
         }
@@ -96,7 +96,7 @@ public class ListClientPageController : ABaseController {
     /// Navigates to the save client page for creating a new client
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
-    private void navigateToSaveClient(object? obj) {
+    private void navigateToSavePage(object? obj) {
         _m_page_navigation.navigateTo(new SaveClientPage());
     }
 
@@ -105,17 +105,17 @@ public class ListClientPageController : ABaseController {
     /// </summary>
     /// <param name="arg">Command parameter (not used)</param>
     /// <returns>True if a client is selected, false otherwise</returns>
-    private bool isClientSelected(object? arg) {
-        return m_selected_client != null;
+    private bool isItemSelected(object? arg) {
+        return m_selected_item != null;
     }
 
     /// <summary>
     /// Navigates to the save client page for modifying an existing client
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
-    private void navigateToModifyClient(object? obj) {
-        if (_m_selected_client != null) {
-            _m_page_navigation.navigateTo(new SaveClientPage(_m_selected_client.entity_id));
+    private void navigateToModifyItem(object? obj) {
+        if (_m_selected_item != null) {
+            _m_page_navigation.navigateTo(new SaveClientPage(_m_selected_item.entity_id));
         }
     }
 
@@ -123,15 +123,15 @@ public class ListClientPageController : ABaseController {
     /// Deletes or restores the selected client based on current archive status
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
-    private void deleteClient(object? obj) {
-        if (_m_selected_client != null) {
+    private void deleteRestoreItem(object? obj) {
+        if (_m_selected_item != null) {
             if (_m_is_checkbox_show_archived_clicked) {
-                _m_client_model.deleteItem(_m_selected_client.entity_id, EDatabaseDeleteItem.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.entity_id, EDatabaseDeleteItem.RESTORE);
             }
             else {
-                _m_client_model.deleteItem(_m_selected_client.entity_id);
+                _m_item_model.deleteItem(_m_selected_item.entity_id);
             }
-            updateListClients();
+            updateListItems();
         }
     }
 }
