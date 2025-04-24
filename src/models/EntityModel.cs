@@ -10,7 +10,6 @@ namespace Mams.src.models;
 
 public class EntityModel : 
     ABaseSearchModel,
-    ISearchItemsByName,
     ICRUDItem<EntityItem> {
 
     private const string _m_TBL_NAME = "entities";
@@ -116,7 +115,7 @@ public class EntityModel :
 
         if (item.entity_id == 0) {
 
-            if (checkIfItemExist(item.entity_name)) {
+            if (checkIfItemExist(_m_TBL_NAME, _m_COL_NAME, item.entity_name)) {
                 return false;
             }
 
@@ -151,30 +150,5 @@ public class EntityModel :
 
     public override List<string> searchItems(string search) {
         throw new NotImplementedException();
-    }
-
-
-    public List<string> searchItemsByName(string search) {
-        throw new NotImplementedException();
-    }
-
-
-    private bool checkIfItemExist(string name) {
-
-        using MySqlConnection? conn = _m_conn.openConnection();
-
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT COUNT(*) FROM {_m_TBL_NAME} WHERE {_m_COL_NAME} = @name",
-                conn
-            );
-            cmd.Parameters.AddWithValue("@name", name);
-            int count = Convert.ToInt32(cmd.ExecuteScalar());
-            return count > 0;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
-        }
     }
 }

@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS mams_db;
+-- DROP DATABASE IF EXISTS mams_db;
 CREATE DATABASE IF NOT EXISTS mams_db;
 USE mams_db;
 
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS beehives (
 
 CREATE TABLE IF NOT EXISTS products_lots (
     product_lot_id INT PRIMARY KEY AUTO_INCREMENT,
-    product_lot_nbr INT NOT NULL,
+    product_lot_name VARCHAR(50) NOT NULL,
     product_lot_year INT NOT NULL,
     product_lot_archive DATETIME,
     fk_beehive_id INT REFERENCES beehives(beehive_id)

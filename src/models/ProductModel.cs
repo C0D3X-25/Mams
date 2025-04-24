@@ -1,4 +1,5 @@
 ﻿using Mams.src.enums;
+using Mams.src.helpers;
 using Mams.src.interfaces;
 using Mams.src.items;
 using MySqlConnector;
@@ -13,7 +14,6 @@ using System.Windows;
 namespace Mams.src.models;
 internal class ProductModel :
     ABaseSearchModel,
-    ISearchItemsByName,
     ICRUDItem<ProductItem> {
 
     private const string _m_TBL_NAME = "products";
@@ -44,7 +44,57 @@ internal class ProductModel :
     }
 
     public ProductItem? getItemByID(string id) {
-        throw new NotImplementedException();
+        using MySqlConnection? conn = _m_conn.openConnection();
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_WEIGHT}, " +
+                $"{_m_COL_FK_PRODUCT_TYPE_ID}, {_m_COL_FK_PRODUCT_TYPE_NAME}, " +
+                $"{_m_COL_FK_PRODUCT_CATEGORY_ID}, {_m_COL_FK_PRODUCT_CATEGORY_NAME}, " +
+                $"{_m_COL_FK_PRODUCT_SHAPE_ID}, {_m_COL_FK_PRODUCT_SHAPE_NAME}, " +
+                $"{_m_COL_FK_PRODUCT_LOT_ID}, {_m_COL_FK_PRODUCT_LOT_NAME}, " +
+                $"{_m_COL_ARCHIVE} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_ID} = @id ",
+                conn
+            );
+
+            cmd.Parameters.AddWithValue("@id", id);
+            using MySqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read()) {
+
+                int product_type_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_TYPE_ID);
+                int product_category_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY_ID);
+                int product_shape_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE_ID);
+                int product_lot_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_LOT_ID);
+
+                ProductCategoryModel product_category_model = new();
+                ProductTypeModel product_type_model = new();
+                ProductShapeModel product_shape_model = new();
+                ProductLotModel product_lot_model = new();
+
+                return new ProductItem {
+                    product_id = reader.GetSafeValue<int>(_m_COL_ID),
+                    product_name = reader.GetSafeValue<string>(_m_COL_NAME, string.Empty),
+                    product_weight = reader.GetSafeValue<int>(_m_COL_WEIGHT, 0),
+                    fk_product_type_id = product_type_id,
+                    product_type_name = product_type_model.getItemByID(product_type_id.ToString())?.product_type_name ?? string.Empty,
+                    fk_product_category_id = product_category_id,
+                    product_category_name = product_category_model.getItemByID(product_category_id.ToString())?.product_category_name ?? string.Empty,
+                    fk_product_shape_id = product_shape_id,
+                    product_shape_name = product_shape_model.getItemByID(product_shape_id.ToString())?.product_shape_name ?? string.Empty,
+                    fk_product_lot_id = product_lot_id,
+                    product_lot_name = product_lot_model.getItemByID(product_lot_id.ToString())?.product_lot_name ?? string.Empty,
+                    product_archive = reader.GetSafeValue<DateTime>(_m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                };
+            }
+            return null;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return null;
+        }
     }
 
     public ObservableCollection<ProductItem> getTable() {
@@ -58,7 +108,7 @@ internal class ProductModel :
 
         if (item.product_id == 0) {
 
-            if (checkIfItemExist(item.product_name)) {
+            if (checkIfItemExist(_m_TBL_NAME, _m_COL_NAME, item.product_name)) {
                 return false;
             }
 
@@ -94,31 +144,6 @@ internal class ProductModel :
 
     public override List<string> searchItems(string search) {
         throw new NotImplementedException();
-    }
-
-
-    public List<string> searchItemsByName(string search) {
-        throw new NotImplementedException();
-    }
-
-
-    private bool checkIfItemExist(string name) {
-
-        using MySqlConnection? conn = _m_conn.openConnection();
-
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT COUNT(*) FROM {_m_TBL_NAME} WHERE {_m_COL_NAME} = @name",
-                conn
-            );
-            cmd.Parameters.AddWithValue("@name", name);
-            int count = Convert.ToInt32(cmd.ExecuteScalar());
-            return count > 0;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
-        }
     }
 }
 

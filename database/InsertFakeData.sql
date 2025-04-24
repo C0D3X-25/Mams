@@ -67,17 +67,17 @@ INSERT INTO beehives (beehive_name, beehive_archive) VALUES
 ('Clover Fields', NULL);
 
 -- Insert data into products_lots (same as previous)
-INSERT INTO products_lots (product_lot_nbr, product_lot_year, fk_beehive_id, product_lot_archive) VALUES
-(101, 2024, 1, NULL),
-(102, 2024, 2, NULL),
-(103, 2024, 3, NULL),
-(104, 2024, 4, NULL),
-(105, 2024, 5, '2024-02-15 13:20:00'),
-(106, 2024, 6, NULL),
-(107, 2024, 7, NULL),
-(108, 2024, 8, NULL),
-(201, 2023, 1, '2024-03-05 09:40:00'),
-(202, 2023, 2, NULL);
+INSERT INTO products_lots (product_lot_name, product_lot_year, fk_beehive_id, product_lot_archive) VALUES
+('101', 2024, 1, NULL),
+('102', 2024, 2, NULL),
+('103', 2024, 3, NULL),
+('104', 2024, 4, NULL),
+('105', 2024, 5, '2024-02-15 13:20:00'),
+('106', 2024, 6, NULL),
+('107', 2024, 7, NULL),
+('108', 2024, 8, NULL),
+('201', 2023, 1, '2024-03-05 09:40:00'),
+('202', 2023, 2, NULL);
 
 -- Insert data into products (same as previous)
 INSERT INTO products (product_name, product_weight, fk_product_category_id, fk_product_type_id, fk_product_shape_id, fk_product_lot_id, product_archive) VALUES
