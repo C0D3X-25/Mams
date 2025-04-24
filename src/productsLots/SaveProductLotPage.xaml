@@ -124,7 +124,7 @@
                                 <!--Beehive-->
                                 <userControls:UCLabelTextBox
                                 Grid.Row="0"
-                                label="Ruche"
+                                label="Rucher"
                                 text="{Binding m_product_lot.beehive_name, UpdateSourceTrigger=PropertyChanged}"
                                 >
                                 </userControls:UCLabelTextBox>

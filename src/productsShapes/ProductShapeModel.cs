@@ -1,5 +1,6 @@
 ﻿using Mams.src.crudOperations;
 using Mams.src.models;
+using Mams.src.productsCategories;
 using System.Collections.ObjectModel;
 
 namespace Mams.src.productsShapes;
@@ -30,7 +31,8 @@ public class ProductShapeModel :
     }
 
     public ObservableCollection<ProductShapeItem> getTable() {
-        throw new NotImplementedException();
+        return GetTableModel.getTableData<ProductShapeItem>(this, _m_TBL_NAME);
+
     }
 
     public bool saveItem(ProductShapeItem item) {

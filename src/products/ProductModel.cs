@@ -32,16 +32,18 @@ internal class ProductModel :
     public bool deleteItem(string id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
         return DeleteItemModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
-
     public bool deleteItem(int id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
+
 
     public ProductItem? getItem(string search) {
         throw new NotImplementedException();
     }
 
+
     public ProductItem? getItemByID(string id) {
+
         using MySqlConnection? conn = _m_conn.openConnection();
 
         try {
@@ -95,9 +97,11 @@ internal class ProductModel :
         }
     }
 
+
     public ObservableCollection<ProductItem> getTable() {
         return GetTableModel.getTableData<ProductItem>(this, _m_TBL_NAME);
     }
+
 
     public bool saveItem(ProductItem item) {
         using MySqlConnection? conn = _m_conn.openConnection();

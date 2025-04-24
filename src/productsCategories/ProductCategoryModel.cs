@@ -1,5 +1,6 @@
 ﻿using Mams.src.crudOperations;
 using Mams.src.models;
+using Mams.src.productsLots;
 using System.Collections.ObjectModel;
 
 namespace Mams.src.productsCategories;
@@ -33,7 +34,7 @@ public class ProductCategoryModel :
     }
 
     public ObservableCollection<ProductCategoryItem> getTable() {
-        throw new NotImplementedException();
+        return GetTableModel.getTableData<ProductCategoryItem>(this, _m_TBL_NAME);
     }
 
     public bool saveItem(ProductCategoryItem item) {
