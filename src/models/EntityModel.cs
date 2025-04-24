@@ -116,7 +116,7 @@ public class EntityModel :
 
         if (item.entity_id == 0) {
 
-            if (checkIfEntityExists(item.entity_name)) {
+            if (checkIfItemExist(item.entity_name)) {
                 return false;
             }
 
@@ -159,7 +159,7 @@ public class EntityModel :
     }
 
 
-    private bool checkIfEntityExists(string name) {
+    private bool checkIfItemExist(string name) {
 
         using MySqlConnection? conn = _m_conn.openConnection();
 

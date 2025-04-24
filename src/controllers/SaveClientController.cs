@@ -33,13 +33,13 @@ public class SaveClientController : ABaseController {
     /// Initializes a new instance of the SaveClientController
     /// </summary>
     /// <param name="page_navigation">The navigation controller for managing page transitions</param>
-    /// <param name="id">Optional ID of an existing client to modify. If 0, creates a new client</param>
-    public SaveClientController(PageNavigationController page_navigation, int id = 0) {
+    /// <param name="id_to_load">Optional ID of an existing client to modify. If 0, creates a new client</param>
+    public SaveClientController(PageNavigationController page_navigation, int id_to_load = 0) {
         _m_page_navigation = page_navigation;
         _m_entity_model = new();
         _m_client = new EntityItem();
-        if (id != 0) {
-            _m_client = _m_entity_model.getItemByID(id.ToString()) ?? new EntityItem();
+        if (id_to_load != 0) {
+            _m_client = _m_entity_model.getItemByID(id_to_load.ToString()) ?? new EntityItem();
         }
         m_save_command = new RelayCommand(saveClient, canSaveClient);
         m_abort_command = new RelayCommand(abortClient);

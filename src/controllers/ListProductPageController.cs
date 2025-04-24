@@ -23,11 +23,11 @@ internal class ListProductPageController : ABaseController {
     public ICommand m_delete_item_command { get; set; }
 
 
-    private bool _m_is_checkbox_show_archived_clicked = false;
-    public bool m_is_checkbox_show_archived_clicked {
-        get { return _m_is_checkbox_show_archived_clicked; }
+    private bool _m_is_show_archived_checked = false;
+    public bool m_is_show_archived_checked {
+        get { return _m_is_show_archived_checked; }
         set {
-            _m_is_checkbox_show_archived_clicked = value;
+            _m_is_show_archived_checked = value;
             onPropertyChanged();
             updateListItems();
         }
@@ -74,7 +74,7 @@ internal class ListProductPageController : ABaseController {
     private void updateListItems() {
         var all_items = _m_item_model.getTable();
 
-        if (!_m_is_checkbox_show_archived_clicked) {
+        if (!_m_is_show_archived_checked) {
             m_list_items = new ObservableCollection<ProductItem>(
                 all_items.Where(item => item.product_archive == String.Empty)
             );
@@ -101,14 +101,14 @@ internal class ListProductPageController : ABaseController {
 
     private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
-            _m_page_navigation.navigateTo(new SaveClientPage(_m_selected_item.product_id));
+            _m_page_navigation.navigateTo(new SaveProductPage(_m_selected_item.product_id));
         }
     }
 
 
     private void deleteRestoreItem(object? obj) {
         if (_m_selected_item != null) {
-            if (_m_is_checkbox_show_archived_clicked) {
+            if (_m_is_show_archived_checked) {
                 _m_item_model.deleteItem(_m_selected_item.product_id, EDatabaseDeleteItem.RESTORE);
             }
             else {

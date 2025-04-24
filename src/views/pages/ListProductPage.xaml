@@ -71,7 +71,7 @@
                         <CheckBox 
                             Grid.Row="0"
                             Content="Afficher les produits archivés"
-                            IsChecked="{Binding m_is_checkbox_show_archived_clicked, UpdateSourceTrigger=PropertyChanged}"
+                            IsChecked="{Binding m_is_show_archived_checked, UpdateSourceTrigger=PropertyChanged}"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             VerticalContentAlignment="Center"
@@ -140,7 +140,7 @@
                         <!--Add new Broduct Buttons-->
                         <Button 
                             Grid.Row="2"
-                            Content="Ajouter un produit"
+                            Content="Nouveau produit"
                             Command="{Binding m_add_new_item_command}"
                             Height="30" Width="130"
                             MaxHeight="30" MaxWidth="130"

@@ -86,7 +86,8 @@
                                     <RowDefinition Height="1*"/>
                                     <RowDefinition Height="1*"/>
                                     <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="6*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="5*"/>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
@@ -94,23 +95,34 @@
 
                                 <!--Name-->
                                 <userControls:UCLabelTextBox
-                                    x:Name="product_name"
                                     Grid.Row="0"
-                                    label="Nom*">
+                                    label="Nom*"
+                                    text="{Binding m_product.product_name, UpdateSourceTrigger=PropertyChanged}"
+                                    >
                                 </userControls:UCLabelTextBox>
 
                                 <!--Category-->
                                 <userControls:UCLabelTextBox
-                                    x:Name="product_category"
                                     Grid.Row="1"
-                                    label="Catégorie*">
+                                    label="Catégorie*"                                    
+                                    text="{Binding m_product.product_category_name, UpdateSourceTrigger=PropertyChanged}"
+                                    >
                                 </userControls:UCLabelTextBox>
-
+                                
+                                <!--Lot-->
+                                <userControls:UCLabelTextBox
+                                    Grid.Row="2"
+                                    label="Lot"
+                                    text="{Binding m_product.product_lot_name, UpdateSourceTrigger=PropertyChanged}"
+                                    >
+                                </userControls:UCLabelTextBox>
+                                
                                 <!--ID-->
                                 <userControls:UCLabelTextBox
-                                    x:Name="product_id"
-                                    Grid.Row="2"
-                                    label="ID">
+                                    Grid.Row="3"
+                                    label="ID"
+                                    text="{Binding m_product.product_id, UpdateSourceTrigger=PropertyChanged}"
+                                    >
                                 </userControls:UCLabelTextBox>
                             </Grid>
 
@@ -130,23 +142,26 @@
 
                                 <!--Type-->
                                 <userControls:UCLabelTextBox
-                                    x:Name="product_type"
                                     Grid.Row="0"
-                                    label="Type*">
+                                    label="Type*"
+                                    text="{Binding m_product.product_type_name, UpdateSourceTrigger=PropertyChanged}"
+                                    >
                                 </userControls:UCLabelTextBox>
 
                                 <!--Shape-->
                                 <userControls:UCLabelTextBox
-                                    x:Name="product_shape"
                                     Grid.Row="1"
-                                    label="Forme">
+                                    label="Forme"
+                                    text="{Binding m_product.product_shape_name, UpdateSourceTrigger=PropertyChanged}"
+                                    >
                                 </userControls:UCLabelTextBox>
 
                                 <!--Weight-->
                                 <userControls:UCLabelTextBox
-                                    x:Name="product_weight"
                                     Grid.Row="2"
-                                    label="Poid">
+                                    label="Poid"
+                                    text="{Binding m_product.product_weight, UpdateSourceTrigger=PropertyChanged}"
+                                    >
                                 </userControls:UCLabelTextBox>
                             </Grid>
                         </Grid>
