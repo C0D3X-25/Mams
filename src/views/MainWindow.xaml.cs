@@ -1,4 +1,4 @@
-﻿using Mams.src.controllers;
+﻿using Mams.src.navigations;
 using System.Windows;
 
 namespace Mams.src.views;

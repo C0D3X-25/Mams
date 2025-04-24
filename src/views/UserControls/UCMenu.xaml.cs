@@ -1,5 +1,4 @@
-﻿using Mams.src.controllers;
-using Mams.src.views.pages;
+﻿using Mams.src.navigations;
 using System.Windows;
 using System.Windows.Controls;
 

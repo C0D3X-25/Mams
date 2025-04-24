@@ -16,4 +16,8 @@
     <None Include="schemas\MLD.simp.user" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="src\suppliers\" />
+  </ItemGroup>
+
 </Project>

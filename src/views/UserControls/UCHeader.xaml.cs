@@ -1,7 +1,8 @@
-﻿using Mams.src.models;
-using Mams.src.controllers;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
+using Mams.src.entities;
+using Mams.src.navigations;
+using Mams.src.searchBars;
 
 namespace Mams.src.views.userControls;
 

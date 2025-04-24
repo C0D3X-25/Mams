@@ -1,4 +1,5 @@
-﻿using MySqlConnector;
+﻿using Mams.src.databaseConnections;
+using MySqlConnector;
 using System.Windows;
 
 namespace Mams.src.models;

@@ -30,10 +30,6 @@ public partial class UCPageNavigationMenuButton : UserControl {
         InitializeComponent();
     }
 
-    public void buttonClick() {
-        //menu_button.Click
-    }
-
     private static void OnContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
         if (d is UCPageNavigationMenuButton control && control.menu_button != null) {
             control.menu_button.Content = e.NewValue;
