@@ -9,8 +9,8 @@ namespace Mams.src.models;
 /// Holds the SQL connection object for all models to use.
 /// </summary>
 public abstract class ABaseModel {
-    public readonly SQLConnectionModel _m_conn = new();
 
+    public readonly SQLConnectionModel _m_conn = new();
 
     protected bool checkIfItemExist(string table_name, string colomn_to_search, string item_to_find) {
 

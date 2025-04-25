@@ -10,6 +10,7 @@ namespace Mams.src.crudOperations;
 public static class GetTableModel {
 
     public static ObservableCollection<T> getTableData<T>(ABaseModel model, string table) where T : ABaseItem, new() {
+
         ObservableCollection<T> items = new();
         DataTable? data_table = getTable(model, table);
 
@@ -43,8 +44,6 @@ public static class GetTableModel {
         using MySqlConnection? conn = model._m_conn.openConnection();
 
         DataTable data_table = new();
-
-        string query = string.Empty;
 
         try {
                 using MySqlCommand cmd = new($"SELECT * FROM {table};", conn);

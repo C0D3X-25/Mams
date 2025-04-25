@@ -49,13 +49,11 @@ internal class ProductModel :
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_WEIGHT}, " +
-                $"{_m_COL_FK_PRODUCT_TYPE_ID}, {_m_COL_FK_PRODUCT_TYPE_NAME}, " +
-                $"{_m_COL_FK_PRODUCT_CATEGORY_ID}, {_m_COL_FK_PRODUCT_CATEGORY_NAME}, " +
-                $"{_m_COL_FK_PRODUCT_SHAPE_ID}, {_m_COL_FK_PRODUCT_SHAPE_NAME}, " +
-                $"{_m_COL_FK_PRODUCT_LOT_ID}, {_m_COL_FK_PRODUCT_LOT_NAME}, " +
+                $"{_m_COL_FK_PRODUCT_TYPE_ID}, {_m_COL_FK_PRODUCT_CATEGORY_ID}, " +
+                $"{_m_COL_FK_PRODUCT_SHAPE_ID}, {_m_COL_FK_PRODUCT_LOT_ID}, " +
                 $"{_m_COL_ARCHIVE} " +
                 $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_ID} = @id ",
+                $"WHERE {_m_COL_ID} = @id;",
                 conn
             );
 
@@ -64,13 +62,13 @@ internal class ProductModel :
 
             if (reader.Read()) {
 
-                int product_type_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_TYPE_ID);
-                int product_category_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY_ID);
-                int product_shape_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE_ID);
-                int product_lot_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_LOT_ID);
+                int product_type_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_TYPE_ID, 0);
+                int product_category_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY_ID, 0);
+                int product_shape_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE_ID, 0);
+                int product_lot_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_LOT_ID, 0);
 
-                ProductCategoryModel product_category_model = new();
                 ProductTypeModel product_type_model = new();
+                ProductCategoryModel product_category_model = new();
                 ProductShapeModel product_shape_model = new();
                 ProductLotModel product_lot_model = new();
 
@@ -99,7 +97,21 @@ internal class ProductModel :
 
 
     public ObservableCollection<ProductItem> getTable() {
-        return GetTableModel.getTableData<ProductItem>(this, _m_TBL_NAME);
+
+        ObservableCollection<ProductItem> table = GetTableModel.getTableData<ProductItem>(this, _m_TBL_NAME);
+
+        ProductTypeModel product_type_model = new();
+        ProductCategoryModel product_category_model = new();
+        ProductShapeModel product_shape_model = new();
+        ProductLotModel product_lot_model = new();
+
+        foreach (ProductItem item in table) {
+            item.product_type_name = item.fk_product_type_id > 0 ? product_type_model.getItemByID(item.fk_product_type_id.ToString())?.product_type_name ?? string.Empty : "";
+            item.product_category_name = item.fk_product_category_id > 0 ? product_category_model.getItemByID(item.fk_product_category_id.ToString())?.product_category_name ?? string.Empty : "";
+            item.product_shape_name = item.fk_product_shape_id > 0 ? product_shape_model.getItemByID(item.fk_product_shape_id.ToString())?.product_shape_name ?? string.Empty : "";
+            item.product_lot_name = item.fk_product_lot_id > 0 ? product_lot_model.getItemByID(item.fk_product_lot_id.ToString())?.product_lot_name ?? string.Empty : "";
+        }
+        return table;
     }
 
 
@@ -114,13 +126,19 @@ internal class ProductModel :
                 return false;
             }
 
-            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_WEIGHT}, {_m_COL_FK_PRODUCT_TYPE_ID}, {_m_COL_FK_PRODUCT_CATEGORY_ID}, {_m_COL_FK_PRODUCT_SHAPE_ID}, {_m_COL_FK_PRODUCT_LOT_ID}) " +
-                $"VALUES (@name, @weight, @fk_product_type, @fk_product_category, @fk_product_shape, @fk_product_lot)";
+            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_WEIGHT}, " +
+                $"{_m_COL_FK_PRODUCT_TYPE_ID}, {_m_COL_FK_PRODUCT_CATEGORY_ID}, " +
+                $"{_m_COL_FK_PRODUCT_SHAPE_ID}, {_m_COL_FK_PRODUCT_LOT_ID}) " +
+                $"VALUES (@name, @weight, @fk_product_type, @fk_product_category, @fk_product_shape, @fk_product_lot);";
         }
         else {
             query = $"UPDATE {_m_TBL_NAME} " +
-                $"SET {_m_COL_NAME} = @name, {_m_COL_WEIGHT} = @weight, {_m_COL_FK_PRODUCT_TYPE_ID} = @fk_product_type, {_m_COL_FK_PRODUCT_CATEGORY_ID} = @fk_product_category, {_m_COL_FK_PRODUCT_SHAPE_ID} = @fk_product_shape, {_m_COL_FK_PRODUCT_LOT_ID} = @fk_product_lot " +
-                $"WHERE {_m_COL_ID} = @id";
+                $"SET {_m_COL_NAME} = @name, {_m_COL_WEIGHT} = @weight, " +
+                $"{_m_COL_FK_PRODUCT_TYPE_ID} = @fk_product_type, " +
+                $"{_m_COL_FK_PRODUCT_CATEGORY_ID} = @fk_product_category, " +
+                $"{_m_COL_FK_PRODUCT_SHAPE_ID} = @fk_product_shape, " +
+                $"{_m_COL_FK_PRODUCT_LOT_ID} = @fk_product_lot " +
+                $"WHERE {_m_COL_ID} = @id;";
         }
 
         try {

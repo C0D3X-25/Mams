@@ -1,11 +1,6 @@
 ﻿using Mams.src.crudOperations;
 using Mams.src.helpers;
 using Mams.src.models;
-using Mams.src.products;
-using Mams.src.productsCategories;
-using Mams.src.productsLots;
-using Mams.src.productsShapes;
-using Mams.src.productsTypes;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -40,9 +35,9 @@ public class BeehiveModel
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE}, " +
+                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
                 $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_ID} = @id ",
+                $"WHERE {_m_COL_ID} = @id;",
                 conn
             );
 
@@ -71,6 +66,7 @@ public class BeehiveModel
 
 
     public bool saveItem(BeehiveItem item) {
+
         using MySqlConnection? conn = _m_conn.openConnection();
 
         string query = string.Empty;
@@ -82,12 +78,12 @@ public class BeehiveModel
             }
 
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
-                $"VALUES (@name)";
+                $"VALUES (@name);";
         }
         else {
             query = $"UPDATE {_m_TBL_NAME} " +
                 $"SET {_m_COL_NAME} = @name" +
-                $"WHERE {_m_COL_ID} = @id";
+                $"WHERE {_m_COL_ID} = @id;";
         }
 
         try {
