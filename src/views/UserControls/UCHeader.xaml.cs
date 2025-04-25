@@ -11,9 +11,6 @@ namespace Mams.src.views.userControls;
 /// </summary>
 public partial class UCHeader : UserControl {
 
-    private readonly ABaseSearchModel _m_model = new EntityModel();
-    private readonly SearchBarModel? _m_search_bar;
-
     public string title {
         get { return (string)GetValue(titleProperty); }
         set { SetValue(titleProperty, value); }
@@ -26,25 +23,14 @@ public partial class UCHeader : UserControl {
     public UCHeader() {
         InitializeComponent();
         this.Loaded += UCHeader_Loaded; // need to wait for the window to be loaded
-
-        _m_search_bar = new SearchBarModel(_m_model, this);
     }
 
     private void UCHeader_Loaded(object sender, RoutedEventArgs e) {
         MainWindow? _m_window = Window.GetWindow(this) as MainWindow;
 
         if (_m_window != null) {
-            UCHeaderController header_controller = new(_m_window.m_page_navigation);
-            this.DataContext = header_controller;
+            UCHeaderController controller = new(_m_window.m_page_navigation);
+            this.DataContext = controller;
         }
-    }
-
-    private void searchbar_txtBox_TextChanged(object sender, TextChangedEventArgs e) {
-        _m_search_bar?.txtBox_TextChanged(sender, e);
-    }
-
-    private void searchbar_listView_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-        _m_search_bar?.listView_SelectionChanged(sender, e);
-        //_m_search_bar?.clearSearchBar(); // Uncomment later !
     }
 }

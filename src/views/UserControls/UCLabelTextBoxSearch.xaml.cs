@@ -1,5 +1,9 @@
-﻿using System.Windows;
+﻿using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Controls;
+using Mams.src.clients;
+using Mams.src.entities;
+using Mams.src.items;
 using Mams.src.searchBars;
 
 namespace Mams.src.views.userControls;
@@ -9,41 +13,34 @@ namespace Mams.src.views.userControls;
 /// </summary>
 public partial class UCLabelTextBoxSearch : UserControl {
 
-    //private readonly ABaseSearchModel _m_model = new InventoryModel();
-    private readonly SearchBarModel? _m_search_bar;
+    public UCLabelTextBoxSearch() {
+        InitializeComponent();
+    }
+
 
     public string label {
         get { return (string)GetValue(labelProperty); }
         set { SetValue(labelProperty, value); }
     }
     public static readonly DependencyProperty labelProperty =
-        DependencyProperty.Register("label", typeof(string), typeof(UCLabelTextBox),
-            new PropertyMetadata("label to change text"));
+        DependencyProperty.Register("label", typeof(string), typeof(UCLabelTextBoxSearch),
+            new PropertyMetadata("use 'label' to change text"));
 
-    public string text {
-        get { return (string)GetValue(textProperty); }
-        set { SetValue(textProperty, value); }
+
+
+    public list<string> list_items {
+        get { return (list<string>)GetValue(list_itemsProperty); }
+        set { SetValue(list_itemsProperty, value); }
     }
-    public static readonly DependencyProperty textProperty =
-        DependencyProperty.Register("text", typeof(string), typeof(UCLabelTextBox),
-            new FrameworkPropertyMetadata(default(string),
-                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault |
-                FrameworkPropertyMetadataOptions.Journal)
-            );
+    public static readonly DependencyProperty list_itemsProperty =
+        DependencyProperty.Register("list_items", typeof(list<string>), typeof(UCLabelTextBoxSearch));
 
 
-    public UCLabelTextBoxSearch() {
-        InitializeComponent();
-        //_m_search_bar = new SearchBarModel(_m_model, this);
 
+    public string selected_item {
+        get { return (string)GetValue(selected_itemProperty); }
+        set { SetValue(selected_itemProperty, value); }
     }
-
-    private void textBoxSearch_txtBox_TextChanged(object sender, TextChangedEventArgs e) {
-        _m_search_bar?.txtBox_TextChanged(sender, e);
-    }
-
-    private void searchbar_listView_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-        _m_search_bar?.listView_SelectionChanged(sender, e);
-    }
-
+    public static readonly DependencyProperty selected_itemProperty =
+        DependencyProperty.Register("selected_item", typeof(string), typeof(UCLabelTextBoxSearch));
 }

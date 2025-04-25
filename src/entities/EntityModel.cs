@@ -1,14 +1,13 @@
 ﻿using Mams.src.crudOperations;
 using Mams.src.helpers;
-using Mams.src.searchBars;
+using Mams.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace Mams.src.entities;
 
-public class EntityModel : 
-    ABaseSearchModel,
+public class EntityModel : ABaseModel,
     ICrudOperation<EntityItem> {
 
     private const string _m_TBL_NAME = "entities";
@@ -147,7 +146,30 @@ public class EntityModel :
     }
 
 
-    public override List<string> searchItems(string search) {
-        throw new NotImplementedException();
-    }
+    //public override List<string> searchItems(string search) {
+
+    //    using MySqlConnection? conn = _m_conn.openConnection();
+
+    //    var results = new List<string>();
+
+    //    try {
+    //        using MySqlCommand cmd = new(
+    //            $"SELECT DISTINCT {_m_COL_NAME} " +
+    //            $"FROM {_m_TBL_NAME} " +
+    //            //$"WHERE {_m_COL_ARCHIVE} = '' " + // Only non-archived items
+    //            $"ORDER BY {_m_COL_NAME};",
+    //            conn
+    //        );
+
+    //        using MySqlDataReader reader = cmd.ExecuteReader();
+    //        while (reader.Read()) {
+    //            results.Add(reader.GetString(_m_COL_NAME));
+    //        }
+    //        return results;
+    //    }
+    //    catch (MySqlException ex) {
+    //        MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+    //        return results;
+    //    }
+    //}
 }

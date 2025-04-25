@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Mams.src.views.userControls;
 
@@ -24,13 +12,15 @@ public partial class UCLabelTextBox : UserControl {
         InitializeComponent();
     }
 
+
     public string label {
         get { return (string)GetValue(labelProperty); }
         set { SetValue(labelProperty, value); }
     }
     public static readonly DependencyProperty labelProperty =
         DependencyProperty.Register("label", typeof(string), typeof(UCLabelTextBox),
-            new PropertyMetadata("label to change text"));
+            new PropertyMetadata("use 'label' to change text"));
+
 
     public string text {
         get { return (string)GetValue(textProperty); }
@@ -40,5 +30,7 @@ public partial class UCLabelTextBox : UserControl {
         DependencyProperty.Register("text", typeof(string), typeof(UCLabelTextBox),
             new FrameworkPropertyMetadata(default(string),
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault |
-                FrameworkPropertyMetadataOptions.Journal));
+                FrameworkPropertyMetadataOptions.Journal
+            )
+        );
 }

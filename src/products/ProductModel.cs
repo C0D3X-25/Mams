@@ -1,17 +1,16 @@
 ﻿using Mams.src.crudOperations;
 using Mams.src.helpers;
+using Mams.src.models;
 using Mams.src.productsCategories;
 using Mams.src.productsLots;
 using Mams.src.productsShapes;
 using Mams.src.productsTypes;
-using Mams.src.searchBars;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace Mams.src.products;
-internal class ProductModel :
-    ABaseSearchModel,
+internal class ProductModel : ABaseModel,
     ICrudOperation<ProductItem> {
 
     private const string _m_TBL_NAME = "products";
@@ -159,11 +158,6 @@ internal class ProductModel :
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return false;
         }
-    }
-
-
-    public override List<string> searchItems(string search) {
-        throw new NotImplementedException();
     }
 }
 

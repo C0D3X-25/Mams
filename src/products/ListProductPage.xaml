@@ -94,6 +94,7 @@
                             <ListView 
                                 Grid.Column="1" 
                                 Margin="0,0,0,10"
+                                MinWidth="500"
                                 FontSize="14"
                                 ItemsSource="{Binding m_list_items}"
                                 SelectedItem="{Binding m_selected_item}">

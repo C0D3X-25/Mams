@@ -19,57 +19,25 @@
         </Grid.ColumnDefinitions>
         
         <Label x:Name="labelTextBox_lbl" 
-               Grid.Column="0" Grid.Row="0" 
-               Content="{Binding label, ElementName=root}" 
-               FontSize="16" 
-               VerticalAlignment="Center" HorizontalAlignment="Right">
+                Grid.Column="0" Grid.Row="0" 
+                Content="{Binding label, ElementName=root}" 
+                FontSize="16" 
+                VerticalAlignment="Center" HorizontalAlignment="Right"
 
-        </Label>
-        <TextBox x:Name="labelTextBox_txtBox" 
-                 Text="{Binding text, ElementName=root, UpdateSourceTrigger=PropertyChanged}"
-                 Grid.Column="1" Grid.Row="0" 
-                 TextWrapping="Wrap"
-                 Margin="5,0,5,0" 
-                 FontSize="16" 
-                 VerticalAlignment="Center"
-                 MinHeight="25" MinWidth="200">
+        ></Label>
 
-        </TextBox>
-        
-        <!--Old--><!--
-        <Label x:Name="textBoxSearch_label" 
-               Grid.Column="0" Grid.Row="0" 
-               Content="{Binding label, ElementName=root}" 
-               FontSize="16" 
-               VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <TextBox x:Name="textBoxSearch_txtBox" 
-                 Grid.Column="1" Grid.Row="0" 
-                 TextWrapping="Wrap" 
-                 Margin="5,0,5,0" 
-                 FontSize="16" 
-                 VerticalAlignment="Center" 
-                 TextChanged="textBoxSearch_txtBox_TextChanged"/>
-        --><!--Old-->
-        
-        
-        
-        <!-- Popup for ListView -->
-        <Popup x:Name="searchPopup" 
-                        Grid.Column="1" 
-                        PlacementTarget="{Binding ElementName=textBoxSearch_txtBox}"
-                        Placement="Bottom"
-                        AllowsTransparency="True"
-                        StaysOpen="False"
-                        PopupAnimation="Slide">
-            <ListView x:Name="searchbar_listView"
-                            Width="{Binding ElementName=textBoxSearch_txtBox, Path=ActualWidth}"
-                            Background="White"
-                            BorderBrush="Gray"
-                            BorderThickness="1"
-                            FontSize="16"
-                            SelectionChanged="searchbar_listView_SelectionChanged"
-            />
-        </Popup>
+        <ComboBox x:Name="searchComboBox"
+                Grid.Column="1" Grid.Row="0" 
+                Margin="5,0,5,0" 
+                FontSize="16" 
+                VerticalAlignment="Center"
+                MinHeight="25" MinWidth="200"
+                ItemsSource="{Binding list_items, ElementName=root}"
+                SelectedItem="{Binding selected_item, ElementName=root}"
+                  
+        ></ComboBox>
+                <!--IsEditable="False"-->
+
     </Grid>
     <!--Label + TextBoxSearch-->
 </UserControl>

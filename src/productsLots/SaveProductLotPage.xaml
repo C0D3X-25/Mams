@@ -128,6 +128,13 @@
                                 text="{Binding m_product_lot.beehive_name, UpdateSourceTrigger=PropertyChanged}"
                                 >
                                 </userControls:UCLabelTextBox>
+              
+                                <userControls:UCLabelTextBoxSearch
+                                    Grid.Row="0"
+                                    label="Rucher"                  
+                                    list_items="{Binding m_list_beehive}" Wrong
+                                    selected_item="{Binding m_product_lot.beehive_name, UpdateSourceTrigger=PropertyChanged}"
+                                ></userControls:UCLabelTextBoxSearch>
 
                                 <!--ID-->
                                 <userControls:UCLabelTextBox

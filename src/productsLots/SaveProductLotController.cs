@@ -27,10 +27,22 @@ public class SaveProductLotController : ABaseController {
     }
 
 
+    private List<string> _m_list_beehive;
+    public List<string> m_list_beehive {
+        get { return _m_list_beehive; }
+        set { 
+            _m_list_beehive = value;
+            onPropertyChanged();
+        }
+    }
+
+
+
     public SaveProductLotController(PageNavigationController page_navigation, int id_to_load = 0) {
         _m_page_navigation = page_navigation;
         _m_product_lot_model = new();
         _m_product_lot = new ProductLotItem();
+        _m_list_beehive = new List<string>(); //TODO: how to get the beehives from the database
         if (id_to_load != 0) {
             _m_product_lot = _m_product_lot_model.getItemByID(id_to_load.ToString()) ?? new ProductLotItem();
         }

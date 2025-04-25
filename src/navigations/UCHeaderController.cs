@@ -1,4 +1,5 @@
 ﻿using Mams.src.commands;
+using Mams.src.entities;
 using Mams.src.views.pages;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Mams.src.navigations;
 public class UCHeaderController {
 
     private readonly PageNavigationController _m_page_navigation;
+
     public ICommand m_navigate_homepage_command { get; set; }
 
     public UCHeaderController(PageNavigationController pageNavigation) {

@@ -61,7 +61,7 @@ internal class ListProductController : ABaseController {
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
         m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
-        m_delete_item_command = new RelayCommand(deleteRestoreItem, isItemSelected);
+        m_delete_item_command = new RelayCommand(deleteOrRestoreItem, isItemSelected);
     }
 
 
@@ -100,7 +100,7 @@ internal class ListProductController : ABaseController {
     }
 
 
-    private void deleteRestoreItem(object? obj) {
+    private void deleteOrRestoreItem(object? obj) {
         if (_m_selected_item != null) {
             if (_m_is_show_archived_checked) {
                 _m_item_model.deleteItem(_m_selected_item.product_id, EDatabaseDeleteItem.RESTORE);

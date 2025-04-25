@@ -69,7 +69,7 @@ public class ListClientController : ABaseController {
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
         m_modify_item_command = new RelayCommand(navigateToModifyItem, isItemSelected);
-        m_delete_item_command = new RelayCommand(deleteRestoreItem, isItemSelected);
+        m_delete_item_command = new RelayCommand(deleteOrRestoreItem, isItemSelected);
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public class ListClientController : ABaseController {
     /// Deletes or restores the selected client based on current archive status
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
-    private void deleteRestoreItem(object? obj) {
+    private void deleteOrRestoreItem(object? obj) {
         if (_m_selected_item != null) {
             if (_m_is_show_archived_checked) {
                 _m_item_model.deleteItem(_m_selected_item.entity_id, EDatabaseDeleteItem.RESTORE);
