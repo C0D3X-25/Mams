@@ -78,16 +78,6 @@
                             
                         </userControls:UCLabelTextBox>
                         <!--Label + TextBox-->
-                        
-                        
-                        <!--Label + TextBoxSearch-->
-                        <userControls:UCLabelTextBoxSearch 
-                            x:Name="labelTextBoxSearch0" 
-                            Grid.Row="1" 
-                            Grid.Column="0" >
-                            
-                        </userControls:UCLabelTextBoxSearch>
-                        <!--Label + TextBoxSearch-->
                     </Grid>
                 </Grid>
                 <!--Content-->

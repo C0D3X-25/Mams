@@ -102,7 +102,7 @@
                                     <GridView>
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_id}"/>
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_name}"/>
-                                        <GridViewColumn Header="Poid (g)" DisplayMemberBinding="{Binding product_weight}"/>
+                                        <GridViewColumn Header="Poid(g)" DisplayMemberBinding="{Binding product_weight}"/>
                                         <GridViewColumn Header="Type" DisplayMemberBinding="{Binding product_type_name}"/>
                                         <GridViewColumn Header="Catégorie" DisplayMemberBinding="{Binding product_category_name}"/>
                                         <GridViewColumn Header="Forme" DisplayMemberBinding="{Binding product_shape_name}"/>

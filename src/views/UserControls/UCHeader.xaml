@@ -19,7 +19,7 @@
         </Grid.ColumnDefinitions>
         
         <!--Title-->
-        <Label x:Name="title_page_lbl" 
+        <Label
                Content="{Binding title, ElementName=root}" 
                FontSize="25" FontWeight="Bold" 
                HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -52,59 +52,6 @@
                     MinHeight="40" MinWidth="40"
                     Command="{Binding m_navigate_homepage_command}"/>
             </Grid>
-            
-            <!--Searchbar-->
-            <local:UCLabelTextBoxSearch
-                Grid.Column="1"
-                label=""
-                >
-            </local:UCLabelTextBoxSearch>
-            <!--
-            <Grid Grid.Column="1" Background="#FFE25F5F" MaxWidth="500" VerticalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                <ComboBox x:Name="searchbar_cmbBox" 
-                          Grid.Column="0" 
-                          Margin="50,0,0,0" 
-                          VerticalAlignment="Center">
-                    
-                </ComboBox>
-
-                <TextBox x:Name="searchbar_txtBox" 
-                         Grid.Column="1" 
-                         Margin="1,0,50,0" 
-                         FontSize="16" 
-                         VerticalAlignment="Center" 
-                         TextChanged="searchbar_txtBox_TextChanged">
-                    
-                </TextBox>
-                
-                --><!-- Popup for ListView --><!--
-                <Popup x:Name="searchPopup" 
-                       Grid.Column="1" 
-                       PlacementTarget="{Binding ElementName=searchbar_txtBox}"
-                       Placement="Bottom"
-                       AllowsTransparency="True"
-                       StaysOpen="False"
-                       PopupAnimation="Slide">
-                    <ListView x:Name="searchbar_listView"
-                            Width="{Binding ElementName=searchbar_txtBox, Path=ActualWidth}"
-                            Background="White"
-                            BorderBrush="Gray"
-                            BorderThickness="1"
-                            FontSize="16"
-                            SelectionChanged="searchbar_listView_SelectionChanged">
-                        
-                    </ListView>
-                </Popup>
-            </Grid>-->
-            <!--Searchbar-->
         </Grid>
         <!--Header Menu-->
     </Grid>

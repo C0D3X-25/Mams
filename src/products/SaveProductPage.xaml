@@ -159,7 +159,7 @@
                                 <!--Weight-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="2"
-                                    label="Poid (g)"
+                                    label="Poid(g)"
                                     text="{Binding m_product.product_weight, UpdateSourceTrigger=PropertyChanged}"
                                     >
                                 </userControls:UCLabelTextBox>

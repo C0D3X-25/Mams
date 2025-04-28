@@ -122,19 +122,38 @@
                                 </Grid.ColumnDefinitions>
 
                                 <!--Beehive-->
-                                <userControls:UCLabelTextBox
-                                Grid.Row="0"
-                                label="Rucher"
-                                text="{Binding m_product_lot.beehive_name, UpdateSourceTrigger=PropertyChanged}"
-                                >
-                                </userControls:UCLabelTextBox>
-              
-                                <userControls:UCLabelTextBoxSearch
-                                    Grid.Row="0"
-                                    label="Rucher"                  
-                                    list_items="{Binding m_list_beehive}" Wrong
-                                    selected_item="{Binding m_product_lot.beehive_name, UpdateSourceTrigger=PropertyChanged}"
-                                ></userControls:UCLabelTextBoxSearch>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label
+                                        Grid.Column="0" Grid.Row="0" 
+                                        Content="Rucher"
+                                        FontSize="16" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Right"
+
+                                    ></Label>
+
+                                    <ComboBox
+                                        Grid.Column="1" Grid.Row="0" 
+                                        Margin="5,0,5,0" 
+                                        FontSize="16" 
+                                        VerticalAlignment="Center"
+                                        MinHeight="25" MinWidth="200"
+                                        ItemsSource="{Binding m_list_beehive, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedItem="{Binding m_selected_beehive, UpdateSourceTrigger=PropertyChanged}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding beehive_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
 
                                 <!--ID-->
                                 <userControls:UCLabelTextBox

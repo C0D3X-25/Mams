@@ -4,7 +4,7 @@ using MySqlConnector;
 namespace Mams.src.helpers;
 
 public static class MySqlDataReaderExtensions {
-    public static T GetSafeValue<T>(this MySqlDataReader reader, string columnName, T defaultValue = default) {
+    public static T GetSafeValue<T>(this MySqlDataReader reader, string columnName, T defaultValue = default!) {
         var ordinal = reader.GetOrdinal(columnName);
         if (reader.IsDBNull(ordinal))
             return defaultValue;

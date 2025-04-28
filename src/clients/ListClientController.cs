@@ -32,6 +32,7 @@ public class ListClientController : ABaseController {
         }
     }
 
+
     private string _m_delete_button_text;
     public string m_delete_button_text {
         get { return _m_delete_button_text; }
@@ -40,6 +41,7 @@ public class ListClientController : ABaseController {
             onPropertyChanged();
         }
     }
+
 
     private ObservableCollection<EntityItem>? _m_list_items;
     public ObservableCollection<EntityItem>? m_list_items {
@@ -50,6 +52,7 @@ public class ListClientController : ABaseController {
         }
     }
 
+
     private EntityItem? _m_selected_item;
     public EntityItem? m_selected_item {
         get { return _m_selected_item; }
@@ -58,6 +61,7 @@ public class ListClientController : ABaseController {
             onPropertyChanged();
         }
     }
+
 
     /// <summary>
     /// Initializes a new instance of the ListClientPageController
@@ -71,6 +75,7 @@ public class ListClientController : ABaseController {
         m_modify_item_command = new RelayCommand(navigateToModifyItem, isItemSelected);
         m_delete_item_command = new RelayCommand(deleteOrRestoreItem, isItemSelected);
     }
+
 
     /// <summary>
     /// Updates the list of clients based on the archive status filter
@@ -92,6 +97,7 @@ public class ListClientController : ABaseController {
         }
     }
 
+
     /// <summary>
     /// Navigates to the save client page for creating a new client
     /// </summary>
@@ -99,6 +105,7 @@ public class ListClientController : ABaseController {
     private void navigateToSavePage(object? obj) {
         _m_page_navigation.navigateTo(new SaveClientPage());
     }
+
 
     /// <summary>
     /// Determines if a client is currently selected
@@ -108,6 +115,7 @@ public class ListClientController : ABaseController {
     private bool isItemSelected(object? arg) {
         return m_selected_item != null;
     }
+
 
     /// <summary>
     /// Navigates to the save client page for modifying an existing client
@@ -119,17 +127,18 @@ public class ListClientController : ABaseController {
         }
     }
 
+
     /// <summary>
     /// Deletes or restores the selected client based on current archive status
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
     private void deleteOrRestoreItem(object? obj) {
         if (_m_selected_item != null) {
-            if (_m_is_show_archived_checked) {
-                _m_item_model.deleteItem(_m_selected_item.entity_id, EDatabaseDeleteItem.RESTORE);
+            if (!_m_is_show_archived_checked) {
+                _m_item_model.deleteItem(_m_selected_item.entity_id);
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.entity_id);
+                _m_item_model.deleteItem(_m_selected_item.entity_id, EDatabaseDeleteItem.RESTORE);
             }
             updateListItems();
         }
