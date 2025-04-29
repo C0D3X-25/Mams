@@ -70,7 +70,7 @@
                         <!--CheckBox Archived-->
                         <CheckBox 
                             Grid.Row="0"
-                            Content="Afficher les lots archivés"
+                            Content="Archives"
                             IsChecked="{Binding m_is_show_archived_checked, UpdateSourceTrigger=PropertyChanged}"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"

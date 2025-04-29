@@ -9,7 +9,7 @@ namespace Mams.src.helpers;
 /// <summary>
 /// Provides utility methods for validating date-related information.
 /// </summary>
-public static class DateValidation {
+public static class SDateValidation {
 
     /// <summary>
     /// Determines whether a given year is within a specified range.

@@ -90,7 +90,7 @@ public class ProductCategoryModel :
         }
         else {
             query = $"UPDATE {_m_TBL_NAME} " +
-                $"SET {_m_COL_NAME} = @name" +
+                $"SET {_m_COL_NAME} = @name " +
                 $"WHERE {_m_COL_ID} = @id;";
         }
 

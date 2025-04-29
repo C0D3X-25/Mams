@@ -102,20 +102,80 @@
                                 </userControls:UCLabelTextBox>
 
                                 <!--Category-->
-                                <userControls:UCLabelTextBox
+                                <!--<userControls:UCLabelTextBox
                                     Grid.Row="1"
                                     label="Catégorie*"                                    
                                     text="{Binding m_product.product_category_name, UpdateSourceTrigger=PropertyChanged}"
                                     >
-                                </userControls:UCLabelTextBox>
-                                
+                                </userControls:UCLabelTextBox>-->
+                                <Grid
+                                    Grid.Column="0" Grid.Row="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label
+                                        Grid.Column="0" Grid.Row="0" 
+                                        Content="Catégorie*"
+                                        FontSize="16" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Right"
+
+                                    ></Label>
+
+                                    <ComboBox
+                                        Grid.Column="1" Grid.Row="0" 
+                                        Margin="5,0,5,0" 
+                                        FontSize="16" 
+                                        VerticalAlignment="Center"
+                                        MinHeight="25" MinWidth="200"
+                                        ItemsSource="{Binding m_list_product_category, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedItem="{Binding m_selected_product_category, UpdateSourceTrigger=PropertyChanged}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding product_category_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
+
                                 <!--Lot-->
-                                <userControls:UCLabelTextBox
-                                    Grid.Row="2"
-                                    label="Lot"
-                                    text="{Binding m_product.product_lot_name, UpdateSourceTrigger=PropertyChanged}"
-                                    >
-                                </userControls:UCLabelTextBox>
+                                <Grid
+                                    Grid.Column="0" Grid.Row="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label
+                                        Grid.Column="0" Grid.Row="0" 
+                                        Content="Lot"
+                                        FontSize="16" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Right"
+
+                                    ></Label>
+
+                                    <ComboBox
+                                        Grid.Column="1" Grid.Row="0" 
+                                        Margin="5,0,5,0" 
+                                        FontSize="16" 
+                                        VerticalAlignment="Center"
+                                        MinHeight="25" MinWidth="200"
+                                        ItemsSource="{Binding m_list_product_lot, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedItem="{Binding m_selected_product_lot, UpdateSourceTrigger=PropertyChanged}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding product_lot_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
                                 
                                 <!--ID-->
                                 <userControls:UCLabelTextBox
@@ -141,20 +201,74 @@
                                 </Grid.ColumnDefinitions>
 
                                 <!--Type-->
-                                <userControls:UCLabelTextBox
-                                    Grid.Row="0"
-                                    label="Type*"
-                                    text="{Binding m_product.product_type_name, UpdateSourceTrigger=PropertyChanged}"
-                                    >
-                                </userControls:UCLabelTextBox>
+                                <Grid
+                                    Grid.Column="0" Grid.Row="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label
+                                        Grid.Column="0" Grid.Row="0" 
+                                        Content="Type*"
+                                        FontSize="16" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Right"
+
+                                    ></Label>
+
+                                    <ComboBox
+                                        Grid.Column="1" Grid.Row="0" 
+                                        Margin="5,0,5,0" 
+                                        FontSize="16" 
+                                        VerticalAlignment="Center"
+                                        MinHeight="25" MinWidth="200"
+                                        ItemsSource="{Binding m_list_product_type, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedItem="{Binding m_selected_product_type, UpdateSourceTrigger=PropertyChanged}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding product_type_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
 
                                 <!--Shape-->
-                                <userControls:UCLabelTextBox
-                                    Grid.Row="1"
-                                    label="Forme"
-                                    text="{Binding m_product.product_shape_name, UpdateSourceTrigger=PropertyChanged}"
-                                    >
-                                </userControls:UCLabelTextBox>
+                                <Grid
+                                    Grid.Column="0" Grid.Row="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label
+                                        Grid.Column="0" Grid.Row="0" 
+                                        Content="Forme"
+                                        FontSize="16" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Right"
+
+                                    ></Label>
+
+                                    <ComboBox
+                                        Grid.Column="1" Grid.Row="0" 
+                                        Margin="5,0,5,0" 
+                                        FontSize="16" 
+                                        VerticalAlignment="Center"
+                                        MinHeight="25" MinWidth="200"
+                                        ItemsSource="{Binding m_list_product_shape, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedItem="{Binding m_selected_product_shape, UpdateSourceTrigger=PropertyChanged}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding product_shape_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
 
                                 <!--Weight-->
                                 <userControls:UCLabelTextBox

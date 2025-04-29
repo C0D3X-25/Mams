@@ -18,8 +18,8 @@ public partial class UCMenu : UserControl {
         MainWindow? _m_window = Window.GetWindow(this) as MainWindow;
 
         if (_m_window != null) {
-            UCMenuController menu_controller = new(_m_window.m_page_navigation);
-            this.DataContext = menu_controller;
+            UCMenuController controller = new(_m_window.m_page_navigation);
+            this.DataContext = controller;
         }
     }
 }

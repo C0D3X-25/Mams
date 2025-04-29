@@ -20,4 +20,19 @@
     <Folder Include="src\suppliers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="src\beehives\ListBeehivePage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="src\beehives\SaveBeehivePage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="src\productsTypes\ListProductTypePage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="src\productsTypes\SaveProductTypePage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
 </Project>

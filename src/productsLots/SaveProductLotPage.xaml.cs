@@ -22,12 +22,12 @@ namespace Mams.src.productsLots;
 /// </summary>
 public partial class SaveProductLotPage : Page {
 
-    private readonly int _m_id_product = 0;
-    public SaveProductLotPage(int id_product = 0) {
+    private readonly int _m_id_to_load = 0;
+    public SaveProductLotPage(int id_to_load = 0) {
 
         InitializeComponent();
         Loaded += pageLoaded;
-        _m_id_product = id_product;
+        _m_id_to_load = id_to_load;
     }
 
 
@@ -35,7 +35,7 @@ public partial class SaveProductLotPage : Page {
         MainWindow? _m_window = Window.GetWindow(this) as MainWindow;
 
         if (_m_window != null) {
-            SaveProductLotController controller = new(_m_window.m_page_navigation, _m_id_product);
+            SaveProductLotController controller = new(_m_window.m_page_navigation, _m_id_to_load);
             DataContext = controller;
         }
     }

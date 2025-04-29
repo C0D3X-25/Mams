@@ -26,7 +26,7 @@
             <userControls:UCHeader 
                 x:Name="header" 
                 Grid.Row="0"
-                title="Liste Clients">
+                title="Liste des Clients">
 
             </userControls:UCHeader>
             <!--Header-->
@@ -44,7 +44,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Menu-->
-                <userControls:UCMenu x:Name="pages_menu">
+                <userControls:UCMenu>
 
                 </userControls:UCMenu>
                 <!--Menu-->
@@ -71,7 +71,7 @@
                         <!--CheckBox Archived-->
                         <CheckBox 
                             Grid.Row="0"
-                            Content="Afficher les clients archivés"
+                            Content="Archives"
                             IsChecked="{Binding m_is_show_archived_checked, UpdateSourceTrigger=PropertyChanged}"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"

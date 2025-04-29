@@ -1,6 +1,6 @@
 ﻿namespace Mams.src.helpers;
 
-public static class CombineLists {
+public static class SCombineLists {
 
     /// <summary>
     /// Combines multiple lists into one list, taking elements from each list in order.

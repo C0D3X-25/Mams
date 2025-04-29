@@ -2,14 +2,13 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Mams.src.productsLots;
+namespace Mams.src.productsTypes;
 
 /// <summary>
-/// Interaction logic for ListLotPage.xaml
+/// Interaction logic for ListProductTypePage.xaml
 /// </summary>
-public partial class ListProductLotPage : Page {
-    public ListProductLotPage() {
-
+public partial class ListProductTypePage : Page {
+    public ListProductTypePage() {
         InitializeComponent();
         Loaded += pageLoaded; // need to wait for the window to be loaded
     }
@@ -19,7 +18,7 @@ public partial class ListProductLotPage : Page {
         MainWindow? _m_window = Window.GetWindow(this) as MainWindow;
 
         if (_m_window != null) {
-            ListLotController controller = new(_m_window.m_page_navigation);
+            ListProductTypeController controller = new(_m_window.m_page_navigation);
             DataContext = controller;
         }
     }

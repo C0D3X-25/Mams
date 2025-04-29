@@ -1,13 +1,13 @@
-﻿<Page x:Class="Mams.src.products.ListProductPage"
+﻿<Page x:Class="Mams.src.productsTypes.ListProductTypePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Mams.src.products"
+      xmlns:local="clr-namespace:Mams.src.productsTypes"
       xmlns:userControls="clr-namespace:Mams.src.views.userControls"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="1000"
-      Title="ListProductPage">
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ListProductTypePage">
 
     <Grid>
         <!--Page is 12* per 12*-->
@@ -23,9 +23,9 @@
 
             <!--Header-->
             <userControls:UCHeader 
-                x:Name="header"  
-                Grid.Row="0"
-                title="Liste des Produits">
+        x:Name="header" 
+        Grid.Row="0"
+        title="Liste des types de produit">
 
             </userControls:UCHeader>
             <!--Header-->
@@ -69,14 +69,14 @@
 
                         <!--CheckBox Archived-->
                         <CheckBox 
-                            Grid.Row="0"
-                            Content="Archives"
-                            IsChecked="{Binding m_is_show_archived_checked, UpdateSourceTrigger=PropertyChanged}"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            VerticalContentAlignment="Center"
-                            Margin="0,0,50,0"
-                            FontSize="16">
+                        Grid.Row="0"
+                        Content="Archives"
+                        IsChecked="{Binding m_is_show_archived_checked, UpdateSourceTrigger=PropertyChanged}"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Margin="0,0,50,0"
+                        FontSize="16">
 
                         </CheckBox>
 
@@ -92,22 +92,17 @@
                             </Grid.ColumnDefinitions>
 
                             <ListView 
-                                Grid.Column="1" 
-                                Margin="0,0,0,10"
-                                MinWidth="500"
-                                FontSize="14"
-                                ItemsSource="{Binding m_list_items}"
-                                SelectedItem="{Binding m_selected_item}">
+                            Grid.Column="1" 
+                            Margin="0,0,0,10"
+                            MinWidth="500"
+                            FontSize="14"
+                            ItemsSource="{Binding m_list_items}"
+                            SelectedItem="{Binding m_selected_item}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_id}"/>
-                                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_name}"/>
-                                        <GridViewColumn Header="Poid(g)" DisplayMemberBinding="{Binding product_weight}"/>
-                                        <GridViewColumn Header="Type" DisplayMemberBinding="{Binding product_type_name}"/>
-                                        <GridViewColumn Header="Catégorie" DisplayMemberBinding="{Binding product_category_name}"/>
-                                        <GridViewColumn Header="Forme" DisplayMemberBinding="{Binding product_shape_name}"/>
-                                        <GridViewColumn Header="Lot" DisplayMemberBinding="{Binding product_lot_name}"/>
-                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_archive}"/>
+                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_type_id}"/>
+                                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_type_name}"/>
+                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_type_archive}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -115,44 +110,45 @@
 
                         <!--Delete Buttons-->
                         <Button 
-                            Grid.Row="2"
-                            Content="{Binding m_delete_button_text}"
-                            Command="{Binding m_delete_item_command}"
-                            Height="30" Width="130"
-                            MaxHeight="30" MaxWidth="130"
-                            HorizontalAlignment="left" VerticalAlignment="Center"
-                            Margin="50,0,0,0"
-                            FontSize="16"
-                            Background="IndianRed"
-                        ></Button>
+                        Grid.Row="2"
+                        Content="{Binding m_delete_button_text}"
+                        Command="{Binding m_delete_item_command}"
+                        Height="30" Width="130"
+                        MaxHeight="30" MaxWidth="130"
+                        HorizontalAlignment="left" VerticalAlignment="Center"
+                        Margin="50,0,0,0"
+                        FontSize="16"
+                        Background="IndianRed"
+                    ></Button>
 
                         <!--Modifiy Buttons-->
                         <Button 
-                            Grid.Row="2"
-                            Content="Modifier"
-                            Command="{Binding m_modify_item_command}"
-                            Height="30" Width="130"
-                            MaxHeight="30" MaxWidth="130"
-                            HorizontalAlignment="Right" VerticalAlignment="Center"
-                            Margin="0,0,200,0"
-                            FontSize="16"
-                        ></Button>
+                        Grid.Row="2"
+                        Content="Modifier"
+                        Command="{Binding m_modify_item_command}"
+                        Height="30" Width="130"
+                        MaxHeight="30" MaxWidth="130"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,200,0"
+                        FontSize="16"
+                    ></Button>
 
                         <!--Add new Broduct Buttons-->
                         <Button 
-                            Grid.Row="2"
-                            Content="Nouveau produit"
-                            Command="{Binding m_add_new_item_command}"
-                            Height="30" Width="130"
-                            MaxHeight="30" MaxWidth="130"
-                            HorizontalAlignment="Right" VerticalAlignment="Center"
-                            Margin="0,0,50,0"
-                            FontSize="16"
-                        ></Button>
+                        Grid.Row="2"
+                        Content="Nouveau type"
+                        Command="{Binding m_add_new_item_command}"
+                        Height="30" Width="130"
+                        MaxHeight="30" MaxWidth="130"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,50,0"
+                        FontSize="16"
+                    ></Button>
                     </Grid>
                 </Grid>
                 <!--Content-->
             </Grid>
+            <!--Body-->
 
             <!--Footer-->
             <userControls:UCFooter x:Name="footer" Grid.Row="2">

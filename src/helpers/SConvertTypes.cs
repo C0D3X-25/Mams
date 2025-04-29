@@ -1,6 +1,6 @@
 ﻿namespace Mams.src.helpers;
 
-public static class ConvertTypes {
+public static class SConvertTypes {
 
     public static int tryConvertToID(int id) {
         if (id < 0) {
