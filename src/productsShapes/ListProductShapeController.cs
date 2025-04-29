@@ -12,7 +12,7 @@ namespace Mams.src.productsShapes;
 public class ListProductShapeController : ABaseController {
 
     private readonly PageNavigationController _m_page_navigation;
-    private readonly ProductShapeModel _m_item_model = new();
+    private readonly ProductShapeModel _m_item_model;
 
     public ICommand m_add_new_item_command { get; set; }
     public ICommand m_modify_item_command { get; set; }
@@ -59,6 +59,7 @@ public class ListProductShapeController : ABaseController {
 
     public ListProductShapeController(PageNavigationController page_navigation) {
         _m_page_navigation = page_navigation;
+        _m_item_model = new();
         _m_delete_button_text = "";
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
