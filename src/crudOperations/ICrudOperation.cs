@@ -8,6 +8,6 @@ public interface ICrudOperation<T> where T : ABaseItem {
     T? getItem(string search);
     T? getItemByID(string id);
     bool saveItem(T item);
-    bool deleteItem(string id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE);
-    bool deleteItem(int id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE);
+    bool deleteItem(string id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE);
+    bool deleteItem(int id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE);
 }

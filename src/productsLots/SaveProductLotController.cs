@@ -81,7 +81,7 @@ public class SaveProductLotController : ABaseController {
         }
 
         if (_m_product_lot_model.saveItem(m_product_lot)) {
-            PageNavigationController.navigateTo(new ListProductLotPage());
+            SPageNavigationController.navigateTo(new ListProductLotPage());
         }
         else {
             MessageBox.Show("Un lot avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -90,6 +90,6 @@ public class SaveProductLotController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        PageNavigationController.navigateTo(new ListProductLotPage());
+        SPageNavigationController.navigateTo(new ListProductLotPage());
     }
 }

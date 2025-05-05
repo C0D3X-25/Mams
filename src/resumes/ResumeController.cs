@@ -1,27 +1,36 @@
 ﻿using Mams.src.controllers;
-using Mams.src.navigations;
+using Mams.src.products;
+using System.Collections.ObjectModel;
 
 namespace Mams.src.resumes;
 
 public class ResumeController : ABaseController {
 
-    //private PageNavigationController PageNavigationController;
     //private readonly ProductShapeModel _m_item_model;
 
-    //public ICommand m_add_new_item_command { get; set; }
-    //public ICommand m_modify_item_command { get; set; }
-    //public ICommand m_delete_item_command { get; set; }
+
+    private ObservableCollection<ProductItem>? _m_list_tables;
+    public ObservableCollection<ProductItem>? m_list_tables {
+        get { return _m_list_tables; }
+        set {
+            _m_list_tables = value;
+            onPropertyChanged();
+        }
+    }
+
+    private ProductItem? _m_selected_table;
+    public ProductItem? m_selected_table {
+        get { return _m_selected_table; }
+        set {
+            _m_selected_table = value;
+            onPropertyChanged();
+        }
+    }
 
 
+    public ResumeController() {
 
-
-    public ResumeController(/*PageNavigationController page_navigation*/) {
-
-        //
         //_m_item_model = new();
 
-        //m_add_new_item_command = new RelayCommand(navigateToSavePage);
-        //m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
-        //m_delete_item_command = new RelayCommand(deleteOrRestoreItem, isItemSelected);
     }
 }

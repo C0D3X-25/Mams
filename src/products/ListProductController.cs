@@ -8,7 +8,6 @@ using System.Windows.Input;
 namespace Mams.src.products;
 
 internal class ListProductController : ABaseController {
-
     
     private readonly ProductModel _m_item_model = new();
 
@@ -84,7 +83,7 @@ internal class ListProductController : ABaseController {
 
 
     private void navigateToSavePage(object? obj) {
-        PageNavigationController.navigateTo(new SaveProductPage());
+        SPageNavigationController.navigateTo(new SaveProductPage());
     }
 
 
@@ -95,7 +94,7 @@ internal class ListProductController : ABaseController {
 
     private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
-            PageNavigationController.navigateTo(new SaveProductPage(_m_selected_item.product_id));
+            SPageNavigationController.navigateTo(new SaveProductPage(_m_selected_item.product_id));
         }
     }
 
@@ -103,7 +102,7 @@ internal class ListProductController : ABaseController {
     private void deleteOrRestoreItem(object? obj) {
         if (_m_selected_item != null) {
             if (_m_is_show_archived_checked) {
-                _m_item_model.deleteItem(_m_selected_item.product_id, EDatabaseDeleteItem.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.product_id, DeleteItemOperationEnum.RESTORE);
             }
             else {
                 _m_item_model.deleteItem(_m_selected_item.product_id);

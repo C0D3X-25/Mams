@@ -12,7 +12,7 @@ using System.Windows;
 namespace Mams.src.productsLots;
 
 public class ProductLotModel :
-    ABaseModel,
+    BaseModel,
     ICrudOperation<ProductLotItem> {
 
     private const string _m_TBL_NAME = "products_lots";
@@ -24,12 +24,12 @@ public class ProductLotModel :
     private const string _m_COL_ARCHIVE = "product_lot_archive";
 
 
-    public bool deleteItem(string id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
-        return DeleteItemModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
+    public bool deleteItem(string id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+        return SDatabaseModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
 
-    public bool deleteItem(int id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
+    public bool deleteItem(int id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
 
@@ -79,7 +79,7 @@ public class ProductLotModel :
 
 
     public ObservableCollection<ProductLotItem> getTable() {
-        ObservableCollection<ProductLotItem> table = GetTableModel.getTableData<ProductLotItem>(this, _m_TBL_NAME);
+        ObservableCollection<ProductLotItem> table = SDatabaseModel.getTableData<ProductLotItem>(this, _m_TBL_NAME);
 
         BeehiveModel beehive_model = new();
 

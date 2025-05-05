@@ -84,7 +84,7 @@ public class ListBeehiveController : ABaseController {
 
 
     private void navigateToSavePage(object? obj) {
-        PageNavigationController.navigateTo(new SaveBeehivePage());
+        SPageNavigationController.navigateTo(new SaveBeehivePage());
     }
 
 
@@ -95,7 +95,7 @@ public class ListBeehiveController : ABaseController {
 
     private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
-            PageNavigationController.navigateTo(new SaveBeehivePage(_m_selected_item.beehive_id));
+            SPageNavigationController.navigateTo(new SaveBeehivePage(_m_selected_item.beehive_id));
         }
     }
 
@@ -106,7 +106,7 @@ public class ListBeehiveController : ABaseController {
                 _m_item_model.deleteItem(_m_selected_item.beehive_id);
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.beehive_id, EDatabaseDeleteItem.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.beehive_id, DeleteItemOperationEnum.RESTORE);
             }
             updateListItems();
         }

@@ -47,7 +47,7 @@ public class SaveBeehiveController : ABaseController {
 
     private void saveProduct(object? obj) {
         if (_m_beehive_model.saveItem(m_beehive)) {
-            PageNavigationController.navigateTo(new ListBeehivePage());
+            SPageNavigationController.navigateTo(new ListBeehivePage());
         }
         else {
             MessageBox.Show("Une forme avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -56,6 +56,6 @@ public class SaveBeehiveController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        PageNavigationController.navigateTo(new ListBeehivePage());
+        SPageNavigationController.navigateTo(new ListBeehivePage());
     }
 }

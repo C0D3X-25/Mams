@@ -10,7 +10,7 @@ using System.Windows;
 namespace Mams.src.productsShapes;
 
 public class ProductShapeModel :
-    ABaseModel,
+    BaseModel,
     ICrudOperation<ProductShapeItem> {
 
     private const string _m_TBL_NAME = "products_shapes";
@@ -19,12 +19,12 @@ public class ProductShapeModel :
     private const string _m_COL_ARCHIVE = "product_shape_archive";
 
 
-    public bool deleteItem(string id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
-        return DeleteItemModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
+    public bool deleteItem(string id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+        return SDatabaseModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
 
-    public bool deleteItem(int id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
+    public bool deleteItem(int id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
 
@@ -66,7 +66,7 @@ public class ProductShapeModel :
 
 
     public ObservableCollection<ProductShapeItem> getTable() {
-        return GetTableModel.getTableData<ProductShapeItem>(this, _m_TBL_NAME);
+        return SDatabaseModel.getTableData<ProductShapeItem>(this, _m_TBL_NAME);
 
     }
 

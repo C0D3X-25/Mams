@@ -14,7 +14,7 @@ namespace Mams.src.productsTypes;
 
 
 public class ProductTypeModel :
-    ABaseModel,
+    BaseModel,
     ICrudOperation<ProductTypeItem> {
 
     private const string _m_TBL_NAME = "products_types";
@@ -23,11 +23,11 @@ public class ProductTypeModel :
     private const string _m_COL_ARCHIVE = "product_type_archive";
 
 
-    public bool deleteItem(string id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
-        return DeleteItemModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
+    public bool deleteItem(string id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+        return SDatabaseModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
-    public bool deleteItem(int id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
+    public bool deleteItem(int id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
 
@@ -66,7 +66,7 @@ public class ProductTypeModel :
     }
 
     public ObservableCollection<ProductTypeItem> getTable() {
-        return GetTableModel.getTableData<ProductTypeItem>(this, _m_TBL_NAME);
+        return SDatabaseModel.getTableData<ProductTypeItem>(this, _m_TBL_NAME);
     }
 
     public bool saveItem(ProductTypeItem item) {

@@ -46,7 +46,7 @@ public class SaveProductShapeController : ABaseController {
 
     private void saveProduct(object? obj) {
         if (_m_product_shape_model.saveItem(m_product_shape)) {
-            PageNavigationController.navigateTo(new ListProductShapePage());
+            SPageNavigationController.navigateTo(new ListProductShapePage());
         }
         else {
             MessageBox.Show("Une forme avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -55,6 +55,6 @@ public class SaveProductShapeController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        PageNavigationController.navigateTo(new ListProductShapePage());
+        SPageNavigationController.navigateTo(new ListProductShapePage());
     }
 }

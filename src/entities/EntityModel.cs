@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace Mams.src.entities;
 
-public class EntityModel : ABaseModel,
+public class EntityModel : BaseModel,
     ICrudOperation<EntityItem> {
 
     private const string _m_TBL_NAME = "entities";
@@ -20,10 +20,10 @@ public class EntityModel : ABaseModel,
     private const string _m_COL_ARCHIVE = "entity_archive";
 
 
-    public bool deleteItem(string id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
-        return DeleteItemModel.deleteItem(this, id,_m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
+    public bool deleteItem(string id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+        return SDatabaseModel.deleteItem(this, id,_m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
-    public bool deleteItem(int id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
+    public bool deleteItem(int id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
 
@@ -102,7 +102,7 @@ public class EntityModel : ABaseModel,
 
 
     public ObservableCollection<EntityItem> getTable() {
-        return GetTableModel.getTableData<EntityItem>(this, _m_TBL_NAME);
+        return SDatabaseModel.getTableData<EntityItem>(this, _m_TBL_NAME);
     }
 
 

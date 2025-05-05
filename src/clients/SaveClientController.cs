@@ -66,7 +66,7 @@ public class SaveClientController : ABaseController {
     /// </remarks>
     private void saveClient(object? obj) {
         if (_m_entity_model.saveItem(m_client)) {
-            PageNavigationController.navigateTo(new ListClientPage());
+            SPageNavigationController.navigateTo(new ListClientPage());
         }
         else { MessageBox.Show("Un client avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); }
     }
@@ -77,6 +77,6 @@ public class SaveClientController : ABaseController {
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
     private void abortClient(object? obj) {
-        PageNavigationController.navigateTo(new ListClientPage());
+        SPageNavigationController.navigateTo(new ListClientPage());
     }
 }

@@ -13,7 +13,7 @@ namespace Mams.src.productsCategories;
 /// Product Category is about what is is, like "Honey", "Wax", "Soap"
 
 public class ProductCategoryModel :
-    ABaseModel,
+    BaseModel,
     ICrudOperation<ProductCategoryItem> {
 
     private const string _m_TBL_NAME = "products_categories";
@@ -22,12 +22,12 @@ public class ProductCategoryModel :
     private const string _m_COL_ARCHIVE = "product_category_archive";
 
 
-    public bool deleteItem(string id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
-        return DeleteItemModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
+    public bool deleteItem(string id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+        return SDatabaseModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
 
-    public bool deleteItem(int id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
+    public bool deleteItem(int id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
 
@@ -69,7 +69,7 @@ public class ProductCategoryModel :
 
 
     public ObservableCollection<ProductCategoryItem> getTable() {
-        return GetTableModel.getTableData<ProductCategoryItem>(this, _m_TBL_NAME);
+        return SDatabaseModel.getTableData<ProductCategoryItem>(this, _m_TBL_NAME);
     }
 
 

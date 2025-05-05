@@ -47,7 +47,7 @@ public class SaveProductTypeController : ABaseController {
 
     private void saveProduct(object? obj) {
         if (_m_product_type_model.saveItem(m_product_type)) {
-            PageNavigationController.navigateTo(new ListProductTypePage());
+            SPageNavigationController.navigateTo(new ListProductTypePage());
         }
         else {
             MessageBox.Show("Un produit avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -56,6 +56,6 @@ public class SaveProductTypeController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        PageNavigationController.navigateTo(new ListProductTypePage());
+        SPageNavigationController.navigateTo(new ListProductTypePage());
     }
 }

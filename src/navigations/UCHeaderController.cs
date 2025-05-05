@@ -20,6 +20,6 @@ public class UCHeaderController {
     }
 
     private void navigateToHomepage(object? obj) {
-        PageNavigationController.navigateToHomePage();
+        SPageNavigationController.navigateToHomePage();
     }
 }

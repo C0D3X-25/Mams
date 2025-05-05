@@ -84,7 +84,7 @@ public class ListProductLotController : ABaseController {
 
 
     private void navigateToSavePage(object? obj) {
-        PageNavigationController.navigateTo(new SaveProductLotPage());
+        SPageNavigationController.navigateTo(new SaveProductLotPage());
     }
 
 
@@ -95,7 +95,7 @@ public class ListProductLotController : ABaseController {
 
     private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
-            PageNavigationController.navigateTo(new SaveProductLotPage(_m_selected_item.product_lot_id));
+            SPageNavigationController.navigateTo(new SaveProductLotPage(_m_selected_item.product_lot_id));
         }
     }
 
@@ -103,7 +103,7 @@ public class ListProductLotController : ABaseController {
     private void deleteOrRestoreItem(object? obj) {
         if (_m_selected_item != null) {
             if (_m_is_show_archived_checked) {
-                _m_item_model.deleteItem(_m_selected_item.product_lot_id, EDatabaseDeleteItem.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.product_lot_id, DeleteItemOperationEnum.RESTORE);
             }
             else {
                 _m_item_model.deleteItem(_m_selected_item.product_lot_id);

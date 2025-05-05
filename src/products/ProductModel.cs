@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace Mams.src.products;
-internal class ProductModel : ABaseModel,
+internal class ProductModel : BaseModel,
     ICrudOperation<ProductItem> {
 
     private const string _m_TBL_NAME = "products";
@@ -28,10 +28,10 @@ internal class ProductModel : ABaseModel,
     private const string _m_COL_ARCHIVE = "product_archive";
 
 
-    public bool deleteItem(string id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
-        return DeleteItemModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
+    public bool deleteItem(string id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+        return SDatabaseModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
-    public bool deleteItem(int id, EDatabaseDeleteItem delete_type = EDatabaseDeleteItem.SOFT_DELETE) {
+    public bool deleteItem(int id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
 
@@ -97,7 +97,7 @@ internal class ProductModel : ABaseModel,
 
     public ObservableCollection<ProductItem> getTable() {
 
-        ObservableCollection<ProductItem> table = GetTableModel.getTableData<ProductItem>(this, _m_TBL_NAME);
+        ObservableCollection<ProductItem> table = SDatabaseModel.getTableData<ProductItem>(this, _m_TBL_NAME);
 
         ProductTypeModel product_type_model = new();
         ProductCategoryModel product_category_model = new();

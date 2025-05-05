@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace Mams.src.navigations;
 
-public static class PageNavigationController {
+public static class SPageNavigationController {
 
     private static Frame? _m_frame;
 

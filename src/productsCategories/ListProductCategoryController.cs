@@ -84,7 +84,7 @@ public class ListProductCategoryController : ABaseController {
 
 
     private void navigateToSavePage(object? obj) {
-        PageNavigationController.navigateTo(new SaveProductCategoryPage());
+        SPageNavigationController.navigateTo(new SaveProductCategoryPage());
     }
 
 
@@ -95,7 +95,7 @@ public class ListProductCategoryController : ABaseController {
 
     private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
-            PageNavigationController.navigateTo(new SaveProductCategoryPage(_m_selected_item.product_category_id));
+            SPageNavigationController.navigateTo(new SaveProductCategoryPage(_m_selected_item.product_category_id));
         }
     }
 
@@ -106,7 +106,7 @@ public class ListProductCategoryController : ABaseController {
                 _m_item_model.deleteItem(_m_selected_item.product_category_id);
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.product_category_id, EDatabaseDeleteItem.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.product_category_id, DeleteItemOperationEnum.RESTORE);
             }
             updateListItems();
         }

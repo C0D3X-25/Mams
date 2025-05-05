@@ -103,7 +103,7 @@ public class ListClientController : ABaseController {
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
     private void navigateToSavePage(object? obj) {
-        PageNavigationController.navigateTo(new SaveClientPage());
+        SPageNavigationController.navigateTo(new SaveClientPage());
     }
 
 
@@ -123,7 +123,7 @@ public class ListClientController : ABaseController {
     /// <param name="obj">Command parameter (not used)</param>
     private void navigateToModifyItem(object? obj) {
         if (_m_selected_item != null) {
-            PageNavigationController.navigateTo(new SaveClientPage(_m_selected_item.entity_id));
+            SPageNavigationController.navigateTo(new SaveClientPage(_m_selected_item.entity_id));
         }
     }
 
@@ -138,7 +138,7 @@ public class ListClientController : ABaseController {
                 _m_item_model.deleteItem(_m_selected_item.entity_id);
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.entity_id, EDatabaseDeleteItem.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.entity_id, DeleteItemOperationEnum.RESTORE);
             }
             updateListItems();
         }
