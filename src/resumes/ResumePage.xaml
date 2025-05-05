@@ -89,30 +89,32 @@
 
                            ></Label>
 
+                           <!--Search in table-->
                            <ComboBox
                                Grid.Column="1" Grid.Row="0" 
                                Margin="5,0,5,0" 
                                FontSize="16" 
                                VerticalAlignment="Center"
-                               ItemsSource="{Binding m_list_beehive, UpdateSourceTrigger=PropertyChanged}"
-                               SelectedItem="{Binding m_selected_beehive, UpdateSourceTrigger=PropertyChanged}">
+                               ItemsSource="{Binding m_list_table, UpdateSourceTrigger=PropertyChanged}"
+                               SelectedItem="{Binding m_selected_table, UpdateSourceTrigger=PropertyChanged}">
                                <ComboBox.ItemTemplate>
                                    <DataTemplate>
-                                       <TextBlock Text="{Binding beehive_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <TextBlock Text="{Binding m_name_to_display, UpdateSourceTrigger=PropertyChanged}"/>
                                    </DataTemplate>
                                </ComboBox.ItemTemplate>
                            </ComboBox>
 
-                           <ComboBox
+                            <!--Search by value-->
+                            <ComboBox
                                Grid.Column="2" Grid.Row="0" 
                                Margin="5,0,5,0" 
                                FontSize="16" 
                                VerticalAlignment="Center"
-                               ItemsSource="{Binding m_list_beehive, UpdateSourceTrigger=PropertyChanged}"
-                               SelectedItem="{Binding m_selected_beehive, UpdateSourceTrigger=PropertyChanged}">
+                               ItemsSource="{Binding m_list_search_item, UpdateSourceTrigger=PropertyChanged}"
+                               SelectedItem="{Binding m_selected_search_item, UpdateSourceTrigger=PropertyChanged}">
                                <ComboBox.ItemTemplate>
                                    <DataTemplate>
-                                       <TextBlock Text="{Binding beehive_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <TextBlock Text="{Binding m_search_name_to_display, UpdateSourceTrigger=PropertyChanged}"/>
                                    </DataTemplate>
                                </ComboBox.ItemTemplate>
                            </ComboBox>

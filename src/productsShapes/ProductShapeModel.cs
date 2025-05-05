@@ -1,4 +1,4 @@
-﻿using Mams.src.crudOperations;
+﻿using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
 using Mams.src.productsCategories;
@@ -10,21 +10,21 @@ using System.Windows;
 namespace Mams.src.productsShapes;
 
 public class ProductShapeModel :
-    BaseModel,
+    ABaseModel,
     ICrudOperation<ProductShapeItem> {
 
-    private const string _m_TBL_NAME = "products_shapes";
-    private const string _m_COL_ID = "product_shape_id";
-    private const string _m_COL_NAME = "product_shape_name";
-    private const string _m_COL_ARCHIVE = "product_shape_archive";
+    public const string m_TBL_NAME = "products_shapes";
+    public const string m_COL_ID = "product_shape_id";
+    public const string m_COL_NAME = "product_shape_name";
+    public const string m_COL_ARCHIVE = "product_shape_archive";
 
 
-    public bool deleteItem(string id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+        return SDatabaseModel.deleteItem(this, id, m_COL_ID, m_COL_ARCHIVE, m_TBL_NAME, delete_type);
     }
 
 
-    public bool deleteItem(int id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
 
@@ -40,9 +40,9 @@ public class ProductShapeModel :
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
-                $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_ID} = @id;",
+                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_ARCHIVE} " +
+                $"FROM {m_TBL_NAME} " +
+                $"WHERE {m_COL_ID} = @id;",
                 conn
             );
 
@@ -51,9 +51,9 @@ public class ProductShapeModel :
 
             if (reader.Read()) {
                 return new ProductShapeItem {
-                    product_shape_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    product_shape_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
-                    product_shape_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                    product_shape_id = reader.GetSafeValue<int>(m_COL_ID),
+                    product_shape_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
+                    product_shape_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateTime.MinValue).ToString()
                 };
             }
             return null;
@@ -66,7 +66,7 @@ public class ProductShapeModel :
 
 
     public ObservableCollection<ProductShapeItem> getTable() {
-        return SDatabaseModel.getTableData<ProductShapeItem>(this, _m_TBL_NAME);
+        return SDatabaseModel.getAllData<ProductShapeItem>(this, m_TBL_NAME);
 
     }
 
@@ -79,17 +79,17 @@ public class ProductShapeModel :
 
         if (item.product_shape_id == 0) {
 
-            if (checkIfItemExist(_m_TBL_NAME, _m_COL_NAME, item.product_shape_name)) {
+            if (checkIfItemExist(m_TBL_NAME, m_COL_NAME, item.product_shape_name)) {
                 return false;
             }
 
-            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
+            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}) " +
                 $"VALUES (@name);";
         }
         else {
-            query = $"UPDATE {_m_TBL_NAME} " +
-                $"SET {_m_COL_NAME} = @name " +
-                $"WHERE {_m_COL_ID} = @id;";
+            query = $"UPDATE {m_TBL_NAME} " +
+                $"SET {m_COL_NAME} = @name " +
+                $"WHERE {m_COL_ID} = @id;";
         }
 
         try {

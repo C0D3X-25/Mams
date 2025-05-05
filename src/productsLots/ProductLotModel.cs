@@ -1,5 +1,5 @@
 ﻿using Mams.src.beehives;
-using Mams.src.crudOperations;
+using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
 using Mams.src.products;
@@ -12,24 +12,24 @@ using System.Windows;
 namespace Mams.src.productsLots;
 
 public class ProductLotModel :
-    BaseModel,
+    ABaseModel,
     ICrudOperation<ProductLotItem> {
 
-    private const string _m_TBL_NAME = "products_lots";
-    private const string _m_COL_ID = "product_lot_id";
-    private const string _m_COL_NAME = "product_lot_name";
-    private const string _m_COL_YEAR = "product_lot_year";
-    private const string _m_COL_FK_BEEHIVE_ID = "fk_beehive_id";
-    private const string _m_COL_FK_BEEHIVE_NAME = "beehive_name";
-    private const string _m_COL_ARCHIVE = "product_lot_archive";
+    public const string m_TBL_NAME = "products_lots";
+    public const string m_COL_ID = "product_lot_id";
+    public const string m_COL_NAME = "product_lot_name";
+    public const string m_COL_YEAR = "product_lot_year";
+    public const string m_COL_FK_BEEHIVE_ID = "fk_beehive_id";
+    public const string m_COL_FK_BEEHIVE_NAME = "beehive_name";
+    public const string m_COL_ARCHIVE = "product_lot_archive";
 
 
-    public bool deleteItem(string id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+        return SDatabaseModel.deleteItem(this, id, m_COL_ID, m_COL_ARCHIVE, m_TBL_NAME, delete_type);
     }
 
 
-    public bool deleteItem(int id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
 
@@ -45,9 +45,9 @@ public class ProductLotModel :
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE_ID}, {_m_COL_ARCHIVE} " +
-                $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_ID} = @id;",
+                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE_ID}, {m_COL_ARCHIVE} " +
+                $"FROM {m_TBL_NAME} " +
+                $"WHERE {m_COL_ID} = @id;",
                 conn
             );
 
@@ -56,17 +56,17 @@ public class ProductLotModel :
 
             if (reader.Read()) {
 
-                int beehive_id = reader.GetSafeValue<int>(_m_COL_FK_BEEHIVE_ID, 0);
+                int beehive_id = reader.GetSafeValue<int>(m_COL_FK_BEEHIVE_ID, 0);
 
                 BeehiveModel beehive_model = new();
 
                 return new ProductLotItem {
-                    product_lot_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    product_lot_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
-                    product_lot_year = reader.GetSafeValue<int>(_m_COL_YEAR),
+                    product_lot_id = reader.GetSafeValue<int>(m_COL_ID),
+                    product_lot_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
+                    product_lot_year = reader.GetSafeValue<int>(m_COL_YEAR),
                     fk_beehive_id = beehive_id,
                     beehive_name = beehive_model.getItemByID(beehive_id.ToString())?.beehive_name ?? string.Empty,
-                    product_lot_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                    product_lot_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateTime.MinValue).ToString()
                 };
             }
             return null;
@@ -79,7 +79,7 @@ public class ProductLotModel :
 
 
     public ObservableCollection<ProductLotItem> getTable() {
-        ObservableCollection<ProductLotItem> table = SDatabaseModel.getTableData<ProductLotItem>(this, _m_TBL_NAME);
+        ObservableCollection<ProductLotItem> table = SDatabaseModel.getAllData<ProductLotItem>(this, m_TBL_NAME);
 
         BeehiveModel beehive_model = new();
 
@@ -99,17 +99,17 @@ public class ProductLotModel :
 
         if (item.product_lot_id == 0) {
 
-            if (checkIfItemExist(_m_TBL_NAME, _m_COL_NAME, item.product_lot_name)) {
+            if (checkIfItemExist(m_TBL_NAME, m_COL_NAME, item.product_lot_name)) {
                 return false;
             }
 
-            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE_ID}) " +
+            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE_ID}) " +
                 $"VALUES (@name, @year, @fk_beehive)";
         }
         else {
-            query = $"UPDATE {_m_TBL_NAME} " +
-                $"SET {_m_COL_NAME} = @name, {_m_COL_YEAR} = @year, {_m_COL_FK_BEEHIVE_ID} = @fk_beehive " +
-                $"WHERE {_m_COL_ID} = @id";
+            query = $"UPDATE {m_TBL_NAME} " +
+                $"SET {m_COL_NAME} = @name, {m_COL_YEAR} = @year, {m_COL_FK_BEEHIVE_ID} = @fk_beehive " +
+                $"WHERE {m_COL_ID} = @id";
         }
 
         try {

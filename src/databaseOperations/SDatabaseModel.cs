@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Windows;
 
-namespace Mams.src.crudOperations;
+namespace Mams.src.databaseOperations;
 
 /// <summary>
 /// Provides static database operations for handling data models in the application.
@@ -23,7 +23,7 @@ public static class SDatabaseModel {
     /// An ObservableCollection of type T containing the converted database records.
     /// Returns an empty collection if an error occurs during data retrieval or conversion.
     /// </returns>
-    public static ObservableCollection<T> getTableData<T>(BaseModel model, string table) where T : ABaseItem, new() {
+    public static ObservableCollection<T> getAllData<T>(ABaseModel model, string table) where T : ABaseItem, new() {
 
         ObservableCollection<T> items = new();
         DataTable? data_table = getTable(model, table);
@@ -72,24 +72,24 @@ public static class SDatabaseModel {
     /// - Restore: Clears the archive date to restore a soft-deleted record
     /// </remarks>
     /// <exception cref="MySqlException">Thrown when a database error occurs during the operation.</exception>
-    public static bool deleteItem(BaseModel model, string id, string field_name_id, string field_name_archive, string table_name, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+    public static bool deleteItem(ABaseModel model, string id, string field_name_id, string field_name_archive, string table_name, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         using MySqlConnection? conn = model._m_conn.openConnection();
 
         string query = string.Empty;
 
         switch (delete_type) {
-            case DeleteItemOperationEnum.SOFT_DELETE:
+            case EDeleteItemOperation.SOFT_DELETE:
                 query = $"UPDATE {table_name} " +
                     $"SET {field_name_archive} = CURDATE() " +
                     $"WHERE {field_name_id} = @id";
                 break;
-            case DeleteItemOperationEnum.HARD_DELETE:
+            case EDeleteItemOperation.HARD_DELETE:
                 query = $"DELETE FROM {table_name} WHERE {field_name_id} = @id;";
                 break;
-            case DeleteItemOperationEnum.SAFE_DELETE:
+            case EDeleteItemOperation.SAFE_DELETE:
                 // TODO: check if the linked tables if used, then SOFT_DELETE or HARD_DELETE
                 break;
-            case DeleteItemOperationEnum.RESTORE:
+            case EDeleteItemOperation.RESTORE:
                 query = $"UPDATE {table_name} " +
                     $"SET {field_name_archive} = NULL " +
                     $"WHERE {field_name_id} = @id";
@@ -119,7 +119,7 @@ public static class SDatabaseModel {
     /// A DataTable containing all records from the specified table.
     /// Returns null if an error occurs during the database operation.
     /// </returns>
-    private static DataTable? getTable(BaseModel model, string table) {
+    private static DataTable? getTable(ABaseModel model, string table) {
 
         using MySqlConnection? conn = model._m_conn.openConnection();
 

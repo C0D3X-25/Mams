@@ -1,4 +1,4 @@
-﻿using Mams.src.crudOperations;
+﻿using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
@@ -8,7 +8,7 @@ using System.Windows;
 namespace Mams.src.beehives;
 
 public class BeehiveModel
-    : BaseModel,
+    : ABaseModel,
     ICrudOperation<BeehiveItem> {
 
     public const string _m_TBL_NAME = "beehives";
@@ -16,10 +16,10 @@ public class BeehiveModel
     public const string _m_COL_NAME = "beehive_name";
     public const string _m_COL_ARCHIVE = "beehive_archive";
 
-    public bool deleteItem(string id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return SDatabaseModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
-    public bool deleteItem(int id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
 
@@ -61,7 +61,7 @@ public class BeehiveModel
 
 
     public ObservableCollection<BeehiveItem> getTable() {
-        return SDatabaseModel.getTableData<BeehiveItem>(this, _m_TBL_NAME);
+        return SDatabaseModel.getAllData<BeehiveItem>(this, _m_TBL_NAME);
     }
 
 

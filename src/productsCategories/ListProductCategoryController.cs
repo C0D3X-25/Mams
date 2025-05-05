@@ -1,6 +1,6 @@
 ﻿using Mams.src.commands;
 using Mams.src.controllers;
-using Mams.src.crudOperations;
+using Mams.src.databaseOperations;
 using Mams.src.navigations;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -106,7 +106,7 @@ public class ListProductCategoryController : ABaseController {
                 _m_item_model.deleteItem(_m_selected_item.product_category_id);
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.product_category_id, DeleteItemOperationEnum.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.product_category_id, EDeleteItemOperation.RESTORE);
             }
             updateListItems();
         }

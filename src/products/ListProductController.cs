@@ -1,6 +1,6 @@
 ﻿using Mams.src.commands;
 using Mams.src.controllers;
-using Mams.src.crudOperations;
+using Mams.src.databaseOperations;
 using Mams.src.navigations;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -102,7 +102,7 @@ internal class ListProductController : ABaseController {
     private void deleteOrRestoreItem(object? obj) {
         if (_m_selected_item != null) {
             if (_m_is_show_archived_checked) {
-                _m_item_model.deleteItem(_m_selected_item.product_id, DeleteItemOperationEnum.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.product_id, EDeleteItemOperation.RESTORE);
             }
             else {
                 _m_item_model.deleteItem(_m_selected_item.product_id);

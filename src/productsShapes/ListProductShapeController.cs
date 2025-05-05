@@ -1,6 +1,6 @@
 ﻿using Mams.src.commands;
 using Mams.src.controllers;
-using Mams.src.crudOperations;
+using Mams.src.databaseOperations;
 using Mams.src.navigations;
 using Mams.src.productsCategories;
 using Mams.src.productsLots;
@@ -109,7 +109,7 @@ public class ListProductShapeController : ABaseController {
                 _m_item_model.deleteItem(_m_selected_item.product_shape_id);
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.product_shape_id, DeleteItemOperationEnum.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.product_shape_id, EDeleteItemOperation.RESTORE);
             }
             updateListItems();
         }

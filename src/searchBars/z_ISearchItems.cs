@@ -1,11 +1,11 @@
-﻿//using Mams.src.items;
-//using Mams.src.models;
-//using System.Collections.ObjectModel;
+﻿using Mams.src.items;
+using Mams.src.models;
+using Mams.src.resumes;
+using System.Collections.ObjectModel;
 
-//namespace Mams.src.searchBars;
+namespace Mams.src.searchBars;
 
 //public interface z_ISearchItems<T> where T : ABaseModel {
 
-//    //List<string> searchItems(string search);
-//    ObservableCollection<T> getTable();
+//    ObservableCollection<SearchItem> getItemName(T src);
 //}

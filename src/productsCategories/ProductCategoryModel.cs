@@ -1,4 +1,4 @@
-﻿using Mams.src.crudOperations;
+﻿using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
 using Mams.src.productsLots;
@@ -13,21 +13,21 @@ namespace Mams.src.productsCategories;
 /// Product Category is about what is is, like "Honey", "Wax", "Soap"
 
 public class ProductCategoryModel :
-    BaseModel,
+    ABaseModel,
     ICrudOperation<ProductCategoryItem> {
 
-    private const string _m_TBL_NAME = "products_categories";
-    private const string _m_COL_ID = "product_category_id";
-    private const string _m_COL_NAME = "product_category_name";
-    private const string _m_COL_ARCHIVE = "product_category_archive";
+    public const string m_TBL_NAME = "products_categories";
+    public const string m_COL_ID = "product_category_id";
+    public const string m_COL_NAME = "product_category_name";
+    public const string m_COL_ARCHIVE = "product_category_archive";
 
 
-    public bool deleteItem(string id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+        return SDatabaseModel.deleteItem(this, id, m_COL_ID, m_COL_ARCHIVE, m_TBL_NAME, delete_type);
     }
 
 
-    public bool deleteItem(int id, DeleteItemOperationEnum delete_type = DeleteItemOperationEnum.SOFT_DELETE) {
+    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
 
@@ -43,9 +43,9 @@ public class ProductCategoryModel :
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
-                $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_ID} = @id;",
+                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_ARCHIVE} " +
+                $"FROM {m_TBL_NAME} " +
+                $"WHERE {m_COL_ID} = @id;",
                 conn
             );
 
@@ -54,9 +54,9 @@ public class ProductCategoryModel :
 
             if (reader.Read()) {
                 return new ProductCategoryItem {
-                    product_category_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    product_category_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
-                    product_category_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                    product_category_id = reader.GetSafeValue<int>(m_COL_ID),
+                    product_category_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
+                    product_category_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateTime.MinValue).ToString()
                 };
             }
             return null;
@@ -69,7 +69,7 @@ public class ProductCategoryModel :
 
 
     public ObservableCollection<ProductCategoryItem> getTable() {
-        return SDatabaseModel.getTableData<ProductCategoryItem>(this, _m_TBL_NAME);
+        return SDatabaseModel.getAllData<ProductCategoryItem>(this, m_TBL_NAME);
     }
 
 
@@ -81,17 +81,17 @@ public class ProductCategoryModel :
 
         if (item.product_category_id == 0) {
 
-            if (checkIfItemExist(_m_TBL_NAME, _m_COL_NAME, item.product_category_name)) {
+            if (checkIfItemExist(m_TBL_NAME, m_COL_NAME, item.product_category_name)) {
                 return false;
             }
 
-            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
+            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}) " +
                 $"VALUES (@name);";
         }
         else {
-            query = $"UPDATE {_m_TBL_NAME} " +
-                $"SET {_m_COL_NAME} = @name " +
-                $"WHERE {_m_COL_ID} = @id;";
+            query = $"UPDATE {m_TBL_NAME} " +
+                $"SET {m_COL_NAME} = @name " +
+                $"WHERE {m_COL_ID} = @id;";
         }
 
         try {

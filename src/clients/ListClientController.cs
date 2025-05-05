@@ -1,6 +1,6 @@
 ﻿using Mams.src.commands;
 using Mams.src.controllers;
-using Mams.src.crudOperations;
+using Mams.src.databaseOperations;
 using Mams.src.entities;
 using Mams.src.navigations;
 using System.Collections.ObjectModel;
@@ -138,7 +138,7 @@ public class ListClientController : ABaseController {
                 _m_item_model.deleteItem(_m_selected_item.entity_id);
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.entity_id, DeleteItemOperationEnum.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.entity_id, EDeleteItemOperation.RESTORE);
             }
             updateListItems();
         }
