@@ -7,9 +7,9 @@ using System.Windows.Input;
 
 namespace Mams.src.productsLots;
 
-public class ListLotController : ABaseController {
+public class ListProductLotController : ABaseController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    
     private readonly ProductLotModel _m_item_model = new();
 
     public ICommand m_add_new_item_command { get; set; }
@@ -55,8 +55,8 @@ public class ListLotController : ABaseController {
     }
 
 
-    public ListLotController(PageNavigationController page_navigation) {
-        _m_page_navigation = page_navigation;
+    public ListProductLotController() {
+        
         _m_delete_button_text = "";
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
@@ -84,7 +84,7 @@ public class ListLotController : ABaseController {
 
 
     private void navigateToSavePage(object? obj) {
-        _m_page_navigation.navigateTo(new SaveProductLotPage());
+        PageNavigationController.navigateTo(new SaveProductLotPage());
     }
 
 
@@ -95,7 +95,7 @@ public class ListLotController : ABaseController {
 
     private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
-            _m_page_navigation.navigateTo(new SaveProductLotPage(_m_selected_item.product_lot_id));
+            PageNavigationController.navigateTo(new SaveProductLotPage(_m_selected_item.product_lot_id));
         }
     }
 

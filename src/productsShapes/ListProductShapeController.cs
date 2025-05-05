@@ -11,7 +11,7 @@ namespace Mams.src.productsShapes;
 
 public class ListProductShapeController : ABaseController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    
     private readonly ProductShapeModel _m_item_model;
 
     public ICommand m_add_new_item_command { get; set; }
@@ -57,8 +57,8 @@ public class ListProductShapeController : ABaseController {
     }
 
 
-    public ListProductShapeController(PageNavigationController page_navigation) {
-        _m_page_navigation = page_navigation;
+    public ListProductShapeController() {
+        
         _m_item_model = new();
         _m_delete_button_text = "";
         updateListItems();
@@ -87,7 +87,7 @@ public class ListProductShapeController : ABaseController {
 
 
     private void navigateToSavePage(object? obj) {
-        _m_page_navigation.navigateTo(new SaveProductShapePage());
+        PageNavigationController.navigateTo(new SaveProductShapePage());
     }
 
 
@@ -98,7 +98,7 @@ public class ListProductShapeController : ABaseController {
 
     private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
-            _m_page_navigation.navigateTo(new SaveProductShapePage(_m_selected_item.product_shape_id));
+            PageNavigationController.navigateTo(new SaveProductShapePage(_m_selected_item.product_shape_id));
         }
     }
 

@@ -3,20 +3,20 @@ using System.Windows.Controls;
 
 namespace Mams.src.navigations;
 
-public class PageNavigationController {
+public static class PageNavigationController {
 
-    private readonly Frame? _m_frame;
+    private static Frame? _m_frame;
 
-    public PageNavigationController(Frame frame) {
+    public static void Initialize(Frame frame) {
         _m_frame = frame;
         navigateToHomePage();
     }
 
-    public void navigateToHomePage() {
+    public static void navigateToHomePage() {
         _m_frame?.Navigate(new ResumePage());
     }
 
-    public void navigateTo(Page page) {
+    public static void navigateTo(Page page) {
         _m_frame?.Navigate(page);
     }
 }

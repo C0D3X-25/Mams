@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using Mams.src.navigations;
 
-namespace Mams.src.views.userControls;
+namespace Mams.src.views.UserControls;
 
 /// <summary>
 /// Interaction logic for UCHeader.xaml
@@ -20,15 +20,6 @@ public partial class UCHeader : UserControl {
 
     public UCHeader() {
         InitializeComponent();
-        this.Loaded += UCHeader_Loaded; // need to wait for the window to be loaded
-    }
-
-    private void UCHeader_Loaded(object sender, RoutedEventArgs e) {
-        MainWindow? _m_window = Window.GetWindow(this) as MainWindow;
-
-        if (_m_window != null) {
-            UCHeaderController controller = new(_m_window.m_page_navigation);
-            this.DataContext = controller;
-        }
+        DataContext = new UCHeaderController();
     }
 }

@@ -2,7 +2,7 @@
 //using System.Windows.Controls;
 //using System.Windows.Input;
 
-//namespace Mams.src.views.userControls;
+//namespace Mams.src.views.UserControls;
 
 ///// <summary>
 ///// Interaction logic for UCPageNavigationMenuButton.xaml

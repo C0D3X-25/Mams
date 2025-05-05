@@ -13,7 +13,7 @@ namespace Mams.src.clients;
 /// </summary>
 public class ListClientController : ABaseController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    
     private readonly EntityModel _m_item_model = new();
 
 
@@ -67,8 +67,8 @@ public class ListClientController : ABaseController {
     /// Initializes a new instance of the ListClientPageController
     /// </summary>
     /// <param name="page_navigation">The navigation controller for managing page transitions</param>
-    public ListClientController(PageNavigationController page_navigation) {
-        _m_page_navigation = page_navigation;
+    public ListClientController() {
+        
         _m_delete_button_text = "";
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
@@ -103,7 +103,7 @@ public class ListClientController : ABaseController {
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
     private void navigateToSavePage(object? obj) {
-        _m_page_navigation.navigateTo(new SaveClientPage());
+        PageNavigationController.navigateTo(new SaveClientPage());
     }
 
 
@@ -123,7 +123,7 @@ public class ListClientController : ABaseController {
     /// <param name="obj">Command parameter (not used)</param>
     private void navigateToModifyItem(object? obj) {
         if (_m_selected_item != null) {
-            _m_page_navigation.navigateTo(new SaveClientPage(_m_selected_item.entity_id));
+            PageNavigationController.navigateTo(new SaveClientPage(_m_selected_item.entity_id));
         }
     }
 

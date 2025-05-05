@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Mams.src.helpers;
 
-public static class StartApplication {
+public static class z_StartApplication {
     
     public static void launchServices() {
         SQLConnectionModel _m_sqlConnectionModel = new();

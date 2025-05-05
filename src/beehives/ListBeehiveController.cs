@@ -9,7 +9,7 @@ namespace Mams.src.beehives;
 
 public class ListBeehiveController : ABaseController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    
     private readonly BeehiveModel _m_item_model = new();
 
     public ICommand m_add_new_item_command { get; set; }
@@ -55,8 +55,8 @@ public class ListBeehiveController : ABaseController {
     }
 
 
-    public ListBeehiveController(PageNavigationController page_navigation) {
-        _m_page_navigation = page_navigation;
+    public ListBeehiveController() {
+        
         _m_delete_button_text = "";
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
@@ -84,7 +84,7 @@ public class ListBeehiveController : ABaseController {
 
 
     private void navigateToSavePage(object? obj) {
-        _m_page_navigation.navigateTo(new SaveBeehivePage());
+        PageNavigationController.navigateTo(new SaveBeehivePage());
     }
 
 
@@ -95,7 +95,7 @@ public class ListBeehiveController : ABaseController {
 
     private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
-            _m_page_navigation.navigateTo(new SaveBeehivePage(_m_selected_item.beehive_id));
+            PageNavigationController.navigateTo(new SaveBeehivePage(_m_selected_item.beehive_id));
         }
     }
 

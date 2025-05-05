@@ -8,7 +8,7 @@ namespace Mams.src.beehives;
 
 public class SaveBeehiveController : ABaseController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    
     private readonly BeehiveModel _m_beehive_model;
 
     public ICommand m_save_command { get; set; }
@@ -25,9 +25,9 @@ public class SaveBeehiveController : ABaseController {
     }
 
 
-    public SaveBeehiveController(PageNavigationController page_navigation, int id_to_load = 0) {
+    public SaveBeehiveController(int id_to_load = 0) {
 
-        _m_page_navigation = page_navigation;
+        
         _m_beehive_model = new();
         _m_beehive = new BeehiveItem();
 
@@ -47,7 +47,7 @@ public class SaveBeehiveController : ABaseController {
 
     private void saveProduct(object? obj) {
         if (_m_beehive_model.saveItem(m_beehive)) {
-            _m_page_navigation.navigateTo(new ListBeehivePage());
+            PageNavigationController.navigateTo(new ListBeehivePage());
         }
         else {
             MessageBox.Show("Une forme avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -56,6 +56,6 @@ public class SaveBeehiveController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        _m_page_navigation.navigateTo(new ListBeehivePage());
+        PageNavigationController.navigateTo(new ListBeehivePage());
     }
 }

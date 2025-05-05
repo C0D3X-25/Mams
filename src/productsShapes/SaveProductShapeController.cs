@@ -8,7 +8,7 @@ namespace Mams.src.productsShapes;
 
 public class SaveProductShapeController : ABaseController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    
     private readonly ProductShapeModel _m_product_shape_model;
 
     public ICommand m_save_command { get; set; }
@@ -25,8 +25,8 @@ public class SaveProductShapeController : ABaseController {
     }
 
 
-    public SaveProductShapeController(PageNavigationController page_navigation, int id_to_load = 0) {
-        _m_page_navigation = page_navigation;
+    public SaveProductShapeController(int id_to_load = 0) {
+        
         _m_product_shape_model = new();
         _m_product_shape = new ProductShapeItem();
 
@@ -46,7 +46,7 @@ public class SaveProductShapeController : ABaseController {
 
     private void saveProduct(object? obj) {
         if (_m_product_shape_model.saveItem(m_product_shape)) {
-            _m_page_navigation.navigateTo(new ListProductShapePage());
+            PageNavigationController.navigateTo(new ListProductShapePage());
         }
         else {
             MessageBox.Show("Une forme avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -55,6 +55,6 @@ public class SaveProductShapeController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        _m_page_navigation.navigateTo(new ListProductShapePage());
+        PageNavigationController.navigateTo(new ListProductShapePage());
     }
 }

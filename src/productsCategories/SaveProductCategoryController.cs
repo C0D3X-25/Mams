@@ -8,7 +8,7 @@ namespace Mams.src.productsCategories;
 
 public class SaveProductCategoryController : ABaseController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    //
     private readonly ProductCategoryModel _m_product_category_model;
 
     public ICommand m_save_command { get; set; }
@@ -25,8 +25,8 @@ public class SaveProductCategoryController : ABaseController {
     }
 
 
-    public SaveProductCategoryController(PageNavigationController page_navigation, int id_to_load = 0) {
-        _m_page_navigation = page_navigation;
+    public SaveProductCategoryController(/*PageNavigationController page_navigation, */int id_to_load = 0) {
+        //
         _m_product_category_model = new();
         _m_product_category = new ProductCategoryItem();
 
@@ -47,7 +47,7 @@ public class SaveProductCategoryController : ABaseController {
 
     private void saveProduct(object? obj) {
         if (_m_product_category_model.saveItem(m_product_category)) {
-            _m_page_navigation.navigateTo(new ListProductCategoryPage());
+            PageNavigationController.navigateTo(new ListProductCategoryPage());
         }
         else {
             MessageBox.Show("Un produit avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -56,6 +56,6 @@ public class SaveProductCategoryController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        _m_page_navigation.navigateTo(new ListProductCategoryPage());
+        PageNavigationController.navigateTo(new ListProductCategoryPage());
     }
 }

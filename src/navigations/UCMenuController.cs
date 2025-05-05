@@ -14,7 +14,7 @@ namespace Mams.src.navigations;
 
 public class UCMenuController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    
     public ICommand m_navigate_fee_command { get; set; }
     public ICommand m_navigate_profit_command { get; set; }
     public ICommand m_navigate_list_client_command { get; set; }
@@ -25,9 +25,7 @@ public class UCMenuController {
     public ICommand m_navigate_list_product_type_command { get; set; }
     public ICommand m_navigate_list_product_shape_command { get; set; }
 
-    public UCMenuController(PageNavigationController page_navigation) {
-
-        _m_page_navigation = page_navigation;
+    public UCMenuController() {
 
         m_navigate_fee_command = new RelayCommand(navigateToFee);
         m_navigate_profit_command = new RelayCommand(navigateToProfit);
@@ -41,37 +39,37 @@ public class UCMenuController {
     }
 
     private void navigateToFee(object? obj) {
-        _m_page_navigation.navigateTo(new SaveFeePage());
+        PageNavigationController.navigateTo(new SaveFeePage());
     }
 
     private void navigateToProfit(object? obj) {
-        _m_page_navigation.navigateTo(new SaveProfitPage());
+        PageNavigationController.navigateTo(new SaveProfitPage());
     }
 
     private void navigateToListClient(object? obj) {
-        _m_page_navigation.navigateTo(new ListClientPage());
+        PageNavigationController.navigateTo(new ListClientPage());
     }
     private void navigateToListProduct(object? obj) {
-        _m_page_navigation.navigateTo(new ListProductPage());
+        PageNavigationController.navigateTo(new ListProductPage());
     }
 
     private void navigateToListLot(object? obj) {
-        _m_page_navigation.navigateTo(new ListProductLotPage());
+        PageNavigationController.navigateTo(new ListProductLotPage());
     }
 
     private void navigateToListBeehive(object? obj) {
-        _m_page_navigation.navigateTo(new ListBeehivePage());
+        PageNavigationController.navigateTo(new ListBeehivePage());
     }
 
     private void navigateToListProductCategory(object? obj) {
-        _m_page_navigation.navigateTo(new ListProductCategoryPage());
+        PageNavigationController.navigateTo(new ListProductCategoryPage());
     }
 
     private void navigateToListProductType(object? obj) {
-        _m_page_navigation.navigateTo(new ListProductTypePage());
+        PageNavigationController.navigateTo(new ListProductTypePage());
     }
 
     private void navigateToListProductShape(object? obj) {
-        _m_page_navigation.navigateTo(new ListProductShapePage());
+        PageNavigationController.navigateTo(new ListProductShapePage());
     }
 }

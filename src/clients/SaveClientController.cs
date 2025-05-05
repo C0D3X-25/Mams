@@ -12,7 +12,7 @@ namespace Mams.src.clients;
 /// </summary>
 public class SaveClientController : ABaseController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    
     private readonly EntityModel _m_entity_model;
 
     public ICommand m_save_command { get; set; }
@@ -34,8 +34,8 @@ public class SaveClientController : ABaseController {
     /// </summary>
     /// <param name="page_navigation">The navigation controller for managing page transitions</param>
     /// <param name="id_to_load">Optional ID of an existing client to modify. If 0, creates a new client</param>
-    public SaveClientController(PageNavigationController page_navigation, int id_to_load = 0) {
-        _m_page_navigation = page_navigation;
+    public SaveClientController(int id_to_load = 0) {
+        
         _m_entity_model = new();
         _m_client = new EntityItem();
         if (id_to_load != 0) {
@@ -66,7 +66,7 @@ public class SaveClientController : ABaseController {
     /// </remarks>
     private void saveClient(object? obj) {
         if (_m_entity_model.saveItem(m_client)) {
-            _m_page_navigation.navigateTo(new ListClientPage());
+            PageNavigationController.navigateTo(new ListClientPage());
         }
         else { MessageBox.Show("Un client avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); }
     }
@@ -77,6 +77,6 @@ public class SaveClientController : ABaseController {
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
     private void abortClient(object? obj) {
-        _m_page_navigation.navigateTo(new ListClientPage());
+        PageNavigationController.navigateTo(new ListClientPage());
     }
 }

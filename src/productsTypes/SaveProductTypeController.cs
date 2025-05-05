@@ -8,7 +8,7 @@ namespace Mams.src.productsTypes;
 
 public class SaveProductTypeController : ABaseController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    
     private readonly ProductTypeModel _m_product_type_model;
 
     public ICommand m_save_command { get; set; }
@@ -25,8 +25,8 @@ public class SaveProductTypeController : ABaseController {
     }
 
 
-    public SaveProductTypeController(PageNavigationController page_navigation, int id_to_load = 0) {
-        _m_page_navigation = page_navigation;
+    public SaveProductTypeController(int id_to_load = 0) {
+        
         _m_product_type_model = new();
         _m_product_type = new ProductTypeItem();
 
@@ -47,7 +47,7 @@ public class SaveProductTypeController : ABaseController {
 
     private void saveProduct(object? obj) {
         if (_m_product_type_model.saveItem(m_product_type)) {
-            _m_page_navigation.navigateTo(new ListProductTypePage());
+            PageNavigationController.navigateTo(new ListProductTypePage());
         }
         else {
             MessageBox.Show("Un produit avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -56,6 +56,6 @@ public class SaveProductTypeController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        _m_page_navigation.navigateTo(new ListProductTypePage());
+        PageNavigationController.navigateTo(new ListProductTypePage());
     }
 }

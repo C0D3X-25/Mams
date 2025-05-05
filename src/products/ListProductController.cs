@@ -9,7 +9,7 @@ namespace Mams.src.products;
 
 internal class ListProductController : ABaseController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    
     private readonly ProductModel _m_item_model = new();
 
     public ICommand m_add_new_item_command { get; set; }
@@ -55,8 +55,8 @@ internal class ListProductController : ABaseController {
     }
 
 
-    public ListProductController(PageNavigationController page_navigation) {
-        _m_page_navigation = page_navigation;
+    public ListProductController() {
+        
         _m_delete_button_text = "";
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
@@ -84,7 +84,7 @@ internal class ListProductController : ABaseController {
 
 
     private void navigateToSavePage(object? obj) {
-        _m_page_navigation.navigateTo(new SaveProductPage());
+        PageNavigationController.navigateTo(new SaveProductPage());
     }
 
 
@@ -95,7 +95,7 @@ internal class ListProductController : ABaseController {
 
     private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
-            _m_page_navigation.navigateTo(new SaveProductPage(_m_selected_item.product_id));
+            PageNavigationController.navigateTo(new SaveProductPage(_m_selected_item.product_id));
         }
     }
 

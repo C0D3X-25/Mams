@@ -12,7 +12,7 @@ namespace Mams.src.productsLots;
 
 public class SaveProductLotController : ABaseController {
 
-    private readonly PageNavigationController _m_page_navigation;
+    
     private readonly ProductLotModel _m_product_lot_model;
     private readonly BeehiveModel _m_beehive_model;
 
@@ -50,8 +50,8 @@ public class SaveProductLotController : ABaseController {
     }
 
 
-    public SaveProductLotController(PageNavigationController page_navigation, int id_to_load = 0) {
-        _m_page_navigation = page_navigation;
+    public SaveProductLotController(int id_to_load = 0) {
+        
         _m_product_lot_model = new();
         _m_beehive_model = new();
         _m_product_lot = new ProductLotItem();
@@ -81,7 +81,7 @@ public class SaveProductLotController : ABaseController {
         }
 
         if (_m_product_lot_model.saveItem(m_product_lot)) {
-            _m_page_navigation.navigateTo(new ListProductLotPage());
+            PageNavigationController.navigateTo(new ListProductLotPage());
         }
         else {
             MessageBox.Show("Un lot avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -90,6 +90,6 @@ public class SaveProductLotController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        _m_page_navigation.navigateTo(new ListProductLotPage());
+        PageNavigationController.navigateTo(new ListProductLotPage());
     }
 }

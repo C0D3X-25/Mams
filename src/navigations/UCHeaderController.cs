@@ -12,17 +12,14 @@ namespace Mams.src.navigations;
 
 public class UCHeaderController {
 
-    private readonly PageNavigationController _m_page_navigation;
-
     public ICommand m_navigate_homepage_command { get; set; }
 
-    public UCHeaderController(PageNavigationController pageNavigation) {
+    public UCHeaderController() {
 
-        _m_page_navigation = pageNavigation;
         m_navigate_homepage_command = new RelayCommand(navigateToHomepage);
     }
 
     private void navigateToHomepage(object? obj) {
-        _m_page_navigation.navigateToHomePage();
+        PageNavigationController.navigateToHomePage();
     }
 }
