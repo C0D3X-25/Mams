@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS clients (
 CREATE TABLE IF NOT EXISTS receipts (
     receipt_id INT PRIMARY KEY AUTO_INCREMENT,
     receipt_total_price DECIMAL(9,2) NOT NULL,
-    receipt_date_sold DATE NOT NULL
+    receipt_date_created DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS suppliers_receipts(

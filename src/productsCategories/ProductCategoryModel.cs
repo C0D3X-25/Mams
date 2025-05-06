@@ -56,7 +56,7 @@ public class ProductCategoryModel :
                 return new ProductCategoryItem {
                     product_category_id = reader.GetSafeValue<int>(m_COL_ID),
                     product_category_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
-                    product_category_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                    product_category_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;

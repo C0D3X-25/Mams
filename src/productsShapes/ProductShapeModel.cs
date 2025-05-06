@@ -53,7 +53,7 @@ public class ProductShapeModel :
                 return new ProductShapeItem {
                     product_shape_id = reader.GetSafeValue<int>(m_COL_ID),
                     product_shape_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
-                    product_shape_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                    product_shape_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;

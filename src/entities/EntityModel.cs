@@ -88,7 +88,7 @@ public class EntityModel : ABaseModel,
                     entity_email = reader.GetSafeValue(m_COL_EMAIL, string.Empty),
                     entity_city = reader.GetSafeValue(m_COL_CITY, string.Empty),
                     entity_address = reader.GetSafeValue(m_COL_ADDRESS, string.Empty),
-                    entity_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                    entity_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;

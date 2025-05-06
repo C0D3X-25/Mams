@@ -48,7 +48,7 @@ public class BeehiveModel
                 return new BeehiveItem {
                     beehive_id = reader.GetSafeValue<int>(_m_COL_ID),
                     beehive_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
-                    beehive_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                    beehive_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;

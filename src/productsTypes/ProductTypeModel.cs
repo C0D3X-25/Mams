@@ -54,7 +54,7 @@ public class ProductTypeModel :
                 return new ProductTypeItem {
                     product_type_id = reader.GetSafeValue<int>(m_COL_ID),
                     product_type_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
-                    product_type_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                    product_type_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;

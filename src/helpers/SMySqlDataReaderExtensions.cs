@@ -14,8 +14,8 @@ public static class SMySqlDataReaderExtensions {
             return (T)(object)reader.GetString(ordinal);
         if (typeof(T) == typeof(int))
             return (T)(object)reader.GetInt32(ordinal);
-        if (typeof(T) == typeof(DateTime))
-            return (T)(object)reader.GetDateTime(ordinal);
+        if (typeof(T) == typeof(DateOnly))
+            return (T)(object)reader.GetDateOnly(ordinal);
 
         return (T)reader.GetValue(ordinal);
     }

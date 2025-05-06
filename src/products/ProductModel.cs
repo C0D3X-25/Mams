@@ -18,13 +18,9 @@ internal class ProductModel : ABaseModel,
     public const string m_COL_NAME = "product_name";
     public const string m_COL_WEIGHT = "product_weight";
     public const string m_COL_FK_PRODUCT_TYPE_ID = "fk_product_type_id";
-    public const string m_COL_FK_PRODUCT_TYPE_NAME = "product_type_name";
     public const string m_COL_FK_PRODUCT_CATEGORY_ID = "fk_product_category_id";
-    public const string m_COL_FK_PRODUCT_CATEGORY_NAME = "product_category_name";
     public const string m_COL_FK_PRODUCT_SHAPE_ID = "fk_product_shape_id";
-    public const string m_COL_FK_PRODUCT_SHAPE_NAME = "product_shape_name";
     public const string m_COL_FK_PRODUCT_LOT_ID = "fk_product_lot_id";
-    public const string m_COL_FK_PRODUCT_LOT_NAME = "product_lot_nbr";
     public const string m_COL_ARCHIVE = "product_archive";
 
 
@@ -83,7 +79,7 @@ internal class ProductModel : ABaseModel,
                     product_shape_name = product_shape_model.getItemByID(product_shape_id.ToString())?.product_shape_name ?? string.Empty,
                     fk_product_lot_id = product_lot_id,
                     product_lot_name = product_lot_model.getItemByID(product_lot_id.ToString())?.product_lot_name ?? string.Empty,
-                    product_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                    product_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;

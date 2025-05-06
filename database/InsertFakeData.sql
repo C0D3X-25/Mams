@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS clients (
 CREATE TABLE IF NOT EXISTS receipts (
     receipt_id INT PRIMARY KEY AUTO_INCREMENT,
     receipt_total_price DECIMAL(9,2) NOT NULL,
-    receipt_date_sold DATE NOT NULL
+    receipt_date_created DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS suppliers_receipts(
@@ -192,7 +192,7 @@ INSERT INTO products (product_name, product_weight, fk_product_category_id, fk_p
 ('Thyme Honey', NULL, 1, 1, 2, 10, NULL);
 
 -- Insert data into receipts
-INSERT INTO receipts (receipt_total_price, receipt_date_sold) VALUES
+INSERT INTO receipts (receipt_total_price, receipt_date_created) VALUES
 (124.50, '2024-01-15'),
 (76.80, '2024-01-22'),
 (198.25, '2024-01-30'),

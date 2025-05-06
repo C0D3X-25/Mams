@@ -141,7 +141,7 @@
                         <!--Add new Client Buttons-->
                         <Button 
                             Grid.Row="2"
-                            Content="Nouveau client"
+                            Content="Nouveau contact"
                             Command="{Binding m_add_new_item_command}"
                             Height="30" Width="130"
                             MaxHeight="30" MaxWidth="130"

@@ -66,7 +66,7 @@ public class ProductLotModel :
                     product_lot_year = reader.GetSafeValue<int>(m_COL_YEAR),
                     fk_beehive_id = beehive_id,
                     beehive_name = beehive_model.getItemByID(beehive_id.ToString())?.beehive_name ?? string.Empty,
-                    product_lot_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateTime.MinValue).ToString()
+                    product_lot_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;
