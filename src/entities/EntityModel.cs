@@ -1,6 +1,8 @@
-﻿using Mams.src.databaseOperations;
+﻿using Mams.src.clients;
+using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
+using Mams.src.suppliers;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -20,49 +22,21 @@ public class EntityModel : ABaseModel,
     public const string m_COL_ARCHIVE = "entity_archive";
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+
+        // Cascad delete the supplier and client items
+        if (delete_type == EDeleteItemOperation.HARD_DELETE) {
+
+            ClientModel client_model = new();
+            SupplierModel supplier_model = new();
+
+            client_model.deleteListClientWithEntityFK(id);
+            supplier_model.deleteListSupplierWithEntityFK(id);
+        }
+
         return SDatabaseModel.deleteItem(this, id, m_COL_ID, m_COL_ARCHIVE, m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
-    }
-
-
-    public EntityItem? getItem(string search) {
-        throw new NotImplementedException();
-
-        //using MySqlConnection? conn = _m_conn.openConnection();
-
-        //try {
-        //    // First try exact name match
-        //    using MySqlCommand cmd = new(
-        //        $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_QUANTITY} " +
-        //        $"FROM {_m_TBL_NAME} " +
-        //        $"WHERE {_m_COL_NAME} = @search " +
-        //        $"UNION " +
-        //        $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_QUANTITY} " +
-        //        $"FROM {_m_TBL_NAME} " +
-        //        $"WHERE {_m_COL_ID} = @search AND NOT EXISTS (" +
-        //            $"SELECT 1 FROM {_m_TBL_NAME} WHERE {_m_COL_NAME} = @search" +
-        //        $") LIMIT 1;",
-        //        conn
-        //    );
-
-        //    cmd.Parameters.AddWithValue("@search", search);
-        //    using MySqlDataReader reader = cmd.ExecuteReader();
-
-        //    if (reader.Read()) {
-        //        return new InventoryItem(
-        //            reader.GetInt32(_m_COL_ID),
-        //            reader.GetString(_m_COL_NAME),
-        //            reader.GetInt32(_m_COL_QUANTITY)
-        //        );
-        //    }
-        //    return null;
-        //}
-        //catch (MySqlException ex) {
-        //    MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-        //    return null;
-        //}
     }
 
 

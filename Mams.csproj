@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\suppliers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Update="src\beehives\ListBeehivePage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

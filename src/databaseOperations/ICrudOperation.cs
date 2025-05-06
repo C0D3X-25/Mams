@@ -5,7 +5,6 @@ namespace Mams.src.databaseOperations;
 
 public interface ICrudOperation<T> where T : ABaseItem {
     ObservableCollection<T> getTable();
-    T? getItem(string search);
     T? getItemByID(string id);
     bool saveItem(T item);
     bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE);

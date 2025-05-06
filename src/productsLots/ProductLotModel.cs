@@ -19,8 +19,7 @@ public class ProductLotModel :
     public const string m_COL_ID = "product_lot_id";
     public const string m_COL_NAME = "product_lot_name";
     public const string m_COL_YEAR = "product_lot_year";
-    public const string m_COL_FK_BEEHIVE_ID = "fk_beehive_id";
-    public const string m_COL_FK_BEEHIVE_NAME = "beehive_name";
+    public const string m_COL_FK_BEEHIVE = "fk_beehive_id";
     public const string m_COL_ARCHIVE = "product_lot_archive";
 
 
@@ -45,7 +44,7 @@ public class ProductLotModel :
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE_ID}, {m_COL_ARCHIVE} " +
+                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE}, {m_COL_ARCHIVE} " +
                 $"FROM {m_TBL_NAME} " +
                 $"WHERE {m_COL_ID} = @id;",
                 conn
@@ -56,7 +55,7 @@ public class ProductLotModel :
 
             if (reader.Read()) {
 
-                int beehive_id = reader.GetSafeValue<int>(m_COL_FK_BEEHIVE_ID, 0);
+                int beehive_id = reader.GetSafeValue<int>(m_COL_FK_BEEHIVE, 0);
 
                 BeehiveModel beehive_model = new();
 
@@ -103,12 +102,12 @@ public class ProductLotModel :
                 return false;
             }
 
-            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE_ID}) " +
+            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE}) " +
                 $"VALUES (@name, @year, @fk_beehive)";
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
-                $"SET {m_COL_NAME} = @name, {m_COL_YEAR} = @year, {m_COL_FK_BEEHIVE_ID} = @fk_beehive " +
+                $"SET {m_COL_NAME} = @name, {m_COL_YEAR} = @year, {m_COL_FK_BEEHIVE} = @fk_beehive " +
                 $"WHERE {m_COL_ID} = @id";
         }
 

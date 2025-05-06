@@ -28,14 +28,14 @@ CREATE TABLE IF NOT EXISTS receipts (
     receipt_date_created DATE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS suppliers_receipts(
-    fk_supplier_id INT NOT NULL REFERENCES suppliers(supplier_id),
-    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+CREATE TABLE IF NOT EXISTS receipts_suppliers(
+    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id),
+    fk_supplier_id INT NOT NULL REFERENCES suppliers(supplier_id)
 );
 
-CREATE TABLE IF NOT EXISTS clients_receipts(
-    fk_client_id INT NOT NULL REFERENCES clients(client_id),
-    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+CREATE TABLE IF NOT EXISTS receipts_clients(
+    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id),
+    fk_client_id INT NOT NULL REFERENCES clients(client_id)
 );
 
 CREATE TABLE IF NOT EXISTS products_types (
@@ -204,14 +204,14 @@ INSERT INTO receipts (receipt_total_price, receipt_date_created) VALUES
 (67.90, '2024-03-10'),
 (189.30, '2024-03-12');
 
--- Insert data into suppliers_receipts
-INSERT INTO suppliers_receipts (fk_supplier_id, fk_receipt_id) VALUES
+-- Insert data into receipts_suppliers
+INSERT INTO receipts_suppliers (fk_supplier_id, fk_receipt_id) VALUES
 (1, 1), (2, 2), (3, 3), (4, 4),
 (5, 5), (6, 6), (7, 7), (8, 8),
 (9, 9), (10, 10);
 
--- Insert data into clients_receipts
-INSERT INTO clients_receipts (fk_client_id, fk_receipt_id) VALUES
+-- Insert data into receipts_clients
+INSERT INTO receipts_clients (fk_client_id, fk_receipt_id) VALUES
 (1, 1), (2, 2), (3, 3), (4, 4),
 (5, 5), (6, 6), (7, 7), (8, 8),
 (9, 9), (10, 10);

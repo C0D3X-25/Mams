@@ -17,10 +17,10 @@ internal class ProductModel : ABaseModel,
     public const string m_COL_ID = "product_id";
     public const string m_COL_NAME = "product_name";
     public const string m_COL_WEIGHT = "product_weight";
-    public const string m_COL_FK_PRODUCT_TYPE_ID = "fk_product_type_id";
-    public const string m_COL_FK_PRODUCT_CATEGORY_ID = "fk_product_category_id";
-    public const string m_COL_FK_PRODUCT_SHAPE_ID = "fk_product_shape_id";
-    public const string m_COL_FK_PRODUCT_LOT_ID = "fk_product_lot_id";
+    public const string m_COL_FK_PRODUCT_TYPE = "fk_product_type_id";
+    public const string m_COL_FK_PRODUCT_CATEGORY = "fk_product_category_id";
+    public const string m_COL_FK_PRODUCT_SHAPE = "fk_product_shape_id";
+    public const string m_COL_FK_PRODUCT_LOT = "fk_product_lot_id";
     public const string m_COL_ARCHIVE = "product_archive";
 
 
@@ -32,11 +32,6 @@ internal class ProductModel : ABaseModel,
     }
 
 
-    public ProductItem? getItem(string search) {
-        throw new NotImplementedException();
-    }
-
-
     public ProductItem? getItemByID(string id) {
 
         using MySqlConnection? conn = _m_conn.openConnection();
@@ -44,8 +39,8 @@ internal class ProductModel : ABaseModel,
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_WEIGHT}, " +
-                $"{m_COL_FK_PRODUCT_TYPE_ID}, {m_COL_FK_PRODUCT_CATEGORY_ID}, " +
-                $"{m_COL_FK_PRODUCT_SHAPE_ID}, {m_COL_FK_PRODUCT_LOT_ID}, " +
+                $"{m_COL_FK_PRODUCT_TYPE}, {m_COL_FK_PRODUCT_CATEGORY}, " +
+                $"{m_COL_FK_PRODUCT_SHAPE}, {m_COL_FK_PRODUCT_LOT}, " +
                 $"{m_COL_ARCHIVE} " +
                 $"FROM {m_TBL_NAME} " +
                 $"WHERE {m_COL_ID} = @id;",
@@ -57,10 +52,10 @@ internal class ProductModel : ABaseModel,
 
             if (reader.Read()) {
 
-                int product_type_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_TYPE_ID, 0);
-                int product_category_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_CATEGORY_ID, 0);
-                int product_shape_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_SHAPE_ID, 0);
-                int product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT_ID, 0);
+                int product_type_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_TYPE, 0);
+                int product_category_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_CATEGORY, 0);
+                int product_shape_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_SHAPE, 0);
+                int product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT, 0);
 
                 ProductTypeModel product_type_model = new();
                 ProductCategoryModel product_category_model = new();
@@ -111,6 +106,7 @@ internal class ProductModel : ABaseModel,
 
 
     public bool saveItem(ProductItem item) {
+
         using MySqlConnection? conn = _m_conn.openConnection();
 
         string query = string.Empty;
@@ -122,17 +118,17 @@ internal class ProductModel : ABaseModel,
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_WEIGHT}, " +
-                $"{m_COL_FK_PRODUCT_TYPE_ID}, {m_COL_FK_PRODUCT_CATEGORY_ID}, " +
-                $"{m_COL_FK_PRODUCT_SHAPE_ID}, {m_COL_FK_PRODUCT_LOT_ID}) " +
+                $"{m_COL_FK_PRODUCT_TYPE}, {m_COL_FK_PRODUCT_CATEGORY}, " +
+                $"{m_COL_FK_PRODUCT_SHAPE}, {m_COL_FK_PRODUCT_LOT}) " +
                 $"VALUES (@name, @weight, @fk_product_type, @fk_product_category, @fk_product_shape, @fk_product_lot);";
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
                 $"SET {m_COL_NAME} = @name, {m_COL_WEIGHT} = @weight, " +
-                $"{m_COL_FK_PRODUCT_TYPE_ID} = @fk_product_type, " +
-                $"{m_COL_FK_PRODUCT_CATEGORY_ID} = @fk_product_category, " +
-                $"{m_COL_FK_PRODUCT_SHAPE_ID} = @fk_product_shape, " +
-                $"{m_COL_FK_PRODUCT_LOT_ID} = @fk_product_lot " +
+                $"{m_COL_FK_PRODUCT_TYPE} = @fk_product_type, " +
+                $"{m_COL_FK_PRODUCT_CATEGORY} = @fk_product_category, " +
+                $"{m_COL_FK_PRODUCT_SHAPE} = @fk_product_shape, " +
+                $"{m_COL_FK_PRODUCT_LOT} = @fk_product_lot " +
                 $"WHERE {m_COL_ID} = @id;";
         }
 

@@ -25,7 +25,7 @@
             <userControls:UCHeader 
                 x:Name="header" 
                 Grid.Row="0"
-                title="Liste des Clients">
+                title="Liste des Contacts">
 
             </userControls:UCHeader>
             <!--Header-->

@@ -1,23 +1,19 @@
 ﻿using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
+using Mams.src.suppliers;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace Mams.src.receipts;
 
-/// <summary>
-/// ReceiptProduct is for 1 product in a receipt.
-public class ReceiptProductModel : ABaseModel,
-    ICrudOperation<ReceiptProductItem> {
+public class ReceiptSupplierModel : ABaseModel,
+    ICrudOperation<ReceiptSupplierItem> {
 
-    public const string m_TBL_NAME = "receipts_products";
-    public const string m_COL_ID = "receipt_product_id";
-    public const string m_COL_QUANTITY = "receipt_product_quantity";
-    public const string m_COL_UNITY_PRICE = "receipt_product_unity_price";
-    public const string m_COL_FK_PRODUCT = "fk_product_id";
+    public const string m_TBL_NAME = "receipts_suppliers";
     public const string m_COL_FK_RECEIPT = "fk_receipt_id";
+    public const string m_COL_FK_SUPPLIER = "fk_supplier_id";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
@@ -51,32 +47,29 @@ public class ReceiptProductModel : ABaseModel,
     }
 
 
-    public ReceiptProductItem? getItemByID(string id) {
+    public ReceiptSupplierItem? getItemByID(string id) {
         throw new NotImplementedException();
     }
 
 
-    public ObservableCollection<ReceiptProductItem> getTable() {
+    public ObservableCollection<ReceiptSupplierItem> getTable() {
 
-        ObservableCollection<ReceiptProductItem> items = new();
+        ObservableCollection<ReceiptSupplierItem> items = new();
 
         using MySqlConnection? conn = _m_conn.openConnection();
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT} " +
+                $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER} " +
                 $"FROM {m_TBL_NAME};",
                 conn
             );
             using MySqlDataReader reader = cmd.ExecuteReader();
 
             while (reader.Read()) {
-                items.Add(new ReceiptProductItem {
-                    receipt_product_id = reader.GetSafeValue<int>(m_COL_ID),
-                    receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.GetSafeValue<double>(m_COL_UNITY_PRICE),
+                items.Add(new ReceiptSupplierItem {
                     fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
-                    fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
+                    fk_supplier_id = reader.GetSafeValue<int>(m_COL_FK_SUPPLIER)
                 });
             }
             return items;
@@ -88,11 +81,12 @@ public class ReceiptProductModel : ABaseModel,
     }
 
 
-    public bool saveItem(ReceiptProductItem item) {
+    public bool saveItem(ReceiptSupplierItem item) {
+
         if (item == null) {
             return false;
         }
-        if (item.fk_receipt_id == 0 || item.fk_receipt_id == 0) {
+        if (item.fk_receipt_id == 0 || item.fk_supplier_id == 0) {
             return false;
         }
 
@@ -100,18 +94,18 @@ public class ReceiptProductModel : ABaseModel,
 
         try {
             // Check if the item already exists in the database
-            {
+            { 
                 using MySqlCommand cmd = new(
-                    $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT} " +
+                    $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER} " +
                     $"FROM {m_TBL_NAME} " +
                     $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt " +
-                    $"AND {m_COL_FK_PRODUCT} = @fk_product" +
-                    $"AND {m_COL_UNITY_PRICE} = @quantity;",
+                    $"AND {m_COL_FK_SUPPLIER} = @fk_supplier;",
                     conn
                 );
 
                 using MySqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows) {
+
+                if(reader.HasRows) {
                     return false;
                 }
             }
@@ -120,15 +114,12 @@ public class ReceiptProductModel : ABaseModel,
             {
                 using MySqlCommand cmd = new(
                     $"INSERT INTO {m_TBL_NAME} " +
-                    $"({m_COL_QUANTITY}, {m_COL_UNITY_PRICE} " +
-                    $"{m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT}) " +
-                    $"VALUES (@quantity, @unity_price, @fk_receipt, @fk_product);",
+                    $"({m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER}) " +
+                    $"VALUES (@fk_receipt, @fk_supplier);",
                     conn
                 );
-                cmd.Parameters.AddWithValue("@quantity", item.receipt_product_quantity);
-                cmd.Parameters.AddWithValue("@unity_price", item.receipt_product_unity_price);
                 cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
-                cmd.Parameters.AddWithValue("@fk_product", item.fk_product_id);
+                cmd.Parameters.AddWithValue("@fk_supplier", item.fk_supplier_id);
                 return cmd.ExecuteNonQuery() > 0;
             }
         }
@@ -139,9 +130,9 @@ public class ReceiptProductModel : ABaseModel,
     }
 
 
-    public ObservableCollection<ReceiptProductItem> getListItemWithReceiptFK(string fk_receipt) {
+    public ObservableCollection<ReceiptSupplierItem> getListItemWithReceiptFK(string fk_receipt) {
 
-        ObservableCollection<ReceiptProductItem> items = new();
+        ObservableCollection<ReceiptSupplierItem> items = new();
 
         if (string.IsNullOrEmpty(fk_receipt)) {
             return items;
@@ -151,7 +142,7 @@ public class ReceiptProductModel : ABaseModel,
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT} " +
+                $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER} " +
                 $"FROM {m_TBL_NAME} " +
                 $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
                 conn
@@ -162,9 +153,9 @@ public class ReceiptProductModel : ABaseModel,
             using MySqlDataReader reader = cmd.ExecuteReader();
 
             while (reader.Read()) {
-                items.Add(new ReceiptProductItem {
+                items.Add(new ReceiptSupplierItem {
                     fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
-                    fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
+                    fk_supplier_id = reader.GetSafeValue<int>(m_COL_FK_SUPPLIER)
                 });
             }
 
@@ -179,12 +170,12 @@ public class ReceiptProductModel : ABaseModel,
 
     public bool deleteListItemWithFkEntity(string fk_receipt) {
 
-        ObservableCollection<ReceiptProductItem> items = getListItemWithReceiptFK(fk_receipt);
+        ObservableCollection<ReceiptSupplierItem> items = getListItemWithReceiptFK(fk_receipt);
 
         if (items.Count == 0) {
             return false;
         }
-        foreach (ReceiptProductItem item in items) {
+        foreach (ReceiptSupplierItem item in items) {
             deleteItemWithReceiptFK(item.fk_receipt_id);
         }
         return true;

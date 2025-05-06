@@ -28,14 +28,14 @@ CREATE TABLE IF NOT EXISTS receipts (
     receipt_date_created DATE NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS suppliers_receipts(
-    fk_supplier_id INT NOT NULL REFERENCES suppliers(supplier_id),
-    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+CREATE TABLE IF NOT EXISTS receipts_suppliers(
+    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id),
+    fk_supplier_id INT NOT NULL REFERENCES suppliers(supplier_id)
 );
 
-CREATE TABLE IF NOT EXISTS clients_receipts(
-    fk_client_id INT NOT NULL REFERENCES clients(client_id),
-    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+CREATE TABLE IF NOT EXISTS receipts_clients(
+    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id),
+    fk_client_id INT NOT NULL REFERENCES clients(client_id)
 );
 
 CREATE TABLE IF NOT EXISTS products_types (
