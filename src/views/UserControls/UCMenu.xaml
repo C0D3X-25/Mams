@@ -52,11 +52,11 @@
                 Margin="3"
                 Command="{Binding m_navigate_profit_command}"/>
             <Button 
-                Content="Clients"
+                Content="Contacts"
                 Grid.Row="3"
                 FontSize="16"
                 Margin="3"
-                Command="{Binding m_navigate_list_client_command}"/>
+                Command="{Binding m_navigate_list_entity_command}"/>
             <Button 
                 Content="Produits" 
                 Grid.Row="4" 

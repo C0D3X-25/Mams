@@ -2,15 +2,15 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Mams.src.clients;
+namespace Mams.src.entities;
 
 /// <summary>
 /// Interaction logic for SaveClientsPage.xaml
 /// </summary>
-public partial class SaveClientPage : Page {
+public partial class SaveEntityPage : Page {
 
-    public SaveClientPage(int id_client = 0) {
+    public SaveEntityPage(int id_client = 0) {
         InitializeComponent();
-        DataContext = new SaveClientController(id_client);
+        DataContext = new SaveEntityController(id_client);
     }
 }

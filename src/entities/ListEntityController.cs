@@ -1,17 +1,17 @@
-﻿using Mams.src.commands;
+﻿using Mams.src.clients;
+using Mams.src.commands;
 using Mams.src.controllers;
 using Mams.src.databaseOperations;
-using Mams.src.entities;
 using Mams.src.navigations;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
-namespace Mams.src.clients;
+namespace Mams.src.entities;
 
 /// <summary>
 /// Controller for managing the list of clients page, handling client-related operations and UI interactions.
 /// </summary>
-public class ListClientController : ABaseController {
+public class ListEntityController : ABaseController {
 
     
     private readonly EntityModel _m_item_model = new();
@@ -67,7 +67,7 @@ public class ListClientController : ABaseController {
     /// Initializes a new instance of the ListClientPageController
     /// </summary>
     /// <param name="page_navigation">The navigation controller for managing page transitions</param>
-    public ListClientController() {
+    public ListEntityController() {
         
         _m_delete_button_text = "";
         updateListItems();
@@ -103,7 +103,7 @@ public class ListClientController : ABaseController {
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
     private void navigateToSavePage(object? obj) {
-        SPageNavigationController.navigateTo(new SaveClientPage());
+        SPageNavigationController.navigateTo(new SaveEntityPage());
     }
 
 
@@ -123,7 +123,7 @@ public class ListClientController : ABaseController {
     /// <param name="obj">Command parameter (not used)</param>
     private void navigateToModifyItem(object? obj) {
         if (_m_selected_item != null) {
-            SPageNavigationController.navigateTo(new SaveClientPage(_m_selected_item.entity_id));
+            SPageNavigationController.navigateTo(new SaveEntityPage(_m_selected_item.entity_id));
         }
     }
 

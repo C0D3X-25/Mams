@@ -1,6 +1,5 @@
-﻿namespace Mams.src.fees
+﻿namespace Mams.src.fees;
+
+class FeeModel
 {
-    class FeeModel
-    {
-    }
 }
