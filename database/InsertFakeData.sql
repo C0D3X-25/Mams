@@ -1,4 +1,93 @@
+DROP DATABASE IF EXISTS mams_db;
+CREATE DATABASE IF NOT EXISTS mams_db;
 USE mams_db;
+
+CREATE TABLE IF NOT EXISTS entities (
+    entity_id INT PRIMARY KEY AUTO_INCREMENT,
+    entity_name VARCHAR(50) NOT NULL,
+    entity_phone VARCHAR(25),
+    entity_email VARCHAR(255),
+    entity_city VARCHAR(50),
+    entity_address VARCHAR(255),
+    entity_archive DATE
+);
+
+CREATE TABLE IF NOT EXISTS suppliers (
+    supplier_id INT PRIMARY KEY AUTO_INCREMENT,
+    fk_entity_id INT NOT NULL REFERENCES entities(entity_id)
+);
+
+CREATE TABLE IF NOT EXISTS clients (
+    client_id INT PRIMARY KEY AUTO_INCREMENT,
+    fk_entity_id INT NOT NULL REFERENCES entities(entity_id)
+);
+
+CREATE TABLE IF NOT EXISTS receipts (
+    receipt_id INT PRIMARY KEY AUTO_INCREMENT,
+    receipt_total_price DECIMAL(9,2) NOT NULL,
+    receipt_date_sold DATE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS suppliers_receipts(
+    fk_supplier_id INT NOT NULL REFERENCES suppliers(supplier_id),
+    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+);
+
+CREATE TABLE IF NOT EXISTS clients_receipts(
+    fk_client_id INT NOT NULL REFERENCES clients(client_id),
+    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+);
+
+CREATE TABLE IF NOT EXISTS products_types (
+    product_type_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_type_name VARCHAR(100) NOT NULL,
+    product_type_archive DATE
+);
+
+CREATE TABLE IF NOT EXISTS products_categories (
+    product_category_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_category_name VARCHAR(100) NOT NULL,
+    product_category_archive DATE
+);
+
+CREATE TABLE IF NOT EXISTS products_shapes (
+    product_shape_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_shape_name VARCHAR(100) NOT NULL,
+    product_shape_archive DATE
+);
+
+CREATE TABLE IF NOT EXISTS beehives (
+    beehive_id INT PRIMARY KEY AUTO_INCREMENT,
+    beehive_name VARCHAR(50) NOT NULL,
+    beehive_archive DATE
+);
+
+CREATE TABLE IF NOT EXISTS products_lots (
+    product_lot_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_lot_name VARCHAR(50) NOT NULL,
+    product_lot_year INT NOT NULL,
+    product_lot_archive DATE,
+    fk_beehive_id INT REFERENCES beehives(beehive_id)
+);
+
+CREATE TABLE IF NOT EXISTS products (
+    product_id INT PRIMARY KEY AUTO_INCREMENT,
+    product_name VARCHAR(100) NOT NULL,
+    product_weight INT,
+    product_archive DATE,
+    fk_product_type_id INT NOT NULL REFERENCES products_types(product_type_id),
+    fk_product_category_id INT REFERENCES products_categories(product_category_id),
+    fk_product_shape_id INT REFERENCES products_shapes(product_shape_id),
+    fk_product_lot_id INT REFERENCES products_lots(product_lot_id)
+);
+
+CREATE TABLE IF NOT EXISTS receipts_products (
+    receipt_product_id INT PRIMARY KEY AUTO_INCREMENT,
+    receipt_product_quantity INT,
+    receipt_product_unity_price DECIMAL(9,2),
+    fk_product_id INT NOT NULL REFERENCES products(product_id),
+    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+);
 
 -- Insert data into entities (including mixed supplier-client entities)
 INSERT INTO entities (entity_name, entity_phone, entity_email, entity_city, entity_address, entity_archive) VALUES
@@ -8,7 +97,7 @@ INSERT INTO entities (entity_name, entity_phone, entity_email, entity_city, enti
 ('Wholesome Market', '+44 20 4567 8901', 'orders@wholesomemarket.com', 'Bristol', '53 Pure Street, BS1 4DF', NULL),
 ('Honey Harvest Suppliers', '+44 20 8765 4321', 'sales@honeyharvest.com', 'Manchester', '12 Supplier Street, M1 3AB', NULL),
 ('Bee World Distributors', '+44 20 9876 5432', 'info@beeworld.co.uk', 'Birmingham', '25 Distribution Road, B2 2CD', NULL),
-('Sweet Nectar Imports', '+44 20 7654 3210', 'contact@sweetnectar.com', 'London', '8 Import Avenue, EC2 4EF', '2024-02-15 12:00:00'),
+('Sweet Nectar Imports', '+44 20 7654 3210', 'contact@sweetnectar.com', 'London', '8 Import Avenue, EC2 4EF', '2024-02-15'),
 ('Organic Bee Collective', '+44 20 6543 2109', 'hello@organicbee.co.uk', 'Edinburgh', '15 Green Lane, EH2 5GH', NULL),
 -- Three entities that will be both suppliers and clients
 ('Dual Purpose Honey Co.', '+44 20 1111 2222', 'info@dualpurposehoney.com', 'Manchester', '10 Crossover Street, M2 3CD', NULL),
@@ -29,7 +118,7 @@ INSERT INTO products_types (product_type_name, product_type_archive) VALUES
 ('Infused Honey', NULL),
 ('Honey Comb', NULL),
 ('Propolis', NULL),
-('Pollen', '2024-01-15 09:30:00'),
+('Pollen', '2024-01-15'),
 ('Royal Jelly', NULL),
 ('Beeswax Products', NULL);
 
@@ -38,18 +127,18 @@ INSERT INTO products_categories (product_category_name, product_category_archive
 ('Spring Collection', NULL),
 ('Summer Collection', NULL),
 ('Autumn Collection', NULL),
-('Winter Collection', '2024-02-10 14:45:00'),
+('Winter Collection', '2024-02-10'),
 ('Premium Collection', NULL),
 ('Organic Collection', NULL),
 ('Gift Collection', NULL),
-('Natural Remedies', '2024-03-01 11:20:00');
+('Natural Remedies', '2024-03-01');
 
 -- Insert data into products_shapes (same as previous)
 INSERT INTO products_shapes (product_shape_name, product_shape_archive) VALUES
 ('Jar', NULL),
 ('Bottle', NULL),
 ('Hexagonal Jar', NULL),
-('Square Jar', '2024-01-20 10:15:00'),
+('Square Jar', '2024-01-20'),
 ('Gift Box', NULL),
 ('Tube', NULL),
 ('Comb Frame', NULL),
@@ -59,11 +148,11 @@ INSERT INTO products_shapes (product_shape_name, product_shape_archive) VALUES
 INSERT INTO beehives (beehive_name, beehive_archive) VALUES
 ('Wildflower Meadow', NULL),
 ('Orchard Grove', NULL),
-('Mountain Ridge', '2024-02-05 08:30:00'),
+('Mountain Ridge', '2024-02-05'),
 ('Forest Edge', NULL),
 ('Lavender Fields', NULL),
 ('Riverside Hives', NULL),
-('Valley Apiary', '2024-01-10 16:45:00'),
+('Valley Apiary', '2024-01-10'),
 ('Clover Fields', NULL);
 
 -- Insert data into products_lots (same as previous)
@@ -72,48 +161,48 @@ INSERT INTO products_lots (product_lot_name, product_lot_year, fk_beehive_id, pr
 ('102', 2024, 2, NULL),
 ('103', 2024, 3, NULL),
 ('104', 2024, 4, NULL),
-('105', 2024, 5, '2024-02-15 13:20:00'),
+('105', 2024, 5, '2024-02-15'),
 ('106', 2024, 6, NULL),
 ('107', 2024, 7, NULL),
 ('108', 2024, 8, NULL),
-('201', 2023, 1, '2024-03-05 09:40:00'),
+('201', 2023, 1, '2024-03-05'),
 ('202', 2023, 2, NULL);
 
 -- Insert data into products (same as previous)
 INSERT INTO products (product_name, product_weight, fk_product_category_id, fk_product_type_id, fk_product_shape_id, fk_product_lot_id, product_archive) VALUES
 ('Wildflower Raw Honey', 500, 1, 1, 1, 1, NULL),
 ('Acacia Creamed Honey', 350, 2, 2, 1, 2, NULL),
-('Lavender Infused Honey', 250, 5, 3, 3, 5, '2024-02-20 11:30:00'),
+('Lavender Infused Honey', 250, 5, 3, 3, 5, '2024-02-20'),
 ('Pure Honeycomb', 400, 4, 4, 7, 3, NULL),
 ('Premium Propolis Extract', 100, 8, 5, 6, 4, NULL),
-('Organic Bee Pollen', 200, 6, 6, 1, 6, '2024-01-25 14:15:00'),
+('Organic Bee Pollen', 200, 6, 6, 1, 6, '2024-01-25'),
 ('Royal Jelly Premium', 50, 5, 7, 6, 7, NULL),
 ('Natural Beeswax Candle Set', 150, 7, 8, 5, 8, NULL),
 ('Heather Honey', 500, 3, 1, 4, 9, NULL),
 ('Orange Blossom Honey', 250, 2, 1, 2, 10, NULL),
 ('Manuka Honey Special Reserve', 150, 5, 1, 3, 1, NULL),
-('Buckwheat Raw Honey', 500, 3, 1, 1, 2, '2024-03-02 10:45:00'),
+('Buckwheat Raw Honey', 500, 3, 1, 1, 2, '2024-03-02'),
 ('Eucalyptus Honey', 350, 6, 1, 2, 3, NULL),
 ('Linden Honey', 250, 1, 1, 1, 4, NULL),
 ('Clover Honey', 500, 2, 1, 4, 5, NULL),
 ('Beeswax Food Wraps', NULL, 7, 8, 5, 6, NULL),
 ('Propolis Tincture', 30, 8, 5, 6, 7, NULL),
-('Honeycomb Gift Box', 300, 7, 4, 5, 8, '2024-02-28 15:40:00'),
+('Honeycomb Gift Box', 300, 7, 4, 5, 8, '2024-02-28'),
 ('Chestnut Honey', 500, 3, 1, 1, 9, NULL),
 ('Thyme Honey', NULL, 1, 1, 2, 10, NULL);
 
 -- Insert data into receipts
 INSERT INTO receipts (receipt_total_price, receipt_date_sold) VALUES
-(124.50, '2024-01-15 10:23:45'),
-(76.80, '2024-01-22 14:35:12'),
-(198.25, '2024-01-30 09:15:27'),
-(45.00, '2024-02-05 16:42:38'),
-(312.75, '2024-02-12 11:30:05'),
-(87.20, '2024-02-20 15:18:54'),
-(156.40, '2024-02-28 10:05:32'),
-(234.60, '2024-03-05 13:45:29'),
-(67.90, '2024-03-10 09:22:17'),
-(189.30, '2024-03-12 14:55:03');
+(124.50, '2024-01-15'),
+(76.80, '2024-01-22'),
+(198.25, '2024-01-30'),
+(45.00, '2024-02-05'),
+(312.75, '2024-02-12'),
+(87.20, '2024-02-20'),
+(156.40, '2024-02-28'),
+(234.60, '2024-03-05'),
+(67.90, '2024-03-10'),
+(189.30, '2024-03-12');
 
 -- Insert data into suppliers_receipts
 INSERT INTO suppliers_receipts (fk_supplier_id, fk_receipt_id) VALUES
@@ -139,7 +228,7 @@ INSERT INTO receipts_products (receipt_product_quantity, receipt_product_unity_p
 (10, 18.50, 1, 5),
 (5, 14.75, 9, 5),
 (2, 19.50, 12, 5),
-(NULL, 15.90, 15, 6),
+(1, 15.90, 15, 6),
 (2, 19.75, 17, 6),
 (5, 16.80, 4, 7),
 (3, 23.40, 18, 7),

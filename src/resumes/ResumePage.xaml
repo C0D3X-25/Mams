@@ -22,15 +22,13 @@
            </Grid.ColumnDefinitions>
 
            <!--Header-->
-           <userControls:UCHeader 
-               x:Name="header" 
+            <userControls:UCHeader 
                Grid.Row="0"
                title="Résumé">
 
-           </userControls:UCHeader>
-           <!--Header-->
+            </userControls:UCHeader>
 
-           <!--Body-->
+            <!--Body-->
            <Grid Grid.Row="1">
                <Grid.RowDefinitions>
                    <RowDefinition/>
@@ -43,12 +41,11 @@
                </Grid.ColumnDefinitions>
 
                <!--Menu-->
-               <userControls:UCMenu x:Name="pages_menu">
+                <userControls:UCMenu>
 
-               </userControls:UCMenu>
-               <!--Menu-->
+                </userControls:UCMenu>
 
-               <!--Content-->
+                <!--Content-->
                <Grid Grid.Column="1" 
                      Background="#FFE0A5A5" 
                      Margin="3,3,10,3">
@@ -123,67 +120,68 @@
                        <!--Resume Views-->
                        <Grid Grid.Column="0" Grid.Row="1"
                              Margin="5">
-                           <Grid.RowDefinitions>
-                               <RowDefinition Height="1*"/>
-                               <RowDefinition Height="10*"/>
-                           </Grid.RowDefinitions>
-                           <Grid.ColumnDefinitions>
-                               <ColumnDefinition/>
-                               <ColumnDefinition/>
-                           </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="10*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
 
-                           <Label 
+                            <Label 
                                Grid.Column="0" Grid.Row="0"
-                               Content="Frais" 
-                               FontSize="20"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"
-                               
-                           ></Label>
-
-                           <Label 
-                               Grid.Column="1" Grid.Row="0"
                                Content="Bénéfices" 
                                FontSize="20"
                                HorizontalAlignment="Center" VerticalAlignment="Center"
                                
                            ></Label>
 
-                           <!--Fees-->
+                           <!--Profit-->
                            <ListView
                                Grid.Column="0" Grid.Row="1"
                                FontSize="14"
                                Margin="0,0,5,0"
-                               ItemsSource="{Binding m_list_items}"
-                               SelectedItem="{Binding m_selected_item}">
+                               ItemsSource="{Binding _m_list_profit_item}">
                                <ListView.View>
                                    <GridView>
-                                       <GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_lot_id}"/>
-                                       <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_lot_name}"/>
-                                       <GridViewColumn Header="Année" DisplayMemberBinding="{Binding product_lot_year}"/>
-                                       <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding beehive_name}"/>
-                                       <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding product_lot_archive}"/>
+                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding profit_id}"/>
+                                        <GridViewColumn Header="Client" DisplayMemberBinding="{Binding client_name}"/>
+                                        <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
+                                        <GridViewColumn Header="Année" DisplayMemberBinding="{Binding profit_year}"/>
+                                        <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding profit_price_unity}"/>
+                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding profit_price_total}"/>
                                    </GridView>
                                </ListView.View>
                            </ListView>
 
-                           <!--Profil-->
+                            <Label 
+                               Grid.Column="1" Grid.Row="0"
+                               Content="Frais" 
+                               FontSize="20"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               
+                           ></Label>
+
+                            <!--Fees-->
                            <ListView
                                Grid.Column="1" Grid.Row="1"
                                FontSize="14"
                                Margin="5,0,0,0"
-                               ItemsSource="{Binding m_list_items}"
-                               SelectedItem="{Binding m_selected_item}">
+                               ItemsSource="{Binding _m_list_fee_item}">
                                <ListView.View>
                                    <GridView>
-                                       <GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_lot_id}"/>
-                                       <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_lot_name}"/>
-                                       <GridViewColumn Header="Année" DisplayMemberBinding="{Binding product_lot_year}"/>
-                                       <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding beehive_name}"/>
-                                       <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding product_lot_archive}"/>
+                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding fee_id}"/>
+                                        <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding supplier_name}"/>
+                                        <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
+                                        <GridViewColumn Header="Année" DisplayMemberBinding="{Binding fee_year}"/>
+                                        <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding fee_price_unity}"/>
+                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding fee_price_total}"/>
                                    </GridView>
                                </ListView.View>
                            </ListView>
                        </Grid>
+
 
                        <Grid Grid.Column="0" Grid.Row="2"
                              Margin="5">
@@ -199,13 +197,13 @@
                            
                            <!--Total Label-->
                            <Label
-                               Grid.Column="0" Grid.Row="1"
+                               Grid.Column="0" Grid.Row="0"
                                HorizontalContentAlignment="Right"
                                FontSize="16"
                                Content="Total Bénéfices :"
                            ></Label>
                            <Label
-                               Grid.Column="0" Grid.Row="0"
+                               Grid.Column="0" Grid.Row="1"
                                HorizontalContentAlignment="Right"
                                FontSize="16"
                                Content="Total Frais :"

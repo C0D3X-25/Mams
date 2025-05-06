@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS entities (
     entity_email VARCHAR(255),
     entity_city VARCHAR(50),
     entity_address VARCHAR(255),
-    entity_archive DATETIME
+    entity_archive DATE
 );
 
 CREATE TABLE IF NOT EXISTS suppliers (
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS clients (
 CREATE TABLE IF NOT EXISTS receipts (
     receipt_id INT PRIMARY KEY AUTO_INCREMENT,
     receipt_total_price DECIMAL(9,2) NOT NULL,
-    receipt_date_sold DATETIME NOT NULL
+    receipt_date_sold DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS suppliers_receipts(
@@ -41,32 +41,32 @@ CREATE TABLE IF NOT EXISTS clients_receipts(
 CREATE TABLE IF NOT EXISTS products_types (
     product_type_id INT PRIMARY KEY AUTO_INCREMENT,
     product_type_name VARCHAR(100) NOT NULL,
-    product_type_archive DATETIME
+    product_type_archive DATE
 );
 
 CREATE TABLE IF NOT EXISTS products_categories (
     product_category_id INT PRIMARY KEY AUTO_INCREMENT,
     product_category_name VARCHAR(100) NOT NULL,
-    product_category_archive DATETIME
+    product_category_archive DATE
 );
 
 CREATE TABLE IF NOT EXISTS products_shapes (
     product_shape_id INT PRIMARY KEY AUTO_INCREMENT,
     product_shape_name VARCHAR(100) NOT NULL,
-    product_shape_archive DATETIME
+    product_shape_archive DATE
 );
 
 CREATE TABLE IF NOT EXISTS beehives (
     beehive_id INT PRIMARY KEY AUTO_INCREMENT,
     beehive_name VARCHAR(50) NOT NULL,
-    beehive_archive DATETIME
+    beehive_archive DATE
 );
 
 CREATE TABLE IF NOT EXISTS products_lots (
     product_lot_id INT PRIMARY KEY AUTO_INCREMENT,
     product_lot_name VARCHAR(50) NOT NULL,
     product_lot_year INT NOT NULL,
-    product_lot_archive DATETIME,
+    product_lot_archive DATE,
     fk_beehive_id INT REFERENCES beehives(beehive_id)
 );
 
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS products (
     product_id INT PRIMARY KEY AUTO_INCREMENT,
     product_name VARCHAR(100) NOT NULL,
     product_weight INT,
-    product_archive DATETIME,
+    product_archive DATE,
     fk_product_type_id INT NOT NULL REFERENCES products_types(product_type_id),
     fk_product_category_id INT REFERENCES products_categories(product_category_id),
     fk_product_shape_id INT REFERENCES products_shapes(product_shape_id),
