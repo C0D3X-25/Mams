@@ -17,15 +17,6 @@ public class ReceiptModel : ABaseModel,
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-
-        ReceiptProductModel receipt_product_model = new();
-        ReceiptClientModel receipt_client_model = new();
-        ReceiptSupplierModel receipt_supplier_model = new();
-
-        receipt_product_model.deleteItemWithReceiptFK(int.Parse(id));
-        receipt_client_model.deleteItemWithReceiptFK(int.Parse(id));
-        receipt_supplier_model.deleteItemWithReceiptFK(int.Parse(id));
-
         return SDatabaseModel.deleteItem(this, id, m_COL_ID, "", m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
@@ -79,8 +70,8 @@ public class ReceiptModel : ABaseModel,
 
         if (item.receipt_id == 0) {
 
-            //if (checkIfItemExist(m_TBL_NAME, m_COL_NAME, item.product_name)) {
-            //    // TODO
+            //if () {
+            //    // TODO: check If Item Exist
             //    return false;
             //}
 
@@ -104,41 +95,51 @@ public class ReceiptModel : ABaseModel,
             cmd.Parameters.AddWithValue("@date_created", item.receipt_date_created);
             cmd.ExecuteNonQuery();
 
-            ReceiptProductModel receipt_product_model = new();
-            ReceiptClientModel receipt_client_model = new();
-            ReceiptSupplierModel receipt_supplier_model = new();
-
-            ObservableCollection<ReceiptProductItem> receipt_product_items = new();
-
-            ReceiptClientItem receipt_client_item = new() {
-                fk_receipt_id = item.receipt_id,
-                fk_client_id = item.fk_client_id
-            };
-            ReceiptSupplierItem receipt_supplier_item = new() {
-                fk_receipt_id = item.receipt_id,
-                fk_supplier_id = item.fk_supplier_id
-            };
-
-            if (receipt_client_item.fk_client_id != 0) {
-                receipt_client_model.saveItem(receipt_client_item);
-            }
-            else {
-                if (receipt_supplier_item.fk_supplier_id != 0) {
-                    receipt_supplier_model.saveItem(receipt_supplier_item);
-                }
-            }
-
-            // TODO: need to get all the products then add them a receipt id, maybe a other save method where all save are done in same time ?
-            foreach (ReceiptProductItem receipt_product_item in item.receipt_product_items) {
-                receipt_product_item.fk_receipt_id = item.receipt_id;
-                receipt_product_model.saveItem(receipt_product_item);
-            }
-
             return true;
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return false;
+        }
+    }
+
+
+    public int getLastID() {
+        using MySqlConnection? conn = _m_conn.openConnection();
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT LAST_INSERT_ID() AS {m_COL_ID}",
+                conn
+            );
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            if (reader.Read()) {
+                MessageBox.Show($"Mams.src.receipts.ReceiptModel.getLastID(): {reader.GetSafeValue<int>(m_COL_ID)}"); // BUG ??
+                return reader.GetSafeValue<int>(m_COL_ID);
+            }
+            return 0;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return 0;
+        }
+    }
+
+
+    public int getNumberOfRows() {
+
+        using MySqlConnection? conn = _m_conn.openConnection();
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT COUNT(*) FROM {m_TBL_NAME};",
+                conn
+            );
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return 0;
         }
     }
 }

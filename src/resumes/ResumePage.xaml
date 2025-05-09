@@ -142,13 +142,14 @@
                                Grid.Column="0" Grid.Row="1"
                                FontSize="14"
                                Margin="0,0,5,0"
-                               ItemsSource="{Binding _m_list_profit_item}">
+                               ItemsSource="{Binding m_list_profit_item}">
                                <ListView.View>
                                    <GridView>
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding profit_id}"/>
                                         <GridViewColumn Header="Client" DisplayMemberBinding="{Binding client_name}"/>
                                         <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
                                         <GridViewColumn Header="Année" DisplayMemberBinding="{Binding profit_year}"/>
+                                        <GridViewColumn Header="Quantité" DisplayMemberBinding="{Binding profit_quantity}"/>
                                         <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding profit_price_unity}"/>
                                         <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding profit_price_total}"/>
                                    </GridView>
@@ -168,13 +169,14 @@
                                Grid.Column="1" Grid.Row="1"
                                FontSize="14"
                                Margin="5,0,0,0"
-                               ItemsSource="{Binding _m_list_fee_item}">
+                               ItemsSource="{Binding m_list_fee_item}">
                                <ListView.View>
                                    <GridView>
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding fee_id}"/>
                                         <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding supplier_name}"/>
                                         <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
                                         <GridViewColumn Header="Année" DisplayMemberBinding="{Binding fee_year}"/>
+                                        <GridViewColumn Header="Quantité" DisplayMemberBinding="{Binding fee_quantity}"/>
                                         <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding fee_price_unity}"/>
                                         <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding fee_price_total}"/>
                                    </GridView>

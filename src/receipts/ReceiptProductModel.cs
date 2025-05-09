@@ -21,38 +21,47 @@ public class ReceiptProductModel : ABaseModel,
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        throw new NotImplementedException();
+        return SDatabaseModel.deleteItem(this, id, m_COL_FK_RECEIPT, "", m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        throw new NotImplementedException();
-    }
-
-
-    public bool deleteItemWithReceiptFK(int fk_receipt, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-
-        if (fk_receipt == 0) {
-            return false;
-        }
-        using MySqlConnection? conn = _m_conn.openConnection();
-
-        try {
-            using MySqlCommand cmd = new(
-                $"DELETE FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
-                conn
-            );
-            cmd.Parameters.AddWithValue("@fk_receipt", fk_receipt);
-            return cmd.ExecuteNonQuery() > 0;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
-        }
+        return deleteItem(id.ToString(), delete_type);
     }
 
 
     public ReceiptProductItem? getItemByID(string id) {
-        throw new NotImplementedException();
+
+        using MySqlConnection? conn = _m_conn.openConnection();
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT {m_COL_ID}, " +
+                $"{m_COL_QUANTITY}, " +
+                $"{m_COL_UNITY_PRICE} " +
+                $"{m_COL_FK_PRODUCT} " +
+                $"{m_COL_FK_RECEIPT} " +
+                $"FROM {m_TBL_NAME} " +
+                $"WHERE {m_COL_ID} = @id;",
+                conn
+            );
+
+            cmd.Parameters.AddWithValue("@id", id);
+            using MySqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read()) {
+                return new ReceiptProductItem {
+                    receipt_product_id = reader.GetSafeValue<int>(m_COL_ID),
+                    receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
+                    receipt_product_unity_price = reader.GetSafeValue<double>(m_COL_UNITY_PRICE),
+                    fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT),
+                    fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT)
+                };
+            }
+            return null;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return null;
+        }
     }
 
 
@@ -92,7 +101,7 @@ public class ReceiptProductModel : ABaseModel,
         if (item == null) {
             return false;
         }
-        if (item.fk_receipt_id == 0 || item.fk_receipt_id == 0) {
+        if (item.fk_receipt_id == 0 || item.fk_product_id == 0) {
             return false;
         }
 
@@ -105,8 +114,9 @@ public class ReceiptProductModel : ABaseModel,
                     $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT} " +
                     $"FROM {m_TBL_NAME} " +
                     $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt " +
-                    $"AND {m_COL_FK_PRODUCT} = @fk_product" +
-                    $"AND {m_COL_UNITY_PRICE} = @quantity;",
+                    $"AND {m_COL_FK_PRODUCT} = @fk_product " +
+                    $"AND {m_COL_QUANTITY} = @quantity " +
+                    $"AND {m_COL_UNITY_PRICE} = @unity_price;",
                     conn
                 );
 
@@ -139,7 +149,7 @@ public class ReceiptProductModel : ABaseModel,
     }
 
 
-    public ObservableCollection<ReceiptProductItem> getListItemWithReceiptFK(string fk_receipt) {
+    public ObservableCollection<ReceiptProductItem> getListItemWithReceiptID(string fk_receipt) {
 
         ObservableCollection<ReceiptProductItem> items = new();
 
@@ -177,16 +187,16 @@ public class ReceiptProductModel : ABaseModel,
     }
 
 
-    public bool deleteListItemWithFkEntity(string fk_receipt) {
+    //public bool deleteListItemWithReceiptID(string fk_receipt) {
 
-        ObservableCollection<ReceiptProductItem> items = getListItemWithReceiptFK(fk_receipt);
+    //    ObservableCollection<ReceiptProductItem> items = getListItemWithReceiptID(fk_receipt);
 
-        if (items.Count == 0) {
-            return false;
-        }
-        foreach (ReceiptProductItem item in items) {
-            deleteItemWithReceiptFK(item.fk_receipt_id);
-        }
-        return true;
-    }
+    //    if (items.Count == 0) {
+    //        return false;
+    //    }
+    //    foreach (ReceiptProductItem item in items) {
+    //        deleteItemWithReceiptFK(item.fk_receipt_id);
+    //    }
+    //    return true;
+    //}
 }

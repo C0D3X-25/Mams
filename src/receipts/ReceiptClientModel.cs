@@ -16,40 +16,39 @@ public class ReceiptClientModel : ABaseModel,
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        throw new NotImplementedException();
+        return SDatabaseModel.deleteItem(this, id, m_COL_FK_RECEIPT, "", m_TBL_NAME, delete_type);
     }
-
-
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        throw new NotImplementedException();
-    }
-
-
-    public bool deleteItemWithReceiptFK(int fk_receipt, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-
-        if (fk_receipt == 0) {
-            return false;
-        }
-        using MySqlConnection? conn = _m_conn.openConnection();
-
-        try {
-            using MySqlCommand cmd = new(
-                $"DELETE FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
-                conn
-            );
-            cmd.Parameters.AddWithValue("@fk_receipt", fk_receipt);
-            return cmd.ExecuteNonQuery() > 0;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
-        }
+        return deleteItem(id.ToString(), delete_type);
     }
 
 
     public ReceiptClientItem? getItemByID(string id) {
-        throw new NotImplementedException();
+
+        using MySqlConnection? conn = _m_conn.openConnection();
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_CLIENT} " +
+                $"FROM {m_TBL_NAME} " +
+                $"WHERE {m_COL_FK_RECEIPT} = @id;",
+                conn
+            );
+            cmd.Parameters.AddWithValue("@id", id);
+
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            if (reader.Read()) {
+                return new ReceiptClientItem {
+                    fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
+                    fk_client_id = reader.GetSafeValue<int>(m_COL_FK_CLIENT)
+                };
+            }
+            return null;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return null;
+        }
     }
 
 
@@ -130,7 +129,7 @@ public class ReceiptClientModel : ABaseModel,
     }
 
 
-    public ObservableCollection<ReceiptClientItem> getListItemWithReceiptFK(string fk_receipt) {
+    public ObservableCollection<ReceiptClientItem> getListItemWithReceiptID(string fk_receipt) {
 
         ObservableCollection<ReceiptClientItem> items = new();
 
@@ -165,19 +164,5 @@ public class ReceiptClientModel : ABaseModel,
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return items;
         }
-    }
-
-
-    public bool deleteListItemWithFkEntity(string fk_receipt) {
-
-        ObservableCollection<ReceiptClientItem> items = getListItemWithReceiptFK(fk_receipt);
-
-        if (items.Count == 0) {
-            return false;
-        }
-        foreach (ReceiptClientItem item in items) {
-            deleteItemWithReceiptFK(item.fk_receipt_id);
-        }
-        return true;
     }
 }

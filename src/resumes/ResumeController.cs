@@ -10,6 +10,7 @@ using Mams.src.productsShapes;
 using Mams.src.productsTypes;
 using Mams.src.profits;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Mams.src.resumes;
 
@@ -22,6 +23,8 @@ public class ResumeController : ABaseController {
     private readonly ProductTypeModel _m_product_type_model;
     private readonly ProductLotModel _m_product_lot_model;
     private readonly BeehiveModel _m_beehive_model;
+    private readonly ProfitModel _m_profit_model;
+    private readonly FeeModel _m_fee_model;
 
     private ObservableCollection<EntityItem>? _m_list_entity_all;
     private ObservableCollection<EntityItem>? _m_list_entity_not_archived;
@@ -67,8 +70,8 @@ public class ResumeController : ABaseController {
         get { return _m_selected_table; }
         set {
             _m_selected_table = value;
-            onPropertyChanged();
             updateListSearchItems();
+            onPropertyChanged();
         }
     }
 
@@ -124,9 +127,34 @@ public class ResumeController : ABaseController {
         _m_product_type_model = new();
         _m_product_lot_model = new();
         _m_beehive_model = new();
+        _m_profit_model = new();
+        _m_fee_model = new();
 
         populateListOfItems();
+        populateListTable();
 
+        updateProfits();
+        updateFees();
+        updateListSearchItems();
+    }
+
+
+    private void updateProfits() {
+
+        // search all
+        if (_m_selected_search_item == null) {
+            m_list_profit_item = _m_profit_model.getTable();
+        }
+
+    }
+
+
+    private void updateFees() {
+
+    }
+
+
+    private void populateListTable() {
         m_list_table = new ObservableCollection<DatabaseTablesNameItem> {
             new(){ m_name_in_database = "", m_name_to_display = "" }, // search all
             new(){ m_name_in_database = EntityModel.m_TBL_NAME, m_name_to_display = "Client/Fournisseur" },
@@ -137,20 +165,6 @@ public class ResumeController : ABaseController {
             new(){ m_name_in_database = ProductTypeModel.m_TBL_NAME, m_name_to_display = "Type" },
             new(){ m_name_in_database = ProductLotModel.m_TBL_NAME, m_name_to_display = "Lot" }
         };
-
-        updateProfits();
-        updateFees();
-        updateListSearchItems();
-    }
-
-
-    private void updateProfits() {
-
-    }
-
-
-    private void updateFees() {
-
     }
 
 
@@ -239,7 +253,7 @@ public class ResumeController : ABaseController {
                         });
                     }
                 }
-                break;
+            break;
             case BeehiveModel._m_TBL_NAME:
                 if (_m_list_beehive_not_archived != null) {
                     foreach (BeehiveItem item in _m_list_beehive_not_archived) {
@@ -249,7 +263,7 @@ public class ResumeController : ABaseController {
                         });
                     }
                 }
-                break;
+            break;
             case ProductModel.m_TBL_NAME:
                 if (_m_list_product_not_archived != null) {
                     foreach (ProductItem item in _m_list_product_not_archived) {
@@ -259,7 +273,7 @@ public class ResumeController : ABaseController {
                         });
                     }
                 }
-                break;
+            break;
             case ProductShapeModel.m_TBL_NAME:
                 if (_m_list_product_shape_not_archived != null) {
                     foreach (ProductShapeItem item in _m_list_product_shape_not_archived) {
@@ -269,7 +283,7 @@ public class ResumeController : ABaseController {
                         });
                     }
                 }
-                break;
+            break;
             case ProductCategoryModel.m_TBL_NAME:
                 if (_m_list_product_category_not_archived != null) {
                     foreach (ProductCategoryItem item in _m_list_product_category_not_archived) {
@@ -279,7 +293,7 @@ public class ResumeController : ABaseController {
                         });
                     }
                 }
-                break;
+            break;
             case ProductTypeModel.m_TBL_NAME:
                 if (_m_list_product_type_not_archived != null) {
                     foreach (ProductTypeItem item in _m_list_product_type_not_archived) {
@@ -289,7 +303,7 @@ public class ResumeController : ABaseController {
                         });
                     }
                 }
-                break;
+            break;
             case ProductLotModel.m_TBL_NAME:
                 if (_m_list_product_lot_not_archived != null) {
                     foreach (ProductLotItem item in _m_list_product_lot_not_archived) {
@@ -299,7 +313,7 @@ public class ResumeController : ABaseController {
                         });
                     }
                 }
-                break;
+            break;
         }
     }
 }

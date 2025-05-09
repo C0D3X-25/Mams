@@ -1,26 +1,20 @@
 ﻿using Mams.src.databaseOperations;
+using Mams.src.entities;
 using Mams.src.models;
+using Mams.src.products;
+using Mams.src.receipts;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Mams.src.profits;
 
 public class ProfitModel : ABaseModel,
     ICrudOperation<ProfitItem> {
 
-    public const string m_TBL_NAME = "profits";
-    //public const string m_COL_ID = "profit_id";
-    //public const string m_COL_CLIENT_NAME = "client_name";
-    //public const string m_COL_PRODUCT_NAME = "product_name";
-    //public const string m_COL_YEAR = "profit_year";
-    //public const string m_COL_PRICE_UNITY = "profit_price_unity";
-    //public const string m_COL_PRICE_TOTAL = "profit_price_total";
-
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         throw new NotImplementedException();
     }
-
-
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         throw new NotImplementedException();
     }
@@ -37,7 +31,37 @@ public class ProfitModel : ABaseModel,
 
 
     public ObservableCollection<ProfitItem> getTable() {
-        throw new NotImplementedException();
+
+        ReceiptCascadeOperationModel receipt_operation_model = new();
+        EntityModel entity_model = new();
+        ProductModel product_model = new();
+
+        ObservableCollection<ProfitItem> items = new();
+
+        var item_to_sort = receipt_operation_model.getTable();
+
+        foreach (var item in item_to_sort) {
+
+            int receipt_id = item.receipt_item.receipt_id;
+            string client_name = entity_model.getItemByID(item.receipt_client_item.fk_client_id.ToString())?.entity_name ?? "";
+            string profit_year = item.receipt_item.receipt_date_created;
+
+            foreach (var product in item.receipt_product_items) {
+
+                ProfitItem profit_item = new();
+
+                profit_item.receipt_id = receipt_id;
+                profit_item.client_name = client_name;
+                profit_item.product_name = product_model.getItemByID(product.fk_product_id.ToString())?.product_name ?? "";
+                profit_item.profit_year = item.receipt_item.receipt_date_created;
+                profit_item.profit_quantity = product.receipt_product_quantity; // BUG: missing quantity
+                profit_item.profit_price_unity = product.receipt_product_unity_price; // BUG: missing price
+                profit_item.profit_price_total = profit_item.profit_quantity * profit_item.profit_price_unity; // BUG: missing total
+
+                items.Add(profit_item);
+            }
+        }
+        return items;
     }
 
 

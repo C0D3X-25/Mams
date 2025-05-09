@@ -1,7 +1,6 @@
 ﻿using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
-using Mams.src.suppliers;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -17,38 +16,39 @@ public class ReceiptSupplierModel : ABaseModel,
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        throw new NotImplementedException();
+        return SDatabaseModel.deleteItem(this, id, m_COL_FK_RECEIPT, "", m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        throw new NotImplementedException();
-    }
-
-
-    public bool deleteItemWithReceiptFK(int fk_receipt, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-
-        if (fk_receipt == 0) {
-            return false;
-        }
-        using MySqlConnection? conn = _m_conn.openConnection();
-
-        try {
-            using MySqlCommand cmd = new(
-                $"DELETE FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
-                conn
-            );
-            cmd.Parameters.AddWithValue("@fk_receipt", fk_receipt);
-            return cmd.ExecuteNonQuery() > 0;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
-        }
+        return deleteItem(id.ToString(), delete_type);
     }
 
 
     public ReceiptSupplierItem? getItemByID(string id) {
-        throw new NotImplementedException();
+
+        using MySqlConnection? conn = _m_conn.openConnection();
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER} " +
+                $"FROM {m_TBL_NAME} " +
+                $"WHERE {m_COL_FK_RECEIPT} = @id;",
+                conn
+            );
+            cmd.Parameters.AddWithValue("@id", id);
+
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            if (reader.Read()) {
+                return new ReceiptSupplierItem {
+                    fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
+                    fk_supplier_id = reader.GetSafeValue<int>(m_COL_FK_SUPPLIER)
+                };
+            }
+            return null;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return null;
+        }
     }
 
 
@@ -130,7 +130,7 @@ public class ReceiptSupplierModel : ABaseModel,
     }
 
 
-    public ObservableCollection<ReceiptSupplierItem> getListItemWithReceiptFK(string fk_receipt) {
+    public ObservableCollection<ReceiptSupplierItem> getListItemWithReceiptID(string fk_receipt) {
 
         ObservableCollection<ReceiptSupplierItem> items = new();
 
@@ -165,19 +165,5 @@ public class ReceiptSupplierModel : ABaseModel,
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return items;
         }
-    }
-
-
-    public bool deleteListItemWithFkEntity(string fk_receipt) {
-
-        ObservableCollection<ReceiptSupplierItem> items = getListItemWithReceiptFK(fk_receipt);
-
-        if (items.Count == 0) {
-            return false;
-        }
-        foreach (ReceiptSupplierItem item in items) {
-            deleteItemWithReceiptFK(item.fk_receipt_id);
-        }
-        return true;
     }
 }
