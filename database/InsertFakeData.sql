@@ -207,13 +207,11 @@ INSERT INTO receipts (receipt_total_price, receipt_date_created) VALUES
 -- Insert data into receipts_suppliers
 INSERT INTO receipts_suppliers (fk_supplier_id, fk_receipt_id) VALUES
 (1, 1), (2, 2), (3, 3), (4, 4),
-(5, 5), (6, 6), (7, 7), (8, 8),
-(9, 9), (10, 10);
+(5, 5);
 
 -- Insert data into receipts_clients
 INSERT INTO receipts_clients (fk_client_id, fk_receipt_id) VALUES
-(1, 1), (2, 2), (3, 3), (4, 4),
-(5, 5), (6, 6), (7, 7), (8, 8),
+(6, 6), (7, 7), (8, 8),
 (9, 9), (10, 10);
 
 -- Insert data into receipts_products
@@ -234,6 +232,6 @@ INSERT INTO receipts_products (receipt_product_quantity, receipt_product_unity_p
 (3, 23.40, 18, 7),
 (8, 18.50, 1, 8),
 (4, 21.90, 19, 8),
-(2, NULL, 11, 9),
+(2, 0, 11, 9),
 (6, 17.50, 14, 10),
 (4, 22.45, 16, 10);

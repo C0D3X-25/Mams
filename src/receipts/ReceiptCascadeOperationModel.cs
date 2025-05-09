@@ -15,16 +15,13 @@ public class ReceiptCascadeOperationModel : ABaseModel {
 
         ObservableCollection<ReceiptCascadeOperationItem> items = new();
 
-
-        int id = 0;
-        while (id < _m_receipt_model.getNumberOfRows()) {
+        foreach (var id in _m_receipt_model.getRowsID()) {
 
             var receipt = getReceiptByID(id.ToString());
 
             if (receipt != null) { 
                 items.Add(receipt);
             }
-            id++;
         }
         return items;
     }
@@ -32,11 +29,11 @@ public class ReceiptCascadeOperationModel : ABaseModel {
 
     public ReceiptCascadeOperationItem? getReceiptByID(string id) {
 
-        ReceiptCascadeOperationItem item = new();
-
         if (id == null) {
-            return item;
+            return null;
         }
+
+        ReceiptCascadeOperationItem item = new();
 
         item.receipt_item = _m_receipt_model.getItemByID(id) ?? new();
         item.receipt_client_item = _m_receipt_client_model.getItemByID(id) ?? new();

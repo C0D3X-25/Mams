@@ -71,6 +71,8 @@ public class ResumeController : ABaseController {
         set {
             _m_selected_table = value;
             updateListSearchItems();
+            updateProfits();
+            updateFees();
             onPropertyChanged();
         }
     }
@@ -141,22 +143,33 @@ public class ResumeController : ABaseController {
 
     private void updateProfits() {
 
-        // search all
+        // Search all profits
         if (_m_selected_search_item == null) {
             m_list_profit_item = _m_profit_model.getTable();
         }
-
+        // TODO: All the other searches
+        else {
+            m_list_profit_item = new();
+        }
     }
 
 
     private void updateFees() {
 
+        // Search all fees
+        if (_m_selected_search_item == null) {
+            m_list_fee_item = _m_fee_model.getTable();
+        }
+        // TODO: All the other searches
+        else {
+            m_list_fee_item = new();
+        }
     }
 
 
     private void populateListTable() {
         m_list_table = new ObservableCollection<DatabaseTablesNameItem> {
-            new(){ m_name_in_database = "", m_name_to_display = "" }, // search all
+            new(){ m_name_in_database = "", m_name_to_display = "" }, // Search all
             new(){ m_name_in_database = EntityModel.m_TBL_NAME, m_name_to_display = "Client/Fournisseur" },
             new(){ m_name_in_database = BeehiveModel._m_TBL_NAME, m_name_to_display = "Rucher" },
             new(){ m_name_in_database = ProductModel.m_TBL_NAME, m_name_to_display = "Produit" },

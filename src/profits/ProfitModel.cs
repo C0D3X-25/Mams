@@ -4,7 +4,6 @@ using Mams.src.models;
 using Mams.src.products;
 using Mams.src.receipts;
 using System.Collections.ObjectModel;
-using System.Windows;
 
 namespace Mams.src.profits;
 
@@ -42,6 +41,11 @@ public class ProfitModel : ABaseModel,
 
         foreach (var item in item_to_sort) {
 
+            // Skip the item if the client ID is 0, because it's a supplier receipt
+            if (item.receipt_client_item.fk_client_id == 0) { 
+                continue; 
+            }
+            
             int receipt_id = item.receipt_item.receipt_id;
             string client_name = entity_model.getItemByID(item.receipt_client_item.fk_client_id.ToString())?.entity_name ?? "";
             string profit_year = item.receipt_item.receipt_date_created;
@@ -54,9 +58,9 @@ public class ProfitModel : ABaseModel,
                 profit_item.client_name = client_name;
                 profit_item.product_name = product_model.getItemByID(product.fk_product_id.ToString())?.product_name ?? "";
                 profit_item.profit_year = item.receipt_item.receipt_date_created;
-                profit_item.profit_quantity = product.receipt_product_quantity; // BUG: missing quantity
-                profit_item.profit_price_unity = product.receipt_product_unity_price; // BUG: missing price
-                profit_item.profit_price_total = profit_item.profit_quantity * profit_item.profit_price_unity; // BUG: missing total
+                profit_item.profit_quantity = product.receipt_product_quantity;
+                profit_item.profit_price_unity = Math.Round(product.receipt_product_unity_price, 2);
+                profit_item.profit_price_total = Math.Round((profit_item.profit_quantity * profit_item.profit_price_unity), 2);
 
                 items.Add(profit_item);
             }

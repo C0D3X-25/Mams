@@ -145,7 +145,7 @@
                                ItemsSource="{Binding m_list_profit_item}">
                                <ListView.View>
                                    <GridView>
-                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding profit_id}"/>
+                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding receipt_id}"/>
                                         <GridViewColumn Header="Client" DisplayMemberBinding="{Binding client_name}"/>
                                         <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
                                         <GridViewColumn Header="Année" DisplayMemberBinding="{Binding profit_year}"/>
@@ -172,7 +172,7 @@
                                ItemsSource="{Binding m_list_fee_item}">
                                <ListView.View>
                                    <GridView>
-                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding fee_id}"/>
+                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding receipt_id}"/>
                                         <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding supplier_name}"/>
                                         <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
                                         <GridViewColumn Header="Année" DisplayMemberBinding="{Binding fee_year}"/>

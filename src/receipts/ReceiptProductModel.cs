@@ -36,9 +36,9 @@ public class ReceiptProductModel : ABaseModel,
             using MySqlCommand cmd = new(
                 $"SELECT {m_COL_ID}, " +
                 $"{m_COL_QUANTITY}, " +
-                $"{m_COL_UNITY_PRICE} " +
-                $"{m_COL_FK_PRODUCT} " +
-                $"{m_COL_FK_RECEIPT} " +
+                $"{m_COL_UNITY_PRICE}, " +
+                $"{m_COL_FK_PRODUCT}, " +
+                $"{m_COL_FK_RECEIPT}, " +
                 $"FROM {m_TBL_NAME} " +
                 $"WHERE {m_COL_ID} = @id;",
                 conn
@@ -51,7 +51,7 @@ public class ReceiptProductModel : ABaseModel,
                 return new ReceiptProductItem {
                     receipt_product_id = reader.GetSafeValue<int>(m_COL_ID),
                     receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.GetSafeValue<double>(m_COL_UNITY_PRICE),
+                    receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
                     fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT),
                     fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT)
                 };
@@ -73,7 +73,11 @@ public class ReceiptProductModel : ABaseModel,
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT} " +
+                $"SELECT {m_COL_ID}, " +
+                $"{m_COL_QUANTITY}, " +
+                $"{m_COL_UNITY_PRICE}, " +
+                $"{m_COL_FK_PRODUCT}, " +
+                $"{m_COL_FK_RECEIPT} " +
                 $"FROM {m_TBL_NAME};",
                 conn
             );
@@ -83,7 +87,7 @@ public class ReceiptProductModel : ABaseModel,
                 items.Add(new ReceiptProductItem {
                     receipt_product_id = reader.GetSafeValue<int>(m_COL_ID),
                     receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.GetSafeValue<double>(m_COL_UNITY_PRICE),
+                    receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
                     fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
                     fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
                 });
@@ -98,49 +102,32 @@ public class ReceiptProductModel : ABaseModel,
 
 
     public bool saveItem(ReceiptProductItem item) {
-        if (item == null) {
-            return false;
-        }
-        if (item.fk_receipt_id == 0 || item.fk_product_id == 0) {
+
+        if (!ValidateReceiptProduct(item)) {
             return false;
         }
 
         using MySqlConnection? conn = _m_conn.openConnection();
 
         try {
-            // Check if the item already exists in the database
-            {
-                using MySqlCommand cmd = new(
-                    $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT} " +
-                    $"FROM {m_TBL_NAME} " +
-                    $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt " +
-                    $"AND {m_COL_FK_PRODUCT} = @fk_product " +
-                    $"AND {m_COL_QUANTITY} = @quantity " +
-                    $"AND {m_COL_UNITY_PRICE} = @unity_price;",
-                    conn
-                );
-
-                using MySqlDataReader reader = cmd.ExecuteReader();
-                if (reader.HasRows) {
-                    return false;
-                }
-            }
-
-            // If not, insert the item into the database
-            {
-                using MySqlCommand cmd = new(
-                    $"INSERT INTO {m_TBL_NAME} " +
-                    $"({m_COL_QUANTITY}, {m_COL_UNITY_PRICE} " +
-                    $"{m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT}) " +
-                    $"VALUES (@quantity, @unity_price, @fk_receipt, @fk_product);",
-                    conn
-                );
-                cmd.Parameters.AddWithValue("@quantity", item.receipt_product_quantity);
-                cmd.Parameters.AddWithValue("@unity_price", item.receipt_product_unity_price);
-                cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
-                cmd.Parameters.AddWithValue("@fk_product", item.fk_product_id);
-                return cmd.ExecuteNonQuery() > 0;
-            }
+            // Check if the item already exists in the database, if not insert the item into the database
+            using MySqlCommand cmd = new(
+                $"INSERT INTO {m_TBL_NAME} ({m_COL_QUANTITY}, {m_COL_UNITY_PRICE}, " +
+                $"{m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT}) " +
+                $"SELECT @quantity, @unity_price, @fk_receipt, @fk_product " +
+                $"WHERE NOT EXISTS (SELECT 1 FROM {m_TBL_NAME} " +
+                $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt " +
+                $"AND {m_COL_FK_PRODUCT} = @fk_product " +
+                $"AND {m_COL_QUANTITY} = @quantity " +
+                $"AND {m_COL_UNITY_PRICE} = @unity_price)",
+                conn
+            );
+            cmd.Parameters.AddWithValue("@quantity", item.receipt_product_quantity);
+            cmd.Parameters.AddWithValue("@unity_price", item.receipt_product_unity_price);
+            cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
+            cmd.Parameters.AddWithValue("@fk_product", item.fk_product_id);
+            return cmd.ExecuteNonQuery() > 0;
+            
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
@@ -161,7 +148,11 @@ public class ReceiptProductModel : ABaseModel,
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT} " +
+                $"SELECT {m_COL_ID}, " +
+                $"{m_COL_QUANTITY}, " +
+                $"{m_COL_UNITY_PRICE}, " +
+                $"{m_COL_FK_PRODUCT}, " +
+                $"{m_COL_FK_RECEIPT} " +
                 $"FROM {m_TBL_NAME} " +
                 $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
                 conn
@@ -173,11 +164,13 @@ public class ReceiptProductModel : ABaseModel,
 
             while (reader.Read()) {
                 items.Add(new ReceiptProductItem {
+                    receipt_product_id = reader.GetSafeValue<int>(m_COL_ID),
+                    receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
+                    receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
                     fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
                     fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
                 });
             }
-
             return items;
         }
         catch (MySqlException ex) {
@@ -187,16 +180,11 @@ public class ReceiptProductModel : ABaseModel,
     }
 
 
-    //public bool deleteListItemWithReceiptID(string fk_receipt) {
-
-    //    ObservableCollection<ReceiptProductItem> items = getListItemWithReceiptID(fk_receipt);
-
-    //    if (items.Count == 0) {
-    //        return false;
-    //    }
-    //    foreach (ReceiptProductItem item in items) {
-    //        deleteItemWithReceiptFK(item.fk_receipt_id);
-    //    }
-    //    return true;
-    //}
+    private bool ValidateReceiptProduct(ReceiptProductItem item) {
+        return item != null
+            && item.receipt_product_quantity > 0
+            && item.receipt_product_unity_price >= 0
+            && item.fk_receipt_id > 0
+            && item.fk_product_id > 0;
+    }
 }

@@ -18,6 +18,8 @@ public static class SMySqlDataReaderExtensions {
             return (T)(object)reader.GetDateOnly(ordinal);
         if (typeof(T) == typeof(double))
             return (T)(object)reader.GetDouble(ordinal);
+        if (typeof(T) == typeof(decimal))
+            return (T)(object)reader.GetDecimal(ordinal);
 
         return (T)reader.GetValue(ordinal);
     }

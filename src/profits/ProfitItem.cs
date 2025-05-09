@@ -8,6 +8,6 @@ public class ProfitItem : ABaseItem{
     public string product_name { get; set; } = string.Empty;
     public string profit_year { get; set; } = string.Empty;
     public int profit_quantity { get; set; } = 0;
-    public double profit_price_unity { get; set; } = 0.0;
-    public double profit_price_total { get; set; } = 0.0;
+    public decimal profit_price_unity { get; set; } = 0.0M;
+    public decimal profit_price_total { get; set; } = 0.0M;
 }

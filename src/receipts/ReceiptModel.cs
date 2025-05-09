@@ -126,20 +126,26 @@ public class ReceiptModel : ABaseModel,
     }
 
 
-    public int getNumberOfRows() {
+    public ObservableCollection<int> getRowsID() {
 
         using MySqlConnection? conn = _m_conn.openConnection();
 
+        ObservableCollection<int> items = new();
+
         try {
             using MySqlCommand cmd = new(
-                $"SELECT COUNT(*) FROM {m_TBL_NAME};",
+                $"SELECT {m_COL_ID} FROM {m_TBL_NAME};",
                 conn
             );
-            return Convert.ToInt32(cmd.ExecuteScalar());
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read()) {
+                items.Add(reader.GetSafeValue<int>(m_COL_ID));
+            }
+            return items;
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return items;
         }
     }
 }
