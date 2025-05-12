@@ -111,7 +111,7 @@
                                SelectedItem="{Binding m_selected_search_item, UpdateSourceTrigger=PropertyChanged}">
                                <ComboBox.ItemTemplate>
                                    <DataTemplate>
-                                        <TextBlock Text="{Binding m_search_name_to_display, UpdateSourceTrigger=PropertyChanged}"/>
+                                        <TextBlock Text="{Binding search_name_to_display, UpdateSourceTrigger=PropertyChanged}"/>
                                    </DataTemplate>
                                </ComboBox.ItemTemplate>
                            </ComboBox>
@@ -148,7 +148,7 @@
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding receipt_id}"/>
                                         <GridViewColumn Header="Client" DisplayMemberBinding="{Binding client_name}"/>
                                         <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
-                                        <GridViewColumn Header="Année" DisplayMemberBinding="{Binding profit_year}"/>
+                                        <GridViewColumn Header="Année" DisplayMemberBinding="{Binding profit_date}"/>
                                         <GridViewColumn Header="Quantité" DisplayMemberBinding="{Binding profit_quantity}"/>
                                         <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding profit_price_unity}"/>
                                         <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding profit_price_total}"/>
@@ -175,7 +175,7 @@
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding receipt_id}"/>
                                         <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding supplier_name}"/>
                                         <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
-                                        <GridViewColumn Header="Année" DisplayMemberBinding="{Binding fee_year}"/>
+                                        <GridViewColumn Header="Année" DisplayMemberBinding="{Binding fee_date}"/>
                                         <GridViewColumn Header="Quantité" DisplayMemberBinding="{Binding fee_quantity}"/>
                                         <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding fee_price_unity}"/>
                                         <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding fee_price_total}"/>
@@ -222,19 +222,21 @@
                                Grid.Column="1" Grid.Row="0"
                                HorizontalContentAlignment="Left"
                                FontSize="16"
-                               Content="000"
+                               Content="{Binding m_total_profit}"
                            ></Label>
                            <Label
                                Grid.Column="1" Grid.Row="1"
                                HorizontalContentAlignment="Left"
                                FontSize="16"
-                               Content="000"
+                               Foreground="{Binding m_total_fee_color}"
+                               Content="{Binding m_total_fee}"
                            ></Label>
                            <Label
                                Grid.Column="1" Grid.Row="2"
                                HorizontalContentAlignment="Left"
                                FontSize="16"
-                               Content="000"
+                               Foreground="{Binding m_total_color}"
+                               Content="{Binding m_total}"
                            ></Label>
                        </Grid>
                    </Grid>

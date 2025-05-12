@@ -58,7 +58,7 @@ public class FeeModel : ABaseModel,
                 fee_item.receipt_id = receipt_id;
                 fee_item.supplier_name = supplier_name;
                 fee_item.product_name = product_model.getItemByID(product.fk_product_id.ToString())?.product_name ?? "";
-                fee_item.fee_year = item.receipt_item.receipt_date_created;
+                fee_item.fee_date = item.receipt_item.receipt_date_created;
                 fee_item.fee_quantity = product.receipt_product_quantity;
                 fee_item.fee_price_unity = Math.Round(product.receipt_product_unity_price, 2);
                 fee_item.fee_price_total = Math.Round((fee_item.fee_quantity * fee_item.fee_price_unity), 2);

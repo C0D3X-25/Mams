@@ -193,16 +193,16 @@ INSERT INTO products (product_name, product_weight, fk_product_category_id, fk_p
 
 -- Insert data into receipts
 INSERT INTO receipts (receipt_total_price, receipt_date_created) VALUES
-(124.50, '2024-01-15'),
-(76.80, '2024-01-22'),
-(198.25, '2024-01-30'),
+(124.50, '2025-01-15'),
+(76.80, '2025-01-22'),
+(198.25, '2021-01-30'),
 (45.00, '2024-02-05'),
 (312.75, '2024-02-12'),
-(87.20, '2024-02-20'),
-(156.40, '2024-02-28'),
+(87.20, '2022-02-20'),
+(156.40, '2025-02-28'),
 (234.60, '2024-03-05'),
-(67.90, '2024-03-10'),
-(189.30, '2024-03-12');
+(67.90, '2020-03-10'),
+(189.30, '2021-03-12');
 
 -- Insert data into receipts_suppliers
 INSERT INTO receipts_suppliers (fk_supplier_id, fk_receipt_id) VALUES
