@@ -127,4 +127,37 @@ public class ProductLotModel :
             return false;
         }
     }
+
+
+    public ObservableCollection<ProductLotItem> getProductLotWithBeehiveId(List<int> beehive_ids) {
+
+        ObservableCollection<ProductLotItem> table = new();
+
+        if (beehive_ids.Count == 0) {
+            return table;
+        }
+
+        using MySqlConnection? conn = _m_conn.openConnection();
+
+        string query = $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE} " +
+            $"FROM {m_TBL_NAME} " +
+            $"WHERE {m_COL_FK_BEEHIVE} IN ({string.Join(",", beehive_ids)})";
+
+        try {
+            using MySqlCommand cmd = new(query, conn);
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read()) {
+                table.Add(new ProductLotItem {
+                    product_lot_id = reader.GetSafeValue<int>(m_COL_ID),
+                    product_lot_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
+                    product_lot_year = reader.GetSafeValue<int>(m_COL_YEAR),
+                    fk_beehive_id = reader.GetSafeValue<int>(m_COL_FK_BEEHIVE)
+                });
+            }
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+        }
+        return table;
+    }
 }

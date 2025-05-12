@@ -1,13 +1,6 @@
-﻿using Mams.src.beehives;
-using Mams.src.controllers;
+﻿using Mams.src.controllers;
 using Mams.src.databaseOperations;
-using Mams.src.entities;
 using Mams.src.fees;
-using Mams.src.products;
-using Mams.src.productsCategories;
-using Mams.src.productsLots;
-using Mams.src.productsShapes;
-using Mams.src.productsTypes;
 using Mams.src.profits;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -144,8 +137,18 @@ public class ResumeController : ABaseController {
 
 
     private void updateDisplayedProfitsAndFeesLists() {
-        m_list_profit_item = _m_resume_model.getFilteredProfits(_m_selected_search_item);
-        m_list_fee_item = _m_resume_model.getFilteredFees(_m_selected_search_item);
+
+        if (m_selected_search_item == null) {
+            m_selected_search_item = new SearchItem();
+        }
+        if (m_selected_table == null) {
+            m_selected_table = new DatabaseTablesNameItem();
+        }
+
+        m_selected_search_item.search_table = m_selected_table.m_name_in_database;
+
+        m_list_profit_item = _m_resume_model.getFilteredProfits(m_selected_search_item);
+        m_list_fee_item = _m_resume_model.getFilteredFees(m_selected_search_item);
         updateDisplayedTotalTransactions();
     }
 

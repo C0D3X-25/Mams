@@ -151,5 +151,66 @@ internal class ProductModel : ABaseModel,
             return false;
         }
     }
+
+
+    public ObservableCollection<ProductItem> getProductWithProductTypeId(List<int> product_type_id) {
+        return getProductWith(m_COL_FK_PRODUCT_TYPE, product_type_id);
+    }
+
+
+    public ObservableCollection<ProductItem> getProductWithProductCategoryId(List<int> product_category_id) {
+        return getProductWith(m_COL_FK_PRODUCT_CATEGORY, product_category_id);
+    }
+
+
+    public ObservableCollection<ProductItem> getProductWithProductShapeId(List<int> product_shape_id) {
+        return getProductWith(m_COL_FK_PRODUCT_SHAPE, product_shape_id);
+    }
+
+
+    public ObservableCollection<ProductItem> getProductWithProductLotId(List<int> product_lot_id) {
+        return getProductWith(m_COL_FK_PRODUCT_LOT, product_lot_id);
+    }
+
+
+    private ObservableCollection<ProductItem> getProductWith(string col_name, List<int> ids) {
+
+        ObservableCollection<ProductItem> product_items = new();
+        using MySqlConnection? conn = _m_conn.openConnection();
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_WEIGHT}, " +
+                $"{m_COL_FK_PRODUCT_TYPE}, {m_COL_FK_PRODUCT_CATEGORY}, " +
+                $"{m_COL_FK_PRODUCT_SHAPE}, {m_COL_FK_PRODUCT_LOT} " +
+                $"FROM {m_TBL_NAME} " +
+                $"WHERE {col_name} IN ({string.Join(",", ids.Select((id, index) => $"@id{index}"))});",
+                conn
+            );
+
+            // Add parameters for each ID
+            for (int i = 0; i < ids.Count; i++) {
+                cmd.Parameters.AddWithValue($"@id{i}", ids[i]);
+            }
+
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read()) {
+                product_items.Add(new ProductItem {
+                    product_id = reader.GetSafeValue<int>(m_COL_ID),
+                    product_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
+                    product_weight = reader.GetSafeValue(m_COL_WEIGHT, 0),
+                    fk_product_type_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_TYPE, 0),
+                    fk_product_category_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_CATEGORY, 0),
+                    fk_product_shape_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_SHAPE, 0),
+                    fk_product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT, 0)
+                });
+            }
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+        }
+
+        return product_items;
+    }
 }
 

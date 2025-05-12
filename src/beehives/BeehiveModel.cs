@@ -1,6 +1,7 @@
 ﻿using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
+using Mams.src.products;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;

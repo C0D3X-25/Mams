@@ -9,10 +9,12 @@ using Mams.src.productsShapes;
 using Mams.src.productsTypes;
 using Mams.src.profits;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Mams.src.resumes;
 
-// This class is mainely used to manage the filter of the page Resume.
+// This class is mainely used to manage the filter of the page Resume,
+// that why this class doesn't inherit from ABaseModel
 public class ResumeModel {
 
     private readonly ProfitModel _m_profit_model;
@@ -51,14 +53,14 @@ public class ResumeModel {
 
 
     public readonly ObservableCollection<DatabaseTablesNameItem> m_search_tables = new() {
-        new(){ m_name_in_database = "", m_name_to_display = "" }, // Search all
-        new(){ m_name_in_database = EntityModel.m_TBL_NAME, m_name_to_display = "Client/Fournisseur" },
-        new(){ m_name_in_database = BeehiveModel._m_TBL_NAME, m_name_to_display = "Rucher" },
-        new(){ m_name_in_database = ProductModel.m_TBL_NAME, m_name_to_display = "Produit" },
-        new(){ m_name_in_database = ProductShapeModel.m_TBL_NAME, m_name_to_display = "Forme" },
-        new(){ m_name_in_database = ProductCategoryModel.m_TBL_NAME, m_name_to_display = "Catégorie" },
-        new(){ m_name_in_database = ProductTypeModel.m_TBL_NAME, m_name_to_display = "Type" },
-        new(){ m_name_in_database = ProductLotModel.m_TBL_NAME, m_name_to_display = "Lot" }
+        new(){ m_name_in_database = EDatabaseTableName.NONE, m_name_to_display = "" }, // Search all
+        new(){ m_name_in_database = EDatabaseTableName.ENTITY, m_name_to_display = "Client/Fournisseur" },
+        new(){ m_name_in_database = EDatabaseTableName.BEEHIVE, m_name_to_display = "Rucher" },
+        new(){ m_name_in_database = EDatabaseTableName.PRODUCT, m_name_to_display = "Produit" },
+        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_SHAPE, m_name_to_display = "Forme" },
+        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_CATEGORY, m_name_to_display = "Catégorie" },
+        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_TYPE, m_name_to_display = "Type" },
+        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_LOT, m_name_to_display = "Lot" }
     };
 
 
@@ -103,17 +105,202 @@ public class ResumeModel {
 
 
     private ObservableCollection<ProfitItem> filterProfitBy(SearchItem? search) {
-        // TODO: sort by other criteria
 
-        return _m_list_profit_items;
+        var filtered_data = new ObservableCollection<ProfitItem>();
+
+        if (_m_list_profit_items == null) {
+            return filtered_data;
+        }
+        if (search == null) {
+            return _m_list_profit_items;
+        }
+
+        switch (search.search_table) {
+            case EDatabaseTableName.NONE:
+                filtered_data = _m_list_profit_items;
+                break;
+            case EDatabaseTableName.ENTITY:
+                if (search.search_item_to_display == string.Empty) {
+                    break;
+                }
+                filtered_data = new(
+                    _m_list_profit_items.Where(profit => profit.client_name == search.search_item_to_display)
+                );
+                break;
+            case EDatabaseTableName.PRODUCT:
+                if (search.search_item_to_display == string.Empty) {
+                    break;
+                }
+                filtered_data = new(
+                    _m_list_profit_items.Where(profit => profit.product_name == search.search_item_to_display)
+                );
+                break;
+            case EDatabaseTableName.PRODUCT_TYPE:
+                if (search.search_id == 0) {
+                    break;
+                }
+                var product_items_t = _m_product_model.getProductWithProductTypeId(new List<int> { search.search_id });
+
+                filtered_data = new(
+                    _m_list_profit_items.Where(fee =>
+                    product_items_t.Any(product =>
+                    product.product_name == fee.product_name))
+                );
+                break;
+            case EDatabaseTableName.PRODUCT_CATEGORY:
+                if (search.search_id == 0) {
+                    break;
+                }
+                var product_items_c = _m_product_model.getProductWithProductCategoryId(new List<int> { search.search_id });
+
+                filtered_data = new(
+                    _m_list_profit_items.Where(profit =>
+                    product_items_c.Any(product =>
+                    product.product_name == profit.product_name))
+                );
+                break;
+            case EDatabaseTableName.PRODUCT_SHAPE:
+                if (search.search_id == 0) {
+                    break;
+                }
+                var product_items_s = _m_product_model.getProductWithProductShapeId(new List<int> { search.search_id });
+
+                filtered_data = new(
+                    _m_list_profit_items.Where(profit =>
+                    product_items_s.Any(product =>
+                    product.product_name == profit.product_name))
+                );
+                break;
+            case EDatabaseTableName.PRODUCT_LOT:
+                if (search.search_id == 0) {
+                    break;
+                }
+                var product_items_l = _m_product_model.getProductWithProductLotId(new List<int> { search.search_id });
+
+                filtered_data = new(
+                    _m_list_profit_items.Where(profit =>
+                    product_items_l.Any(product =>
+                    product.product_name == profit.product_name))
+                );
+                break;
+            case EDatabaseTableName.BEEHIVE:
+                if (search.search_id == 0) {
+                    break;
+                }
+                var product_lot_p = _m_product_lot_model.getProductLotWithBeehiveId(new List<int> { search.search_id });
+                var product_lot_ids = product_lot_p.Select(lot => lot.product_lot_id).ToList();
+                var product_items_b = _m_product_model.getProductWithProductLotId(product_lot_ids);
+
+                filtered_data = new(
+                    _m_list_profit_items.Where(profit =>
+                    product_items_b.Any(product =>
+                    product.product_name == profit.product_name))
+                );
+                break;
+        }
+
+        return filtered_data;
     }
 
 
     private ObservableCollection<FeeItem> filterFeeBy(SearchItem? search) {
-        // TODO: sort by other criteria
 
-        return _m_list_fee_items;
+        var filtered_data = new ObservableCollection<FeeItem>();
+
+        if (_m_list_fee_items == null) {
+            return filtered_data;
+        }
+        if (search == null) {
+            return _m_list_fee_items;
+        }
+
+        switch (search.search_table) {
+            case EDatabaseTableName.NONE:
+                filtered_data = _m_list_fee_items;
+                break;
+            case EDatabaseTableName.ENTITY:
+                if (search.search_item_to_display == string.Empty) {
+                    break;
+                }
+                filtered_data = new(
+                    _m_list_fee_items.Where(fee => fee.supplier_name == search.search_item_to_display)
+                );
+                break;
+            case EDatabaseTableName.PRODUCT:
+                if (search.search_item_to_display == string.Empty) {
+                    break;
+                }
+                filtered_data = new(
+                    _m_list_fee_items.Where(fee => fee.product_name == search.search_item_to_display)
+                );
+                break;
+            case EDatabaseTableName.PRODUCT_TYPE:
+                if (search.search_id == 0) {
+                    break;
+                }
+                var product_items_t = _m_product_model.getProductWithProductTypeId(new List<int> { search.search_id });
+
+                filtered_data = new(
+                    _m_list_fee_items.Where(fee =>
+                    product_items_t.Any(product =>
+                    product.product_name == fee.product_name))
+                );
+                break;
+            case EDatabaseTableName.PRODUCT_CATEGORY:
+                if (search.search_id == 0) {
+                    break;
+                }
+                var product_items_c = _m_product_model.getProductWithProductCategoryId(new List<int> { search.search_id });
+
+                filtered_data = new(
+                    _m_list_fee_items.Where(fee =>
+                    product_items_c.Any(product =>
+                    product.product_name == fee.product_name))
+                );
+                break;
+            case EDatabaseTableName.PRODUCT_SHAPE:
+                if (search.search_id == 0) {
+                    break;
+                }
+                var product_items_s = _m_product_model.getProductWithProductShapeId(new List<int> { search.search_id });
+
+                filtered_data = new(
+                    _m_list_fee_items.Where(fee =>
+                    product_items_s.Any(product =>
+                    product.product_name == fee.product_name))
+                );
+                break;
+            case EDatabaseTableName.PRODUCT_LOT:
+                if (search.search_id == 0) {
+                    break;
+                }
+                var product_items_l = _m_product_model.getProductWithProductLotId(new List<int> { search.search_id });
+
+                filtered_data = new(
+                    _m_list_fee_items.Where(fee =>
+                    product_items_l.Any(product =>
+                    product.product_name == fee.product_name))
+                );
+                break;
+            case EDatabaseTableName.BEEHIVE:
+                if (search.search_id == 0) {
+                    break;
+                }
+                var product_lot_p = _m_product_lot_model.getProductLotWithBeehiveId(new List<int> { search.search_id });
+                var product_lot_ids = product_lot_p.Select(lot => lot.product_lot_id).ToList();
+                var product_items_b = _m_product_model.getProductWithProductLotId(product_lot_ids);
+
+                filtered_data = new(
+                    _m_list_fee_items.Where(fee =>
+                    product_items_b.Any(product =>
+                    product.product_name == fee.product_name))
+                );
+                break;
+        }
+
+        return filtered_data;
     }
+
 
     private ObservableCollection<ProfitItem> sortProfitByYear(ObservableCollection<ProfitItem> data_to_sort, SearchItem? search) {
 
@@ -229,76 +416,76 @@ public class ResumeModel {
         var list_search_item = new ObservableCollection<SearchItem>();
 
         switch (_m_selected_table.m_name_in_database) {
-            case EntityModel.m_TBL_NAME:
+            case EDatabaseTableName.ENTITY:
                 if (_m_list_entity_not_archived != null) {
-                    foreach (EntityItem item in _m_list_entity_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            id = item.entity_id,
-                            search_name_to_display = item.entity_name
-                        });
-                    }
+                foreach (EntityItem item in _m_list_entity_not_archived) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.entity_id,
+                        search_item_to_display = item.entity_name
+                    });
                 }
-                break;
-            case BeehiveModel._m_TBL_NAME:
+            }
+            break;
+            case EDatabaseTableName.BEEHIVE:
                 if (_m_list_beehive_not_archived != null) {
-                    foreach (BeehiveItem item in _m_list_beehive_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            id = item.beehive_id,
-                            search_name_to_display = item.beehive_name
-                        });
-                    }
+                foreach (BeehiveItem item in _m_list_beehive_not_archived) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.beehive_id,
+                        search_item_to_display = item.beehive_name
+                    });
                 }
-                break;
-            case ProductModel.m_TBL_NAME:
+            }
+            break;
+            case EDatabaseTableName.PRODUCT:
                 if (_m_list_product_not_archived != null) {
-                    foreach (ProductItem item in _m_list_product_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            id = item.product_id,
-                            search_name_to_display = item.product_name
-                        });
-                    }
+                foreach (ProductItem item in _m_list_product_not_archived) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.product_id,
+                        search_item_to_display = item.product_name
+                    });
                 }
-                break;
-            case ProductShapeModel.m_TBL_NAME:
+            }
+            break;
+            case EDatabaseTableName.PRODUCT_SHAPE:
                 if (_m_list_product_shape_not_archived != null) {
                     foreach (ProductShapeItem item in _m_list_product_shape_not_archived) {
                         list_search_item.Add(new SearchItem {
-                            id = item.product_shape_id,
-                            search_name_to_display = item.product_shape_name
+                            search_id = item.product_shape_id,
+                            search_item_to_display = item.product_shape_name
                         });
                     }
                 }
-                break;
-            case ProductCategoryModel.m_TBL_NAME:
+            break;
+            case EDatabaseTableName.PRODUCT_CATEGORY:
                 if (_m_list_product_category_not_archived != null) {
-                    foreach (ProductCategoryItem item in _m_list_product_category_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            id = item.product_category_id,
-                            search_name_to_display = item.product_category_name
-                        });
-                    }
+                foreach (ProductCategoryItem item in _m_list_product_category_not_archived) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.product_category_id,
+                        search_item_to_display = item.product_category_name
+                    });
                 }
-                break;
-            case ProductTypeModel.m_TBL_NAME:
+            }
+            break;
+            case EDatabaseTableName.PRODUCT_TYPE:
                 if (_m_list_product_type_not_archived != null) {
-                    foreach (ProductTypeItem item in _m_list_product_type_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            id = item.product_type_id,
-                            search_name_to_display = item.product_type_name
-                        });
-                    }
+                foreach (ProductTypeItem item in _m_list_product_type_not_archived) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.product_type_id,
+                        search_item_to_display = item.product_type_name
+                    });
                 }
-                break;
-            case ProductLotModel.m_TBL_NAME:
+            }
+            break;
+            case EDatabaseTableName.PRODUCT_LOT:
                 if (_m_list_product_lot_not_archived != null) {
-                    foreach (ProductLotItem item in _m_list_product_lot_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            id = item.product_lot_id,
-                            search_name_to_display = item.product_lot_name
-                        });
-                    }
+                foreach (ProductLotItem item in _m_list_product_lot_not_archived) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.product_lot_id,
+                        search_item_to_display = item.product_lot_name
+                    });
                 }
-                break;
+            }
+            break;
         }
 
         return list_search_item;
