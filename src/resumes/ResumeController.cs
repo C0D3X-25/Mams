@@ -176,6 +176,7 @@ public class ResumeController : ABaseController {
             }
         }
 
+        // Addition of profits and fees, because fee is negative or 0
         m_total = m_total_profit + m_total_fee;
 
         if (m_total < 0) {
