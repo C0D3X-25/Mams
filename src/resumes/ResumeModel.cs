@@ -8,6 +8,7 @@ using Mams.src.productsLots;
 using Mams.src.productsShapes;
 using Mams.src.productsTypes;
 using Mams.src.profits;
+using Mams.src.receipts;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -19,6 +20,7 @@ public class ResumeModel {
 
     private readonly ProfitModel _m_profit_model;
     private readonly FeeModel _m_fee_model;
+    private readonly ReceiptModel _m_receipt_model;
     private readonly EntityModel _m_entity_model;
     private readonly ProductModel _m_product_model;
     private readonly ProductShapeModel _m_product_shape_model;
@@ -68,6 +70,7 @@ public class ResumeModel {
 
         _m_profit_model = new();
         _m_fee_model = new();
+        _m_receipt_model = new();
         _m_entity_model = new();
         _m_product_model = new();
         _m_product_shape_model = new();
@@ -104,6 +107,111 @@ public class ResumeModel {
     }
 
 
+    public ObservableCollection<SearchItem> getListSearchItems(DatabaseTablesNameItem selected_table) {
+
+        var list_search_item = new ObservableCollection<SearchItem>();
+
+        switch (selected_table.m_name_in_database) {
+            case EDatabaseTableName.ENTITY:
+                if (_m_list_entity_not_archived != null) {
+                    foreach (EntityItem item in _m_list_entity_not_archived) {
+                        list_search_item.Add(new SearchItem {
+                            search_id = item.entity_id,
+                            search_item_to_display = item.entity_name
+                        });
+                    }
+                }
+                break;
+            case EDatabaseTableName.BEEHIVE:
+                if (_m_list_beehive_not_archived != null) {
+                    foreach (BeehiveItem item in _m_list_beehive_not_archived) {
+                        list_search_item.Add(new SearchItem {
+                            search_id = item.beehive_id,
+                            search_item_to_display = item.beehive_name
+                        });
+                    }
+                }
+                break;
+            case EDatabaseTableName.PRODUCT:
+                if (_m_list_product_not_archived != null) {
+                    foreach (ProductItem item in _m_list_product_not_archived) {
+                        list_search_item.Add(new SearchItem {
+                            search_id = item.product_id,
+                            search_item_to_display = item.product_name
+                        });
+                    }
+                }
+                break;
+            case EDatabaseTableName.PRODUCT_SHAPE:
+                if (_m_list_product_shape_not_archived != null) {
+                    foreach (ProductShapeItem item in _m_list_product_shape_not_archived) {
+                        list_search_item.Add(new SearchItem {
+                            search_id = item.product_shape_id,
+                            search_item_to_display = item.product_shape_name
+                        });
+                    }
+                }
+                break;
+            case EDatabaseTableName.PRODUCT_CATEGORY:
+                if (_m_list_product_category_not_archived != null) {
+                    foreach (ProductCategoryItem item in _m_list_product_category_not_archived) {
+                        list_search_item.Add(new SearchItem {
+                            search_id = item.product_category_id,
+                            search_item_to_display = item.product_category_name
+                        });
+                    }
+                }
+                break;
+            case EDatabaseTableName.PRODUCT_TYPE:
+                if (_m_list_product_type_not_archived != null) {
+                    foreach (ProductTypeItem item in _m_list_product_type_not_archived) {
+                        list_search_item.Add(new SearchItem {
+                            search_id = item.product_type_id,
+                            search_item_to_display = item.product_type_name
+                        });
+                    }
+                }
+                break;
+            case EDatabaseTableName.PRODUCT_LOT:
+                if (_m_list_product_lot_not_archived != null) {
+                    foreach (ProductLotItem item in _m_list_product_lot_not_archived) {
+                        list_search_item.Add(new SearchItem {
+                            search_id = item.product_lot_id,
+                            search_item_to_display = item.product_lot_name
+                        });
+                    }
+                }
+                break;
+        }
+        return list_search_item;
+    }
+
+
+    public ObservableCollection<SearchItem> getListYears() {
+
+        var list_search_year = new ObservableCollection<SearchItem>();
+        var years = _m_receipt_model.getExistingYear();
+
+        if (years == null) {
+            return list_search_year;
+        }
+
+        list_search_year.Add(new SearchItem {
+            search_year = string.Empty,
+            search_item_to_display = string.Empty
+        });
+        foreach (string year in years) {
+            list_search_year.Add(new SearchItem {
+                search_year = year,
+                search_item_to_display = string.Empty
+            });
+        }
+
+        return list_search_year;
+    }
+
+
+    // TODO: Create an object who hold ObservableCollection<ProfitItem> and ObservableCollection<FeeItem>
     private ObservableCollection<ProfitItem> filterProfitBy(SearchItem? search) {
 
         var filtered_data = new ObservableCollection<ProfitItem>();
@@ -353,7 +461,12 @@ public class ResumeModel {
         if (date == string.Empty) {
             return string.Empty;
         }
-        DateTime parsed_date = DateTime.ParseExact(date, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+        // If the date is already a year (4 digits)
+        if (date.Length == 4) {
+            return date;
+        }
+
+        DateTime parsed_date = DateTime.ParseExact(date, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
 
         return parsed_date.Year.ToString();
     }
@@ -410,84 +523,4 @@ public class ResumeModel {
         _m_list_fee_items = _m_fee_model.getTable();
     }
 
-
-    public ObservableCollection<SearchItem> getListSearchItems(DatabaseTablesNameItem _m_selected_table) {
-
-        var list_search_item = new ObservableCollection<SearchItem>();
-
-        switch (_m_selected_table.m_name_in_database) {
-            case EDatabaseTableName.ENTITY:
-                if (_m_list_entity_not_archived != null) {
-                foreach (EntityItem item in _m_list_entity_not_archived) {
-                    list_search_item.Add(new SearchItem {
-                        search_id = item.entity_id,
-                        search_item_to_display = item.entity_name
-                    });
-                }
-            }
-            break;
-            case EDatabaseTableName.BEEHIVE:
-                if (_m_list_beehive_not_archived != null) {
-                foreach (BeehiveItem item in _m_list_beehive_not_archived) {
-                    list_search_item.Add(new SearchItem {
-                        search_id = item.beehive_id,
-                        search_item_to_display = item.beehive_name
-                    });
-                }
-            }
-            break;
-            case EDatabaseTableName.PRODUCT:
-                if (_m_list_product_not_archived != null) {
-                foreach (ProductItem item in _m_list_product_not_archived) {
-                    list_search_item.Add(new SearchItem {
-                        search_id = item.product_id,
-                        search_item_to_display = item.product_name
-                    });
-                }
-            }
-            break;
-            case EDatabaseTableName.PRODUCT_SHAPE:
-                if (_m_list_product_shape_not_archived != null) {
-                    foreach (ProductShapeItem item in _m_list_product_shape_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            search_id = item.product_shape_id,
-                            search_item_to_display = item.product_shape_name
-                        });
-                    }
-                }
-            break;
-            case EDatabaseTableName.PRODUCT_CATEGORY:
-                if (_m_list_product_category_not_archived != null) {
-                foreach (ProductCategoryItem item in _m_list_product_category_not_archived) {
-                    list_search_item.Add(new SearchItem {
-                        search_id = item.product_category_id,
-                        search_item_to_display = item.product_category_name
-                    });
-                }
-            }
-            break;
-            case EDatabaseTableName.PRODUCT_TYPE:
-                if (_m_list_product_type_not_archived != null) {
-                foreach (ProductTypeItem item in _m_list_product_type_not_archived) {
-                    list_search_item.Add(new SearchItem {
-                        search_id = item.product_type_id,
-                        search_item_to_display = item.product_type_name
-                    });
-                }
-            }
-            break;
-            case EDatabaseTableName.PRODUCT_LOT:
-                if (_m_list_product_lot_not_archived != null) {
-                foreach (ProductLotItem item in _m_list_product_lot_not_archived) {
-                    list_search_item.Add(new SearchItem {
-                        search_id = item.product_lot_id,
-                        search_item_to_display = item.product_lot_name
-                    });
-                }
-            }
-            break;
-        }
-
-        return list_search_item;
-    }
 }

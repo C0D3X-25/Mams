@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Mams.src.fees"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="1000"
+      d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveFeePage">
 
     <Grid>
@@ -23,12 +23,10 @@
 
             <!--Header-->
             <userControls:UCHeader 
-                x:Name="header" 
                 Grid.Row="0"
                 title="Frais">
 
             </userControls:UCHeader>
-            <!--Header-->
 
             <!--Body-->
             <Grid Grid.Row="1">
@@ -43,45 +41,227 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Menu-->
-                <userControls:UCMenu x:Name="pages_menu">
+                <userControls:UCMenu>
 
                 </userControls:UCMenu>
-                <!--Menu-->
 
                 <!--Content-->
-                <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
+                <Grid Grid.Column="1" 
+                      Background="#FFE0A5A5" 
+                      Margin="3,3,10,3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Label x:Name="content_label" Content="Content" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-                    <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="5">
+                    <Grid Grid.Column="1" 
+                          Background="#FFE0A5A5" 
+                          Margin="5">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="1*"/>
-                            <RowDefinition Height="1*"/>
                             <RowDefinition Height="10*"/>
+                            <RowDefinition Height="1*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"/>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="2*"/>
                         </Grid.ColumnDefinitions>
 
+                        <!--Receipt header-->
+                        <Grid Grid.Column="1" Grid.Row="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="2*"/>
+                            </Grid.ColumnDefinitions>
 
+                            <!--Receipt number-->
+                            <Label
+                                Grid.Column="0" Grid.Row="0"
+                                Content="N° de Facture"
+                                FontSize="16"
+                                VerticalAlignment="Center" HorizontalAlignment="Right"
+                            ></Label>
+                            <Label
+                                Grid.Column="1" Grid.Row="0"
+                                Content="{Binding m_fee.receipt_id, UpdateSourceTrigger=PropertyChanged}"
+                                FontSize="16"
+                                VerticalAlignment="Center" HorizontalAlignment="Left"
+                            ></Label>
+
+
+                            <!--Supplier-->
+                            <Grid
+                                Grid.Column="2" Grid.Row="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="2*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label
+                                    Grid.Column="0" Grid.Row="0" 
+                                    Content="Fournisseur*"
+                                    FontSize="16" 
+                                    VerticalAlignment="Center" HorizontalAlignment="Right"
+
+                                ></Label>
+
+                                <ComboBox
+                                    Grid.Column="1" Grid.Row="0" 
+                                    Margin="5,0,5,0" 
+                                    FontSize="16" 
+                                    VerticalAlignment="Center"
+                                    MinHeight="25" MinWidth="200"
+                                    ItemsSource="{Binding m_list_supplier, UpdateSourceTrigger=PropertyChanged}"
+                                    SelectedItem="{Binding m_selected_supplier, UpdateSourceTrigger=PropertyChanged}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding entity_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Grid>
+
+                            <!--Date-->
+                            <userControls:UCLabelTextBox
+                                Grid.Column="3" Grid.Row="0"
+                                label="Date*"
+                                text="{Binding m_fee.fee_date, UpdateSourceTrigger=PropertyChanged}"
+                                VerticalAlignment="Center" HorizontalAlignment="Center"
+                            ></userControls:UCLabelTextBox>
+
+                        </Grid>
+
+                        <!--Receipt content-->
+                        <Grid
+                            Grid.Column="0" Grid.Row="1"
+                            Margin="0,10,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="12*"/>
+                                <ColumnDefinition Width="50"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid
+                                Grid.Column="1" Grid.Row="0"
+                                Background="Aqua"
+                                MaxHeight="75">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="4*"/>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!--Product-->
+                                <Grid
+                                    Grid.Column="0" Grid.Row="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="3*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label
+                                        Grid.Column="0" Grid.Row="0" 
+                                        Content="Produit*"
+                                        FontSize="16" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Right"
+
+                                    ></Label>
+
+                                    <ComboBox
+                                        Grid.Column="1" Grid.Row="0" 
+                                        Margin="5,0,5,0" 
+                                        FontSize="16" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Left"
+                                        MinHeight="25" MinWidth="200"
+                                        ItemsSource="{Binding m_list_product, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedItem="{Binding m_selected_product, UpdateSourceTrigger=PropertyChanged}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding product_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
+
+                                <!--Quantity-->
+                                <userControls:UCLabelTextBox
+                                    Grid.Column="1" Grid.Row="0"
+                                    label="Quantité*"
+                                    text="{Binding m_fee.quantity, UpdateSourceTrigger=PropertyChanged}"
+                                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                                    
+                                ></userControls:UCLabelTextBox>
+
+                                <!--Price Unity-->
+                                <userControls:UCLabelTextBox
+                                    Grid.Column="2" Grid.Row="0"
+                                    label="Prix unité*"
+                                    text="{Binding m_fee.fee_price_unity, UpdateSourceTrigger=PropertyChanged}"
+                                    VerticalAlignment="Center" HorizontalAlignment="Center"
+                                ></userControls:UCLabelTextBox>
+
+                                <!--Delete Button-->
+                                <Button 
+                                    Grid.Column="3" Grid.Row="0"
+                                    Content="X"
+                                    Command="{Binding }"
+                                    Height="30" Width="30"
+                                    MaxHeight="30" MaxWidth="30"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    FontSize="16"
+                                ></Button>
+                            </Grid>
+                        </Grid>
+
+                        <!--Abort Save Buttons-->
+                        <Button 
+                            Grid.Row="2"
+                            Content="Enregistrer"
+                            Command="{Binding m_save_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,50,0"
+                            FontSize="16"
+                        ></Button>
+
+                        <Button 
+                            Grid.Row="2"
+                            Content="Annuler"
+                            Command="{Binding m_abort_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Margin="50,0,0,0"
+                            FontSize="16"
+                        ></Button>
                     </Grid>
                 </Grid>
-                <!--Content-->
             </Grid>
-            <!--Body-->
 
             <!--Footer-->
             <userControls:UCFooter x:Name="footer" Grid.Row="2">
 
             </userControls:UCFooter>
-            <!--Footer-->
         </Grid>
         <!--Page-->
     </Grid>

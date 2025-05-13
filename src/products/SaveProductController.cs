@@ -1,28 +1,23 @@
-﻿using Mams.src.beehives;
-using Mams.src.commands;
+﻿using Mams.src.commands;
 using Mams.src.controllers;
 using Mams.src.navigations;
 using Mams.src.productsCategories;
 using Mams.src.productsLots;
 using Mams.src.productsShapes;
 using Mams.src.productsTypes;
-using Mams.src.views.pages;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 
 namespace Mams.src.products;
 
-
 public class SaveProductController : ABaseController {
-
     
     private readonly ProductModel _m_product_model;
     private readonly ProductTypeModel _m_product_type_model;
     private readonly ProductCategoryModel _m_product_category_model;
     private readonly ProductShapeModel _m_product_shape_model;
     private readonly ProductLotModel _m_product_lot_model;
-
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
@@ -119,8 +114,6 @@ public class SaveProductController : ABaseController {
 
 
     public SaveProductController(int id_to_load = 0) {
-
-        
 
         _m_product_model = new();
         _m_product_type_model = new();

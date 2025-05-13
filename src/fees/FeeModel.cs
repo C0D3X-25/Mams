@@ -2,7 +2,6 @@
 using Mams.src.entities;
 using Mams.src.models;
 using Mams.src.products;
-using Mams.src.profits;
 using Mams.src.receipts;
 using System.Collections.ObjectModel;
 

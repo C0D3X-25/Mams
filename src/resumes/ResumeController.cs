@@ -3,7 +3,6 @@ using Mams.src.databaseOperations;
 using Mams.src.fees;
 using Mams.src.profits;
 using System.Collections.ObjectModel;
-using System.Windows;
 using System.Windows.Media;
 
 namespace Mams.src.resumes;
@@ -50,6 +49,27 @@ public class ResumeController : ABaseController {
         get { return _m_selected_search_item; }
         set {
             _m_selected_search_item = value;
+            updateDisplayedProfitsAndFeesLists();
+            onPropertyChanged();
+        }
+    }
+
+
+    private ObservableCollection<SearchItem>? _m_list_year;
+    public ObservableCollection<SearchItem>? m_list_year {
+        get { return _m_list_year; }
+        set {
+            _m_list_year = value;
+            onPropertyChanged();
+        }
+    }
+
+
+    private SearchItem? _m_selected_year;
+    public SearchItem? m_selected_year {
+        get { return _m_selected_year; }
+        set {
+            _m_selected_year = value;
             updateDisplayedProfitsAndFeesLists();
             onPropertyChanged();
         }
@@ -144,8 +164,12 @@ public class ResumeController : ABaseController {
         if (m_selected_table == null) {
             m_selected_table = new DatabaseTablesNameItem();
         }
+        if (m_selected_year == null) {
+            m_selected_year = new SearchItem();
+        }
 
         m_selected_search_item.search_table = m_selected_table.m_name_in_database;
+        m_selected_search_item.search_year = m_selected_year.search_year;
 
         m_list_profit_item = _m_resume_model.getFilteredProfits(m_selected_search_item);
         m_list_fee_item = _m_resume_model.getFilteredFees(m_selected_search_item);
@@ -196,6 +220,7 @@ public class ResumeController : ABaseController {
     private void updateListSearchItems() {
         if (_m_selected_table != null) {
             m_list_search_item = _m_resume_model.getListSearchItems(_m_selected_table);
+            m_list_year = _m_resume_model.getListYears();
         }
     }
 }

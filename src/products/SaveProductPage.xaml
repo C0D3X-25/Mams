@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Mams.src.products"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="1000"
+      d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveProductPage">
 
     <Grid>
@@ -102,12 +102,6 @@
                                 </userControls:UCLabelTextBox>
 
                                 <!--Category-->
-                                <!--<userControls:UCLabelTextBox
-                                    Grid.Row="1"
-                                    label="Catégorie*"                                    
-                                    text="{Binding m_product.product_category_name, UpdateSourceTrigger=PropertyChanged}"
-                                    >
-                                </userControls:UCLabelTextBox>-->
                                 <Grid
                                     Grid.Column="0" Grid.Row="1">
                                     <Grid.RowDefinitions>
@@ -117,7 +111,7 @@
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-
+                                    
                                     <Label
                                         Grid.Column="0" Grid.Row="0" 
                                         Content="Catégorie*"

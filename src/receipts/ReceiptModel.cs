@@ -148,4 +148,30 @@ public class ReceiptModel : ABaseModel,
             return items;
         }
     }
+
+
+    public ObservableCollection<string> getExistingYear() {
+
+        using MySqlConnection? conn = _m_conn.openConnection();
+        ObservableCollection<string> items = new();
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT DISTINCT YEAR({m_COL_RECEIPT_DATE_CREATED}) " +
+                $"AS year " +
+                $"FROM {m_TBL_NAME} " +
+                $"ORDER BY year DESC;",
+                conn
+            );
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read()) {
+                items.Add(reader.GetSafeValue<int>("year").ToString());
+            }
+            return items;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return items;
+        }
+    }
 }
