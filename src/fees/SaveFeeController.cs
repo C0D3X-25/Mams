@@ -8,6 +8,7 @@ using Mams.src.receipts;
 using Mams.src.resumes;
 using Mams.src.suppliers;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Mams.src.fees; 
@@ -21,13 +22,16 @@ public class SaveFeeController : ABaseController {
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
+    public ICommand m_add_fee_item_command { get; set; }
+    public ICommand m_delete_fee_item_command { get; set; }
 
 
-    private FeeItem _m_fee;
-    public FeeItem m_fee {
-        get => _m_fee;
+    // TODO: Maybe need to check each field with onPropertyChanged
+    private ObservableCollection<FeeItem> _m_list_fee;
+    public ObservableCollection<FeeItem> m_list_fee {
+        get => _m_list_fee;
         set {
-            _m_fee = value;
+            _m_list_fee = value;
             onPropertyChanged();
         }
     }
@@ -84,26 +88,40 @@ public class SaveFeeController : ABaseController {
         _m_list_product = _m_product_model.getTable();
         _m_list_supplier = _m_entity_model.getTable();
 
-        _m_fee = new FeeItem();
+        _m_list_fee = new();
 
-        //if (id_to_load != 0) {
-        //    _m_fee = _m_product_model.getItemByID(id_to_load.ToString()) ?? new ProductItem();
+        if (id_to_load != 0) {
+            //    _m_fee = _m_product_model.getItemByID(id_to_load.ToString()) ?? new ProductItem();
 
-        //    // Find the matching product and supplier in the list and set it as selected or create a new one
-        //    _m_selected_supplier = _m_list_supplier.FirstOrDefault(b => b.product_category_id == _m_fee.fk_product_category_id) ?? new ProductCategoryItem();
-        //    _m_selected_product = _m_list_product.FirstOrDefault(b => b.product_id == _m_fee.fk_product_id) ?? new ProductItem();
-        //}
+            //    // Find the matching product and supplier in the list and set it as selected or create a new one
+            //    _m_selected_supplier = _m_list_supplier.FirstOrDefault(b => b.product_category_id == _m_fee.fk_product_category_id) ?? new ProductCategoryItem();
+            //    _m_selected_product = _m_list_product.FirstOrDefault(b => b.product_id == _m_fee.fk_product_id) ?? new ProductItem();
+        }
+        else {
+            m_list_fee.Add(new FeeItem());
+        }
+
         m_save_command = new RelayCommand(saveFee, canSaveFee);
         m_abort_command = new RelayCommand(abortFee);
+        m_add_fee_item_command = new RelayCommand(addFeeItem);
+        m_delete_fee_item_command = new RelayCommand(DeleteFeeItem);
     }
 
 
     private bool canSaveFee(object? arg) {
+
+        foreach (var item in m_list_fee) {
+            if (item.fee_price_unity < 0 
+                || item.fee_quantity <= 0 
+                || SDateValidation.isDateValidFormatEU(item.fee_date)
+                ) {
+                
+                return false;
+            }
+        }
+
         return m_selected_supplier != null
-            && m_selected_product != null
-            && m_fee.fee_price_unity >= 0
-            && m_fee.fee_quantity > 0
-            && SDateValidation.isDateValidFormatEU(m_fee.fee_date);
+            && m_selected_product != null;
     }
 
 
@@ -120,5 +138,17 @@ public class SaveFeeController : ABaseController {
 
     private void abortFee(object? obj) {
         SPageNavigationController.navigateTo(new ResumePage());
+    }
+
+
+    private void addFeeItem(object? obj) {
+        m_list_fee.Add(new FeeItem());
+    }
+
+
+    private void DeleteFeeItem(object? parameter) {
+        if (parameter is FeeItem item) {
+            m_list_fee.Remove(item);
+        }
     }
 }
