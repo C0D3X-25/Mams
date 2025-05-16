@@ -172,7 +172,7 @@
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding receipt_id}"/>
                                         <GridViewColumn Header="Client" DisplayMemberBinding="{Binding client_name}"/>
                                         <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
-                                        <GridViewColumn Header="Année" DisplayMemberBinding="{Binding profit_date}"/>
+                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding profit_date}"/>
                                         <GridViewColumn Header="Quantité" DisplayMemberBinding="{Binding profit_quantity}"/>
                                         <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding profit_price_unity}"/>
                                         <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding profit_price_total}"/>
@@ -199,7 +199,7 @@
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding receipt_id}"/>
                                         <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding supplier_name}"/>
                                         <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
-                                        <GridViewColumn Header="Année" DisplayMemberBinding="{Binding fee_date}"/>
+                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding fee_date}"/>
                                         <GridViewColumn Header="Quantité" DisplayMemberBinding="{Binding fee_quantity}"/>
                                         <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding fee_price_unity}"/>
                                         <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding fee_price_total}"/>

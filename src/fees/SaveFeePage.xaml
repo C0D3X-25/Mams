@@ -74,30 +74,24 @@
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="1*"/>
+                                <!--<ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>-->
+                                <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="3*"/>
                                 <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
 
                             <!--Receipt number-->
-                            <Label
+                            <userControls:UCLabelTextBox
                                 Grid.Column="0" Grid.Row="0"
-                                Content="N° de Facture"
-                                FontSize="16"
-                                VerticalAlignment="Center" HorizontalAlignment="Right"
-                            ></Label>
-                            <Label
-                                Grid.Column="1" Grid.Row="0"
-                                Content="{Binding m_fee.receipt_id, UpdateSourceTrigger=PropertyChanged}"
-                                FontSize="16"
-                                VerticalAlignment="Center" HorizontalAlignment="Left"
-                            ></Label>
-
+                                label="N° de Facture"
+                                text="{Binding m_fee.receipt_id, UpdateSourceTrigger=PropertyChanged}"
+                                isEnabled="False"
+                            ></userControls:UCLabelTextBox>
 
                             <!--Supplier-->
                             <Grid
-                                Grid.Column="2" Grid.Row="0">
+                                Grid.Column="1" Grid.Row="0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
@@ -132,7 +126,7 @@
 
                             <!--Date-->
                             <userControls:UCLabelTextBox
-                                Grid.Column="3" Grid.Row="0"
+                                Grid.Column="2" Grid.Row="0"
                                 label="Date*"
                                 text="{Binding m_fee.fee_date, UpdateSourceTrigger=PropertyChanged}"
                                 VerticalAlignment="Center" HorizontalAlignment="Center"
@@ -206,7 +200,7 @@
                                 <userControls:UCLabelTextBox
                                     Grid.Column="1" Grid.Row="0"
                                     label="Quantité*"
-                                    text="{Binding m_fee.quantity, UpdateSourceTrigger=PropertyChanged}"
+                                    text="{Binding m_fee.fee_quantity, UpdateSourceTrigger=PropertyChanged}"
                                     VerticalAlignment="Center" HorizontalAlignment="Center"
                                     
                                 ></userControls:UCLabelTextBox>
@@ -223,14 +217,29 @@
                                 <Button 
                                     Grid.Column="3" Grid.Row="0"
                                     Content="X"
+                                    VerticalContentAlignment="Center"
                                     Command="{Binding }"
-                                    Height="30" Width="30"
-                                    MaxHeight="30" MaxWidth="30"
-                                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                                    FontSize="16"
+                                    Height="20" Width="20"
+                                    MaxHeight="20" MaxWidth="20"
+                                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                                    FontSize="13"
+                                    Margin="15"
                                 ></Button>
                             </Grid>
                         </Grid>
+                        
+                        
+                        <!--Create Product Fee Button-->
+                        <Button 
+                                Grid.Column="0" Grid.Row="1"
+                                Content="+"
+                                VerticalContentAlignment="Center"
+                                Command="{Binding }"
+                                Height="25" Width="100"
+                                MaxHeight="25" MaxWidth="100"
+                                HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                                FontSize="16"
+                        ></Button>
 
                         <!--Abort Save Buttons-->
                         <Button 

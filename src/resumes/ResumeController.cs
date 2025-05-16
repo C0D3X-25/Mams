@@ -171,8 +171,10 @@ public class ResumeController : ABaseController {
         m_selected_search_item.search_table = m_selected_table.m_name_in_database;
         m_selected_search_item.search_year = m_selected_year.search_year;
 
-        m_list_profit_item = _m_resume_model.getFilteredProfits(m_selected_search_item);
-        m_list_fee_item = _m_resume_model.getFilteredFees(m_selected_search_item);
+        var resume_item = _m_resume_model.getFilteredResume(m_selected_search_item);
+
+        m_list_profit_item = resume_item.profit_items;
+        m_list_fee_item = resume_item.fee_items;
         updateDisplayedTotalTransactions();
     }
 

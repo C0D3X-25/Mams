@@ -33,4 +33,14 @@ public partial class UCLabelTextBox : UserControl {
                 FrameworkPropertyMetadataOptions.Journal
             )
         );
+
+
+    public bool isEnabled {
+        get { return (bool)GetValue(isEnabledProperty); }
+        set { SetValue(isEnabledProperty, value); }
+    }        
+    public static readonly DependencyProperty isEnabledProperty =
+        DependencyProperty.Register("isEnabled", typeof(bool), typeof(UCLabelTextBox), new PropertyMetadata(true));
+
+
 }

@@ -83,27 +83,17 @@ public class ResumeModel {
     }
 
 
-    public ObservableCollection<ProfitItem> getFilteredProfits(SearchItem? search) {
+    public ResumeItem getFilteredResume(SearchItem? search) {
 
-        if (_m_list_profit_items == null) {
-            return new ObservableCollection<ProfitItem>();
+        var resume_item = new ResumeItem();
+
+        if (_m_list_profit_items == null || _m_list_fee_items == null) {
+            return resume_item;
         }
 
-        var filtered_data = filterProfitBy(search);
+        resume_item = filterBy(search);
 
-        return sortProfitByYear(filtered_data, search);
-    }
-
-
-    public ObservableCollection<FeeItem> getFilteredFees(SearchItem? search) {
-
-        if (_m_list_fee_items == null) {
-            return new ObservableCollection<FeeItem>();
-        }
-
-        var filtered_data = filterFeeBy(search);
-
-        return sortFeeByYear(filtered_data, search);
+        return sortByYear(resume_item, search);
     }
 
 
@@ -211,126 +201,35 @@ public class ResumeModel {
     }
 
 
-    // TODO: Create an object who hold ObservableCollection<ProfitItem> and ObservableCollection<FeeItem>
-    private ObservableCollection<ProfitItem> filterProfitBy(SearchItem? search) {
+    private ResumeItem filterBy(SearchItem? search) {
 
-        var filtered_data = new ObservableCollection<ProfitItem>();
+        var filtered_data = new ResumeItem();
 
         if (_m_list_profit_items == null) {
             return filtered_data;
         }
-        if (search == null) {
-            return _m_list_profit_items;
-        }
-
-        switch (search.search_table) {
-            case EDatabaseTableName.NONE:
-                filtered_data = _m_list_profit_items;
-                break;
-            case EDatabaseTableName.ENTITY:
-                if (search.search_item_to_display == string.Empty) {
-                    break;
-                }
-                filtered_data = new(
-                    _m_list_profit_items.Where(profit => profit.client_name == search.search_item_to_display)
-                );
-                break;
-            case EDatabaseTableName.PRODUCT:
-                if (search.search_item_to_display == string.Empty) {
-                    break;
-                }
-                filtered_data = new(
-                    _m_list_profit_items.Where(profit => profit.product_name == search.search_item_to_display)
-                );
-                break;
-            case EDatabaseTableName.PRODUCT_TYPE:
-                if (search.search_id == 0) {
-                    break;
-                }
-                var product_items_t = _m_product_model.getProductWithProductTypeId(new List<int> { search.search_id });
-
-                filtered_data = new(
-                    _m_list_profit_items.Where(fee =>
-                    product_items_t.Any(product =>
-                    product.product_name == fee.product_name))
-                );
-                break;
-            case EDatabaseTableName.PRODUCT_CATEGORY:
-                if (search.search_id == 0) {
-                    break;
-                }
-                var product_items_c = _m_product_model.getProductWithProductCategoryId(new List<int> { search.search_id });
-
-                filtered_data = new(
-                    _m_list_profit_items.Where(profit =>
-                    product_items_c.Any(product =>
-                    product.product_name == profit.product_name))
-                );
-                break;
-            case EDatabaseTableName.PRODUCT_SHAPE:
-                if (search.search_id == 0) {
-                    break;
-                }
-                var product_items_s = _m_product_model.getProductWithProductShapeId(new List<int> { search.search_id });
-
-                filtered_data = new(
-                    _m_list_profit_items.Where(profit =>
-                    product_items_s.Any(product =>
-                    product.product_name == profit.product_name))
-                );
-                break;
-            case EDatabaseTableName.PRODUCT_LOT:
-                if (search.search_id == 0) {
-                    break;
-                }
-                var product_items_l = _m_product_model.getProductWithProductLotId(new List<int> { search.search_id });
-
-                filtered_data = new(
-                    _m_list_profit_items.Where(profit =>
-                    product_items_l.Any(product =>
-                    product.product_name == profit.product_name))
-                );
-                break;
-            case EDatabaseTableName.BEEHIVE:
-                if (search.search_id == 0) {
-                    break;
-                }
-                var product_lot_p = _m_product_lot_model.getProductLotWithBeehiveId(new List<int> { search.search_id });
-                var product_lot_ids = product_lot_p.Select(lot => lot.product_lot_id).ToList();
-                var product_items_b = _m_product_model.getProductWithProductLotId(product_lot_ids);
-
-                filtered_data = new(
-                    _m_list_profit_items.Where(profit =>
-                    product_items_b.Any(product =>
-                    product.product_name == profit.product_name))
-                );
-                break;
-        }
-
-        return filtered_data;
-    }
-
-
-    private ObservableCollection<FeeItem> filterFeeBy(SearchItem? search) {
-
-        var filtered_data = new ObservableCollection<FeeItem>();
-
         if (_m_list_fee_items == null) {
             return filtered_data;
         }
         if (search == null) {
-            return _m_list_fee_items;
+            filtered_data.profit_items = _m_list_profit_items;
+            filtered_data.fee_items = _m_list_fee_items;
+            return filtered_data;
         }
 
         switch (search.search_table) {
             case EDatabaseTableName.NONE:
-                filtered_data = _m_list_fee_items;
+                filtered_data.profit_items = _m_list_profit_items;
+                filtered_data.fee_items = _m_list_fee_items;
                 break;
             case EDatabaseTableName.ENTITY:
                 if (search.search_item_to_display == string.Empty) {
                     break;
                 }
-                filtered_data = new(
+                filtered_data.profit_items = new(
+                    _m_list_profit_items.Where(profit => profit.client_name == search.search_item_to_display)
+                );
+                filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee => fee.supplier_name == search.search_item_to_display)
                 );
                 break;
@@ -338,7 +237,10 @@ public class ResumeModel {
                 if (search.search_item_to_display == string.Empty) {
                     break;
                 }
-                filtered_data = new(
+                filtered_data.profit_items = new(
+                    _m_list_profit_items.Where(profit => profit.product_name == search.search_item_to_display)
+                );
+                filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee => fee.product_name == search.search_item_to_display)
                 );
                 break;
@@ -348,7 +250,12 @@ public class ResumeModel {
                 }
                 var product_items_t = _m_product_model.getProductWithProductTypeId(new List<int> { search.search_id });
 
-                filtered_data = new(
+                filtered_data.profit_items = new(
+                    _m_list_profit_items.Where(fee =>
+                    product_items_t.Any(product =>
+                    product.product_name == fee.product_name))
+                );
+                filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
                     product_items_t.Any(product =>
                     product.product_name == fee.product_name))
@@ -360,7 +267,12 @@ public class ResumeModel {
                 }
                 var product_items_c = _m_product_model.getProductWithProductCategoryId(new List<int> { search.search_id });
 
-                filtered_data = new(
+                filtered_data.profit_items = new(
+                    _m_list_profit_items.Where(profit =>
+                    product_items_c.Any(product =>
+                    product.product_name == profit.product_name))
+                );
+                filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
                     product_items_c.Any(product =>
                     product.product_name == fee.product_name))
@@ -372,7 +284,12 @@ public class ResumeModel {
                 }
                 var product_items_s = _m_product_model.getProductWithProductShapeId(new List<int> { search.search_id });
 
-                filtered_data = new(
+                filtered_data.profit_items = new(
+                    _m_list_profit_items.Where(profit =>
+                    product_items_s.Any(product =>
+                    product.product_name == profit.product_name))
+                );
+                filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
                     product_items_s.Any(product =>
                     product.product_name == fee.product_name))
@@ -384,7 +301,12 @@ public class ResumeModel {
                 }
                 var product_items_l = _m_product_model.getProductWithProductLotId(new List<int> { search.search_id });
 
-                filtered_data = new(
+                filtered_data.profit_items = new(
+                    _m_list_profit_items.Where(profit =>
+                    product_items_l.Any(product =>
+                    product.product_name == profit.product_name))
+                );
+                filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
                     product_items_l.Any(product =>
                     product.product_name == fee.product_name))
@@ -398,7 +320,12 @@ public class ResumeModel {
                 var product_lot_ids = product_lot_p.Select(lot => lot.product_lot_id).ToList();
                 var product_items_b = _m_product_model.getProductWithProductLotId(product_lot_ids);
 
-                filtered_data = new(
+                filtered_data.profit_items = new(
+                    _m_list_profit_items.Where(profit =>
+                    product_items_b.Any(product =>
+                    product.product_name == profit.product_name))
+                );
+                filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
                     product_items_b.Any(product =>
                     product.product_name == fee.product_name))
@@ -410,49 +337,39 @@ public class ResumeModel {
     }
 
 
-    private ObservableCollection<ProfitItem> sortProfitByYear(ObservableCollection<ProfitItem> data_to_sort, SearchItem? search) {
+    private ResumeItem sortByYear(ResumeItem data_to_sort, SearchItem? search) {
 
-        if (data_to_sort.Count == 0) {
-            return new ObservableCollection<ProfitItem>();
+        if (data_to_sort.profit_items.Count == 0 && data_to_sort.fee_items.Count == 0) {
+            return new ResumeItem();
         }
 
-        var query = data_to_sort.AsQueryable();
+        var query_profit = data_to_sort.profit_items.AsQueryable();
+        var query_fee = data_to_sort.fee_items.AsQueryable();
 
         // Filter by year if specified in search
         if (search != null) {
             if (search.search_year != string.Empty) {
                 string year_to_match = getYearFromDate(search.search_year);
-                query = query.Where(item => getYearFromDate(item.profit_date) == year_to_match);
+                query_profit = query_profit.Where(item => getYearFromDate(item.profit_date) == year_to_match);
+                query_fee = query_fee.Where(item => getYearFromDate(item.fee_date) == year_to_match);
             }
         }
 
         // Sort by parsed date for correct chronological order
-        var sorted_items = query.OrderByDescending(item => DateTime.ParseExact(item.profit_date, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture));
+        var sorted_items = new ResumeItem();
 
-        return new ObservableCollection<ProfitItem>(sorted_items);
-    }
-
-
-    private ObservableCollection<FeeItem> sortFeeByYear(ObservableCollection<FeeItem> data_to_sort, SearchItem? search) {
-
-        if (data_to_sort.Count == 0) {
-            return new ObservableCollection<FeeItem>();
+        if (data_to_sort.profit_items.Count != 0) {
+            sorted_items.profit_items = new ObservableCollection<ProfitItem>(
+                query_profit.OrderByDescending(item => DateTime.ParseExact(item.profit_date, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture))
+            );
+        }
+        if (data_to_sort.fee_items.Count != 0) {
+            sorted_items.fee_items = new ObservableCollection<FeeItem>(
+                query_fee.OrderByDescending(item => DateTime.ParseExact(item.fee_date, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture))
+            );
         }
 
-        var query = data_to_sort.AsQueryable();
-
-        // Filter by year if specified in search
-        if (search != null) {
-            if (search.search_year != string.Empty) {
-                string year_to_match = getYearFromDate(search.search_year);
-                query = query.Where(item => getYearFromDate(item.fee_date) == year_to_match);
-            }
-        }
-
-        // Sort by parsed date for correct chronological order
-        var sorted_items = query.OrderByDescending(item => DateTime.ParseExact(item.fee_date, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture));
-
-        return new ObservableCollection<FeeItem>(sorted_items);
+        return sorted_items;
     }
 
 
@@ -522,5 +439,4 @@ public class ResumeModel {
         // Fee
         _m_list_fee_items = _m_fee_model.getTable();
     }
-
 }

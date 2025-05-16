@@ -3,6 +3,7 @@ using Mams.src.entities;
 using Mams.src.models;
 using Mams.src.products;
 using Mams.src.receipts;
+using Mams.src.resumes;
 using System.Collections.ObjectModel;
 
 namespace Mams.src.fees;
