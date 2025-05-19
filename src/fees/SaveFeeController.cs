@@ -26,7 +26,17 @@ public class SaveFeeController : ABaseController {
     public ICommand m_delete_fee_item_command { get; set; }
 
 
-    // TODO: Maybe need to check each field with onPropertyChanged
+    // Hold the receipt ID, supplier, date of all the items in m_list_fee
+    private FeeItem _m_fee;
+    public FeeItem m_fee {
+        get => _m_fee;
+        set {
+            _m_fee = value;
+            onPropertyChanged();
+        }
+    }
+
+
     private ObservableCollection<FeeItem> _m_list_fee;
     public ObservableCollection<FeeItem> m_list_fee {
         get => _m_list_fee;
@@ -57,14 +67,14 @@ public class SaveFeeController : ABaseController {
     }
 
 
-    private ProductItem? _m_selected_product;
-    public ProductItem? m_selected_product {
-        get { return _m_selected_product; }
-        set {
-            _m_selected_product = value;
-            onPropertyChanged();
-        }
-    }
+    //private ProductItem? _m_selected_product;
+    //public ProductItem? m_selected_product {
+    //    get { return _m_selected_product; }
+    //    set {
+    //        _m_selected_product = value;
+    //        onPropertyChanged();
+    //    }
+    //}
 
 
     private EntityItem? _m_selected_supplier;
@@ -89,6 +99,7 @@ public class SaveFeeController : ABaseController {
         _m_list_supplier = _m_entity_model.getTable();
 
         _m_list_fee = new();
+        _m_fee = new();
 
         if (id_to_load != 0) {
             //    _m_fee = _m_product_model.getItemByID(id_to_load.ToString()) ?? new ProductItem();
@@ -109,19 +120,14 @@ public class SaveFeeController : ABaseController {
 
 
     private bool canSaveFee(object? arg) {
-
-        foreach (var item in m_list_fee) {
-            if (item.fee_price_unity < 0 
-                || item.fee_quantity <= 0 
-                || SDateValidation.isDateValidFormatEU(item.fee_date)
-                ) {
-                
-                return false;
-            }
-        }
-
         return m_selected_supplier != null
-            && m_selected_product != null;
+            && SDateValidation.isDateValidFormatEU(m_fee.fee_date)
+            && m_list_fee.Count > 0
+            && m_list_fee.All(item => 
+                item.fee_price_unity >= 0 
+                && item.fee_quantity > 0 
+                && item.product_name != null
+            );
     }
 
 
@@ -137,6 +143,13 @@ public class SaveFeeController : ABaseController {
 
 
     private void abortFee(object? obj) {
+        if (m_list_fee.Count > 1) {
+            MessageBoxResult result = MessageBox.Show("En quittant la page, toutes les données seront perdues. Voulez-vous continuer?",
+                "Annuler", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.No) {
+                return;
+            }
+        }
         SPageNavigationController.navigateTo(new ResumePage());
     }
 

@@ -91,10 +91,18 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
+                                
+                                <!--ID-->
+                                <userControls:UCLabelTextBox
+                                    Grid.Row="0"
+                                    label="ID"
+                                    text="{Binding m_entity.entity_id, UpdateSourceTrigger=PropertyChanged}"
+                                    isEnabled="False"
+                                ></userControls:UCLabelTextBox>
 
                                 <!--Name-->
                                 <userControls:UCLabelTextBox
-                                    Grid.Row="0"
+                                    Grid.Row="1"
                                     label="Nom*"
                                     text="{Binding m_entity.entity_name, UpdateSourceTrigger=PropertyChanged}"
 
@@ -102,17 +110,9 @@
 
                                 <!--Email-->
                                 <userControls:UCLabelTextBox
-                                    Grid.Row="1"
+                                    Grid.Row="2"
                                     label="Email"
                                     text="{Binding m_entity.entity_email, UpdateSourceTrigger=PropertyChanged}"
-                                ></userControls:UCLabelTextBox>
-
-                                <!--ID-->
-                                <userControls:UCLabelTextBox
-                                    Grid.Row="2"
-                                    label="ID"
-                                    text="{Binding m_entity.entity_id, UpdateSourceTrigger=PropertyChanged}"
-                                    
                                 ></userControls:UCLabelTextBox>
                             </Grid>
 

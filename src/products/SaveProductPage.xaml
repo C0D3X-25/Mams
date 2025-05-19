@@ -92,10 +92,18 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
+                                
+                                <!--ID-->
+                                <userControls:UCLabelTextBox
+                                    Grid.Row="0"
+                                    label="ID"
+                                    text="{Binding m_product.product_id, UpdateSourceTrigger=PropertyChanged}"
+                                    isEnabled="False"
+                                ></userControls:UCLabelTextBox>
 
                                 <!--Name-->
                                 <userControls:UCLabelTextBox
-                                    Grid.Row="0"
+                                    Grid.Row="1"
                                     label="Nom*"
                                     text="{Binding m_product.product_name, UpdateSourceTrigger=PropertyChanged}"
                                     >
@@ -103,7 +111,7 @@
 
                                 <!--Category-->
                                 <Grid
-                                    Grid.Column="0" Grid.Row="1">
+                                    Grid.Column="0" Grid.Row="2">
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
@@ -111,7 +119,7 @@
                                         <ColumnDefinition/>
                                         <ColumnDefinition/>
                                     </Grid.ColumnDefinitions>
-                                    
+
                                     <Label
                                         Grid.Column="0" Grid.Row="0" 
                                         Content="Catégorie*"
@@ -135,6 +143,65 @@
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
                                 </Grid>
+
+                                <!--Type-->
+                                <Grid
+                                    Grid.Column="0" Grid.Row="3">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label
+                                        Grid.Column="0" Grid.Row="0" 
+                                        Content="Type*"
+                                        FontSize="16" 
+                                        VerticalAlignment="Center" HorizontalAlignment="Right"
+
+                                    ></Label>
+
+                                    <ComboBox
+                                        Grid.Column="1" Grid.Row="0" 
+                                        Margin="5,0,5,0" 
+                                        FontSize="16" 
+                                        VerticalAlignment="Center"
+                                        MinHeight="25" MinWidth="200"
+                                        ItemsSource="{Binding m_list_product_type, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedItem="{Binding m_selected_product_type, UpdateSourceTrigger=PropertyChanged}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding product_type_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
+                            </Grid>
+
+                            <!--Right Grid-->
+                            <Grid Grid.Column="1" Grid.Row="1" 
+                                  HorizontalAlignment="Left"
+                                  Margin="25,0,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="5*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!--Weight-->
+                                <userControls:UCLabelTextBox
+                                    Grid.Row="1"
+                                    label="Poid(g)"
+                                    text="{Binding m_product.product_weight, UpdateSourceTrigger=PropertyChanged}"
+                                    >
+                                </userControls:UCLabelTextBox>
 
                                 <!--Lot-->
                                 <Grid
@@ -170,68 +237,10 @@
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
                                 </Grid>
-                                
-                                <!--ID-->
-                                <userControls:UCLabelTextBox
-                                    Grid.Row="3"
-                                    label="ID"
-                                    text="{Binding m_product.product_id, UpdateSourceTrigger=PropertyChanged}"
-                                    >
-                                </userControls:UCLabelTextBox>
-                            </Grid>
-
-                            <!--Right Grid-->
-                            <Grid Grid.Column="1" Grid.Row="1" 
-                                  HorizontalAlignment="Left"
-                                  Margin="25,0,0,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="6*"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-
-                                <!--Type-->
-                                <Grid
-                                    Grid.Column="0" Grid.Row="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Label
-                                        Grid.Column="0" Grid.Row="0" 
-                                        Content="Type*"
-                                        FontSize="16" 
-                                        VerticalAlignment="Center" HorizontalAlignment="Right"
-
-                                    ></Label>
-
-                                    <ComboBox
-                                        Grid.Column="1" Grid.Row="0" 
-                                        Margin="5,0,5,0" 
-                                        FontSize="16" 
-                                        VerticalAlignment="Center"
-                                        MinHeight="25" MinWidth="200"
-                                        ItemsSource="{Binding m_list_product_type, UpdateSourceTrigger=PropertyChanged}"
-                                        SelectedItem="{Binding m_selected_product_type, UpdateSourceTrigger=PropertyChanged}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding product_type_name, UpdateSourceTrigger=PropertyChanged}"/>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                </Grid>
 
                                 <!--Shape-->
                                 <Grid
-                                    Grid.Column="0" Grid.Row="1">
+                                    Grid.Column="0" Grid.Row="3">
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
@@ -264,13 +273,7 @@
                                     </ComboBox>
                                 </Grid>
 
-                                <!--Weight-->
-                                <userControls:UCLabelTextBox
-                                    Grid.Row="2"
-                                    label="Poid(g)"
-                                    text="{Binding m_product.product_weight, UpdateSourceTrigger=PropertyChanged}"
-                                    >
-                                </userControls:UCLabelTextBox>
+
                             </Grid>
                         </Grid>
 

@@ -18,22 +18,24 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Label x:Name="labelTextBox_lbl" 
-               Grid.Column="0" Grid.Row="0" 
-               Content="{Binding label, ElementName=root}" 
-               FontSize="16" 
-               VerticalAlignment="Center" HorizontalAlignment="Right">
+        <Label 
+            x:Name="labelTextBox_lbl" 
+            Grid.Column="0" Grid.Row="0" 
+            Content="{Binding label, ElementName=root}" 
+            FontSize="16" 
+            VerticalAlignment="Center" HorizontalAlignment="Right">
             
         </Label>
-        <TextBox x:Name="labelTextBox_txtBox" 
-                 Text="{Binding text, ElementName=root, UpdateSourceTrigger=PropertyChanged}"
-                IsEnabled="{Binding isEnabled, ElementName=root}"
-                 Grid.Column="1" Grid.Row="0" 
-                 TextWrapping="Wrap"
-                 Margin="5,0,5,0" 
-                 FontSize="16" 
-                 VerticalAlignment="Center"
-                 MinHeight="25" MinWidth="200">
+        <TextBox 
+            x:Name="labelTextBox_txtBox" 
+            Text="{Binding text, ElementName=root, UpdateSourceTrigger=PropertyChanged}"
+            IsEnabled="{Binding isEnabled, ElementName=root}"
+            Grid.Column="1" Grid.Row="0" 
+            TextWrapping="Wrap"
+            Margin="5,0,5,0" 
+            FontSize="16" 
+            VerticalAlignment="Center"
+            MinHeight="25" MinWidth="200">
             
         </TextBox>
     </Grid>

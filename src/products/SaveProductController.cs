@@ -145,7 +145,8 @@ public class SaveProductController : ABaseController {
     private bool canSaveProduct(object? arg) {
         return !string.IsNullOrEmpty(m_product.product_name)
             && m_selected_product_category != null
-            && m_selected_product_type != null;
+            && m_selected_product_type != null
+            && _m_product.product_weight >= 0;
     }
 
 

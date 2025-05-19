@@ -90,39 +90,18 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-
-                                <!--Name-->
+                                
+                                <!--ID-->
                                 <userControls:UCLabelTextBox
                                 Grid.Row="0"
-                                label="Nom*"
-                                text="{Binding m_product_lot.product_lot_name, UpdateSourceTrigger=PropertyChanged}"
-                                >
-                                </userControls:UCLabelTextBox>
-
-                                <!--Year-->
-                                <userControls:UCLabelTextBox
-                                Grid.Row="1"
-                                label="Année*"                                    
-                                text="{Binding m_product_lot.product_lot_year, UpdateSourceTrigger=PropertyChanged}"
-                                >
-                                </userControls:UCLabelTextBox>
-                            </Grid>
-
-                            <!--Right Grid-->
-                            <Grid Grid.Column="1" Grid.Row="1" 
-                              HorizontalAlignment="Left"
-                              Margin="25,0,0,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="7*"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
+                                label="ID"
+                                text="{Binding m_product_lot.product_lot_id, UpdateSourceTrigger=PropertyChanged}"
+                                isEnabled="False"
+                                ></userControls:UCLabelTextBox>
 
                                 <!--Beehive-->
-                                <Grid>
+                                <Grid
+                                    Grid.Row="1">
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
                                     </Grid.RowDefinitions>
@@ -154,12 +133,34 @@
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
                                 </Grid>
+                            </Grid>
 
-                                <!--ID-->
+                            <!--Right Grid-->
+                            <Grid Grid.Column="1" Grid.Row="1" 
+                              HorizontalAlignment="Left"
+                              Margin="25,0,0,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="1*"/>
+                                    <RowDefinition Height="7*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <!--Name-->
+                                <userControls:UCLabelTextBox
+                                Grid.Row="0"
+                                label="Nom*"
+                                text="{Binding m_product_lot.product_lot_name, UpdateSourceTrigger=PropertyChanged}"
+                                >
+                                </userControls:UCLabelTextBox>
+
+                                <!--Year-->
                                 <userControls:UCLabelTextBox
                                 Grid.Row="1"
-                                label="ID"
-                                text="{Binding m_product_lot.product_lot_id, UpdateSourceTrigger=PropertyChanged}"
+                                label="Année*"                                    
+                                text="{Binding m_product_lot.product_lot_year, UpdateSourceTrigger=PropertyChanged}"
                                 >
                                 </userControls:UCLabelTextBox>
                             </Grid>

@@ -31,6 +31,7 @@
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
@@ -89,7 +90,7 @@
                 Command="{Binding m_navigate_list_product_type_command}"/>
             <Button 
                 Content="Formes de Produit"
-                Grid.Row="8"
+                Grid.Row="9"
                 FontSize="16" 
                 Margin="3"
                 Command="{Binding m_navigate_list_product_shape_command}"/>
