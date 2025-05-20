@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Mams.src.products"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="1000"
+      d:DesignHeight="600" d:DesignWidth="1224"
       Title="ListProductPage">
 
     <Grid>

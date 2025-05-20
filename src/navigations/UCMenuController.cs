@@ -15,8 +15,8 @@ namespace Mams.src.navigations;
 public class UCMenuController {
 
     
-    public ICommand m_navigate_fee_command { get; set; }
-    public ICommand m_navigate_profit_command { get; set; }
+    public ICommand m_navigate_list_fee_command { get; set; }
+    public ICommand m_navigate_list_profit_command { get; set; }
     public ICommand m_navigate_list_entity_command { get; set; }
     public ICommand m_navigate_list_product_command { get; set; }
     public ICommand m_navigate_list_lot_command { get; set; }
@@ -27,8 +27,8 @@ public class UCMenuController {
 
     public UCMenuController() {
 
-        m_navigate_fee_command = new RelayCommand(navigateToFee);
-        m_navigate_profit_command = new RelayCommand(navigateToProfit);
+        m_navigate_list_fee_command = new RelayCommand(navigateToListFee);
+        m_navigate_list_profit_command = new RelayCommand(navigateToListProfit);
         m_navigate_list_entity_command = new RelayCommand(navigateToListEntity);
         m_navigate_list_product_command = new RelayCommand(navigateToListProduct);
         m_navigate_list_lot_command = new RelayCommand(navigateToListLot);
@@ -38,11 +38,11 @@ public class UCMenuController {
         m_navigate_list_product_shape_command = new RelayCommand(navigateToListProductShape);
     }
 
-    private void navigateToFee(object? obj) {
-        SPageNavigationController.navigateTo(new SaveFeePage());
+    private void navigateToListFee(object? obj) {
+        SPageNavigationController.navigateTo(new ListFeePage());
     }
 
-    private void navigateToProfit(object? obj) {
+    private void navigateToListProfit(object? obj) {
         SPageNavigationController.navigateTo(new SaveProfitPage());
     }
 

@@ -41,17 +41,17 @@
                 FontSize="20" 
                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Button 
-                Content="Ajouter Frais" 
+                Content="Frais" 
                 Grid.Row="1" 
                 FontSize="16" 
                 Margin="3"
-                Command="{Binding m_navigate_fee_command}"/>
+                Command="{Binding m_navigate_list_fee_command}"/>
             <Button 
-                Content="Ajouter Bénéfices" 
+                Content="Bénéfices" 
                 Grid.Row="2" 
                 FontSize="16" 
                 Margin="3"
-                Command="{Binding m_navigate_profit_command}"/>
+                Command="{Binding m_navigate_list_profit_command}"/>
             <Button 
                 Content="Contacts"
                 Grid.Row="3"

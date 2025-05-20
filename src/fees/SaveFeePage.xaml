@@ -178,10 +178,11 @@
                                             Margin="5,0,5,0" 
                                             FontSize="16"
                                             MinHeight="25" MinWidth="200"
+                                            MaxHeight="25" MaxWidth="200"
                                             VerticalAlignment="Center" HorizontalAlignment="Left"
                                             ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.m_list_product}"
                                             DisplayMemberPath="product_name"
-                                            SelectedItem="{Binding Path=CurrentProduct, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            SelectedItem="{Binding Path=m_current_product, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                         ></ComboBox>
                                             </Grid>
 
@@ -199,7 +200,9 @@
                                                 Text="{Binding fee_quantity, UpdateSourceTrigger=PropertyChanged}"
                                                 Margin="5"
                                                 MinHeight="25" MinWidth="50"
+                                                MaxHeight="25" MaxWidth="50"
                                                 FontSize="16"
+                                                HorizontalContentAlignment="Center"
                                                 TextWrapping="Wrap"
                                                 VerticalAlignment="Center"
                                             ></TextBox>
@@ -217,8 +220,10 @@
                                                 Text="{Binding fee_price_unity, UpdateSourceTrigger=PropertyChanged}"
                                                 Margin="5"
                                                 MinHeight="25" MinWidth="50"
+                                                MaxHeight="25" MaxWidth="50"
                                                 FontSize="16"
                                                 TextWrapping="Wrap"
+                                                HorizontalContentAlignment="Center"
                                                 VerticalAlignment="Center"
                                             ></TextBox>
 

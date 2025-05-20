@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace Mams.src.products;
 
-internal class ListProductController : ABaseController {
+public class ListProductController : ABaseController {
     
     private readonly ProductModel _m_item_model = new();
 

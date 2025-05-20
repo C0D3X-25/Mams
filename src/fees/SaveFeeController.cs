@@ -121,20 +121,14 @@ public class SaveFeeController : ABaseController {
 
     private bool canSaveFee(object? arg) {
 
-        foreach (var item in m_list_fee) {
-            if (item.fee_quantity <= 0 || string.IsNullOrWhiteSpace(item.product_name)) {
-                return false;
-            }
-        }
-
         return m_selected_supplier != null
             && SDateValidation.isDateValidFormatEU(m_fee.fee_date)
-            && m_list_fee.Count > 0;
-            //&& m_list_fee.All(item =>
-            //item.fee_price_unity >= 0
-            //&& item.fee_quantity > 0
-            //&& item.product_name != null
-            //);
+            && m_list_fee.Count > 0
+            && m_list_fee.All(item =>
+                item.fee_price_unity >= 0
+                && item.fee_quantity > 0
+                && !string.IsNullOrWhiteSpace(item.product_name)
+            );
     }
 
 
