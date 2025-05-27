@@ -31,7 +31,7 @@ public class ProfitModel : ABaseModel,
 
     public ObservableCollection<ProfitItem> getTable() {
 
-        ReceiptCascadeOperationModel receipt_operation_model = new();
+        ReceiptHandlerModel receipt_operation_model = new();
         EntityModel entity_model = new();
         ProductModel product_model = new();
 

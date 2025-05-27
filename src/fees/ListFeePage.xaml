@@ -84,10 +84,10 @@
                             SelectedItem="{Binding m_selected_item}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding receipt_id}"/>
-                                        <GridViewColumn Header="Nom Client" DisplayMemberBinding="{Binding supplier_name}"/>
-                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding fee_date}"/>
-                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding fee_price_total}"/>
+                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding receipt.receipt_id}"/>
+                                        <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding entity.entity_name}"/>
+                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -134,7 +134,8 @@
             </Grid>
 
             <!--Footer-->
-            <userControls:UCFooter x:Name="footer" Grid.Row="2">
+            <userControls:UCFooter 
+                Grid.Row="2">
 
             </userControls:UCFooter>
         </Grid>

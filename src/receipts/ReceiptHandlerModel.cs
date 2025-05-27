@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace Mams.src.receipts;
 
-public class ReceiptCascadeOperationModel : ABaseModel {
+public class ReceiptHandlerModel : ABaseModel {
 
     private readonly ReceiptModel _m_receipt_model = new();
     private readonly ReceiptProductModel _m_receipt_product_model = new();
@@ -11,9 +11,9 @@ public class ReceiptCascadeOperationModel : ABaseModel {
     private readonly ReceiptSupplierModel _m_receipt_supplier_model = new();
 
 
-    public ObservableCollection<ReceiptCascadeOperationItem> getTable() {
+    public ObservableCollection<ReceiptHandlerItem> getTable() {
 
-        ObservableCollection<ReceiptCascadeOperationItem> items = new();
+        ObservableCollection<ReceiptHandlerItem> items = new();
 
         foreach (var id in _m_receipt_model.getRowsID()) {
 
@@ -27,13 +27,13 @@ public class ReceiptCascadeOperationModel : ABaseModel {
     }
 
 
-    public ReceiptCascadeOperationItem? getReceiptByID(string id) {
+    public ReceiptHandlerItem? getReceiptByID(string id) {
 
         if (id == null) {
             return null;
         }
 
-        ReceiptCascadeOperationItem item = new();
+        ReceiptHandlerItem item = new();
 
         item.receipt_item = _m_receipt_model.getItemByID(id) ?? new();
         item.receipt_client_item = _m_receipt_client_model.getItemByID(id) ?? new();
@@ -44,7 +44,7 @@ public class ReceiptCascadeOperationModel : ABaseModel {
     }
 
 
-    public bool saveReceipt(ReceiptCascadeOperationItem item) {
+    public bool saveReceipt(ReceiptHandlerItem item) {
 
         _m_receipt_model.saveItem(item.receipt_item);
 

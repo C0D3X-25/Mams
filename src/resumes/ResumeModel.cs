@@ -19,7 +19,7 @@ namespace Mams.src.resumes;
 public class ResumeModel {
 
     private readonly ProfitModel _m_profit_model;
-    private readonly FeeModel _m_fee_model;
+    private readonly FeeProductModel _m_fee_model;
     private readonly ReceiptModel _m_receipt_model;
     private readonly EntityModel _m_entity_model;
     private readonly ProductModel _m_product_model;
@@ -30,7 +30,7 @@ public class ResumeModel {
     private readonly BeehiveModel _m_beehive_model;
 
     private ObservableCollection<ProfitItem>? _m_list_profit_items;
-    private ObservableCollection<FeeItem>? _m_list_fee_items;
+    private ObservableCollection<FeeReceiptItem>? _m_list_fee_items;
 
     private ObservableCollection<EntityItem>? _m_list_entity_all;
     private ObservableCollection<EntityItem>? _m_list_entity_not_archived;
@@ -230,7 +230,7 @@ public class ResumeModel {
                     _m_list_profit_items.Where(profit => profit.client_name == search.search_item_to_display)
                 );
                 filtered_data.fee_items = new(
-                    _m_list_fee_items.Where(fee => fee.supplier_name == search.search_item_to_display)
+                    _m_list_fee_items.Where(fee => fee.fk_supplier_name == search.search_item_to_display)
                 );
                 break;
             case EDatabaseTableName.PRODUCT:
@@ -241,7 +241,10 @@ public class ResumeModel {
                     _m_list_profit_items.Where(profit => profit.product_name == search.search_item_to_display)
                 );
                 filtered_data.fee_items = new(
-                    _m_list_fee_items.Where(fee => fee.product_name == search.search_item_to_display)
+                    _m_list_fee_items.Where(fee => 
+                        fee.m_fee_items.Any(item => 
+                            item.product_item.product_name == search.search_item_to_display)
+                    )
                 );
                 break;
             case EDatabaseTableName.PRODUCT_TYPE:
@@ -258,7 +261,7 @@ public class ResumeModel {
                 filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
                     product_items_t.Any(product =>
-                    product.product_name == fee.product_name))
+                    product.product_name == fee.m_fee_items.First().product_item.product_name))
                 );
                 break;
             case EDatabaseTableName.PRODUCT_CATEGORY:
@@ -275,7 +278,7 @@ public class ResumeModel {
                 filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
                     product_items_c.Any(product =>
-                    product.product_name == fee.product_name))
+                    product.product_name == fee.m_fee_items.First().product_item.product_name))
                 );
                 break;
             case EDatabaseTableName.PRODUCT_SHAPE:
@@ -292,7 +295,7 @@ public class ResumeModel {
                 filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
                     product_items_s.Any(product =>
-                    product.product_name == fee.product_name))
+                    product.product_name == fee.m_fee_items.First().product_item.product_name))
                 );
                 break;
             case EDatabaseTableName.PRODUCT_LOT:
@@ -309,7 +312,7 @@ public class ResumeModel {
                 filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
                     product_items_l.Any(product =>
-                    product.product_name == fee.product_name))
+                    product.product_name == fee.m_fee_items.First().product_item.product_name))
                 );
                 break;
             case EDatabaseTableName.BEEHIVE:
@@ -328,7 +331,7 @@ public class ResumeModel {
                 filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
                     product_items_b.Any(product =>
-                    product.product_name == fee.product_name))
+                    product.product_name == fee.m_fee_items.First().product_item.product_name))
                 );
                 break;
         }
@@ -351,7 +354,7 @@ public class ResumeModel {
             if (search.search_year != string.Empty) {
                 string year_to_match = getYearFromDate(search.search_year);
                 query_profit = query_profit.Where(item => getYearFromDate(item.profit_date) == year_to_match);
-                query_fee = query_fee.Where(item => getYearFromDate(item.fee_date) == year_to_match);
+                query_fee = query_fee.Where(item => getYearFromDate(item.receipt_date_created) == year_to_match);
             }
         }
 
@@ -360,12 +363,18 @@ public class ResumeModel {
 
         if (data_to_sort.profit_items.Count != 0) {
             sorted_items.profit_items = new ObservableCollection<ProfitItem>(
-                query_profit.OrderByDescending(item => DateTime.ParseExact(item.profit_date, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture))
+                query_profit.OrderByDescending(item => 
+                DateTime.ParseExact(item.profit_date, 
+                "dd.MM.yyyy", 
+                System.Globalization.CultureInfo.InvariantCulture))
             );
         }
         if (data_to_sort.fee_items.Count != 0) {
-            sorted_items.fee_items = new ObservableCollection<FeeItem>(
-                query_fee.OrderByDescending(item => DateTime.ParseExact(item.fee_date, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture))
+            sorted_items.fee_items = new ObservableCollection<FeeReceiptItem>(
+                query_fee.OrderByDescending(item => 
+                DateTime.ParseExact(item.receipt_date_created, 
+                "dd.MM.yyyy", 
+                System.Globalization.CultureInfo.InvariantCulture))
             );
         }
 
@@ -436,7 +445,15 @@ public class ResumeModel {
         // Profit
         _m_list_profit_items = _m_profit_model.getTable();
 
-        // Fee
-        _m_list_fee_items = _m_fee_model.getTable();
+        // Convert ReceiptItem to FeeReceiptItem
+        _m_list_fee_items = new ObservableCollection<FeeReceiptItem>(
+            _m_receipt_model.getTable().Select(receipt => new FeeReceiptItem
+            {
+                receipt_id = receipt.receipt_id,
+                receipt_total_price = receipt.receipt_total_price,
+                receipt_date_created = receipt.receipt_date_created,
+                m_fee_items = new ObservableCollection<FeeProductItem>() // Initialize as needed
+            })
+        );
     }
 }

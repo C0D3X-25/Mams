@@ -5,7 +5,6 @@ using Mams.src.helpers;
 using Mams.src.navigations;
 using Mams.src.products;
 using Mams.src.receipts;
-using Mams.src.resumes;
 using Mams.src.suppliers;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -17,8 +16,8 @@ public class SaveFeeController : ABaseController {
     private readonly ProductModel _m_product_model;
     private readonly SupplierModel _m_supplier_model;
     private readonly EntityModel _m_entity_model;
-    private readonly FeeModel _m_fee_model;
-    private readonly ReceiptCascadeOperationModel _m_receipt_cascade_model;
+    private readonly FeeProductModel _m_fee_model;
+    private readonly ReceiptHandlerModel _m_receipt_handler_model;
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
@@ -27,18 +26,18 @@ public class SaveFeeController : ABaseController {
 
 
     // Hold the receipt ID, supplier, date of all the items in m_list_fee
-    private FeeItem _m_fee;
-    public FeeItem m_fee {
-        get => _m_fee;
+    private FeeReceiptItem _m_fee_receipt;
+    public FeeReceiptItem m_fee_receipt {
+        get => _m_fee_receipt;
         set {
-            _m_fee = value;
+            _m_fee_receipt = value;
             onPropertyChanged();
         }
     }
 
 
-    private ObservableCollection<FeeItem> _m_list_fee;
-    public ObservableCollection<FeeItem> m_list_fee {
+    private ObservableCollection<FeeProductItem> _m_list_fee;
+    public ObservableCollection<FeeProductItem> m_list_fee {
         get => _m_list_fee;
         set {
             _m_list_fee = value;
@@ -92,14 +91,14 @@ public class SaveFeeController : ABaseController {
         _m_supplier_model = new();
         _m_entity_model = new();
         _m_fee_model = new();
-        _m_receipt_cascade_model = new();
+        _m_receipt_handler_model = new();
 
 
         _m_list_product = _m_product_model.getTable();
         _m_list_supplier = _m_entity_model.getTable();
 
         _m_list_fee = new();
-        _m_fee = new();
+        _m_fee_receipt = new();
 
         if (id_to_load != 0) {
             //    _m_fee = _m_product_model.getItemByID(id_to_load.ToString()) ?? new ProductItem();
@@ -109,7 +108,7 @@ public class SaveFeeController : ABaseController {
             //    _m_selected_product = _m_list_product.FirstOrDefault(b => b.product_id == _m_fee.fk_product_id) ?? new ProductItem();
         }
         else {
-            m_list_fee.Add(new FeeItem());
+            m_list_fee.Add(new FeeProductItem());
         }
 
         m_save_command = new RelayCommand(saveFee, canSaveFee);
@@ -122,12 +121,12 @@ public class SaveFeeController : ABaseController {
     private bool canSaveFee(object? arg) {
 
         return m_selected_supplier != null
-            && SDateValidation.isDateValidFormatEU(m_fee.fee_date)
+            && SDateValidation.isDateValidFormatEU(m_fee_receipt.receipt_date_created)
             && m_list_fee.Count > 0
             && m_list_fee.All(item =>
                 item.fee_price_unity >= 0
                 && item.fee_quantity > 0
-                && !string.IsNullOrWhiteSpace(item.product_name)
+                && !string.IsNullOrWhiteSpace(item.product_item.product_name)
             );
     }
 
@@ -135,7 +134,7 @@ public class SaveFeeController : ABaseController {
     private void saveFee(object? obj) {
 
         //if (_m_receipt_cascade_model.saveItem()) {
-        //    SPageNavigationController.navigateTo(new ResumePage());
+        //    SPageNavigationController.navigateTo(new ListFeePage());
         //}
         //else {
         //    MessageBox.Show("Error saving the fee");
@@ -151,17 +150,17 @@ public class SaveFeeController : ABaseController {
                 return;
             }
         }
-        SPageNavigationController.navigateTo(new ResumePage());
+        SPageNavigationController.navigateTo(new ListFeePage());
     }
 
 
     private void addFeeItem(object? obj) {
-        m_list_fee.Add(new FeeItem());
+        m_list_fee.Add(new FeeProductItem());
     }
 
 
     private void DeleteFeeItem(object? parameter) {
-        if (parameter is FeeItem item) {
+        if (parameter is FeeProductItem item) {
             m_list_fee.Remove(item);
         }
     }

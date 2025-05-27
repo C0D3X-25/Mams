@@ -44,7 +44,7 @@ public class ReceiptModel : ABaseModel,
             if (reader.Read()) {
                 return new ReceiptItem {
                     receipt_id = reader.GetSafeValue<int>(m_COL_ID),
-                    receipt_total_price = reader.GetSafeValue<double>(m_COL_RECEIPT_TOTAL_PRICE),
+                    receipt_total_price = reader.GetSafeValue<decimal>(m_COL_RECEIPT_TOTAL_PRICE),
                     receipt_date_created = reader.GetSafeValue(m_COL_RECEIPT_DATE_CREATED, DateOnly.MinValue).ToString()
                 };
             }
