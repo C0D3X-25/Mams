@@ -9,7 +9,7 @@ using System.Windows.Input;
 namespace Mams.src.fees; 
 public class ListFeeController : ABaseController {
 
-    private readonly FeeReceiptModel _m_item_model = new();
+    private readonly ReceiptFeeDetailsModel _m_item_model = new();
 
     public ICommand m_add_new_item_command { get; set; }
     public ICommand m_modify_item_command { get; set; }

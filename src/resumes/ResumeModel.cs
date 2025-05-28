@@ -19,7 +19,7 @@ namespace Mams.src.resumes;
 public class ResumeModel {
 
     private readonly ProfitModel _m_profit_model;
-    private readonly FeeProductModel _m_fee_model;
+    //private readonly FeeProductModel _m_fee_model;
     private readonly ReceiptModel _m_receipt_model;
     private readonly EntityModel _m_entity_model;
     private readonly ProductModel _m_product_model;
@@ -69,7 +69,7 @@ public class ResumeModel {
     public ResumeModel() {
 
         _m_profit_model = new();
-        _m_fee_model = new();
+        //_m_fee_model = new();
         _m_receipt_model = new();
         _m_entity_model = new();
         _m_product_model = new();
@@ -363,18 +363,19 @@ public class ResumeModel {
 
         if (data_to_sort.profit_items.Count != 0) {
             sorted_items.profit_items = new ObservableCollection<ProfitItem>(
-                query_profit.OrderByDescending(item => 
-                DateTime.ParseExact(item.profit_date, 
-                "dd.MM.yyyy", 
-                System.Globalization.CultureInfo.InvariantCulture))
+                query_profit.OrderByDescending(item =>
+                DateTime.ParseExact(item.profit_date,
+                "dd/MM/yyyy",
+                System.Globalization.CultureInfo.InvariantCulture).Date)
             );
         }
         if (data_to_sort.fee_items.Count != 0) {
+
             sorted_items.fee_items = new ObservableCollection<FeeReceiptItem>(
-                query_fee.OrderByDescending(item => 
-                DateTime.ParseExact(item.receipt_date_created, 
-                "dd.MM.yyyy", 
-                System.Globalization.CultureInfo.InvariantCulture))
+                query_fee.OrderByDescending(item =>
+                DateTime.ParseExact(item.receipt_date_created,
+                "dd/MM/yyyy HH:mm:ss",
+                System.Globalization.CultureInfo.InvariantCulture).Date)
             );
         }
 
@@ -392,7 +393,10 @@ public class ResumeModel {
             return date;
         }
 
-        DateTime parsed_date = DateTime.ParseExact(date, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
+        DateTime parsed_date = DateTime.ParseExact(date,
+            "dd/MM/yyyy",
+            System.Globalization.CultureInfo.InvariantCulture
+        );
 
         return parsed_date.Year.ToString();
     }

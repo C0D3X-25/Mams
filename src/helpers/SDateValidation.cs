@@ -32,16 +32,16 @@ public static class SDateValidation {
 
     
     ///<summary>
-    /// Validates whether a given string represents a valid date in the format "dd.MM.yyyy".
+    /// Validates whether a given string represents a valid date in the format "dd/MM/yyyy".
     /// </summary>
-    /// <param name="date">The date string to validate in the format "dd.MM.yyyy".</param>
+    /// <param name="date">The date string to validate in the format "dd/MM/yyyy".</param>
     /// <returns>
     /// <c>true</c> if the date string is valid and matches the required format; otherwise, <c>false</c>.
     /// Returns <c>false</c> if the input is null, empty, or whitespace.
     /// </returns>
     public static bool isDateValidFormatEU(string date) {
 
-        // Date format is dd.MM.yyyy
+        // Date format is dd/MM/yyyy
         if (string.IsNullOrWhiteSpace(date)) {
             return false;
         }
@@ -49,7 +49,7 @@ public static class SDateValidation {
         DateTime parsedDate;
         bool valid = DateTime.TryParseExact(
             date,
-            "dd.MM.yyyy",
+            "dd/MM/yyyy",
             System.Globalization.CultureInfo.InvariantCulture,
             System.Globalization.DateTimeStyles.None,
             out parsedDate

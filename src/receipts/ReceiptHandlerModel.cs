@@ -1,5 +1,6 @@
 ﻿using Mams.src.models;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace Mams.src.receipts;
 
@@ -18,11 +19,11 @@ public class ReceiptHandlerModel : ABaseModel {
         foreach (var id in _m_receipt_model.getRowsID()) {
 
             var receipt = getReceiptByID(id.ToString());
-
             if (receipt != null) { 
                 items.Add(receipt);
             }
         }
+        
         return items;
     }
 

@@ -16,7 +16,7 @@ public class SaveFeeController : ABaseController {
     private readonly ProductModel _m_product_model;
     private readonly SupplierModel _m_supplier_model;
     private readonly EntityModel _m_entity_model;
-    private readonly FeeProductModel _m_fee_model;
+    //private readonly FeeProductModel _m_fee_model;
     private readonly ReceiptHandlerModel _m_receipt_handler_model;
 
     public ICommand m_save_command { get; set; }
@@ -90,7 +90,7 @@ public class SaveFeeController : ABaseController {
         _m_product_model = new();
         _m_supplier_model = new();
         _m_entity_model = new();
-        _m_fee_model = new();
+        //_m_fee_model = new();
         _m_receipt_handler_model = new();
 
 

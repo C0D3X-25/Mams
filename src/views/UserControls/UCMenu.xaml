@@ -47,7 +47,7 @@
                 Margin="3"
                 Command="{Binding m_navigate_list_fee_command}"/>
             <Button 
-                Content="Bénéfices" 
+                Content="Profits" 
                 Grid.Row="2" 
                 FontSize="16" 
                 Margin="3"

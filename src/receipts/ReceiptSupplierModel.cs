@@ -23,6 +23,7 @@ public class ReceiptSupplierModel : ABaseModel,
     }
 
 
+    // Parameter `id` is expected to be a receipt ID
     public ReceiptSupplierItem? getItemByID(string id) {
 
         using MySqlConnection? conn = _m_conn.openConnection();
@@ -130,11 +131,11 @@ public class ReceiptSupplierModel : ABaseModel,
     }
 
 
-    public ObservableCollection<ReceiptSupplierItem> getListItemWithReceiptID(string fk_receipt) {
+    public ObservableCollection<ReceiptSupplierItem> getListItemWithSuppliertID(string supplier_id) {
 
         ObservableCollection<ReceiptSupplierItem> items = new();
 
-        if (string.IsNullOrEmpty(fk_receipt)) {
+        if (string.IsNullOrEmpty(supplier_id)) {
             return items;
         }
 
@@ -144,11 +145,11 @@ public class ReceiptSupplierModel : ABaseModel,
             using MySqlCommand cmd = new(
                 $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER} " +
                 $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
+                $"WHERE {m_COL_FK_SUPPLIER} = @supplier_id;",
                 conn
             );
 
-            cmd.Parameters.AddWithValue("@fk_receipt", fk_receipt);
+            cmd.Parameters.AddWithValue("@supplier_id", supplier_id);
 
             using MySqlDataReader reader = cmd.ExecuteReader();
 

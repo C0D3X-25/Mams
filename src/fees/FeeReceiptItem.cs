@@ -9,6 +9,6 @@ public class FeeReceiptItem : ABaseItem {
     public int fk_supplier_id { get; set; } = 0;
     public string fk_supplier_name { get; set; } = string.Empty;
     public decimal receipt_total_price { get; set; } = 0.0M;
-    public string receipt_date_created { get; set; } = DateOnly.FromDateTime(DateTime.Now).ToString();
+    public string receipt_date_created { get; set; } = DateOnly.FromDateTime(DateTime.Now).ToString("dd/MM/yyyy");
     public ObservableCollection<FeeProductItem> m_fee_items = new();
 }
