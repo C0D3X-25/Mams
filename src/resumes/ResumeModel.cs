@@ -360,12 +360,16 @@ public class ResumeModel {
 
         if (data_to_sort.profit_items.Count != 0) {
             sorted_items.profit_items = new ObservableCollection<ProfitItem>(
-                query_profit.OrderByDescending(item => DateTime.ParseExact(item.profit_date, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture))
+                query_profit.OrderByDescending(item => DateTime.ParseExact(item.profit_date,
+                "dd.MM.yyyy",
+                System.Globalization.CultureInfo.InvariantCulture))
             );
         }
         if (data_to_sort.fee_items.Count != 0) {
             sorted_items.fee_items = new ObservableCollection<FeeItem>(
-                query_fee.OrderByDescending(item => DateTime.ParseExact(item.fee_date, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture))
+                query_fee.OrderByDescending(item => DateTime.ParseExact(item.fee_date,
+                "dd.MM.yyyy",
+                System.Globalization.CultureInfo.InvariantCulture))
             );
         }
 
@@ -383,7 +387,7 @@ public class ResumeModel {
             return date;
         }
 
-        DateTime parsed_date = DateTime.ParseExact(date, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+        DateTime parsed_date = DateTime.ParseExact(date, "dd.MM.yyyy", System.Globalization.CultureInfo.InvariantCulture);
 
         return parsed_date.Year.ToString();
     }
