@@ -17,7 +17,6 @@ public class SaveProductController : ABaseController {
     private readonly ProductTypeModel _m_product_type_model;
     private readonly ProductCategoryModel _m_product_category_model;
     private readonly ProductShapeModel _m_product_shape_model;
-    private readonly ProductLotModel _m_product_lot_model;
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
@@ -63,16 +62,6 @@ public class SaveProductController : ABaseController {
     }
 
 
-    private ObservableCollection<ProductLotItem> _m_list_product_lot;
-    public ObservableCollection<ProductLotItem> m_list_product_lot {
-        get { return _m_list_product_lot; }
-        set {
-            _m_list_product_lot = value;
-            onPropertyChanged();
-        }
-    }
-
-
     private ProductTypeItem? _m_selected_product_type;
     public ProductTypeItem? m_selected_product_type {
         get { return _m_selected_product_type; }
@@ -103,28 +92,16 @@ public class SaveProductController : ABaseController {
     }
 
 
-    private ProductLotItem? _m_selected_product_lot;
-    public ProductLotItem? m_selected_product_lot {
-        get { return _m_selected_product_lot; }
-        set {
-            _m_selected_product_lot = value;
-            onPropertyChanged();
-        }
-    }
-
-
     public SaveProductController(int id_to_load = 0) {
 
         _m_product_model = new();
         _m_product_type_model = new();
         _m_product_category_model = new();
         _m_product_shape_model = new();
-        _m_product_lot_model = new();
 
         _m_list_product_category = _m_product_category_model.getTable();
         _m_list_product_type = _m_product_type_model.getTable();
         _m_list_product_shape = _m_product_shape_model.getTable();
-        _m_list_product_lot = _m_product_lot_model.getTable();
 
         _m_product = new ProductItem();
 
@@ -135,7 +112,6 @@ public class SaveProductController : ABaseController {
             _m_selected_product_category = _m_list_product_category.FirstOrDefault(b => b.product_category_id == _m_product.fk_product_category_id) ?? new ProductCategoryItem();
             _m_selected_product_type = _m_list_product_type.FirstOrDefault(b => b.product_type_id == _m_product.fk_product_type_id) ?? new ProductTypeItem();
             _m_selected_product_shape = _m_list_product_shape.FirstOrDefault(b => b.product_shape_id == _m_product.fk_product_shape_id) ?? new ProductShapeItem();
-            _m_selected_product_lot = _m_list_product_lot.FirstOrDefault(b => b.product_lot_id == _m_product.fk_product_lot_id) ?? new ProductLotItem();
         }
         m_save_command = new RelayCommand(saveProduct, canSaveProduct);
         m_abort_command = new RelayCommand(abortProduct);
@@ -159,9 +135,6 @@ public class SaveProductController : ABaseController {
         }
         if (_m_selected_product_shape != null) {
             m_product.fk_product_shape_id = _m_selected_product_shape.product_shape_id;
-        }
-        if (_m_selected_product_lot != null) {
-            m_product.fk_product_lot_id = _m_selected_product_lot.product_lot_id;
         }
 
         if (_m_product_model.saveItem(m_product)) {

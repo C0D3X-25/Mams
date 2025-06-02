@@ -78,7 +78,6 @@ CREATE TABLE IF NOT EXISTS products (
     fk_product_type_id INT NOT NULL REFERENCES products_types(product_type_id),
     fk_product_category_id INT REFERENCES products_categories(product_category_id),
     fk_product_shape_id INT REFERENCES products_shapes(product_shape_id),
-    fk_product_lot_id INT REFERENCES products_lots(product_lot_id)
 );
 
 CREATE TABLE IF NOT EXISTS receipts_products (
@@ -87,4 +86,5 @@ CREATE TABLE IF NOT EXISTS receipts_products (
     receipt_product_unity_price DECIMAL(9,2),
     fk_product_id INT NOT NULL REFERENCES products(product_id),
     fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+    fk_product_lot_id INT REFERENCES products_lots(product_lot_id)
 );

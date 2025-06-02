@@ -314,44 +314,45 @@ public class ResumeModel {
                     )
                 );
                 break;
-            case EDatabaseTableName.PRODUCT_LOT:
-                if (search.search_id == 0) {
-                    break;
-                }
-                var product_items_l = _m_product_model.getProductWithProductLotId(new List<int> { search.search_id });
+            //// TODO: refactor this case, after database refactor
+            //case EDatabaseTableName.PRODUCT_LOT:
+            //    if (search.search_id == 0) {
+            //        break;
+            //    }
+            //    var product_items_l = _m_product_model.getProductWithProductLotId(new List<int> { search.search_id });
 
-                filtered_data.profit_items = new(
-                    _m_list_profit_items.Where(profit =>
-                    product_items_l.Any(product =>
-                    product.product_name == profit.product_name))
-                );
-                filtered_data.fee_items = new(
-                    _m_list_fee_items.Where(fee =>
-                        product_items_l.Any(product =>
-                        product.product_lot_name == search.search_item_to_display)
-                    )
-                );
-                break;
-            case EDatabaseTableName.BEEHIVE:
-                if (search.search_id == 0) {
-                    break;
-                }
-                var product_lot_p = _m_product_lot_model.getProductLotWithBeehiveId(new List<int> { search.search_id });
-                var product_lot_ids = product_lot_p.Select(lot => lot.product_lot_id).ToList();
-                var product_items_b = _m_product_model.getProductWithProductLotId(product_lot_ids);
+            //    filtered_data.profit_items = new(
+            //        _m_list_profit_items.Where(profit =>
+            //        product_items_l.Any(product =>
+            //        product.product_name == profit.product_name))
+            //    );
+            //    filtered_data.fee_items = new(
+            //        _m_list_fee_items.Where(fee =>
+            //            product_items_l.Any(product =>
+            //            product.product_lot_name == search.search_item_to_display)
+            //        )
+            //    );
+            //    break;
+            //case EDatabaseTableName.BEEHIVE:
+            //    if (search.search_id == 0) {
+            //        break;
+            //    }
+            //    var product_lot_p = _m_product_lot_model.getProductLotWithBeehiveId(new List<int> { search.search_id });
+            //    var product_lot_ids = product_lot_p.Select(lot => lot.product_lot_id).ToList();
+            //    var product_items_b = _m_product_model.getProductWithProductLotId(product_lot_ids);
 
-                filtered_data.profit_items = new(
-                    _m_list_profit_items.Where(profit =>
-                    product_items_b.Any(product =>
-                    product.product_name == profit.product_name))
-                );
-                filtered_data.fee_items = new(
-                    _m_list_fee_items.Where(fee =>
-                        product_items_b.Any(product =>
-                        product.product_lot_name == search.search_item_to_display)
-                    )
-                );
-                break;
+            //    filtered_data.profit_items = new(
+            //        _m_list_profit_items.Where(profit =>
+            //        product_items_b.Any(product =>
+            //        product.product_name == profit.product_name))
+            //    );
+            //    filtered_data.fee_items = new(
+            //        _m_list_fee_items.Where(fee =>
+            //            product_items_b.Any(product =>
+            //            product.product_lot_name == search.search_item_to_display)
+            //        )
+            //    );
+            //    break;
         }
 
         return filtered_data;

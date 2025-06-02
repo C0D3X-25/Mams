@@ -23,7 +23,6 @@
 
             <!--Header-->
             <userControls:UCHeader 
-                x:Name="header"  
                 Grid.Row="0"
                 title="Liste des Produits">
 
@@ -43,10 +42,9 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Menu-->
-                <userControls:UCMenu x:Name="pages_menu">
+                <userControls:UCMenu>
 
                 </userControls:UCMenu>
-                <!--Menu-->
 
                 <!--Content-->
                 <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
@@ -102,11 +100,10 @@
                                     <GridView>
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_id}"/>
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_name}"/>
-                                        <GridViewColumn Header="Poid(g)" DisplayMemberBinding="{Binding product_weight}"/>
+                                        <GridViewColumn Header="Poids(g)" DisplayMemberBinding="{Binding product_weight}"/>
                                         <GridViewColumn Header="Type" DisplayMemberBinding="{Binding product_type_name}"/>
                                         <GridViewColumn Header="Catégorie" DisplayMemberBinding="{Binding product_category_name}"/>
                                         <GridViewColumn Header="Forme" DisplayMemberBinding="{Binding product_shape_name}"/>
-                                        <GridViewColumn Header="Lot" DisplayMemberBinding="{Binding product_lot_name}"/>
                                         <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_archive}"/>
                                     </GridView>
                                 </ListView.View>
@@ -155,11 +152,10 @@
             </Grid>
 
             <!--Footer-->
-            <userControls:UCFooter x:Name="footer" Grid.Row="2">
+            <userControls:UCFooter
+                Grid.Row="2">
 
             </userControls:UCFooter>
-            <!--Footer-->
         </Grid>
-        <!--Page-->
     </Grid>
 </Page>

@@ -20,7 +20,6 @@ internal class ProductModel : ABaseModel,
     public const string m_COL_FK_PRODUCT_TYPE = "fk_product_type_id";
     public const string m_COL_FK_PRODUCT_CATEGORY = "fk_product_category_id";
     public const string m_COL_FK_PRODUCT_SHAPE = "fk_product_shape_id";
-    public const string m_COL_FK_PRODUCT_LOT = "fk_product_lot_id";
     public const string m_COL_ARCHIVE = "product_archive";
 
 
@@ -40,7 +39,7 @@ internal class ProductModel : ABaseModel,
             using MySqlCommand cmd = new(
                 $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_WEIGHT}, " +
                 $"{m_COL_FK_PRODUCT_TYPE}, {m_COL_FK_PRODUCT_CATEGORY}, " +
-                $"{m_COL_FK_PRODUCT_SHAPE}, {m_COL_FK_PRODUCT_LOT}, " +
+                $"{m_COL_FK_PRODUCT_SHAPE}, " +
                 $"{m_COL_ARCHIVE} " +
                 $"FROM {m_TBL_NAME} " +
                 $"WHERE {m_COL_ID} = @id;",
@@ -55,12 +54,10 @@ internal class ProductModel : ABaseModel,
                 int product_type_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_TYPE, 0);
                 int product_category_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_CATEGORY, 0);
                 int product_shape_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_SHAPE, 0);
-                int product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT, 0);
 
                 ProductTypeModel product_type_model = new();
                 ProductCategoryModel product_category_model = new();
                 ProductShapeModel product_shape_model = new();
-                ProductLotModel product_lot_model = new();
 
                 return new ProductItem {
                     product_id = reader.GetSafeValue<int>(m_COL_ID),
@@ -72,8 +69,6 @@ internal class ProductModel : ABaseModel,
                     product_category_name = product_category_model.getItemByID(product_category_id.ToString())?.product_category_name ?? string.Empty,
                     fk_product_shape_id = product_shape_id,
                     product_shape_name = product_shape_model.getItemByID(product_shape_id.ToString())?.product_shape_name ?? string.Empty,
-                    fk_product_lot_id = product_lot_id,
-                    product_lot_name = product_lot_model.getItemByID(product_lot_id.ToString())?.product_lot_name ?? string.Empty,
                     product_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
@@ -99,7 +94,6 @@ internal class ProductModel : ABaseModel,
             item.product_type_name = item.fk_product_type_id > 0 ? product_type_model.getItemByID(item.fk_product_type_id.ToString())?.product_type_name ?? string.Empty : "";
             item.product_category_name = item.fk_product_category_id > 0 ? product_category_model.getItemByID(item.fk_product_category_id.ToString())?.product_category_name ?? string.Empty : "";
             item.product_shape_name = item.fk_product_shape_id > 0 ? product_shape_model.getItemByID(item.fk_product_shape_id.ToString())?.product_shape_name ?? string.Empty : "";
-            item.product_lot_name = item.fk_product_lot_id > 0 ? product_lot_model.getItemByID(item.fk_product_lot_id.ToString())?.product_lot_name ?? string.Empty : "";
         }
         return table;
     }
@@ -119,16 +113,15 @@ internal class ProductModel : ABaseModel,
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_WEIGHT}, " +
                 $"{m_COL_FK_PRODUCT_TYPE}, {m_COL_FK_PRODUCT_CATEGORY}, " +
-                $"{m_COL_FK_PRODUCT_SHAPE}, {m_COL_FK_PRODUCT_LOT}) " +
-                $"VALUES (@name, @weight, @fk_product_type, @fk_product_category, @fk_product_shape, @fk_product_lot);";
+                $"{m_COL_FK_PRODUCT_SHAPE}) " +
+                $"VALUES (@name, @weight, @fk_product_type, @fk_product_category, @fk_product_shape);";
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
                 $"SET {m_COL_NAME} = @name, {m_COL_WEIGHT} = @weight, " +
                 $"{m_COL_FK_PRODUCT_TYPE} = @fk_product_type, " +
                 $"{m_COL_FK_PRODUCT_CATEGORY} = @fk_product_category, " +
-                $"{m_COL_FK_PRODUCT_SHAPE} = @fk_product_shape, " +
-                $"{m_COL_FK_PRODUCT_LOT} = @fk_product_lot " +
+                $"{m_COL_FK_PRODUCT_SHAPE} = @fk_product_shape " +
                 $"WHERE {m_COL_ID} = @id;";
         }
 
@@ -142,7 +135,6 @@ internal class ProductModel : ABaseModel,
             cmd.Parameters.AddWithValue("@fk_product_type", item.fk_product_type_id);
             cmd.Parameters.AddWithValue("@fk_product_category", item.fk_product_category_id);
             cmd.Parameters.AddWithValue("@fk_product_shape", item.fk_product_shape_id);
-            cmd.Parameters.AddWithValue("@fk_product_lot", item.fk_product_lot_id);
             cmd.ExecuteNonQuery();
             return true;
         }
@@ -168,11 +160,6 @@ internal class ProductModel : ABaseModel,
     }
 
 
-    public ObservableCollection<ProductItem> getProductWithProductLotId(List<int> product_lot_id) {
-        return getProductWith(m_COL_FK_PRODUCT_LOT, product_lot_id);
-    }
-
-
     private ObservableCollection<ProductItem> getProductWith(string col_name, List<int> ids) {
 
         ObservableCollection<ProductItem> product_items = new();
@@ -182,7 +169,7 @@ internal class ProductModel : ABaseModel,
             using MySqlCommand cmd = new(
                 $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_WEIGHT}, " +
                 $"{m_COL_FK_PRODUCT_TYPE}, {m_COL_FK_PRODUCT_CATEGORY}, " +
-                $"{m_COL_FK_PRODUCT_SHAPE}, {m_COL_FK_PRODUCT_LOT} " +
+                $"{m_COL_FK_PRODUCT_SHAPE} " +
                 $"FROM {m_TBL_NAME} " +
                 $"WHERE {col_name} IN ({string.Join(",", ids.Select((id, index) => $"@id{index}"))});",
                 conn
@@ -202,7 +189,6 @@ internal class ProductModel : ABaseModel,
                     fk_product_type_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_TYPE, 0),
                     fk_product_category_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_CATEGORY, 0),
                     fk_product_shape_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_SHAPE, 0),
-                    fk_product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT, 0)
                 });
             }
         }

@@ -78,7 +78,6 @@ CREATE TABLE IF NOT EXISTS products (
     fk_product_type_id INT NOT NULL REFERENCES products_types(product_type_id),
     fk_product_category_id INT REFERENCES products_categories(product_category_id),
     fk_product_shape_id INT REFERENCES products_shapes(product_shape_id),
-    fk_product_lot_id INT REFERENCES products_lots(product_lot_id)
 );
 
 CREATE TABLE IF NOT EXISTS receipts_products (
@@ -87,6 +86,7 @@ CREATE TABLE IF NOT EXISTS receipts_products (
     receipt_product_unity_price DECIMAL(9,2),
     fk_product_id INT NOT NULL REFERENCES products(product_id),
     fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+    fk_product_lot_id INT REFERENCES products_lots(product_lot_id)
 );
 
 -- Insert data into entities (including mixed supplier-client entities)
@@ -169,27 +169,27 @@ INSERT INTO products_lots (product_lot_name, product_lot_year, fk_beehive_id, pr
 ('202', 2023, 2, NULL);
 
 -- Insert data into products (same as previous)
-INSERT INTO products (product_name, product_weight, fk_product_category_id, fk_product_type_id, fk_product_shape_id, fk_product_lot_id, product_archive) VALUES
-('Wildflower Raw Honey', 500, 1, 1, 1, 1, NULL),
-('Acacia Creamed Honey', 350, 2, 2, 1, 2, NULL),
-('Lavender Infused Honey', 250, 5, 3, 3, 5, '2024-02-20'),
-('Pure Honeycomb'       , 400, 4, 4, 7, 3, NULL),
-('Premium Propolis Extract', 100, 8, 5, 6, 4, NULL),
-('Organic Bee Pollen'   , 200, 6, 6, 1, 6, '2024-01-25'),
-('Royal Jelly Premium'  , 50, 5, 7, 6, 7, NULL),
-('Natural Beeswax Candle Set', 150, 7, 8, 5, 8, NULL),
-('Heather Honey'        , 500, 3, 1, 4, 9, NULL),
-('Orange Blossom Honey' , 250, 2, 1, 2, 10, NULL),
-('Manuka Honey Special Reserve', 150, 5, 1, 3, 1, NULL),
-('Buckwheat Raw Honey'  , 500, 3, 1, 1, 2, '2024-03-02'),
-('Eucalyptus Honey'     , 350, 6, 1, 2, 3, NULL),
-('Linden Honey'         , 250, 1, 1, 1, 4, NULL),
-('Clover Honey'         , 500, 2, 1, 4, 5, NULL),
-('Beeswax Food Wraps'   , NULL, 7, 8, 5, 6, NULL),
-('Propolis Tincture'    , 30, 8, 5, 6, 7, NULL),
-('Honeycomb Gift Box'   , 300, 7, 4, 5, 8, '2024-02-28'),
-('Chestnut Honey'       , 500, 3, 1, 1, 9, NULL),
-('Thyme Honey'          , NULL, 1, 1, 2, 10, NULL);
+INSERT INTO products (product_name, product_weight, fk_product_category_id, fk_product_type_id, fk_product_shape_id, product_archive) VALUES
+('Wildflower Raw Honey', 500, 1, 1, 1, NULL),
+('Acacia Creamed Honey', 350, 2, 2, 2, NULL),
+('Lavender Infused Honey', 250, 5, 3, 5, '2024-02-20'),
+('Pure Honeycomb'       , 400, 4, 4, 3, NULL),
+('Premium Propolis Extract', 100, 8, 5, 4, NULL),
+('Organic Bee Pollen'   , 200, 6, 6, 6, '2024-01-25'),
+('Royal Jelly Premium'  , 50, 5, 7, 7, NULL),
+('Natural Beeswax Candle Set', 150, 7, 8, 8, NULL),
+('Heather Honey'        , 500, 3, 1, 9, NULL),
+('Orange Blossom Honey' , 250, 2, 1, 10, NULL),
+('Manuka Honey Special Reserve', 150, 5, 1, 1, NULL),
+('Buckwheat Raw Honey'  , 500, 3, 1, 2, '2024-03-02'),
+('Eucalyptus Honey'     , 350, 6, 1, 3, NULL),
+('Linden Honey'         , 250, 1, 1, 4, NULL),
+('Clover Honey'         , 500, 2, 1, 5, NULL),
+('Beeswax Food Wraps'   , NULL, 7, 8, 6, NULL),
+('Propolis Tincture'    , 30, 8, 5, 7, NULL),
+('Honeycomb Gift Box'   , 300, 7, 4, 8, '2024-02-28'),
+('Chestnut Honey'       , 500, 3, 1, 9, NULL),
+('Thyme Honey'          , NULL, 1, 1, 10, NULL);
 
 -- Insert data into receipts
 INSERT INTO receipts (receipt_total_price, receipt_date_created) VALUES
@@ -215,23 +215,23 @@ INSERT INTO receipts_clients (fk_client_id, fk_receipt_id) VALUES
 (9, 9), (10, 10);
 
 -- Insert data into receipts_products
-INSERT INTO receipts_products (receipt_product_quantity, receipt_product_unity_price, fk_product_id, fk_receipt_id) VALUES
-(3, 18.50, 1, 1),
-(2, 34.50, 11, 1),
-(1, 24.50, 5, 2),
-(2, 26.15, 6, 2),
-(5, 18.50, 1, 3),
-(2, 32.75, 13, 3),
-(3, 15.00, 20, 4),
-(10, 18.50, 1, 5),
-(5, 14.75, 9, 5),
-(2, 19.50, 12, 5),
-(1, 15.90, 15, 6),
-(2, 19.75, 17, 6),
-(5, 16.80, 4, 7),
-(3, 23.40, 18, 7),
-(8, 18.50, 1, 8),
-(4, 21.90, 19, 8),
-(2, 0, 11, 9),
-(6, 17.50, 14, 10),
-(4, 22.45, 16, 10);
+INSERT INTO receipts_products (receipt_product_quantity, receipt_product_unity_price, fk_product_id, fk_receipt_id, fk_product_lot_id) VALUES
+(3, 18.50, 1, 1, 1),
+(2, 34.50, 11, 1, 2),
+(1, 24.50, 5, 2, 3),
+(2, 26.15, 6, 2, 4),
+(5, 18.50, 1, 3, 5),
+(2, 32.75, 13, 3, 6),
+(3, 15.00, 20, 4, 7),
+(10, 18.50, 1, 5, 8),
+(5, 14.75, 9, 5, 9),
+(2, 19.50, 12, 5, 10),
+(1, 15.90, 15, 6, NULL),
+(2, 19.75, 17, 6, 1),
+(5, 16.80, 4, 7, 2),
+(3, 23.40, 18, 7, 3),
+(8, 18.50, 1, 8, 4),
+(4, 21.90, 19, 8, 5),
+(2, 0, 11, 9, 6),
+(6, 17.50, 14, 10, 7),
+(4, 22.45, 16, 10, 8);

@@ -568,13 +568,6 @@
     </item>
     <item id="diea1ccce42e734da8a9e1aa1ca1e90ce98409" veid="f32cdcf04d654103b7f8a63687cfabbb" cid="CN018" type="comment-connector" creation-date="02/26/2025 07:33:12" from="ef3f2141defc4aba83255151bc7920ca" to="8e70de7836484f8bad3edeb4bc3f6c12" />
     <item id="dc729f544ee4488eb7bfebab26cad9f4" cid="LBL005" type="ui-label" name="CHF" owner="df9d4ef086534c2d9fc27edb16aa6a3e" creation-date="02/20/2025 16:21:10" />
-    <item id="1f8245a9976d4c69bcc8d6b416af4d44" cid="REL039" type="erd-relationship" creation-date="02/17/2025 16:59:31" from="8b012746bada489cb5cc593c66f18893" to="93945c0f78c84645b48b4fd4b85fc0ce">
-      <erd-relation type="Identifying" multiplicity-from="1..*" multiplicity-to="0..1">
-        <attribute-pairs>
-          <attribute-pair from-attribute="" to-attribute="" />
-        </attribute-pairs>
-      </erd-relation>
-    </item>
     <item id="07b0a5348807447d8e3dc3d2397b68b0" cid="LBL012" type="ui-label" name="Nom*" creation-date="02/20/2025 17:19:52">
       <style style-name="Custom Style" shadow-type="smooth" shadow-offset="2,2" shadow-visible="true" shadow-color="#3A555555" shadow-radius="8" wrap-name-text="true" wrap-other-text="true" padding="2" glow-color="#FFFFFF" accuracy="0.9">
         <text-style type="name" color="#555555" font="Segoe UI;11.25;B" horizontal-alignment="left" />
@@ -612,9 +605,6 @@
     <item id="647e5cc141bb4fea9e30de45e4b685a2" cid="WND002" type="ui-window" name="SecondaryWindow" creation-date="02/22/2025 21:07:06">
       <owned-items />
       <window show-min-button="true" show-max-button="true" show-close-button="true" show-size-grip="false" />
-    </item>
-    <item id="201c94e3f88c4200b4d35bcbbcef950c" cid="CMT003" type="comment" name="Comment" creation-date="01/29/2025 14:40:43">
-      <comment>Ruchers</comment>
     </item>
     <item id="3aa7d74d2dfc4e28aacefa6f7d4f0be2" cid="ENT022" type="erd-entity" name="PRODUCTS_LOTS" style-class="Flat Light Green" creation-date="02/17/2025 16:58:58">
       <style class="Flat Light Green" />
@@ -793,38 +783,6 @@
     <item id="69c9c619a89240a4b46c588bd9bd3d4d" cid="LBL012" type="ui-label" name="ID Client" creation-date="02/20/2025 17:19:52" />
     <item id="ff0cc646a57c48219437ee0401dfd6cf" cid="LBL001" type="ui-label" name="Produit Forme/Type/Catégorie/Rucher" owner="f1e691d9b1754431998c9c7a7cf7a1c4" creation-date="02/20/2025 16:08:09" />
     <item id="difc347b2ed6a44af39f7810a997c4a6355948" veid="75a5c9f2f1184c33a2d500cc6d6d6ad5" cid="LBL005" type="ui-label" name="CHF" owner="477074814ad24eb3946bb2ed2123b89c" creation-date="02/20/2025 16:21:10" />
-    <item id="27c358eb0ba94814b9399b8a5e83ab03" cid="ENT010" type="erd-entity" name="BEEHIVES" style-class="Flat Light Green" creation-date="01/29/2025 13:46:39">
-      <style class="Flat Light Green" />
-      <entity description="" />
-      <attributes>
-        <attribute uid="dc3dfe51e8fb4a86a554839a410024ee" cid="EA019" name="beehive_id" type="" type-id="" nullable="false" creation-date="01/29/2025 13:50:05">
-          <style style-name="Custom Style" shadow-type="smooth" shadow-offset="2,2" shadow-visible="true" shadow-color="#322A2A2A" shadow-radius="8" wrap-name-text="true" wrap-other-text="true" glow-color="#FFFFFF" accuracy="0.9">
-            <text-style type="name" color="#2A2A2A" font="Segoe UI;9.75;BU" horizontal-alignment="left" />
-            <text-style type="part-header" color="#1E1E1E" font="Verdana;9;I" />
-            <text-style type="text" color="#2A2A2A" font="Segoe UI;9.75;" horizontal-alignment="left" />
-            <text-style type="tagged-value" color="#2A2A2A" font="Segoe UI;9.75;" />
-            <text-style type="stereotype" color="#2A2A2A" font="Segoe UI;9;I" />
-            <background type="none" colors="#56BFC2,#56BFC2" />
-            <border color="#11767B" width="0" />
-            <label-connector color="#80000000" dash-style="Dash" />
-            <alternate-styles>
-              <alternate-style style-name="Alternate" shadow-type="smooth" shadow-offset="2,2" shadow-visible="true" shadow-color="#322A2A2A" shadow-radius="8" wrap-name-text="true" wrap-other-text="true" padding="2" margin="3" glow-color="#FFFFFF" accuracy="0.9">
-                <text-style type="name" color="#D5D5D5" font="Segoe UI;11.25;B" />
-                <text-style type="part-header" color="#1E1E1E" font="Verdana;9;I" />
-                <text-style type="text" color="#D5D5D5" font="Segoe UI;9.75;" horizontal-alignment="left" />
-                <text-style type="tagged-value" color="#D5D5D5" font="Segoe UI;9.75;" />
-                <text-style type="stereotype" color="#D5D5D5" font="Segoe UI;9;I" />
-                <background type="solid" colors="#11767B" />
-                <border color="#11767B" width="2" />
-                <label-connector color="#80000000" dash-style="Dash" />
-              </alternate-style>
-            </alternate-styles>
-          </style>
-        </attribute>
-        <attribute uid="15788fcfbac44881b6f3da01b7cf820a" cid="EA047" name="beehive_name" type="" type-id="" nullable="false" creation-date="02/17/2025 17:04:13" />
-        <attribute uid="221e73bbfca84a349e0f3ced43a63d2d" cid="EA063" name="beehive_archive" type="" type-id="" nullable="false" creation-date="02/22/2025 20:35:48" />
-      </attributes>
-    </item>
     <item id="ddbc4f3a03654b59a3cafa9b91462dd8" cid="LBL012" type="ui-label" name="Adresse" creation-date="02/20/2025 17:19:52">
       <style style-name="Custom Style" shadow-type="smooth" shadow-offset="2,2" shadow-visible="true" shadow-color="#3A555555" shadow-radius="8" wrap-name-text="true" wrap-other-text="true" padding="2" glow-color="#FFFFFF" accuracy="0.9">
         <text-style type="name" color="#555555" font="Segoe UI;11.25;B" horizontal-alignment="left" />
@@ -1364,30 +1322,6 @@ article</comment>
           </style>
         </attribute>
         <attribute uid="0eb478ab2a5d49f3b58ba7515aa8150b" cid="EA062" name="fk_product_shape_id" type="" type-id="" foreign-key="true" nullable="false" creation-date="02/22/2025 20:35:22">
-          <style style-name="Custom Style" shadow-type="smooth" shadow-offset="2,2" shadow-visible="true" shadow-color="#322A2A2A" shadow-radius="8" wrap-name-text="true" wrap-other-text="true" glow-color="#FFFFFF" accuracy="0.9">
-            <text-style type="name" color="#2A2A2A" font="Segoe UI;9.75;B" horizontal-alignment="left" />
-            <text-style type="part-header" color="#1E1E1E" font="Verdana;9;I" />
-            <text-style type="text" color="#2A2A2A" font="Segoe UI;9.75;" horizontal-alignment="left" />
-            <text-style type="tagged-value" color="#2A2A2A" font="Segoe UI;9.75;" />
-            <text-style type="stereotype" color="#2A2A2A" font="Segoe UI;9;I" />
-            <background type="none" colors="#B6E2B5,#B6E2B5" />
-            <border color="#69AE68" width="0" />
-            <label-connector color="#80000000" dash-style="Dash" />
-            <alternate-styles>
-              <alternate-style style-name="Alternate" shadow-type="smooth" shadow-offset="2,2" shadow-visible="true" shadow-color="#322A2A2A" shadow-radius="8" wrap-name-text="true" wrap-other-text="true" padding="2" margin="3" glow-color="#FFFFFF" accuracy="0.9">
-                <text-style type="name" color="#2A2A2A" font="Segoe UI;11.25;B" />
-                <text-style type="part-header" color="#1E1E1E" font="Verdana;9;I" />
-                <text-style type="text" color="#2A2A2A" font="Segoe UI;9.75;" horizontal-alignment="left" />
-                <text-style type="tagged-value" color="#2A2A2A" font="Segoe UI;9.75;" />
-                <text-style type="stereotype" color="#2A2A2A" font="Segoe UI;9;I" />
-                <background type="solid" colors="#69AE68" />
-                <border color="#69AE68" width="2" />
-                <label-connector color="#80000000" dash-style="Dash" />
-              </alternate-style>
-            </alternate-styles>
-          </style>
-        </attribute>
-        <attribute uid="1c9d57842dae4a83ad2f696cb0da8102" cid="EA062" name="fk_product_lot_id" type="" type-id="" foreign-key="true" nullable="false" creation-date="02/22/2025 20:35:22">
           <style style-name="Custom Style" shadow-type="smooth" shadow-offset="2,2" shadow-visible="true" shadow-color="#322A2A2A" shadow-radius="8" wrap-name-text="true" wrap-other-text="true" glow-color="#FFFFFF" accuracy="0.9">
             <text-style type="name" color="#2A2A2A" font="Segoe UI;9.75;B" horizontal-alignment="left" />
             <text-style type="part-header" color="#1E1E1E" font="Verdana;9;I" />
@@ -2352,64 +2286,6 @@ Rayon de Miel</comment>
       </attributes>
     </item>
     <item id="2e44327e54f2445e8116da569b8a20c9" cid="DD001" type="ui-drop-down-button" name="Rechercher par:" creation-date="02/20/2025 16:36:39" />
-    <item id="8b012746bada489cb5cc593c66f18893" cid="ENT022" type="erd-entity" name="PRODUCTS_LOTS" style-class="Flat Light Green" creation-date="02/17/2025 16:58:58">
-      <style class="Flat Light Green" />
-      <entity description="" />
-      <attributes>
-        <attribute uid="08a87e91860341bc8db0312de13b6c6b" cid="EA044" name="product_lot_id" type="" type-id="" nullable="false" creation-date="02/17/2025 16:59:42">
-          <style style-name="Custom Style" shadow-type="smooth" shadow-offset="2,2" shadow-visible="true" shadow-color="#3A555555" shadow-radius="8" wrap-name-text="true" wrap-other-text="true" glow-color="#FFFFFF" accuracy="0.9">
-            <text-style type="name" color="#555555" font="Segoe UI;9.75;BU" horizontal-alignment="left" />
-            <text-style type="part-header" color="#1E1E1E" font="Verdana;9;I" />
-            <text-style type="text" color="#555555" font="Segoe UI;9.75;" horizontal-alignment="left" />
-            <text-style type="tagged-value" color="#555555" font="Segoe UI;9.75;" />
-            <text-style type="stereotype" color="#555555" font="Segoe UI;9;I" />
-            <background type="none" colors="#F2F2F2,#F2F2F2" />
-            <border color="#555555" width="0" />
-            <label-connector color="#80000000" dash-style="Dash" />
-            <alternate-styles>
-              <alternate-style style-name="Alternate" shadow-type="smooth" shadow-offset="2,2" shadow-visible="true" shadow-color="#322A2A2A" shadow-radius="8" wrap-name-text="true" wrap-other-text="true" padding="2" margin="3" glow-color="#FFFFFF" accuracy="0.9">
-                <text-style type="name" color="#E9E9E9" font="Segoe UI;11.25;B" />
-                <text-style type="part-header" color="#1E1E1E" font="Verdana;9;I" />
-                <text-style type="text" color="#E9E9E9" font="Segoe UI;9.75;" horizontal-alignment="left" />
-                <text-style type="tagged-value" color="#E9E9E9" font="Segoe UI;9.75;" />
-                <text-style type="stereotype" color="#E9E9E9" font="Segoe UI;9;I" />
-                <background type="solid" colors="#203D85,#203D85" />
-                <border color="#203D85" width="2" />
-                <label-connector color="#80000000" dash-style="Dash" />
-              </alternate-style>
-            </alternate-styles>
-          </style>
-        </attribute>
-        <attribute uid="ad68228872e94480cb170582f4b77b1b6173" cid="EA064" name="product_lot_name" type="" type-id="" nullable="false" creation-date="03/13/2025 10:34:49" />
-        <attribute uid="9f6f0c6007c44ca3bb3ff4876925ecd9" cid="EA045" name="product_lot_nbr" type="" type-id="" nullable="false" creation-date="02/17/2025 16:59:54" />
-        <attribute uid="eb5b22ff8c86489f912bc6045c606cb8" cid="EA046" name="product_lot_year" type="" type-id="" nullable="false" creation-date="02/17/2025 17:00:07" />
-        <attribute uid="83144183f98e496482d523a0a96ac67c" cid="EA061" name="product_lot_archive" type="" type-id="" nullable="false" creation-date="02/22/2025 20:35:03" />
-        <attribute uid="88d325f78c7042e5ad74945640db8f72" cid="EA019" name="fk_beehive_id" type="" type-id="" foreign-key="true" nullable="false" creation-date="01/29/2025 13:50:05">
-          <style style-name="Custom Style" shadow-type="smooth" shadow-offset="2,2" shadow-visible="true" shadow-color="#322A2A2A" shadow-radius="8" wrap-name-text="true" wrap-other-text="true" glow-color="#FFFFFF" accuracy="0.9">
-            <text-style type="name" color="#2A2A2A" font="Segoe UI;9.75;B" horizontal-alignment="left" />
-            <text-style type="part-header" color="#1E1E1E" font="Verdana;9;I" />
-            <text-style type="text" color="#2A2A2A" font="Segoe UI;9.75;" horizontal-alignment="left" />
-            <text-style type="tagged-value" color="#2A2A2A" font="Segoe UI;9.75;" />
-            <text-style type="stereotype" color="#2A2A2A" font="Segoe UI;9;I" />
-            <background type="none" colors="#56BFC2,#56BFC2" />
-            <border color="#11767B" width="0" />
-            <label-connector color="#80000000" dash-style="Dash" />
-            <alternate-styles>
-              <alternate-style style-name="Alternate" shadow-type="smooth" shadow-offset="2,2" shadow-visible="true" shadow-color="#322A2A2A" shadow-radius="8" wrap-name-text="true" wrap-other-text="true" padding="2" margin="3" glow-color="#FFFFFF" accuracy="0.9">
-                <text-style type="name" color="#D5D5D5" font="Segoe UI;11.25;B" />
-                <text-style type="part-header" color="#1E1E1E" font="Verdana;9;I" />
-                <text-style type="text" color="#D5D5D5" font="Segoe UI;9.75;" horizontal-alignment="left" />
-                <text-style type="tagged-value" color="#D5D5D5" font="Segoe UI;9.75;" />
-                <text-style type="stereotype" color="#D5D5D5" font="Segoe UI;9;I" />
-                <background type="solid" colors="#11767B" />
-                <border color="#11767B" width="2" />
-                <label-connector color="#80000000" dash-style="Dash" />
-              </alternate-style>
-            </alternate-styles>
-          </style>
-        </attribute>
-      </attributes>
-    </item>
     <item id="2a93c4ed8c3e4a0ab69fcefc0663eb7b" cid="BTN001" type="ui-button" name="Lots" creation-date="02/20/2025 16:05:59">
       <button />
     </item>
@@ -2878,7 +2754,6 @@ article</comment>
     </item>
     <item id="did8b70888b9ca4cda88fc8568d36cf1521890" veid="d9203fb9a3b9492b955e2bae347b2119" cid="CN011" type="comment-connector" creator="" creation-date="02/22/2025 21:05:15" from="3d6cf1fa58e84a42b41469a6de503db9" to="26a870df77c54013a63d683f4ed397e8" />
     <item id="di4d960c68962949b3b771c852662efbad8655" veid="09efc03da8834c1cb39563c9d62299f2" cid="CN020" type="comment-connector" creation-date="02/26/2025 07:40:47" to="686c12c436cc4047b4bea4ab326f2150" />
-    <item id="4a8e8256291245f1b1392c5544e8e606" cid="CN003" type="comment-connector" creation-date="01/29/2025 14:40:43" from="201c94e3f88c4200b4d35bcbbcef950c" to="27c358eb0ba94814b9399b8a5e83ab03" />
     <item id="6952c1d08bda4cc28d56fb4aeceb18dd" cid="TXT008" type="ui-text-box" owner="d9126ce990264e54932db2f7598efc38" creation-date="02/20/2025 17:21:37">
       <text-box />
     </item>
@@ -3060,13 +2935,6 @@ article</comment>
     </item>
     <item id="diad9ed22172814fbf8cf9ae307a40565a4674" veid="da44900513444861bf3787e2a5f4b951" cid="BTN002" type="ui-button" name="+" owner="9a1bd3a490b6404ea0b362c7e6a23bcc" creation-date="02/20/2025 17:10:11">
       <button />
-    </item>
-    <item id="63125f68105545b9ae7d105756bd1248" cid="REL040" type="erd-relationship" creation-date="02/17/2025 17:02:10" from="8b012746bada489cb5cc593c66f18893" to="27c358eb0ba94814b9399b8a5e83ab03">
-      <erd-relation type="Identifying" multiplicity-from="0..1" multiplicity-to="0..*">
-        <attribute-pairs>
-          <attribute-pair from-attribute="" to-attribute="221e73bbfca84a349e0f3ced43a63d2d" />
-        </attribute-pairs>
-      </erd-relation>
     </item>
     <item id="56ac5db86e5c431e898b53a885056269" cid="BTN001" type="ui-button" name="Retour Menu" owner="20e5525f72584de8ab5e1b358d40ada3" creation-date="02/20/2025 16:05:59">
       <button />
@@ -3402,7 +3270,7 @@ Rayon de Miel</comment>
       </meta>
       <abstract-items />
       <sub-models />
-      <diagram type="entity-relationship" id="p9dd8570f60364791aab501a5e8040f4f_124474875" name="MLD" order-index="1" uid="" name-style="" auto-routed-paths="false" default-line-style="default" view-location="1987,-108" zoom="0.8">
+      <diagram type="entity-relationship" id="p9dd8570f60364791aab501a5e8040f4f_124474875" name="MLD" order-index="1" uid="" name-style="" auto-routed-paths="false" default-line-style="default" view-location="2343,48" zoom="0.9">
         <style>
           <background-color index="1" color="#FFFFFFFF" />
           <background-color index="2" color="#FFFFFFFF" />
@@ -3414,7 +3282,7 @@ Rayon de Miel</comment>
           </authors>
           <description />
           <creation-date>01/28/2025 17:14:27</creation-date>
-          <change-date>06/02/2025 13:34:38</change-date>
+          <change-date>06/02/2025 13:47:43</change-date>
           <revision-count>0</revision-count>
           <version />
         </meta>
@@ -4244,24 +4112,8 @@ Rayon de Miel</comment>
             <layout ax="2723.5" ay="-1063.1844" awidth="257" aheight="180" x="2723.5" y="-1063.1844" width="257" height="180" />
             <erd-entity show-nullability="true" />
           </item>
-          <item id="27c358eb0ba94814b9399b8a5e83ab03" iid="2001b20dc4874ec7a07aaf67cc012034" creation-date="01/29/2025 13:46:39" order-index="3" type="entity">
-            <layout ax="3539" ay="699.38245" awidth="200" aheight="160" x="3539" y="699.38245" width="200" height="160" />
-            <erd-entity show-nullability="true" />
-          </item>
-          <item id="201c94e3f88c4200b4d35bcbbcef950c" iid="4437dba9df3240a998c79b7eb927b88d" creation-date="01/29/2025 14:40:43" order-index="4" type="entity">
-            <layout ax="3539" ay="662.88245" awidth="200" aheight="33" x="3539" y="662.88245" width="200" height="33" />
-          </item>
-          <item id="4a8e8256291245f1b1392c5544e8e606" iid="5d16ee599d4e48e498cc01792d07f2d9" creation-date="01/29/2025 14:40:43" order-index="5" type="comment-connector">
-            <layout line-style="oblique" lock-to-fields="false" auto-path="" x1="3639" y1="696" x2="3639" y2="699" start-border-pos="0.625" end-border-pos="0.125" name-position="0,20">
-              <points>
-                <point x="3639" y="696" />
-                <point x="3639" y="699" />
-              </points>
-            </layout>
-            <relation from="201c94e3f88c4200b4d35bcbbcef950c" from-iid="4437dba9df3240a998c79b7eb927b88d" to="27c358eb0ba94814b9399b8a5e83ab03" to-iid="2001b20dc4874ec7a07aaf67cc012034" />
-          </item>
           <item id="93945c0f78c84645b48b4fd4b85fc0ce" iid="37a0b1b5a023474cb326d2bf3d420171" creation-date="01/30/2025 17:38:20" order-index="6" type="entity">
-            <layout ax="2724.5" ay="477.68445" awidth="257" aheight="199" x="2724.5" y="477.68445" width="257" height="160" />
+            <layout ax="2724.5" ay="487.18445" awidth="257" aheight="179.5" x="2724.5" y="487.18445" width="257" height="179.5" />
             <erd-entity show-nullability="true" />
           </item>
           <item id="0969f6710ccf4532ab3397de484c1ca0" iid="d79b7b83b5b24883955f9f9954c26ffe" creation-date="01/29/2025 13:32:00" order-index="9" type="entity">
@@ -4269,35 +4121,13 @@ Rayon de Miel</comment>
             <erd-entity show-nullability="true" />
           </item>
           <item id="f82ad3f3d10248579aeb1b71a0e1c3e9" iid="f6307e30cc304e41aa2058ba39b750ad" creation-date="01/30/2025 17:49:06" order-index="11" type="relation">
-            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-to-fields="false" auto-path="" x1="2853" y1="343" x2="2853" y2="478" start-border-pos="0.625" end-border-pos="0.125" name-position="0,20">
+            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-to-fields="false" auto-path="" x1="2853" y1="343" x2="2853" y2="487" start-border-pos="0.625" end-border-pos="0.125" name-position="0,20">
               <points>
                 <point x="2853" y="343" />
-                <point x="2853" y="478" />
+                <point x="2853" y="487" />
               </points>
             </layout>
             <relation from="0969f6710ccf4532ab3397de484c1ca0" from-iid="d79b7b83b5b24883955f9f9954c26ffe" to="93945c0f78c84645b48b4fd4b85fc0ce" to-iid="37a0b1b5a023474cb326d2bf3d420171" />
-          </item>
-          <item id="1f8245a9976d4c69bcc8d6b416af4d44" iid="1c87cc97324848da8641ff1266e25b8f" creation-date="02/17/2025 16:59:31" order-index="12" type="relation">
-            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-to-fields="false" auto-path="" x1="3143" y1="713" x2="2982" y2="637" start-border-pos="0.9531188117133247" end-border-pos="0.45025573423759424" name-position="0,20">
-              <points>
-                <point x="3143" y="713" />
-                <point x="2982" y="637" />
-              </points>
-            </layout>
-            <relation from="8b012746bada489cb5cc593c66f18893" from-iid="9afb838d6c564d8781a4a316e3a1acda" to="93945c0f78c84645b48b4fd4b85fc0ce" to-iid="37a0b1b5a023474cb326d2bf3d420171" />
-          </item>
-          <item id="63125f68105545b9ae7d105756bd1248" iid="995236189ab044faa382f91eb1509036" creation-date="02/17/2025 17:02:10" order-index="13" type="relation">
-            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-to-fields="false" auto-path="" x1="3382" y1="772" x2="3539" y2="776" start-border-pos="0.37888971964518225" end-border-pos="0.8797421455383301" end-local-pos="79.81555" name-position="9,18">
-              <points>
-                <point x="3382" y="772" />
-                <point x="3539" y="776" />
-              </points>
-            </layout>
-            <relation from="8b012746bada489cb5cc593c66f18893" from-iid="9afb838d6c564d8781a4a316e3a1acda" to="27c358eb0ba94814b9399b8a5e83ab03" to-iid="2001b20dc4874ec7a07aaf67cc012034" />
-          </item>
-          <item id="8b012746bada489cb5cc593c66f18893" iid="9afb838d6c564d8781a4a316e3a1acda" creation-date="02/17/2025 16:58:58" order-index="14" type="entity">
-            <layout ax="3143" ay="679.38245" awidth="239" aheight="180" x="3133" y="669.07544" width="239" height="180" />
-            <erd-entity show-nullability="true" />
           </item>
           <item id="73586129dfb2448dac0df52720725d10" iid="7ad4649ddeed426aa30cfebaafd30824" creation-date="02/17/2025 17:05:27" order-index="15" type="entity">
             <layout ax="2346" ay="497.18445" awidth="257" aheight="160" x="2333.493" y="486.82092" width="257" height="160" />
@@ -4336,7 +4166,7 @@ Rayon de Miel</comment>
             <relation from="9e3eddf7104f4f6f8de0b3d8b3770bc5" from-iid="0427cd6997f34827abd37710a059b6a8" to="73586129dfb2448dac0df52720725d10" to-iid="7ad4649ddeed426aa30cfebaafd30824" />
           </item>
           <item id="bbb699c5ceb940d5a850be6682472d65" iid="99ec7d64cc1c4042bb8884978db80b09" creation-date="03/10/2025 12:37:25" order-index="73" type="relation">
-            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-to-fields="false" auto-path="" x1="2724" y1="577" x2="2603" y2="577" start-border-pos="0.8752317188972205" end-border-pos="0.374711799621582" name-position="0,20">
+            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-to-fields="false" auto-path="" x1="2724" y1="577" x2="2603" y2="577" start-border-pos="0.8749087022871692" end-border-pos="0.374711799621582" name-position="0,20">
               <points>
                 <point x="2724" y="577" />
                 <point x="2603" y="577" />
@@ -4345,7 +4175,7 @@ Rayon de Miel</comment>
             <relation from="93945c0f78c84645b48b4fd4b85fc0ce" from-iid="37a0b1b5a023474cb326d2bf3d420171" to="73586129dfb2448dac0df52720725d10" to-iid="7ad4649ddeed426aa30cfebaafd30824" />
           </item>
           <item id="8278d949376a4c51977e9ee94aafd855" iid="88d473b085364f61929d97ba2ae38ce0" creation-date="03/10/2025 12:37:42" order-index="74" type="relation">
-            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-to-fields="false" auto-path="" x1="2982" y1="577" x2="3143" y2="577" start-border-pos="0.3747682811027795" end-border-pos="0.8752882003784179" name-position="0,20">
+            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-to-fields="false" auto-path="" x1="2982" y1="577" x2="3143" y2="577" start-border-pos="0.3750912977128308" end-border-pos="0.8752882003784179" name-position="0,20">
               <points>
                 <point x="2982" y="577" />
                 <point x="3143" y="577" />
@@ -4354,9 +4184,9 @@ Rayon de Miel</comment>
             <relation from="93945c0f78c84645b48b4fd4b85fc0ce" from-iid="37a0b1b5a023474cb326d2bf3d420171" to="42267a967f6d43c5a0d3962a405a811f" to-iid="4a27f8ff03ae4243b1bbdc1bbec147b2" />
           </item>
           <item id="5091fff0343046abb81a17565a77d9ed" iid="d900a66c4838454fbab4120d65b630af" creation-date="03/10/2025 12:37:50" order-index="75" type="relation">
-            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-to-fields="false" auto-path="" x1="2853" y1="677" x2="2852" y2="798" start-border-pos="0.6253189502523103" end-border-pos="0.12525898701435811" name-position="0,20">
+            <layout start-role-position="25,15" end-role-position="25,-15" line-style="oblique" lock-to-fields="false" auto-path="" x1="2853" y1="667" x2="2852" y2="798" start-border-pos="0.6252866514925827" end-border-pos="0.12525898701435811" name-position="0,20">
               <points>
-                <point x="2853" y="677" />
+                <point x="2853" y="667" />
                 <point x="2852" y="798" />
               </points>
             </layout>

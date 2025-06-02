@@ -15,8 +15,5 @@ public class ProductItem : ABaseItem {
 
     public int fk_product_shape_id { get; set; } = 0;
     public string product_shape_name { get; set; } = string.Empty;
-
-    public int fk_product_lot_id { get; set; } = 0;
-    public string product_lot_name { get; set; } = string.Empty;
 }
 
