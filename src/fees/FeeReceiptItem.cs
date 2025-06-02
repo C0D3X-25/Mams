@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace Mams.src.fees;
 
-// class representing a fee receipt item
+// class representing 1 fee receipt
 public class FeeReceiptItem : ABaseItem {
     public int receipt_id { get; set; } = 0;
     public int fk_supplier_id { get; set; } = 0;

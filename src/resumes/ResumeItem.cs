@@ -7,5 +7,5 @@ namespace Mams.src.resumes;
 
 public class ResumeItem : ABaseItem {
     public ObservableCollection<ProfitItem> profit_items { get; set; } = new();
-    public ObservableCollection<FeeReceiptItem> fee_items { get; set; } = new();
+    public ObservableCollection<ReceiptFeeDetailedItem> fee_items { get; set; } = new();
 }

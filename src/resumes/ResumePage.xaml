@@ -196,12 +196,10 @@
                                ItemsSource="{Binding m_list_fee_item}">
                                <ListView.View>
                                    <GridView>
-                                        <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt_id}"/>
-                                        <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding supplier_name}"/>
-                                        <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
-                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding fee_date}"/>
-                                        <GridViewColumn Header="Quantité" DisplayMemberBinding="{Binding fee_quantity}"/>
-                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding fee_price_total}"/>
+                                        <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_id}"/>
+                                        <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding entity.entity_name}"/>
+                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
                                    </GridView>
                                </ListView.View>
                            </ListView>

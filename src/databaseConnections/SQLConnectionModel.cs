@@ -7,7 +7,7 @@ public class SQLConnectionModel {
 
     private const string _m_SERVER = "localhost";
     private const string _m_USER = "root";
-    private const string _m_PASSWORD = "";
+    private const string _m_PASSWORD = "root";
     private const string _m_DB = "mams_db";
 
     public MySqlConnection? openConnection() {

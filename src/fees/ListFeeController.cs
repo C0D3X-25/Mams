@@ -9,7 +9,7 @@ using System.Windows.Input;
 namespace Mams.src.fees; 
 public class ListFeeController : ABaseController {
 
-    private readonly ReceiptFeeDetailsModel _m_item_model = new();
+    private readonly ReceiptFeeDetailedModel _m_item_model = new();
 
     public ICommand m_add_new_item_command { get; set; }
     public ICommand m_modify_item_command { get; set; }
@@ -17,8 +17,8 @@ public class ListFeeController : ABaseController {
 
 
 
-    private ObservableCollection<ReceiptFeeDetailsItem>? _m_list_items;
-    public ObservableCollection<ReceiptFeeDetailsItem>? m_list_items {
+    private ObservableCollection<ReceiptFeeDetailedItem>? _m_list_items;
+    public ObservableCollection<ReceiptFeeDetailedItem>? m_list_items {
         get { return _m_list_items; }
         set {
             _m_list_items = value;
@@ -27,8 +27,8 @@ public class ListFeeController : ABaseController {
     }
 
 
-    private ReceiptFeeDetailsItem? _m_selected_item;
-    public ReceiptFeeDetailsItem? m_selected_item {
+    private ReceiptFeeDetailedItem? _m_selected_item;
+    public ReceiptFeeDetailedItem? m_selected_item {
         get { return _m_selected_item; }
         set {
             _m_selected_item = value;

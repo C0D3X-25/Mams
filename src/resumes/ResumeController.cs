@@ -86,14 +86,15 @@ public class ResumeController : ABaseController {
     }
 
 
-    private ObservableCollection<FeeReceiptItem>? _m_list_fee_item;
-    public ObservableCollection<FeeReceiptItem>? m_list_fee_item {
+    private ObservableCollection<ReceiptFeeDetailedItem>? _m_list_fee_item;
+    public ObservableCollection<ReceiptFeeDetailedItem>? m_list_fee_item {
         get { return _m_list_fee_item; }
         set {
             _m_list_fee_item = value;
             onPropertyChanged();
         }
     }
+
 
     private decimal _m_total_profit = 0.00M;
     public decimal m_total_profit {
@@ -190,9 +191,9 @@ public class ResumeController : ABaseController {
             }
         }
         if (m_list_fee_item != null) {
-            foreach (FeeReceiptItem item in m_list_fee_item) {
+            foreach (ReceiptFeeDetailedItem item in m_list_fee_item) {
                 // Subtract the fees to display the correct (negative) value
-                m_total_fee -= item.receipt_total_price;
+                m_total_fee -= item.receipt.receipt_total_price;
             }
             if (m_total_fee < 0) {
                 m_total_fee_color = Brushes.Red;
