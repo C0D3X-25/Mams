@@ -4,6 +4,7 @@ using Mams.src.entities;
 using Mams.src.helpers;
 using Mams.src.navigations;
 using Mams.src.products;
+using Mams.src.productsCategories;
 using Mams.src.productsLots;
 using Mams.src.receipts;
 using Mams.src.suppliers;
@@ -36,11 +37,11 @@ public class SaveFeeController : ABaseController {
     }
 
 
-    private ObservableCollection<ReceiptProductItem> _m_list_fee;
-    public ObservableCollection<ReceiptProductItem> m_list_fee {
-        get => _m_list_fee;
+    private ObservableCollection<ReceiptProductItem> _m_list_receipt_product;
+    public ObservableCollection<ReceiptProductItem> m_list_receipt_product {
+        get => _m_list_receipt_product;
         set {
-            _m_list_fee = value;
+            _m_list_receipt_product = value;
             onPropertyChanged();
         }
     }
@@ -86,11 +87,11 @@ public class SaveFeeController : ABaseController {
     }
 
 
-    private EntityItem? _m_selected_supplier;
+    private EntityItem? _m_selected_entity;
     public EntityItem? m_selected_entity {
-        get { return _m_selected_supplier; }
+        get { return _m_selected_entity; }
         set {
-            _m_selected_supplier = value;
+            _m_selected_entity = value;
             onPropertyChanged();
         }
     }
@@ -116,26 +117,30 @@ public class SaveFeeController : ABaseController {
         _m_list_product_lot = _m_product_lot_model.getTable();
         _m_list_entity = _m_entity_model.getTable();
 
-        _m_list_fee = new();
+        _m_list_receipt_product = new();
         _m_fee_receipt_detail = new();
 
         if (id_to_load != 0) {
-            //m_fee_receipt_detail.receipt_products
 
-            m_fee_receipt_detail = _m_receipt_fee_detailed_model.getItemByID(id_to_load.ToString()) ?? new ReceiptFeeDetailedItem();
-            m_selected_entity = m_fee_receipt_detail.entity;
-            m_list_fee = new ObservableCollection<ReceiptProductItem>(m_fee_receipt_detail.receipt_products.Select(product => new ReceiptProductItem {
-                product_item = product.product_item,
-                receipt_product_unity_price = product.receipt_product_unity_price,
-                receipt_product_quantity = product.receipt_product_quantity,
-                fk_product_id = product.fk_product_id,
-                fk_receipt_id = product.fk_receipt_id,
-                receipt_product_id = product.receipt_product_id,
-                fk_product_lot_id = product.fk_product_lot_id
-            }));
+            _m_fee_receipt_detail = _m_receipt_fee_detailed_model.getItemByID(id_to_load.ToString()) ?? new ReceiptFeeDetailedItem();
+            _m_list_receipt_product = m_fee_receipt_detail.receipt_products;
+
+            _m_selected_entity = _m_list_entity.FirstOrDefault(b =>
+                b.entity_id == m_fee_receipt_detail.entity.entity_id) ?? new();
+
+            // Find the product and product lot for each receipt product and set them
+            // to the receipt product item
+            foreach (var receipt_product in m_fee_receipt_detail.receipt_products) {
+                ProductItem? product = _m_list_product.FirstOrDefault(b =>
+                    b.product_id == receipt_product.fk_product_id) ?? new();
+                receipt_product.product_item = product;
+                ProductLotItem? product_lot = _m_list_product_lot.FirstOrDefault(b =>
+                    b.product_lot_id == receipt_product.fk_product_lot_id) ?? new();
+                receipt_product.product_lot_item = product_lot;
+            }
         }
         else {
-            m_list_fee.Add(new ReceiptProductItem());
+            _m_list_receipt_product.Add(new());
         }
 
         m_save_command = new RelayCommand(saveFee, canSaveFee);
@@ -149,8 +154,8 @@ public class SaveFeeController : ABaseController {
 
         return m_selected_entity != null
             && SDateValidation.isDateValidFormatEU(m_fee_receipt_detail.receipt.receipt_date_created)
-            && m_list_fee.Count > 0
-            && m_list_fee.All(item =>
+            && m_list_receipt_product.Count > 0
+            && m_list_receipt_product.All(item =>
                 item.receipt_product_unity_price >= 0
                 && item.receipt_product_quantity > 0
                 && !string.IsNullOrWhiteSpace(item.product_item.product_name)
@@ -170,11 +175,13 @@ public class SaveFeeController : ABaseController {
 
 
     private void abortFee(object? obj) {
-        if (m_list_fee.Count > 1) {
-            MessageBoxResult result = MessageBox.Show("En quittant la page, toutes les données seront perdues. Voulez-vous continuer?",
-                "Annuler", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.No) {
-                return;
+        if (_m_fee_receipt_detail.receipt.receipt_id == 0) {
+            if (m_list_receipt_product.Count > 1) {
+                MessageBoxResult result = MessageBox.Show("En quittant la page, toutes les données modifiées seront perdues. Voulez-vous continuer?",
+                    "Annuler", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.No) {
+                    return;
+                }
             }
         }
         SPageNavigationController.navigateTo(new ListFeePage());
@@ -182,13 +189,13 @@ public class SaveFeeController : ABaseController {
 
 
     private void addFeeItem(object? obj) {
-        m_list_fee.Add(new ReceiptProductItem());
+        m_list_receipt_product.Add(new ReceiptProductItem());
     }
 
 
     private void DeleteFeeItem(object? parameter) {
         if (parameter is ReceiptProductItem item) {
-            m_list_fee.Remove(item);
+            m_list_receipt_product.Remove(item);
         }
     }
 }

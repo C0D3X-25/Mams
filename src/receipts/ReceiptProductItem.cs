@@ -14,4 +14,24 @@ public class ReceiptProductItem : ABaseItem {
     public int fk_product_lot_id { get; set; } = 0;
     public ProductItem product_item { get; set; } = new();
     public ProductLotItem product_lot_item { get; set;} = new();
+
+    public ProductItem m_current_product {
+        get => product_item;
+        set {
+            product_item = value;
+            if (value != null) {
+                fk_product_id = value.product_id;
+            }
+        }
+    }
+
+    public ProductLotItem m_current_product_lot {
+        get => product_lot_item;
+        set {
+            product_lot_item = value;
+            if (value != null) {
+                fk_product_lot_id = value.product_lot_id;
+            }
+        }
+    }
 }

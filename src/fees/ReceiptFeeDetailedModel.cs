@@ -31,7 +31,6 @@ public class ReceiptFeeDetailedModel : ABaseModel,
 
     public ReceiptFeeDetailedItem? getItemByID(string id) {
 
-
         var receipt = _m_receipt_handler_model.getReceiptByID(id);
 
         if (receipt == null) {
@@ -50,7 +49,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         foreach (var receipt_product in item.receipt_products) {
             ProductItem? product = _m_product_model.getItemByID(receipt_product.fk_product_id.ToString());
             if (product != null) {
-                item.product.Add(product);
+                receipt_product.product_item = product;
             }
         }
 
@@ -66,14 +65,14 @@ public class ReceiptFeeDetailedModel : ABaseModel,
 
             // Skip because it's a profit receipt
             if (receipt.receipt_client_item.fk_client_id != 0) {
-                continue; 
+                continue;
             }
 
             ReceiptFeeDetailedItem item = new() {
                 receipt = receipt.receipt_item,
                 receipt_products = receipt.receipt_product_items,
                 receipt_supplier = receipt.receipt_supplier_item,
-                supplier = _m_supplier_model.getItemByID(receipt.receipt_supplier_item.fk_supplier_id.ToString()) ?? new(),                
+                supplier = _m_supplier_model.getItemByID(receipt.receipt_supplier_item.fk_supplier_id.ToString()) ?? new(),
             };
 
             item.entity = _m_entity_model.getItemByID(item.supplier.fk_entity_id.ToString()) ?? new();
@@ -81,7 +80,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
             foreach (var receipt_product in item.receipt_products) {
                 ProductItem? product = _m_product_model.getItemByID(receipt_product.fk_product_id.ToString());
                 if (product != null) {
-                    item.product.Add(product);
+                    receipt_product.product_item = product;
                 }
             }
 
@@ -92,6 +91,20 @@ public class ReceiptFeeDetailedModel : ABaseModel,
 
 
     public bool saveItem(ReceiptFeeDetailedItem item) {
-        throw new NotImplementedException();
+
+        //if (item == null) {
+        //    return false;
+        //}
+
+        //if (item.receipt == null || item.receipt_products == null || item.supplier == null) {
+        //    return false;
+        //}
+
+        //// Save the receipt
+        //if (!_m_receipts_model.saveItem(item.receipt)) {
+        //    return false;
+        //}
+
+        return false;
     }
 }

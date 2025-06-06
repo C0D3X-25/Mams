@@ -248,8 +248,8 @@ public class ResumeModel {
                 );
                 filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
-                        fee.product.Any(product =>
-                            product.product_id == search.search_id
+                        fee.receipt_products.Any(product =>
+                            product.fk_product_id == search.search_id
                         )
                     )
                 );
@@ -266,11 +266,11 @@ public class ResumeModel {
                             product.product_name == fee.product_name
                         )
                     )
-                );
+                );////
                 filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
-                        fee.product.Any(product =>
-                            product.fk_product_type_id == search.search_id
+                        fee.receipt_products.Any(product =>
+                            product.product_item.fk_product_type_id == search.search_id
                         )
                     )
                 );
@@ -289,8 +289,8 @@ public class ResumeModel {
                 );
                 filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
-                        fee.product.Any(product =>
-                            product.fk_product_category_id == search.search_id
+                        fee.receipt_products.Any(product =>
+                            product.product_item.fk_product_category_id == search.search_id
                         )
                     )
                 );
@@ -308,8 +308,8 @@ public class ResumeModel {
                 );
                 filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
-                        fee.product.Any(product =>
-                            product.fk_product_shape_id == search.search_id
+                        fee.receipt_products.Any(product =>
+                            product.product_item.fk_product_shape_id == search.search_id
                         )
                     )
                 );

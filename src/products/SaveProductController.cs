@@ -103,15 +103,19 @@ public class SaveProductController : ABaseController {
         _m_list_product_type = _m_product_type_model.getTable();
         _m_list_product_shape = _m_product_shape_model.getTable();
 
-        _m_product = new ProductItem();
+        _m_product = new();
 
         if (id_to_load != 0) {
+
             _m_product = _m_product_model.getItemByID(id_to_load.ToString()) ?? new ProductItem();
 
             // Find the matching product in the list and set it as selected or create a new one
-            _m_selected_product_category = _m_list_product_category.FirstOrDefault(b => b.product_category_id == _m_product.fk_product_category_id) ?? new ProductCategoryItem();
-            _m_selected_product_type = _m_list_product_type.FirstOrDefault(b => b.product_type_id == _m_product.fk_product_type_id) ?? new ProductTypeItem();
-            _m_selected_product_shape = _m_list_product_shape.FirstOrDefault(b => b.product_shape_id == _m_product.fk_product_shape_id) ?? new ProductShapeItem();
+            _m_selected_product_category = _m_list_product_category.FirstOrDefault(b => 
+                b.product_category_id == _m_product.fk_product_category_id) ?? new ProductCategoryItem();
+            _m_selected_product_type = _m_list_product_type.FirstOrDefault(b => 
+                b.product_type_id == _m_product.fk_product_type_id) ?? new ProductTypeItem();
+            _m_selected_product_shape = _m_list_product_shape.FirstOrDefault(b => 
+                b.product_shape_id == _m_product.fk_product_shape_id) ?? new ProductShapeItem();
         }
         m_save_command = new RelayCommand(saveProduct, canSaveProduct);
         m_abort_command = new RelayCommand(abortProduct);

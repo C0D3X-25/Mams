@@ -107,13 +107,13 @@
                                 ></Label>
 
                                 <ComboBox
-                                    Grid.Column="1" Grid.Row="0" 
-                                    Margin="5,0,5,0" 
-                                    FontSize="16" 
-                                    VerticalAlignment="Center"
-                                    MinHeight="25" MinWidth="200"
-                                    ItemsSource="{Binding m_list_entity, UpdateSourceTrigger=PropertyChanged}"
-                                    SelectedItem="{Binding m_selected_entity, UpdateSourceTrigger=PropertyChanged}">
+                                        Grid.Column="1" Grid.Row="0" 
+                                        Margin="5,0,5,0" 
+                                        FontSize="16" 
+                                        VerticalAlignment="Center"
+                                        MinHeight="25" MinWidth="200"
+                                        ItemsSource="{Binding m_list_entity, UpdateSourceTrigger=PropertyChanged}"
+                                        SelectedItem="{Binding m_selected_entity, UpdateSourceTrigger=PropertyChanged}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding entity_name, UpdateSourceTrigger=PropertyChanged}"/>
@@ -145,7 +145,7 @@
                             <!-- Fee Item -->
                             <ListView 
                                 Grid.Column="1" Grid.Row="0" 
-                                ItemsSource="{Binding m_list_fee}"
+                                ItemsSource="{Binding m_list_receipt_product}"
                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
                                 HorizontalContentAlignment="Stretch"
                             
@@ -176,6 +176,7 @@
                                                 FontSize="16" 
                                                 VerticalAlignment="Center"
                                             ></Label>
+
                                             <ComboBox 
                                                 Grid.Column="1"
                                                 Margin="5,0,5,0" 
@@ -184,9 +185,10 @@
                                                 MaxHeight="25" MaxWidth="200"
                                                 VerticalAlignment="Center" HorizontalAlignment="Left"
                                                 ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.m_list_product}"
+                                                SelectedItem="{Binding product_item, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                 DisplayMemberPath="product_name"
-                                                SelectedItem="{Binding Path=m_current_product, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            ></ComboBox>
+                                                SelectedValuePath="product_id">
+                                            </ComboBox>
                                         </Grid>
 
                                         <!-- Lot ComboBox -->
@@ -200,6 +202,7 @@
                                                 FontSize="16" 
                                                 VerticalAlignment="Center"
                                             ></Label>
+
                                             <ComboBox
                                                 Grid.Column="1"
                                                 Margin="5,0,5,0" 
@@ -208,9 +211,10 @@
                                                 MaxHeight="25" MaxWidth="200"
                                                 VerticalAlignment="Center" HorizontalAlignment="Left"
                                                 ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.m_list_product_lot}"
-                                                DisplayMemberPath="product_lot_name"
-                                                SelectedItem="{Binding Path=m_current_product_lot, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                            ></ComboBox>
+                                                SelectedItem="{Binding product_lot_item, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                DisplayMemberPath="product_lot_name" 
+                                                SelectedValuePath="product_lot_id">
+                                            </ComboBox>
                                         </Grid>
 
                                         <!-- Quantity -->

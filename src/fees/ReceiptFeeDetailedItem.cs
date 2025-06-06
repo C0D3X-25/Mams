@@ -13,6 +13,5 @@ public class ReceiptFeeDetailedItem : ABaseItem {
     public SupplierItem supplier { get; set; } = new();
     public ReceiptSupplierItem receipt_supplier { get; set; } = new();
     public ReceiptItem receipt { get; set; } = new();
-    public ObservableCollection<ReceiptProductItem> receipt_products = new();
-    public ObservableCollection<ProductItem> product = new();
+    public ObservableCollection<ReceiptProductItem> receipt_products { get; set; } = new();
 }
