@@ -26,7 +26,7 @@ public class SaveFeeController : ABaseController {
     public ICommand m_delete_fee_item_command { get; set; }
 
 
-    // Hold the receipt ID, supplier, date of all the items in m_list_fee
+    // Hold the receipt ID, supplier, date of all the items in m_list_receipt_product
     private ReceiptFeeDetailedItem _m_fee_receipt_detail;
     public ReceiptFeeDetailedItem m_fee_receipt_detail {
         get => _m_fee_receipt_detail;
@@ -36,7 +36,7 @@ public class SaveFeeController : ABaseController {
         }
     }
 
-
+    // This in the list of all the products in the receipt, each item is a line in the receipt
     private ObservableCollection<ReceiptProductItem> _m_list_receipt_product;
     public ObservableCollection<ReceiptProductItem> m_list_receipt_product {
         get => _m_list_receipt_product;
@@ -46,7 +46,7 @@ public class SaveFeeController : ABaseController {
         }
     }
 
-
+    // This is the list of all products available in the database, used to select a product in the receipt
     private ObservableCollection<ProductItem> _m_list_product;
     public ObservableCollection<ProductItem> m_list_product {
         get { return _m_list_product; }
@@ -56,7 +56,7 @@ public class SaveFeeController : ABaseController {
         }
     }
 
-
+    // This is the list of all entities available in the database, used to select an entity in the receipt
     private ObservableCollection<EntityItem> _m_list_entity;
     public ObservableCollection<EntityItem> m_list_entity {
         get { return _m_list_entity; }
@@ -66,7 +66,7 @@ public class SaveFeeController : ABaseController {
         }
     }
 
-
+    // This is the list of all product lots available in the database, used to select a product lot in the receipt
     private ObservableCollection<ProductLotItem> _m_list_product_lot;
     public ObservableCollection<ProductLotItem> m_list_product_lot {
         get { return _m_list_product_lot; }
@@ -76,7 +76,7 @@ public class SaveFeeController : ABaseController {
         }
     }
 
-
+    
     private ProductItem? _m_selected_product;
     public ProductItem? m_selected_product {
         get { return _m_selected_product; }
@@ -120,7 +120,7 @@ public class SaveFeeController : ABaseController {
         _m_list_receipt_product = new();
         _m_fee_receipt_detail = new();
 
-        if (id_to_load != 0) {
+        if (id_to_load > 0) {
 
             _m_fee_receipt_detail = _m_receipt_fee_detailed_model.getItemByID(id_to_load.ToString()) ?? new ReceiptFeeDetailedItem();
             _m_list_receipt_product = m_fee_receipt_detail.receipt_products;
@@ -165,12 +165,12 @@ public class SaveFeeController : ABaseController {
 
     private void saveFee(object? obj) {
 
-        //if (_m_receipt_cascade_model.saveItem()) {
-        //    SPageNavigationController.navigateTo(new ListFeePage());
-        //}
-        //else {
-        //    MessageBox.Show("Error saving the fee");
-        //}
+        if (_m_receipt_fee_detailed_model.saveItem(_m_fee_receipt_detail)) {
+            SPageNavigationController.navigateTo(new ListFeePage());
+        }
+        else {
+            MessageBox.Show("Error saving the fee");
+        }
     }
 
 

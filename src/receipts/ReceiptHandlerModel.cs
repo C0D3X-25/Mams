@@ -23,7 +23,6 @@ public class ReceiptHandlerModel : ABaseModel {
                 items.Add(receipt);
             }
         }
-        
         return items;
     }
 
@@ -47,39 +46,41 @@ public class ReceiptHandlerModel : ABaseModel {
 
     public bool saveReceipt(ReceiptHandlerItem item) {
 
-        _m_receipt_model.saveItem(item.receipt_item);
-
-        int receipt_id = _m_receipt_model.getLastID();
-
+        int receipt_id = _m_receipt_model.saveAndGetLastID(item.receipt_item);
+        
         // Save the products
         foreach (var product in item.receipt_product_items) {
             product.fk_receipt_id = receipt_id;
-            _m_receipt_product_model.saveItem(product);
+            if (!_m_receipt_product_model.saveItem(product)) {
+                return false;
+            }
         }
 
         // Save the client
         if (item.receipt_client_item.fk_client_id > 0) {
             item.receipt_client_item.fk_receipt_id = receipt_id;
-            _m_receipt_client_model.saveItem(item.receipt_client_item);
-            return true;
+            return _m_receipt_client_model.saveItem(item.receipt_client_item);
         }
         // Or save the supplier
         else {
             if (item.receipt_supplier_item.fk_supplier_id > 0) {
                 item.receipt_supplier_item.fk_receipt_id = receipt_id;
-                _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
-                return true;
+                return _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
             }
         }
         return false;
     }
 
 
-    public void deleteReceipt(int receipt_id) {
+    public bool deleteReceipt(string receipt_id) {
 
-        _m_receipt_product_model.deleteItem(receipt_id);
-        _m_receipt_client_model.deleteItem(receipt_id);
-        _m_receipt_supplier_model.deleteItem(receipt_id);
-        _m_receipt_model.deleteItem(receipt_id);
+        if (_m_receipt_product_model.deleteItem(receipt_id)
+            && _m_receipt_client_model.deleteItem(receipt_id)
+            && _m_receipt_supplier_model.deleteItem(receipt_id)
+            && _m_receipt_model.deleteItem(receipt_id)
+        ) { 
+            return true;
+        }
+        return false;
     }
 }

@@ -63,22 +63,19 @@ public class ReceiptModel : ABaseModel,
 
 
     public bool saveItem(ReceiptItem item) {
-
         using MySqlConnection? conn = _m_conn.openConnection();
 
         string query = string.Empty;
+        
+        DateTime parsedDate = DateTime.ParseExact(item.receipt_date_created, "dd.MM.yyyy", null);
+        string mysqlFormattedDate = parsedDate.ToString("yyyy-MM-dd");
 
         if (item.receipt_id == 0) {
-
-            //if () {
-            //    // TODO: check If Item Exist
-            //    return false;
-            //}
-
             query = $"INSERT INTO {m_TBL_NAME} (" +
                 $"{m_COL_RECEIPT_TOTAL_PRICE}, " +
                 $"{m_COL_RECEIPT_DATE_CREATED}) " +
-                $"VALUES (@total_price, @date_created);";
+                $"VALUES (@total_price, @date_created); " +
+                $"SELECT LAST_INSERT_ID();"; // Add this line to get ID immediately
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
@@ -92,8 +89,17 @@ public class ReceiptModel : ABaseModel,
                 cmd.Parameters.AddWithValue("@id", item.receipt_id);
             }
             cmd.Parameters.AddWithValue("@total_price", item.receipt_total_price);
-            cmd.Parameters.AddWithValue("@date_created", item.receipt_date_created);
-            cmd.ExecuteNonQuery();
+            cmd.Parameters.AddWithValue("@date_created", mysqlFormattedDate);
+            
+            if (item.receipt_id == 0) {
+                // For INSERT, get the ID directly
+                var newId = Convert.ToInt32(cmd.ExecuteScalar());
+                item.receipt_id = newId;
+            }
+            else {
+                // For UPDATE
+                cmd.ExecuteNonQuery();
+            }
 
             return true;
         }
@@ -104,18 +110,61 @@ public class ReceiptModel : ABaseModel,
     }
 
 
-    public int getLastID() {
+    public int saveAndGetLastID(ReceiptItem item) {
+        //using MySqlConnection? conn = _m_conn.openConnection();
+
+        //try {
+        //    using MySqlCommand cmd = new(
+        //        $"SELECT LAST_INSERT_ID() AS {m_COL_ID}",
+        //        conn
+        //    );
+        //    using MySqlDataReader reader = cmd.ExecuteReader();
+        //    if (reader.Read()) {
+        //        MessageBox.Show($"Mams.src.receipts.ReceiptModel.getLastID(): {reader.GetSafeValue<int>(m_COL_ID)}"); // BUG ??
+        //        return reader.GetSafeValue<int>(m_COL_ID);
+        //    }
+        //    return 0;
+        //}
+        //catch (MySqlException ex) {
+        //    MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+        //    return 0;
+        //}
+
         using MySqlConnection? conn = _m_conn.openConnection();
 
+        string query = string.Empty;
+
+        DateTime parsedDate = DateTime.ParseExact(item.receipt_date_created, "dd.MM.yyyy", null);
+        string mysqlFormattedDate = parsedDate.ToString("yyyy-MM-dd");
+
+        if (item.receipt_id == 0) {
+            query = $"INSERT INTO {m_TBL_NAME} (" +
+                $"{m_COL_RECEIPT_TOTAL_PRICE}, " +
+                $"{m_COL_RECEIPT_DATE_CREATED}) " +
+                $"VALUES (@total_price, @date_created); " +
+                $"SELECT LAST_INSERT_ID();"; // Get ID immediately, need the same connection
+        }
+        else {
+            query = $"UPDATE {m_TBL_NAME} " +
+                $"SET {m_COL_RECEIPT_TOTAL_PRICE} = @total_price, {m_COL_RECEIPT_DATE_CREATED} = @date_created " +
+                $"WHERE {m_COL_ID} = @id;";
+        }
+
         try {
-            using MySqlCommand cmd = new(
-                $"SELECT LAST_INSERT_ID() AS {m_COL_ID}",
-                conn
-            );
-            using MySqlDataReader reader = cmd.ExecuteReader();
-            if (reader.Read()) {
-                MessageBox.Show($"Mams.src.receipts.ReceiptModel.getLastID(): {reader.GetSafeValue<int>(m_COL_ID)}"); // BUG ??
-                return reader.GetSafeValue<int>(m_COL_ID);
+            using MySqlCommand cmd = new(query, conn);
+            if (item.receipt_id != 0) {
+                cmd.Parameters.AddWithValue("@id", item.receipt_id);
+            }
+            cmd.Parameters.AddWithValue("@total_price", item.receipt_total_price);
+            cmd.Parameters.AddWithValue("@date_created", mysqlFormattedDate);
+
+            if (item.receipt_id == 0) {
+                // For INSERT, get the ID directly
+                return Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else {
+                // For UPDATE
+                cmd.ExecuteNonQuery();
             }
             return 0;
         }

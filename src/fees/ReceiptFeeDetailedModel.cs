@@ -22,10 +22,10 @@ public class ReceiptFeeDetailedModel : ABaseModel,
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        throw new NotImplementedException();
+        return _m_receipt_handler_model.deleteReceipt(id);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        throw new NotImplementedException();
+        return deleteItem(id.ToString(), delete_type);
     }
 
 
@@ -92,19 +92,25 @@ public class ReceiptFeeDetailedModel : ABaseModel,
 
     public bool saveItem(ReceiptFeeDetailedItem item) {
 
-        //if (item == null) {
-        //    return false;
-        //}
+        if (item == null
+            || item.receipt.receipt_id == 0 
+            || item.receipt_products.Count() == 0 
+            || item.supplier.supplier_id == 0
+        ) {
+            return false;
+        }
 
-        //if (item.receipt == null || item.receipt_products == null || item.supplier == null) {
-        //    return false;
-        //}
+        // Save the receipt
+        if (!_m_receipt_handler_model.saveReceipt(
+            new ReceiptHandlerItem {
+                receipt_item = item.receipt,
+                receipt_product_items = item.receipt_products,
+                receipt_supplier_item = item.receipt_supplier
+            }
+        )) {
+            return false;
+        }
 
-        //// Save the receipt
-        //if (!_m_receipts_model.saveItem(item.receipt)) {
-        //    return false;
-        //}
-
-        return false;
+        return true;
     }
 }
