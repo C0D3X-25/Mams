@@ -76,15 +76,15 @@ CREATE TABLE IF NOT EXISTS products (
     product_weight INT,
     product_archive DATE,
     fk_product_type_id INT NOT NULL REFERENCES products_types(product_type_id),
-    fk_product_category_id INT REFERENCES products_categories(product_category_id),
-    fk_product_shape_id INT REFERENCES products_shapes(product_shape_id),
+    fk_product_category_id INT NOT NULL REFERENCES products_categories(product_category_id),
+    fk_product_shape_id INT NOT NULL REFERENCES products_shapes(product_shape_id)
 );
 
 CREATE TABLE IF NOT EXISTS receipts_products (
     receipt_product_id INT PRIMARY KEY AUTO_INCREMENT,
-    receipt_product_quantity INT,
-    receipt_product_unity_price DECIMAL(9,2),
+    receipt_product_quantity INT NOT NULL,
+    receipt_product_unity_price DECIMAL(9,2) NOT NULL,
     fk_product_id INT NOT NULL REFERENCES products(product_id),
-    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id),
     fk_product_lot_id INT REFERENCES products_lots(product_lot_id)
 );

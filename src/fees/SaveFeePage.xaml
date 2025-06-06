@@ -83,7 +83,7 @@
                             <userControls:UCLabelTextBox
                                 Grid.Column="0" Grid.Row="0"
                                 label="N° de Facture"
-                                text="{Binding m_fee.receipt_id, UpdateSourceTrigger=PropertyChanged}"
+                                text="{Binding m_fee_receipt_detail.receipt.receipt_id, UpdateSourceTrigger=PropertyChanged}"
                                 isEnabled="False"
                             ></userControls:UCLabelTextBox>
 
@@ -112,8 +112,8 @@
                                     FontSize="16" 
                                     VerticalAlignment="Center"
                                     MinHeight="25" MinWidth="200"
-                                    ItemsSource="{Binding m_list_supplier, UpdateSourceTrigger=PropertyChanged}"
-                                    SelectedItem="{Binding m_selected_supplier, UpdateSourceTrigger=PropertyChanged}">
+                                    ItemsSource="{Binding m_list_entity, UpdateSourceTrigger=PropertyChanged}"
+                                    SelectedItem="{Binding m_selected_entity, UpdateSourceTrigger=PropertyChanged}">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding entity_name, UpdateSourceTrigger=PropertyChanged}"/>
@@ -126,7 +126,7 @@
                             <userControls:UCLabelTextBox
                                 Grid.Column="2" Grid.Row="0"
                                 label="Date*"
-                                text="{Binding m_fee.fee_date, UpdateSourceTrigger=PropertyChanged}"
+                                text="{Binding m_fee_receipt_detail.receipt.receipt_date_created, UpdateSourceTrigger=PropertyChanged}"
                                 VerticalAlignment="Center" HorizontalAlignment="Center"
                             ></userControls:UCLabelTextBox>
                         </Grid>
@@ -143,17 +143,20 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- Fee Item -->
-                            <ListView Grid.Column="1" Grid.Row="0" 
-                                      ItemsSource="{Binding m_list_fee}"
-                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                      HorizontalContentAlignment="Stretch">
-                            <ListView.ItemTemplate>
+                            <ListView 
+                                Grid.Column="1" Grid.Row="0" 
+                                ItemsSource="{Binding m_list_fee}"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                HorizontalContentAlignment="Stretch"
+                            
+                                ><ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid 
                                         MaxHeight="75" MinHeight="50"
                                         Margin="0,0,0,5"
                                         HorizontalAlignment="Stretch">
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="4*"/>
                                             <ColumnDefinition Width="4*"/>
                                             <ColumnDefinition Width="2*"/>
                                             <ColumnDefinition Width="1*"/>
@@ -163,81 +166,105 @@
                                         </Grid.ColumnDefinitions>
 
                                         <!-- Product ComboBox -->
-                                        <Grid Grid.Column="0" Grid.Row="0"> 
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="1*"/>
-                                            <ColumnDefinition Width="3*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Label 
-                                            Content="Produit*" 
-                                            FontSize="16" 
-                                            VerticalAlignment="Center"
-                                        ></Label>
-                                        <ComboBox 
-                                            Grid.Column="1"
-                                            Margin="5,0,5,0" 
-                                            FontSize="16"
-                                            MinHeight="25" MinWidth="200"
-                                            MaxHeight="25" MaxWidth="200"
-                                            VerticalAlignment="Center" HorizontalAlignment="Left"
-                                            ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.m_list_product}"
-                                            DisplayMemberPath="product_name"
-                                            SelectedItem="{Binding Path=m_current_product, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                        ></ComboBox>
-                                            </Grid>
-
-                                            <!-- Quantity -->
-                                            <Label
-                                                Grid.Column="1" Grid.Row="0"
-                                                Content="Quantité*" 
+                                        <Grid Grid.Column="0" Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="3*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Label 
+                                                Content="Produit*" 
                                                 FontSize="16" 
-                                                VerticalAlignment="Center" HorizontalAlignment="Right"
-                                                Margin="5,0,0,0"
-                                                
-                                            ></Label>
-                                            <TextBox 
-                                                Grid.Column="2" Grid.Row="0"
-                                                Text="{Binding fee_quantity, UpdateSourceTrigger=PropertyChanged}"
-                                                Margin="5"
-                                                MinHeight="25" MinWidth="50"
-                                                MaxHeight="25" MaxWidth="50"
-                                                FontSize="16"
-                                                HorizontalContentAlignment="Center"
-                                                TextWrapping="Wrap"
                                                 VerticalAlignment="Center"
-                                            ></TextBox>
-
-                                            <!-- Price Unity -->
-                                            <Label
-                                                Grid.Column="3" Grid.Row="0"
-                                                Content="Prix unitaire*"
-                                                FontSize="16" 
-                                                VerticalAlignment="Center" HorizontalAlignment="Right"
-                                                Margin="5,0,0,0"
                                             ></Label>
-                                            <TextBox 
-                                                Grid.Column="4" Grid.Row="0"
-                                                Text="{Binding fee_price_unity, UpdateSourceTrigger=PropertyChanged}"
-                                                Margin="5"
-                                                MinHeight="25" MinWidth="50"
-                                                MaxHeight="25" MaxWidth="50"
+                                            <ComboBox 
+                                                Grid.Column="1"
+                                                Margin="5,0,5,0" 
                                                 FontSize="16"
-                                                TextWrapping="Wrap"
-                                                HorizontalContentAlignment="Center"
-                                                VerticalAlignment="Center"
-                                            ></TextBox>
-
-                                            <!-- Delete Button -->
-                                            <Button 
-                                                Grid.Column="5" Grid.Row="0"
-                                                Content="X"
-                                                Command="{Binding DataContext.m_delete_fee_item_command, 
-                                                            RelativeSource={RelativeSource AncestorType=ListView}}"
-                                                CommandParameter="{Binding}"
-                                                Height="20" Width="20"
-                                                Margin="5"
-                                            ></Button>
+                                                MinHeight="25" MinWidth="200"
+                                                MaxHeight="25" MaxWidth="200"
+                                                VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.m_list_product}"
+                                                DisplayMemberPath="product_name"
+                                                SelectedItem="{Binding Path=m_current_product, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            ></ComboBox>
                                         </Grid>
+
+                                        <!-- Lot ComboBox -->
+                                        <Grid Grid.Column="1" Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="1*"/>
+                                                <ColumnDefinition Width="3*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Label 
+                                                Content="lot" 
+                                                FontSize="16" 
+                                                VerticalAlignment="Center"
+                                            ></Label>
+                                            <ComboBox
+                                                Grid.Column="1"
+                                                Margin="5,0,5,0" 
+                                                FontSize="16"
+                                                MinHeight="25" MinWidth="200"
+                                                MaxHeight="25" MaxWidth="200"
+                                                VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.m_list_product_lot}"
+                                                DisplayMemberPath="product_lot_name"
+                                                SelectedItem="{Binding Path=m_current_product_lot, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            ></ComboBox>
+                                        </Grid>
+
+                                        <!-- Quantity -->
+                                        <Label
+                                            Grid.Column="2" Grid.Row="0"
+                                            Content="Quantité*" 
+                                            FontSize="16" 
+                                            VerticalAlignment="Center" HorizontalAlignment="Right"
+                                            Margin="5,0,0,0"
+                                                
+                                        ></Label>
+                                        <TextBox 
+                                            Grid.Column="3" Grid.Row="0"
+                                            Text="{Binding receipt_product_quantity, UpdateSourceTrigger=PropertyChanged}"
+                                            Margin="5"
+                                            MinHeight="25" MinWidth="50"
+                                            MaxHeight="25" MaxWidth="50"
+                                            FontSize="16"
+                                            HorizontalContentAlignment="Center"
+                                            TextWrapping="Wrap"
+                                            VerticalAlignment="Center"
+                                        ></TextBox>
+
+                                        <!-- Price Unity -->
+                                        <Label
+                                            Grid.Column="4" Grid.Row="0"
+                                            Content="Prix unitaire*"
+                                            FontSize="16" 
+                                            VerticalAlignment="Center" HorizontalAlignment="Right"
+                                            Margin="5,0,0,0"
+                                        ></Label>
+                                        <TextBox 
+                                            Grid.Column="5" Grid.Row="0"
+                                            Text="{Binding receipt_product_unity_price, UpdateSourceTrigger=PropertyChanged}"
+                                            Margin="5"
+                                            MinHeight="25" MinWidth="50"
+                                            MaxHeight="25" MaxWidth="50"
+                                            FontSize="16"
+                                            TextWrapping="Wrap"
+                                            HorizontalContentAlignment="Center"
+                                            VerticalAlignment="Center"
+                                        ></TextBox>
+
+                                        <!-- Delete Button -->
+                                        <Button 
+                                            Grid.Column="6" Grid.Row="0"
+                                            Content="X"
+                                            Command="{Binding DataContext.m_delete_fee_item_command, 
+                                                        RelativeSource={RelativeSource AncestorType=ListView}}"
+                                            CommandParameter="{Binding}"
+                                            Height="20" Width="20"
+                                            Margin="5"
+                                        ></Button>
+                                    </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
                             </ListView>

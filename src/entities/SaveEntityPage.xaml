@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Mams.src.entities"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="1000"
+      d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveEntityPage">
 
     <Grid>
@@ -23,7 +23,6 @@
 
             <!--Header-->
             <userControls:UCHeader 
-                x:Name="header" 
                 Grid.Row="0"
                 title="Contact">
 
@@ -91,29 +90,30 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                
-                                <!--ID-->
-                                <userControls:UCLabelTextBox
-                                    Grid.Row="0"
-                                    label="ID"
-                                    text="{Binding m_entity.entity_id, UpdateSourceTrigger=PropertyChanged}"
-                                    isEnabled="False"
-                                ></userControls:UCLabelTextBox>
 
                                 <!--Name-->
                                 <userControls:UCLabelTextBox
-                                    Grid.Row="1"
+                                    Grid.Row="0"
                                     label="Nom*"
                                     text="{Binding m_entity.entity_name, UpdateSourceTrigger=PropertyChanged}"
 
                                 ></userControls:UCLabelTextBox>
+                                
+                                <!--Address-->
+                                <userControls:UCLabelTextBox
+                                    Grid.Row="1"
+                                    label="Adresse"
+                                    text="{Binding m_entity.entity_address, UpdateSourceTrigger=PropertyChanged}"
+                                    
+                                ></userControls:UCLabelTextBox>
 
-                                <!--Email-->
+                                <!--City-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="2"
-                                    label="Email"
-                                    text="{Binding m_entity.entity_email, UpdateSourceTrigger=PropertyChanged}"
+                                    label="Ville"
+                                    text="{Binding m_entity.entity_city, UpdateSourceTrigger=PropertyChanged}"
                                 ></userControls:UCLabelTextBox>
+
                             </Grid>
 
                             <!--Right Grid-->
@@ -130,27 +130,28 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-                                <!--Address-->
-                                <userControls:UCLabelTextBox
-                                    Grid.Row="0"
-                                    label="Adresse"
-                                    text="{Binding m_entity.entity_address, UpdateSourceTrigger=PropertyChanged}"
-                                    
-                                ></userControls:UCLabelTextBox>
-
-                                <!--City-->
-                                <userControls:UCLabelTextBox
-                                    Grid.Row="1"
-                                    label="Ville"
-                                    text="{Binding m_entity.entity_city, UpdateSourceTrigger=PropertyChanged}"
-                                ></userControls:UCLabelTextBox>
-
                                 <!--Phone-->
                                 <userControls:UCLabelTextBox
-                                    Grid.Row="2"
+                                    Grid.Row="0"
                                     label="N° Téléphone"
                                     text="{Binding m_entity.entity_phone, UpdateSourceTrigger=PropertyChanged}"
                                     
+                                ></userControls:UCLabelTextBox>
+
+                                <!--Email-->
+                                <userControls:UCLabelTextBox
+                                    Grid.Row="1"
+                                    label="Email"
+                                    text="{Binding m_entity.entity_email, UpdateSourceTrigger=PropertyChanged}"
+                                ></userControls:UCLabelTextBox>
+                                
+                                <!--ID-->
+                                <userControls:UCLabelTextBox
+                                    Grid.Row="2"
+                                    label="ID"
+                                    text="{Binding m_entity.entity_id, UpdateSourceTrigger=PropertyChanged}"
+                                    Visibility="Visible"
+                                    isEnabled="False"
                                 ></userControls:UCLabelTextBox>
                             </Grid>
                         </Grid>

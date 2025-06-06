@@ -4,6 +4,7 @@ using Mams.src.entities;
 using Mams.src.helpers;
 using Mams.src.navigations;
 using Mams.src.products;
+using Mams.src.productsLots;
 using Mams.src.receipts;
 using Mams.src.suppliers;
 using System.Collections.ObjectModel;
@@ -14,10 +15,9 @@ namespace Mams.src.fees;
 public class SaveFeeController : ABaseController {
 
     private readonly ProductModel _m_product_model;
-    private readonly SupplierModel _m_supplier_model;
     private readonly EntityModel _m_entity_model;
-    //private readonly FeeProductModel _m_fee_model;
-    private readonly ReceiptHandlerModel _m_receipt_handler_model;
+    private readonly ProductLotModel _m_product_lot_model;
+    private readonly ReceiptFeeDetailedModel _m_receipt_fee_detailed_model;
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
@@ -26,18 +26,18 @@ public class SaveFeeController : ABaseController {
 
 
     // Hold the receipt ID, supplier, date of all the items in m_list_fee
-    private FeeReceiptItem _m_fee_receipt;
-    public FeeReceiptItem m_fee_receipt {
-        get => _m_fee_receipt;
+    private ReceiptFeeDetailedItem _m_fee_receipt_detail;
+    public ReceiptFeeDetailedItem m_fee_receipt_detail {
+        get => _m_fee_receipt_detail;
         set {
-            _m_fee_receipt = value;
+            _m_fee_receipt_detail = value;
             onPropertyChanged();
         }
     }
 
 
-    private ObservableCollection<FeeProductItem> _m_list_fee;
-    public ObservableCollection<FeeProductItem> m_list_fee {
+    private ObservableCollection<ReceiptProductItem> _m_list_fee;
+    public ObservableCollection<ReceiptProductItem> m_list_fee {
         get => _m_list_fee;
         set {
             _m_list_fee = value;
@@ -56,11 +56,21 @@ public class SaveFeeController : ABaseController {
     }
 
 
-    private ObservableCollection<EntityItem> _m_list_supplier;
-    public ObservableCollection<EntityItem> m_list_supplier {
-        get { return _m_list_supplier; }
+    private ObservableCollection<EntityItem> _m_list_entity;
+    public ObservableCollection<EntityItem> m_list_entity {
+        get { return _m_list_entity; }
         set {
-            _m_list_supplier = value;
+            _m_list_entity = value;
+            onPropertyChanged();
+        }
+    }
+
+
+    private ObservableCollection<ProductLotItem> _m_list_product_lot;
+    public ObservableCollection<ProductLotItem> m_list_product_lot {
+        get { return _m_list_product_lot; }
+        set {
+            _m_list_product_lot = value;
             onPropertyChanged();
         }
     }
@@ -77,7 +87,7 @@ public class SaveFeeController : ABaseController {
 
 
     private EntityItem? _m_selected_supplier;
-    public EntityItem? m_selected_supplier {
+    public EntityItem? m_selected_entity {
         get { return _m_selected_supplier; }
         set {
             _m_selected_supplier = value;
@@ -85,30 +95,47 @@ public class SaveFeeController : ABaseController {
         }
     }
 
+
+    private ProductLotItem? _m_selected_product_lot;
+    public ProductLotItem? m_selected_product_lot {
+        get { return _m_selected_product_lot; }
+        set {
+            _m_selected_product_lot = value;
+            onPropertyChanged();
+        }
+    }
+
     public SaveFeeController(int id_to_load = 0) {
 
         _m_product_model = new();
-        _m_supplier_model = new();
+        _m_product_lot_model = new();
         _m_entity_model = new();
-        //_m_fee_model = new();
-        _m_receipt_handler_model = new();
-
+        _m_receipt_fee_detailed_model = new();
 
         _m_list_product = _m_product_model.getTable();
-        _m_list_supplier = _m_entity_model.getTable();
+        _m_list_product_lot = _m_product_lot_model.getTable();
+        _m_list_entity = _m_entity_model.getTable();
 
         _m_list_fee = new();
-        _m_fee_receipt = new();
+        _m_fee_receipt_detail = new();
 
         if (id_to_load != 0) {
-            //    _m_fee = _m_product_model.getItemByID(id_to_load.ToString()) ?? new ProductItem();
+            //m_fee_receipt_detail.receipt_products
 
-            //    // Find the matching product and supplier in the list and set it as selected or create a new one
-            //    _m_selected_supplier = _m_list_supplier.FirstOrDefault(b => b.product_category_id == _m_fee.fk_product_category_id) ?? new ProductCategoryItem();
-            //    _m_selected_product = _m_list_product.FirstOrDefault(b => b.product_id == _m_fee.fk_product_id) ?? new ProductItem();
+            m_fee_receipt_detail = _m_receipt_fee_detailed_model.getItemByID(id_to_load.ToString()) ?? new ReceiptFeeDetailedItem();
+            m_selected_entity = m_fee_receipt_detail.entity;
+            m_list_fee = new ObservableCollection<ReceiptProductItem>(m_fee_receipt_detail.receipt_products.Select(product => new ReceiptProductItem {
+                product_item = product.product_item,
+                receipt_product_unity_price = product.receipt_product_unity_price,
+                receipt_product_quantity = product.receipt_product_quantity,
+                fk_product_id = product.fk_product_id,
+                fk_receipt_id = product.fk_receipt_id,
+                receipt_product_id = product.receipt_product_id,
+                fk_product_lot_id = product.fk_product_lot_id
+            }));
         }
         else {
-            m_list_fee.Add(new FeeProductItem());
+            m_list_fee.Add(new ReceiptProductItem());
         }
 
         m_save_command = new RelayCommand(saveFee, canSaveFee);
@@ -120,12 +147,12 @@ public class SaveFeeController : ABaseController {
 
     private bool canSaveFee(object? arg) {
 
-        return m_selected_supplier != null
-            && SDateValidation.isDateValidFormatEU(m_fee_receipt.receipt_date_created)
+        return m_selected_entity != null
+            && SDateValidation.isDateValidFormatEU(m_fee_receipt_detail.receipt.receipt_date_created)
             && m_list_fee.Count > 0
             && m_list_fee.All(item =>
-                item.fee_price_unity >= 0
-                && item.fee_quantity > 0
+                item.receipt_product_unity_price >= 0
+                && item.receipt_product_quantity > 0
                 && !string.IsNullOrWhiteSpace(item.product_item.product_name)
             );
     }
@@ -155,12 +182,12 @@ public class SaveFeeController : ABaseController {
 
 
     private void addFeeItem(object? obj) {
-        m_list_fee.Add(new FeeProductItem());
+        m_list_fee.Add(new ReceiptProductItem());
     }
 
 
     private void DeleteFeeItem(object? parameter) {
-        if (parameter is FeeProductItem item) {
+        if (parameter is ReceiptProductItem item) {
             m_list_fee.Remove(item);
         }
     }

@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Mams.src.productsShapes"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="800" d:DesignWidth="1024"
+      d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveProductShapePage">
 
     <Grid>
@@ -45,7 +45,6 @@
                 <userControls:UCMenu
 
                 ></userControls:UCMenu>
-                <!--Menu-->
 
                 <!--Content-->
                 <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
@@ -88,13 +87,12 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-                                <!--ID-->
+                                <!--Name-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="0"
-                                    label="ID"
-                                    text="{Binding m_product_shape.product_shape_id, UpdateSourceTrigger=PropertyChanged}"
-                                    Visibility="Visible"
-                                    isEnabled="False"
+                                    label="Nom de la forme*"
+                                    text="{Binding m_product_shape.product_shape_name, UpdateSourceTrigger=PropertyChanged}"
+                                
                                 ></userControls:UCLabelTextBox>
                             </Grid>
 
@@ -111,12 +109,13 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-                                <!--Name-->
+                                <!--ID-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="0"
-                                    label="Nom de la forme*"
-                                    text="{Binding m_product_shape.product_shape_name, UpdateSourceTrigger=PropertyChanged}"
-                                
+                                    label="ID"
+                                    text="{Binding m_product_shape.product_shape_id, UpdateSourceTrigger=PropertyChanged}"
+                                    isEnabled="False"
+                                    Visibility="Visible"
                                 ></userControls:UCLabelTextBox>
                             </Grid>
                         </Grid>

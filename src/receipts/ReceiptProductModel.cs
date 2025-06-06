@@ -18,6 +18,7 @@ public class ReceiptProductModel : ABaseModel,
     public const string m_COL_UNITY_PRICE = "receipt_product_unity_price";
     public const string m_COL_FK_PRODUCT = "fk_product_id";
     public const string m_COL_FK_RECEIPT = "fk_receipt_id";
+    public const string m_COL_FK_PRODUCT_LOT = "fk_product_lot_id";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
@@ -39,6 +40,7 @@ public class ReceiptProductModel : ABaseModel,
                 $"{m_COL_UNITY_PRICE}, " +
                 $"{m_COL_FK_PRODUCT}, " +
                 $"{m_COL_FK_RECEIPT}, " +
+                $"{m_COL_FK_PRODUCT_LOT} " +
                 $"FROM {m_TBL_NAME} " +
                 $"WHERE {m_COL_ID} = @id;",
                 conn
@@ -53,7 +55,8 @@ public class ReceiptProductModel : ABaseModel,
                     receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
                     receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
                     fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT),
-                    fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT)
+                    fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
+                    fk_product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
                 };
             }
             return null;
@@ -77,7 +80,8 @@ public class ReceiptProductModel : ABaseModel,
                 $"{m_COL_QUANTITY}, " +
                 $"{m_COL_UNITY_PRICE}, " +
                 $"{m_COL_FK_PRODUCT}, " +
-                $"{m_COL_FK_RECEIPT} " +
+                $"{m_COL_FK_RECEIPT}, " +
+                $"{m_COL_FK_PRODUCT_LOT} " +
                 $"FROM {m_TBL_NAME};",
                 conn
             );
@@ -89,7 +93,8 @@ public class ReceiptProductModel : ABaseModel,
                     receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
                     receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
                     fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
-                    fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
+                    fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT),
+                    fk_product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
                 });
             }
             return items;
@@ -113,8 +118,8 @@ public class ReceiptProductModel : ABaseModel,
             // Check if the item already exists in the database, if not insert the item into the database
             using MySqlCommand cmd = new(
                 $"INSERT INTO {m_TBL_NAME} ({m_COL_QUANTITY}, {m_COL_UNITY_PRICE}, " +
-                $"{m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT}) " +
-                $"SELECT @quantity, @unity_price, @fk_receipt, @fk_product " +
+                $"{m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT}, {m_COL_FK_PRODUCT_LOT}) " +
+                $"SELECT @quantity, @unity_price, @fk_receipt, @fk_product, @fk_product_lot " +
                 $"WHERE NOT EXISTS (SELECT 1 FROM {m_TBL_NAME} " +
                 $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt " +
                 $"AND {m_COL_FK_PRODUCT} = @fk_product " +
@@ -126,6 +131,7 @@ public class ReceiptProductModel : ABaseModel,
             cmd.Parameters.AddWithValue("@unity_price", item.receipt_product_unity_price);
             cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
             cmd.Parameters.AddWithValue("@fk_product", item.fk_product_id);
+            cmd.Parameters.AddWithValue("@fk_product_lot", item.fk_product_lot_id);
             return cmd.ExecuteNonQuery() > 0;
             
         }
@@ -152,7 +158,8 @@ public class ReceiptProductModel : ABaseModel,
                 $"{m_COL_QUANTITY}, " +
                 $"{m_COL_UNITY_PRICE}, " +
                 $"{m_COL_FK_PRODUCT}, " +
-                $"{m_COL_FK_RECEIPT} " +
+                $"{m_COL_FK_RECEIPT}, " +
+                $"{m_COL_FK_PRODUCT_LOT} " +
                 $"FROM {m_TBL_NAME} " +
                 $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
                 conn
@@ -168,7 +175,8 @@ public class ReceiptProductModel : ABaseModel,
                     receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
                     receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
                     fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
-                    fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
+                    fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT),
+                    fk_product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
                 });
             }
             return items;

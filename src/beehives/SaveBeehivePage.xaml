@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Mams.src.beehives"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveBeehivePage">
 
     <Grid>
@@ -23,7 +23,6 @@
 
             <!--Header-->
             <userControls:UCHeader 
-                x:Name="header" 
                 Grid.Row="0"
                 title="Ruchers"
 
@@ -118,6 +117,7 @@
                                     label="ID"
                                     text="{Binding m_beehive.beehive_id, UpdateSourceTrigger=PropertyChanged}"
                                     Visibility="Visible"
+                                    isEnabled="False"
                                 ></userControls:UCLabelTextBox>
                             </Grid>
                         </Grid>

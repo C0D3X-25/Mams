@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Mams.src.productsLots"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveProductLotPage">
 
     <Grid>
@@ -23,12 +23,10 @@
 
             <!--Header-->
             <userControls:UCHeader 
-            x:Name="header" 
             Grid.Row="0"
             title="Lot">
 
             </userControls:UCHeader>
-            <!--Header-->
 
             <!--Body-->
             <Grid Grid.Row="1">
@@ -90,49 +88,22 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                
-                                <!--ID-->
+
+                                <!--Name-->
                                 <userControls:UCLabelTextBox
                                 Grid.Row="0"
-                                label="ID"
-                                text="{Binding m_product_lot.product_lot_id, UpdateSourceTrigger=PropertyChanged}"
-                                isEnabled="False"
+                                label="Nom*"
+                                text="{Binding m_product_lot.product_lot_name, UpdateSourceTrigger=PropertyChanged}"
+                                
                                 ></userControls:UCLabelTextBox>
 
-                                <!--Beehive-->
-                                <Grid
-                                    Grid.Row="1">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Label
-                                        Grid.Column="0" Grid.Row="0" 
-                                        Content="Rucher"
-                                        FontSize="16" 
-                                        VerticalAlignment="Center" HorizontalAlignment="Right"
-
-                                    ></Label>
-
-                                    <ComboBox
-                                        Grid.Column="1" Grid.Row="0" 
-                                        Margin="5,0,5,0" 
-                                        FontSize="16" 
-                                        VerticalAlignment="Center"
-                                        MinHeight="25" MinWidth="200"
-                                        ItemsSource="{Binding m_list_beehive, UpdateSourceTrigger=PropertyChanged}"
-                                        SelectedItem="{Binding m_selected_beehive, UpdateSourceTrigger=PropertyChanged}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding beehive_name, UpdateSourceTrigger=PropertyChanged}"/>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                </Grid>
+                                <!--Year-->
+                                <userControls:UCLabelTextBox
+                                Grid.Row="1"
+                                label="Année*"                                    
+                                text="{Binding m_product_lot.product_lot_year, UpdateSourceTrigger=PropertyChanged}"
+                                
+                                ></userControls:UCLabelTextBox>
                             </Grid>
 
                             <!--Right Grid-->
@@ -148,21 +119,49 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-                                <!--Name-->
-                                <userControls:UCLabelTextBox
-                                Grid.Row="0"
-                                label="Nom*"
-                                text="{Binding m_product_lot.product_lot_name, UpdateSourceTrigger=PropertyChanged}"
-                                >
-                                </userControls:UCLabelTextBox>
+                                <!--Beehive-->
+                                <Grid
+                                    Grid.Row="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
 
-                                <!--Year-->
+                                    <Label
+                                    Grid.Column="0" Grid.Row="0" 
+                                    Content="Rucher"
+                                    FontSize="16" 
+                                    VerticalAlignment="Center" HorizontalAlignment="Right"
+
+                                    ></Label>
+
+                                    <ComboBox
+                                    Grid.Column="1" Grid.Row="0" 
+                                    Margin="5,0,5,0" 
+                                    FontSize="16" 
+                                    VerticalAlignment="Center"
+                                    MinHeight="25" MinWidth="200"
+                                    ItemsSource="{Binding m_list_beehive, UpdateSourceTrigger=PropertyChanged}"
+                                    SelectedItem="{Binding m_selected_beehive, UpdateSourceTrigger=PropertyChanged}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding beehive_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
+
+                                <!--ID-->
                                 <userControls:UCLabelTextBox
-                                Grid.Row="1"
-                                label="Année*"                                    
-                                text="{Binding m_product_lot.product_lot_year, UpdateSourceTrigger=PropertyChanged}"
-                                >
-                                </userControls:UCLabelTextBox>
+                                    Grid.Row="1"
+                                    label="ID"
+                                    text="{Binding m_product_lot.product_lot_id, UpdateSourceTrigger=PropertyChanged}"
+                                    isEnabled="False"
+                                    Visibility="Visible"
+                                ></userControls:UCLabelTextBox>
                             </Grid>
                         </Grid>
 

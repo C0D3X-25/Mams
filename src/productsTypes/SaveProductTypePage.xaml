@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:Mams.src.productsTypes"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="800" d:DesignWidth="1024"
+      d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveProductTypePage">
 
     <Grid>
@@ -23,12 +23,10 @@
 
             <!--Header-->
             <userControls:UCHeader 
-                x:Name="header" 
                 Grid.Row="0"
                 title="Type de produit"
 
             ></userControls:UCHeader>
-            <!--Header-->
 
             <!--Body-->
             <Grid Grid.Row="1">
@@ -46,7 +44,6 @@
                 <userControls:UCMenu
 
                 ></userControls:UCMenu>
-                <!--Menu-->
 
                 <!--Content-->
                 <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
@@ -88,14 +85,13 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-
-                                <!--ID-->
+                                
+                                <!--Name-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="0"
-                                    label="ID"
-                                    text="{Binding m_product_type.product_type_id, UpdateSourceTrigger=PropertyChanged}"
-                                    Visibility="Visible"
-                                    isEnabled="False"
+                                    label="Nom du type*"
+                                    text="{Binding m_product_type.product_type_name, UpdateSourceTrigger=PropertyChanged}"
+                                
                                 ></userControls:UCLabelTextBox>
                             </Grid>
 
@@ -112,12 +108,13 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-                                <!--Name-->
+                                <!--ID-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="0"
-                                    label="Nom du type*"
-                                    text="{Binding m_product_type.product_type_name, UpdateSourceTrigger=PropertyChanged}"
-                                
+                                    label="ID"
+                                    text="{Binding m_product_type.product_type_id, UpdateSourceTrigger=PropertyChanged}"
+                                    isEnabled="False"
+                                    Visibility="Visible"
                                 ></userControls:UCLabelTextBox>
                             </Grid>
                         </Grid>

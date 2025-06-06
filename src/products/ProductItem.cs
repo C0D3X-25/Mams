@@ -1,6 +1,8 @@
 ﻿using Mams.src.items;
 
 namespace Mams.src.products;
+
+
 public class ProductItem : ABaseItem {
     public int product_id { get; set; } = 0;
     public string product_name { get; set; } = string.Empty;

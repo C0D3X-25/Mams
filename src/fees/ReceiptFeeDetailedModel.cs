@@ -30,7 +30,31 @@ public class ReceiptFeeDetailedModel : ABaseModel,
 
 
     public ReceiptFeeDetailedItem? getItemByID(string id) {
-        throw new NotImplementedException();
+
+
+        var receipt = _m_receipt_handler_model.getReceiptByID(id);
+
+        if (receipt == null) {
+            return null;
+        }
+
+        ReceiptFeeDetailedItem item = new() {
+            receipt = receipt.receipt_item,
+            receipt_products = receipt.receipt_product_items,
+            receipt_supplier = receipt.receipt_supplier_item,
+            supplier = _m_supplier_model.getItemByID(receipt.receipt_supplier_item.fk_supplier_id.ToString()) ?? new(),
+        };
+
+        item.entity = _m_entity_model.getItemByID(item.supplier.fk_entity_id.ToString()) ?? new();
+
+        foreach (var receipt_product in item.receipt_products) {
+            ProductItem? product = _m_product_model.getItemByID(receipt_product.fk_product_id.ToString());
+            if (product != null) {
+                item.product.Add(product);
+            }
+        }
+
+        return item;
     }
 
 

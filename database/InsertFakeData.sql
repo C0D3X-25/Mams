@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS products (
     product_archive DATE,
     fk_product_type_id INT NOT NULL REFERENCES products_types(product_type_id),
     fk_product_category_id INT REFERENCES products_categories(product_category_id),
-    fk_product_shape_id INT REFERENCES products_shapes(product_shape_id),
+    fk_product_shape_id INT REFERENCES products_shapes(product_shape_id)
 );
 
 CREATE TABLE IF NOT EXISTS receipts_products (
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS receipts_products (
     receipt_product_quantity INT,
     receipt_product_unity_price DECIMAL(9,2),
     fk_product_id INT NOT NULL REFERENCES products(product_id),
-    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id)
+    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id),
     fk_product_lot_id INT REFERENCES products_lots(product_lot_id)
 );
 
@@ -178,8 +178,8 @@ INSERT INTO products (product_name, product_weight, fk_product_category_id, fk_p
 ('Organic Bee Pollen'   , 200, 6, 6, 6, '2024-01-25'),
 ('Royal Jelly Premium'  , 50, 5, 7, 7, NULL),
 ('Natural Beeswax Candle Set', 150, 7, 8, 8, NULL),
-('Heather Honey'        , 500, 3, 1, 9, NULL),
-('Orange Blossom Honey' , 250, 2, 1, 10, NULL),
+('Heather Honey'        , 500, 3, 1, NULL, NULL),
+('Orange Blossom Honey' , 250, 2, 1, NULL, NULL),
 ('Manuka Honey Special Reserve', 150, 5, 1, 1, NULL),
 ('Buckwheat Raw Honey'  , 500, 3, 1, 2, '2024-03-02'),
 ('Eucalyptus Honey'     , 350, 6, 1, 3, NULL),
