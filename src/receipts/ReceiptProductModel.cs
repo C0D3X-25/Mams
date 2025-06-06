@@ -1,6 +1,8 @@
 ﻿using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
+using Mams.src.products;
+using Mams.src.productsLots;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -54,9 +56,13 @@ public class ReceiptProductModel : ABaseModel,
                     receipt_product_id = reader.GetSafeValue<int>(m_COL_ID),
                     receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
                     receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
-                    fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT),
                     fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
-                    fk_product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
+                    product_item = new ProductItem {
+                        product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
+                    },
+                    product_lot_item = new ProductLotItem {
+                        product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
+                    },
                 };
             }
             return null;
@@ -93,8 +99,12 @@ public class ReceiptProductModel : ABaseModel,
                     receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
                     receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
                     fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
-                    fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT),
-                    fk_product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
+                    product_item = new ProductItem {
+                        product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
+                    },
+                    product_lot_item = new ProductLotItem {
+                        product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
+                    },
                 });
             }
             return items;
@@ -130,8 +140,8 @@ public class ReceiptProductModel : ABaseModel,
             cmd.Parameters.AddWithValue("@quantity", item.receipt_product_quantity);
             cmd.Parameters.AddWithValue("@unity_price", item.receipt_product_unity_price);
             cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
-            cmd.Parameters.AddWithValue("@fk_product", item.fk_product_id);
-            cmd.Parameters.AddWithValue("@fk_product_lot", item.fk_product_lot_id);
+            cmd.Parameters.AddWithValue("@fk_product", item.product_item.product_id);
+            cmd.Parameters.AddWithValue("@fk_product_lot", item.product_lot_item.product_lot_id);
             return cmd.ExecuteNonQuery() > 0;
             
         }
@@ -175,8 +185,12 @@ public class ReceiptProductModel : ABaseModel,
                     receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
                     receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
                     fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
-                    fk_product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT),
-                    fk_product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
+                    product_item = new ProductItem {
+                        product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
+                    },
+                    product_lot_item = new ProductLotItem {
+                        product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
+                    },
                 });
             }
             return items;
@@ -193,6 +207,6 @@ public class ReceiptProductModel : ABaseModel,
             && item.receipt_product_quantity > 0
             && item.receipt_product_unity_price >= 0
             && item.fk_receipt_id > 0
-            && item.fk_product_id > 0;
+            && item.product_item.product_id > 0;
     }
 }

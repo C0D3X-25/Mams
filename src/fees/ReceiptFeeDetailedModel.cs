@@ -47,12 +47,11 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         item.entity = _m_entity_model.getItemByID(item.supplier.fk_entity_id.ToString()) ?? new();
 
         foreach (var receipt_product in item.receipt_products) {
-            ProductItem? product = _m_product_model.getItemByID(receipt_product.fk_product_id.ToString());
+            ProductItem? product = _m_product_model.getItemByID(receipt_product.product_item.product_id.ToString());
             if (product != null) {
                 receipt_product.product_item = product;
             }
         }
-
         return item;
     }
 
@@ -78,7 +77,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
             item.entity = _m_entity_model.getItemByID(item.supplier.fk_entity_id.ToString()) ?? new();
 
             foreach (var receipt_product in item.receipt_products) {
-                ProductItem? product = _m_product_model.getItemByID(receipt_product.fk_product_id.ToString());
+                ProductItem? product = _m_product_model.getItemByID(receipt_product.product_item.product_id.ToString());
                 if (product != null) {
                     receipt_product.product_item = product;
                 }
@@ -91,26 +90,46 @@ public class ReceiptFeeDetailedModel : ABaseModel,
 
 
     public bool saveItem(ReceiptFeeDetailedItem item) {
-
-        if (item == null
-            || item.receipt.receipt_id == 0 
-            || item.receipt_products.Count() == 0 
-            || item.supplier.supplier_id == 0
-        ) {
+        if (item == null) {
+            return false;
+        }
+        if (item.receipt_products.Count() < 1) {
+            return false;
+        }
+        if (item.entity.entity_id == 0) {
             return false;
         }
 
-        // Save the receipt
-        if (!_m_receipt_handler_model.saveReceipt(
-            new ReceiptHandlerItem {
-                receipt_item = item.receipt,
-                receipt_product_items = item.receipt_products,
-                receipt_supplier_item = item.receipt_supplier
-            }
-        )) {
-            return false;
+        int supplier_id = foundSupplierIdOrCreateNew(item.entity.entity_id);
+        item.receipt_supplier.fk_supplier_id = supplier_id;
+        item.supplier.supplier_id = supplier_id;
+
+        var handlerItem = new ReceiptHandlerItem {
+            receipt_item = item.receipt,
+            receipt_product_items = item.receipt_products,
+            receipt_supplier_item = item.receipt_supplier
+        };
+
+        bool result = _m_receipt_handler_model.saveReceipt(handlerItem);
+        if (!result) {
+            MessageBox.Show("Failed to save receipt in handler");
+        }
+        return result;
+    }
+
+
+    private int foundSupplierIdOrCreateNew(int entity_id) {
+
+        int supplier_id = _m_supplier_model.getSupplierWithEntityFK(entity_id.ToString()).supplier_id;
+        if (supplier_id > 0) {
+            return supplier_id;
         }
 
-        return true;
+        var new_supplier = new SupplierItem {
+            fk_entity_id = entity_id 
+        };
+        _m_supplier_model.saveItem(new_supplier);
+
+        return _m_supplier_model.getSupplierWithEntityFK(entity_id.ToString()).supplier_id;
     }
 }

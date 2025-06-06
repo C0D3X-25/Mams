@@ -1,6 +1,5 @@
 ﻿using Mams.src.models;
 using System.Collections.ObjectModel;
-using System.Windows;
 
 namespace Mams.src.receipts;
 
@@ -48,7 +47,7 @@ public class ReceiptHandlerModel : ABaseModel {
 
         int receipt_id = _m_receipt_model.saveAndGetLastID(item.receipt_item);
         
-        // Save the products
+        // Save the receipt products
         foreach (var product in item.receipt_product_items) {
             product.fk_receipt_id = receipt_id;
             if (!_m_receipt_product_model.saveItem(product)) {
@@ -83,4 +82,7 @@ public class ReceiptHandlerModel : ABaseModel {
         }
         return false;
     }
+
+
+
 }

@@ -111,24 +111,6 @@ public class ReceiptModel : ABaseModel,
 
 
     public int saveAndGetLastID(ReceiptItem item) {
-        //using MySqlConnection? conn = _m_conn.openConnection();
-
-        //try {
-        //    using MySqlCommand cmd = new(
-        //        $"SELECT LAST_INSERT_ID() AS {m_COL_ID}",
-        //        conn
-        //    );
-        //    using MySqlDataReader reader = cmd.ExecuteReader();
-        //    if (reader.Read()) {
-        //        MessageBox.Show($"Mams.src.receipts.ReceiptModel.getLastID(): {reader.GetSafeValue<int>(m_COL_ID)}"); // BUG ??
-        //        return reader.GetSafeValue<int>(m_COL_ID);
-        //    }
-        //    return 0;
-        //}
-        //catch (MySqlException ex) {
-        //    MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-        //    return 0;
-        //}
 
         using MySqlConnection? conn = _m_conn.openConnection();
 
@@ -162,11 +144,10 @@ public class ReceiptModel : ABaseModel,
                 // For INSERT, get the ID directly
                 return Convert.ToInt32(cmd.ExecuteScalar());
             }
-            else {
-                // For UPDATE
-                cmd.ExecuteNonQuery();
-            }
-            return 0;
+
+            // For UPDATE
+            cmd.ExecuteNonQuery();
+            return item.receipt_id;
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");

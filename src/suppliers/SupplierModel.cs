@@ -96,12 +96,12 @@ public class SupplierModel : ABaseModel,
     }
 
 
-    public ObservableCollection<SupplierItem> getListSupplierWithEntityFK(string fk_entity) {
+    public SupplierItem getSupplierWithEntityFK(string fk_entity) {
 
-        ObservableCollection<SupplierItem> items = new();
+        SupplierItem item = new();
 
         if (string.IsNullOrEmpty(fk_entity)) {
-            return items;
+            return item;
         }
 
         using MySqlConnection? conn = _m_conn.openConnection();
@@ -118,31 +118,31 @@ public class SupplierModel : ABaseModel,
             using MySqlDataReader reader = cmd.ExecuteReader();
 
             while (reader.Read()) {
-                items.Add(new SupplierItem {
+                item = new SupplierItem {
                     supplier_id = reader.GetSafeValue<int>(m_COL_ID),
                     fk_entity_id = reader.GetSafeValue<int>(m_COL_FK_ENTITY)
-                });
+                };
             }
 
-            return items;
+            return item;
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return items;
+            return item;
         }
     }
 
 
-    public bool deleteListSupplierWithEntityFK(string fk_entity) {
+    public bool deleteSupplierWithEntityFK(string fk_entity) {
 
-        ObservableCollection<SupplierItem> items = getListSupplierWithEntityFK(fk_entity);
+        SupplierItem item = getSupplierWithEntityFK(fk_entity);
 
-        if (items.Count == 0) {
+        if (item == null) {
             return false;
         }
-        foreach (SupplierItem item in items) {
-            deleteItem(item.supplier_id);
-        }
+
+        deleteItem(item.supplier_id);
+        
         return true;
     }
 }

@@ -249,7 +249,7 @@ public class ResumeModel {
                 filtered_data.fee_items = new(
                     _m_list_fee_items.Where(fee =>
                         fee.receipt_products.Any(product =>
-                            product.fk_product_id == search.search_id
+                            product.product_item.product_id == search.search_id
                         )
                     )
                 );

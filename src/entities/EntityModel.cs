@@ -30,7 +30,7 @@ public class EntityModel : ABaseModel,
             SupplierModel supplier_model = new();
 
             client_model.deleteListClientWithEntityFK(id);
-            supplier_model.deleteListSupplierWithEntityFK(id);
+            supplier_model.deleteSupplierWithEntityFK(id);
         }
 
         return SDatabaseModel.deleteItem(this, id, m_COL_ID, m_COL_ARCHIVE, m_TBL_NAME, delete_type);

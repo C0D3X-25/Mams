@@ -103,7 +103,8 @@ public class ReceiptSupplierModel : ABaseModel,
                     $"AND {m_COL_FK_SUPPLIER} = @fk_supplier;",
                     conn
                 );
-
+                cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
+                cmd.Parameters.AddWithValue("@fk_supplier", item.fk_supplier_id);
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
                 if(reader.HasRows) {

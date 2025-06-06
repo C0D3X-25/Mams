@@ -132,10 +132,10 @@ public class SaveFeeController : ABaseController {
             // to the receipt product item
             foreach (var receipt_product in m_fee_receipt_detail.receipt_products) {
                 ProductItem? product = _m_list_product.FirstOrDefault(b =>
-                    b.product_id == receipt_product.fk_product_id) ?? new();
+                    b.product_id == receipt_product.product_item.product_id) ?? new();
                 receipt_product.product_item = product;
                 ProductLotItem? product_lot = _m_list_product_lot.FirstOrDefault(b =>
-                    b.product_lot_id == receipt_product.fk_product_lot_id) ?? new();
+                    b.product_lot_id == receipt_product.product_lot_item.product_lot_id) ?? new();
                 receipt_product.product_lot_item = product_lot;
             }
         }
@@ -165,7 +165,30 @@ public class SaveFeeController : ABaseController {
 
     private void saveFee(object? obj) {
 
-        if (_m_receipt_fee_detailed_model.saveItem(_m_fee_receipt_detail)) {
+        if (m_selected_entity == null) {
+            return;
+        }
+
+        m_fee_receipt_detail.entity = m_selected_entity;
+        
+        // Link product and product lot data for each receipt product
+        foreach (var receipt_product in m_list_receipt_product) {
+
+            var product = receipt_product.product_item;
+            var product_lot = receipt_product.product_lot_item;
+            
+            if (product != null) {
+                receipt_product.product_item.product_id = product.product_id;
+            }
+            if (product_lot != null) {
+                receipt_product.product_lot_item.product_lot_id = product_lot.product_lot_id;
+            }
+        }
+        
+        // Update the receipt products collection
+        m_fee_receipt_detail.receipt_products = m_list_receipt_product;
+
+        if (_m_receipt_fee_detailed_model.saveItem(m_fee_receipt_detail)) {
             SPageNavigationController.navigateTo(new ListFeePage());
         }
         else {
