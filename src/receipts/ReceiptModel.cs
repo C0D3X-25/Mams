@@ -10,14 +10,14 @@ namespace Mams.src.receipts;
 public class ReceiptModel : ABaseModel,
     ICrudOperation<ReceiptItem> {
 
-    public const string m_TBL_NAME = "receipts";
+    private const string m_TBL_NAME = "receipts";
     private const string m_COL_ID = "receipt_id";
     private const string m_COL_RECEIPT_TOTAL_PRICE = "receipt_total_price";
     private const string m_COL_RECEIPT_DATE_CREATED = "receipt_date_created";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_ID, "", m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteItem(this, id, m_COL_ID, string.Empty, m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return deleteItem(id.ToString(), delete_type);
@@ -137,7 +137,8 @@ public class ReceiptModel : ABaseModel,
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
-                $"SET {m_COL_RECEIPT_TOTAL_PRICE} = @total_price, {m_COL_RECEIPT_DATE_CREATED} = @date_created " +
+                $"SET {m_COL_RECEIPT_TOTAL_PRICE} = @total_price, " +
+                $"{m_COL_RECEIPT_DATE_CREATED} = @date_created " +
                 $"WHERE {m_COL_ID} = @id;";
         }
 

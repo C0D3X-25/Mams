@@ -10,13 +10,13 @@ namespace Mams.src.clients;
 public class ClientModel : ABaseModel,
     ICrudOperation<ClientItem> {
 
-    public const string m_TBL_NAME = "clients";
-    public const string m_COL_ID = "client_id";
-    public const string m_COL_FK_ENTITY = "fk_entity_id";
+    private const string m_TBL_NAME = "clients";
+    private const string m_COL_ID = "client_id";
+    private const string m_COL_FK_ENTITY = "fk_entity_id";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_ID, "", m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteItem(this, id, m_COL_ID, string.Empty, m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return deleteItem(id.ToString(), delete_type);

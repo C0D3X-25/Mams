@@ -14,17 +14,17 @@ namespace Mams.src.receipts;
 public class ReceiptProductModel : ABaseModel,
     ICrudOperation<ReceiptProductItem> {
 
-    public const string m_TBL_NAME = "receipts_products";
-    public const string m_COL_ID = "receipt_product_id";
-    public const string m_COL_QUANTITY = "receipt_product_quantity";
-    public const string m_COL_UNITY_PRICE = "receipt_product_unity_price";
-    public const string m_COL_FK_PRODUCT = "fk_product_id";
-    public const string m_COL_FK_RECEIPT = "fk_receipt_id";
-    public const string m_COL_FK_PRODUCT_LOT = "fk_product_lot_id";
+    private const string m_TBL_NAME = "receipts_products";
+    private const string m_COL_ID = "receipt_product_id";
+    private const string m_COL_QUANTITY = "receipt_product_quantity";
+    private const string m_COL_UNITY_PRICE = "receipt_product_unity_price";
+    private const string m_COL_FK_PRODUCT = "fk_product_id";
+    private const string m_COL_FK_RECEIPT = "fk_receipt_id";
+    private const string m_COL_FK_PRODUCT_LOT = "fk_product_lot_id";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_FK_RECEIPT, "", m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteItem(this, id, m_COL_FK_RECEIPT, string.Empty, m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return deleteItem(id.ToString(), delete_type);

@@ -13,10 +13,10 @@ public class ProductShapeModel :
     ABaseModel,
     ICrudOperation<ProductShapeItem> {
 
-    public const string m_TBL_NAME = "products_shapes";
-    public const string m_COL_ID = "product_shape_id";
-    public const string m_COL_NAME = "product_shape_name";
-    public const string m_COL_ARCHIVE = "product_shape_archive";
+    private const string m_TBL_NAME = "products_shapes";
+    private const string m_COL_ID = "product_shape_id";
+    private const string m_COL_NAME = "product_shape_name";
+    private const string m_COL_ARCHIVE = "product_shape_archive";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {

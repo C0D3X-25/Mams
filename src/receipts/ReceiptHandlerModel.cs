@@ -45,8 +45,27 @@ public class ReceiptHandlerModel : ABaseModel {
 
     public bool saveReceipt(ReceiptHandlerItem item) {
 
-        int receipt_id = _m_receipt_model.saveAndGetLastID(item.receipt_item);
-        
+        if (item == null) {
+            return false;
+        }
+
+        int receipt_id = 0;
+
+        // Insert new receipt
+        if (item.receipt_item.receipt_id == 0) {
+            receipt_id = _m_receipt_model.saveAndGetLastID(item.receipt_item);
+        }
+        // Update existing receipt
+        else {
+            receipt_id = item.receipt_item.receipt_id;
+
+            // TODO: Gonna need a better way to update a receipt
+            _m_receipt_model.saveItem(item.receipt_item);
+            _m_receipt_product_model.deleteItem(receipt_id);
+            _m_receipt_client_model.deleteItem(receipt_id);
+            _m_receipt_supplier_model.deleteItem(receipt_id);
+        }
+
         // Save the receipt products
         foreach (var product in item.receipt_product_items) {
             product.fk_receipt_id = receipt_id;

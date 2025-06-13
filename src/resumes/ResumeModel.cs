@@ -55,7 +55,7 @@ public class ResumeModel {
 
 
     public readonly ObservableCollection<DatabaseTablesNameItem> m_search_tables = new() {
-        new(){ m_name_in_database = EDatabaseTableName.NONE, m_name_to_display = "" }, // Search all
+        new(){ m_name_in_database = EDatabaseTableName.NONE, m_name_to_display = string.Empty }, // Search all
         new(){ m_name_in_database = EDatabaseTableName.ENTITY, m_name_to_display = "Client/Fournisseur" },
         new(){ m_name_in_database = EDatabaseTableName.BEEHIVE, m_name_to_display = "Rucher" },
         new(){ m_name_in_database = EDatabaseTableName.PRODUCT, m_name_to_display = "Produit" },

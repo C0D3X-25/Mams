@@ -69,7 +69,7 @@ public class ListEntityController : ABaseController {
     /// <param name="page_navigation">The navigation controller for managing page transitions</param>
     public ListEntityController() {
         
-        _m_delete_button_text = "";
+        _m_delete_button_text = string.Empty;
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
         m_modify_item_command = new RelayCommand(navigateToModifyItem, isItemSelected);

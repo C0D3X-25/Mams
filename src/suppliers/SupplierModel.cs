@@ -10,9 +10,9 @@ namespace Mams.src.suppliers;
 public class SupplierModel : ABaseModel,
     ICrudOperation<SupplierItem> {
 
-    public const string m_TBL_NAME = "suppliers";
-    public const string m_COL_ID = "supplier_id";
-    public const string m_COL_FK_ENTITY = "fk_entity_id";
+    private const string m_TBL_NAME = "suppliers";
+    private const string m_COL_ID = "supplier_id";
+    private const string m_COL_FK_ENTITY = "fk_entity_id";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {

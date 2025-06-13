@@ -163,7 +163,7 @@ public class SQLConnectionModel {
         //    // Command to install the service
         //    ProcessStartInfo startInfo = new() {
         //        FileName = mysqlPath,
-        //        Arguments = $"--install \"{serviceName}\" --defaults-file=\"{configPath}\"",
+        //        Arguments = $"--install \"{serviceName}\" --defaults-file=\"{configPath}\string.Empty,
         //        UseShellExecute = true,
         //        Verb = "runas", // Request admin privileges
         //        CreateNoWindow = false

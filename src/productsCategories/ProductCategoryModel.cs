@@ -16,10 +16,10 @@ public class ProductCategoryModel :
     ABaseModel,
     ICrudOperation<ProductCategoryItem> {
 
-    public const string m_TBL_NAME = "products_categories";
-    public const string m_COL_ID = "product_category_id";
-    public const string m_COL_NAME = "product_category_name";
-    public const string m_COL_ARCHIVE = "product_category_archive";
+    private const string m_TBL_NAME = "products_categories";
+    private const string m_COL_ID = "product_category_id";
+    private const string m_COL_NAME = "product_category_name";
+    private const string m_COL_ARCHIVE = "product_category_archive";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {

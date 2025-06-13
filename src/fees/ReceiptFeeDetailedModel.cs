@@ -105,13 +105,16 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         item.receipt_supplier.fk_supplier_id = supplier_id;
         item.supplier.supplier_id = supplier_id;
 
+        UpdateReceiptTotalPrice(item);
+
         var handlerItem = new ReceiptHandlerItem {
             receipt_item = item.receipt,
             receipt_product_items = item.receipt_products,
             receipt_supplier_item = item.receipt_supplier
         };
 
-        bool result = _m_receipt_handler_model.saveReceipt(handlerItem);
+        bool result = _m_receipt_handler_model.saveReceipt(handlerItem); 
+
         if (!result) {
             MessageBox.Show("Failed to save receipt in handler");
         }
@@ -137,5 +140,14 @@ public class ReceiptFeeDetailedModel : ABaseModel,
 
         supplier = _m_supplier_model.getSupplierWithEntityFK(entity_id.ToString());
         return supplier?.supplier_id ?? 0;
+    }
+
+
+    private void UpdateReceiptTotalPrice(ReceiptFeeDetailedItem item) {
+        decimal total = 0;
+        foreach (var product in item.receipt_products) {
+            total += product.receipt_product_quantity * product.receipt_product_unity_price;
+        }
+        item.receipt.receipt_total_price = total;
     }
 }

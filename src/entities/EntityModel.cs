@@ -12,14 +12,14 @@ namespace Mams.src.entities;
 public class EntityModel : ABaseModel,
     ICrudOperation<EntityItem> {
 
-    public const string m_TBL_NAME  = "entities";
-    public const string m_COL_ID = "entity_id";
-    public const string m_COL_NAME = "entity_name";
-    public const string m_COL_PHONE = "entity_phone";
-    public const string m_COL_EMAIL = "entity_email";
-    public const string m_COL_CITY = "entity_city";
-    public const string m_COL_ADDRESS = "entity_address";
-    public const string m_COL_ARCHIVE = "entity_archive";
+    private const string m_TBL_NAME  = "entities";
+    private const string m_COL_ID = "entity_id";
+    private const string m_COL_NAME = "entity_name";
+    private const string m_COL_PHONE = "entity_phone";
+    private const string m_COL_EMAIL = "entity_email";
+    private const string m_COL_CITY = "entity_city";
+    private const string m_COL_ADDRESS = "entity_address";
+    private const string m_COL_ARCHIVE = "entity_archive";
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
 

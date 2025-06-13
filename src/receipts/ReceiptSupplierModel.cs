@@ -10,13 +10,13 @@ namespace Mams.src.receipts;
 public class ReceiptSupplierModel : ABaseModel,
     ICrudOperation<ReceiptSupplierItem> {
 
-    public const string m_TBL_NAME = "receipts_suppliers";
-    public const string m_COL_FK_RECEIPT = "fk_receipt_id";
-    public const string m_COL_FK_SUPPLIER = "fk_supplier_id";
+    private const string m_TBL_NAME = "receipts_suppliers";
+    private const string m_COL_FK_RECEIPT = "fk_receipt_id";
+    private const string m_COL_FK_SUPPLIER = "fk_supplier_id";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_FK_RECEIPT, "", m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteItem(this, id, m_COL_FK_RECEIPT, string.Empty, m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return deleteItem(id.ToString(), delete_type);

@@ -15,12 +15,12 @@ public class ProductLotModel :
     ABaseModel,
     ICrudOperation<ProductLotItem> {
 
-    public const string m_TBL_NAME = "products_lots";
-    public const string m_COL_ID = "product_lot_id";
-    public const string m_COL_NAME = "product_lot_name";
-    public const string m_COL_YEAR = "product_lot_year";
-    public const string m_COL_FK_BEEHIVE = "fk_beehive_id";
-    public const string m_COL_ARCHIVE = "product_lot_archive";
+    private const string m_TBL_NAME = "products_lots";
+    private const string m_COL_ID = "product_lot_id";
+    private const string m_COL_NAME = "product_lot_name";
+    private const string m_COL_YEAR = "product_lot_year";
+    private const string m_COL_FK_BEEHIVE = "fk_beehive_id";
+    private const string m_COL_ARCHIVE = "product_lot_archive";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
@@ -83,7 +83,7 @@ public class ProductLotModel :
         BeehiveModel beehive_model = new();
 
         foreach (ProductLotItem item in table) {
-            item.beehive_name = item.fk_beehive_id > 0 ? beehive_model.getItemByID(item.fk_beehive_id.ToString())?.beehive_name ?? string.Empty : "";
+            item.beehive_name = item.fk_beehive_id > 0 ? beehive_model.getItemByID(item.fk_beehive_id.ToString())?.beehive_name ?? string.Empty : string.Empty;
         }
 
         return table;

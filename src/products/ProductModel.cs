@@ -13,14 +13,14 @@ namespace Mams.src.products;
 internal class ProductModel : ABaseModel,
     ICrudOperation<ProductItem> {
 
-    public const string m_TBL_NAME = "products";
-    public const string m_COL_ID = "product_id";
-    public const string m_COL_NAME = "product_name";
-    public const string m_COL_WEIGHT = "product_weight";
-    public const string m_COL_FK_PRODUCT_TYPE = "fk_product_type_id";
-    public const string m_COL_FK_PRODUCT_CATEGORY = "fk_product_category_id";
-    public const string m_COL_FK_PRODUCT_SHAPE = "fk_product_shape_id";
-    public const string m_COL_ARCHIVE = "product_archive";
+    private const string m_TBL_NAME = "products";
+    private const string m_COL_ID = "product_id";
+    private const string m_COL_NAME = "product_name";
+    private const string m_COL_WEIGHT = "product_weight";
+    private const string m_COL_FK_PRODUCT_TYPE = "fk_product_type_id";
+    private const string m_COL_FK_PRODUCT_CATEGORY = "fk_product_category_id";
+    private const string m_COL_FK_PRODUCT_SHAPE = "fk_product_shape_id";
+    private const string m_COL_ARCHIVE = "product_archive";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
@@ -91,9 +91,9 @@ internal class ProductModel : ABaseModel,
         ProductLotModel product_lot_model = new();
 
         foreach (ProductItem item in table) {
-            item.product_type_name = item.fk_product_type_id > 0 ? product_type_model.getItemByID(item.fk_product_type_id.ToString())?.product_type_name ?? string.Empty : "";
-            item.product_category_name = item.fk_product_category_id > 0 ? product_category_model.getItemByID(item.fk_product_category_id.ToString())?.product_category_name ?? string.Empty : "";
-            item.product_shape_name = item.fk_product_shape_id > 0 ? product_shape_model.getItemByID(item.fk_product_shape_id.ToString())?.product_shape_name ?? string.Empty : "";
+            item.product_type_name = item.fk_product_type_id > 0 ? product_type_model.getItemByID(item.fk_product_type_id.ToString())?.product_type_name ?? string.Empty : string.Empty;
+            item.product_category_name = item.fk_product_category_id > 0 ? product_category_model.getItemByID(item.fk_product_category_id.ToString())?.product_category_name ?? string.Empty : string.Empty;
+            item.product_shape_name = item.fk_product_shape_id > 0 ? product_shape_model.getItemByID(item.fk_product_shape_id.ToString())?.product_shape_name ?? string.Empty : string.Empty;
         }
         return table;
     }

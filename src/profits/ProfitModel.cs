@@ -47,7 +47,7 @@ public class ProfitModel : ABaseModel,
             }
             
             int receipt_id = item.receipt_item.receipt_id;
-            string client_name = entity_model.getItemByID(item.receipt_client_item.fk_client_id.ToString())?.entity_name ?? "";
+            string client_name = entity_model.getItemByID(item.receipt_client_item.fk_client_id.ToString())?.entity_name ?? string.Empty;
             string profit_year = item.receipt_item.receipt_date_created;
 
             foreach (var product in item.receipt_product_items) {
@@ -56,7 +56,7 @@ public class ProfitModel : ABaseModel,
 
                 profit_item.receipt_id = receipt_id;
                 profit_item.client_name = client_name;
-                profit_item.product_name = product_model.getItemByID(product.product_item.product_id.ToString())?.product_name ?? "";
+                profit_item.product_name = product_model.getItemByID(product.product_item.product_id.ToString())?.product_name ?? string.Empty;
                 profit_item.profit_date = item.receipt_item.receipt_date_created;
                 profit_item.profit_quantity = product.receipt_product_quantity;
                 profit_item.profit_price_unity = Math.Round(product.receipt_product_unity_price, 2);

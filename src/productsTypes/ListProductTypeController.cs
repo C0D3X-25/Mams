@@ -58,7 +58,7 @@ public class ListProductTypeController : ABaseController {
 
     public ListProductTypeController() {
         
-        _m_delete_button_text = "";
+        _m_delete_button_text = string.Empty;
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
         m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
