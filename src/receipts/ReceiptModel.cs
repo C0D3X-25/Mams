@@ -11,9 +11,9 @@ public class ReceiptModel : ABaseModel,
     ICrudOperation<ReceiptItem> {
 
     public const string m_TBL_NAME = "receipts";
-    public const string m_COL_ID = "receipt_id";
-    public const string m_COL_RECEIPT_TOTAL_PRICE = "receipt_total_price";
-    public const string m_COL_RECEIPT_DATE_CREATED = "receipt_date_created";
+    private const string m_COL_ID = "receipt_id";
+    private const string m_COL_RECEIPT_TOTAL_PRICE = "receipt_total_price";
+    private const string m_COL_RECEIPT_DATE_CREATED = "receipt_date_created";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
@@ -63,19 +63,24 @@ public class ReceiptModel : ABaseModel,
 
 
     public bool saveItem(ReceiptItem item) {
+
+        if (item == null) {
+            return false;
+        }
+
         using MySqlConnection? conn = _m_conn.openConnection();
 
         string query = string.Empty;
         
-        DateTime parsedDate = DateTime.ParseExact(item.receipt_date_created, "dd.MM.yyyy", null);
-        string mysqlFormattedDate = parsedDate.ToString("yyyy-MM-dd");
+        DateTime parsed_date = DateTime.ParseExact(item.receipt_date_created, "dd.MM.yyyy", null);
+        string mysql_formatted_date = parsed_date.ToString("yyyy-MM-dd");
 
         if (item.receipt_id == 0) {
             query = $"INSERT INTO {m_TBL_NAME} (" +
                 $"{m_COL_RECEIPT_TOTAL_PRICE}, " +
                 $"{m_COL_RECEIPT_DATE_CREATED}) " +
                 $"VALUES (@total_price, @date_created); " +
-                $"SELECT LAST_INSERT_ID();"; // Add this line to get ID immediately
+                $"SELECT LAST_INSERT_ID();"; // Get ID immediately, need the same connection open
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
@@ -89,7 +94,7 @@ public class ReceiptModel : ABaseModel,
                 cmd.Parameters.AddWithValue("@id", item.receipt_id);
             }
             cmd.Parameters.AddWithValue("@total_price", item.receipt_total_price);
-            cmd.Parameters.AddWithValue("@date_created", mysqlFormattedDate);
+            cmd.Parameters.AddWithValue("@date_created", mysql_formatted_date);
             
             if (item.receipt_id == 0) {
                 // For INSERT, get the ID directly
@@ -112,19 +117,23 @@ public class ReceiptModel : ABaseModel,
 
     public int saveAndGetLastID(ReceiptItem item) {
 
+        if (item == null) {
+            return 0;
+        }
+
         using MySqlConnection? conn = _m_conn.openConnection();
 
         string query = string.Empty;
 
-        DateTime parsedDate = DateTime.ParseExact(item.receipt_date_created, "dd.MM.yyyy", null);
-        string mysqlFormattedDate = parsedDate.ToString("yyyy-MM-dd");
+        DateTime parsed_date = DateTime.ParseExact(item.receipt_date_created, "dd.MM.yyyy", null);
+        string mysql_formatted_date = parsed_date.ToString("yyyy-MM-dd");
 
         if (item.receipt_id == 0) {
             query = $"INSERT INTO {m_TBL_NAME} (" +
                 $"{m_COL_RECEIPT_TOTAL_PRICE}, " +
                 $"{m_COL_RECEIPT_DATE_CREATED}) " +
                 $"VALUES (@total_price, @date_created); " +
-                $"SELECT LAST_INSERT_ID();"; // Get ID immediately, need the same connection
+                $"SELECT LAST_INSERT_ID();"; // Get ID immediately, need the same connection open
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
@@ -138,15 +147,16 @@ public class ReceiptModel : ABaseModel,
                 cmd.Parameters.AddWithValue("@id", item.receipt_id);
             }
             cmd.Parameters.AddWithValue("@total_price", item.receipt_total_price);
-            cmd.Parameters.AddWithValue("@date_created", mysqlFormattedDate);
+            cmd.Parameters.AddWithValue("@date_created", mysql_formatted_date);
 
             if (item.receipt_id == 0) {
                 // For INSERT, get the ID directly
-                return Convert.ToInt32(cmd.ExecuteScalar());
+                item.receipt_id = Convert.ToInt32(cmd.ExecuteScalar());
             }
-
-            // For UPDATE
-            cmd.ExecuteNonQuery();
+            else {
+                // For UPDATE
+                cmd.ExecuteNonQuery();
+            }
             return item.receipt_id;
         }
         catch (MySqlException ex) {

@@ -90,6 +90,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
 
 
     public bool saveItem(ReceiptFeeDetailedItem item) {
+
         if (item == null) {
             return false;
         }
@@ -100,7 +101,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
             return false;
         }
 
-        int supplier_id = foundSupplierIdOrCreateNew(item.entity.entity_id);
+        int supplier_id = findSupplierIdOrCreateNew(item.entity.entity_id);
         item.receipt_supplier.fk_supplier_id = supplier_id;
         item.supplier.supplier_id = supplier_id;
 
@@ -118,11 +119,15 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     }
 
 
-    private int foundSupplierIdOrCreateNew(int entity_id) {
+    private int findSupplierIdOrCreateNew(int entity_id) {
 
-        int supplier_id = _m_supplier_model.getSupplierWithEntityFK(entity_id.ToString()).supplier_id;
-        if (supplier_id > 0) {
-            return supplier_id;
+        if (entity_id <= 0) {
+            return 0;
+        }
+
+        var supplier = _m_supplier_model.getSupplierWithEntityFK(entity_id.ToString());
+        if (supplier != null && supplier.supplier_id > 0) {
+            return supplier.supplier_id;
         }
 
         var new_supplier = new SupplierItem {
@@ -130,6 +135,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         };
         _m_supplier_model.saveItem(new_supplier);
 
-        return _m_supplier_model.getSupplierWithEntityFK(entity_id.ToString()).supplier_id;
+        supplier = _m_supplier_model.getSupplierWithEntityFK(entity_id.ToString());
+        return supplier?.supplier_id ?? 0;
     }
 }

@@ -84,46 +84,41 @@ public class ReceiptSupplierModel : ABaseModel,
 
     public bool saveItem(ReceiptSupplierItem item) {
 
-        if (item == null) {
-            return false;
-        }
-        if (item.fk_receipt_id == 0 || item.fk_supplier_id == 0) {
+        if (item == null || item.fk_receipt_id == 0 || item.fk_supplier_id == 0) {
             return false;
         }
 
         using MySqlConnection? conn = _m_conn.openConnection();
-
+        
         try {
             // Check if the item already exists in the database
-            { 
-                using MySqlCommand cmd = new(
-                    $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER} " +
-                    $"FROM {m_TBL_NAME} " +
-                    $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt " +
-                    $"AND {m_COL_FK_SUPPLIER} = @fk_supplier;",
-                    conn
-                );
-                cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
-                cmd.Parameters.AddWithValue("@fk_supplier", item.fk_supplier_id);
-                using MySqlDataReader reader = cmd.ExecuteReader();
+            using MySqlCommand existCmd = new(
+                $"SELECT COUNT(*) FROM {m_TBL_NAME} " +
+                $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
+                conn
+            );
+            existCmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
+            
+            int exists = Convert.ToInt32(existCmd.ExecuteScalar());
 
-                if(reader.HasRows) {
-                    return false;
-                }
-            }
-
-            // If not, insert the item into the database
-            {
-                using MySqlCommand cmd = new(
-                    $"INSERT INTO {m_TBL_NAME} " +
+            string query;
+            if (exists == 0) {
+                // Insert new record
+                query = $"INSERT INTO {m_TBL_NAME} " +
                     $"({m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER}) " +
-                    $"VALUES (@fk_receipt, @fk_supplier);",
-                    conn
-                );
-                cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
-                cmd.Parameters.AddWithValue("@fk_supplier", item.fk_supplier_id);
-                return cmd.ExecuteNonQuery() > 0;
+                    $"VALUES (@fk_receipt, @fk_supplier);";
             }
+            else {
+                // Update existing record
+                query = $"UPDATE {m_TBL_NAME} " +
+                    $"SET {m_COL_FK_SUPPLIER} = @fk_supplier " +
+                    $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;";
+            }
+
+            using MySqlCommand cmd = new(query, conn);
+            cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
+            cmd.Parameters.AddWithValue("@fk_supplier", item.fk_supplier_id);
+            return cmd.ExecuteNonQuery() > 0;
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");

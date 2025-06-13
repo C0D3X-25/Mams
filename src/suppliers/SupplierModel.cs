@@ -1,5 +1,4 @@
-﻿using Mams.src.clients;
-using Mams.src.databaseOperations;
+﻿using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
@@ -17,7 +16,7 @@ public class SupplierModel : ABaseModel,
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_ID, "", m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteItem(this, id, m_COL_ID, string.Empty, m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return deleteItem(id.ToString(), delete_type);
@@ -25,6 +24,10 @@ public class SupplierModel : ABaseModel,
 
 
     public SupplierItem? getItemByID(string id) {
+
+        if (string.IsNullOrEmpty(id)) {
+            return null;
+        }
 
         using MySqlConnection? conn = _m_conn.openConnection();
 
@@ -96,13 +99,13 @@ public class SupplierModel : ABaseModel,
     }
 
 
-    public SupplierItem getSupplierWithEntityFK(string fk_entity) {
-
-        SupplierItem item = new();
+    public SupplierItem? getSupplierWithEntityFK(string fk_entity) {
 
         if (string.IsNullOrEmpty(fk_entity)) {
-            return item;
+            return null;
         }
+
+        SupplierItem item = new();
 
         using MySqlConnection? conn = _m_conn.openConnection();
         try {
@@ -117,25 +120,27 @@ public class SupplierModel : ABaseModel,
 
             using MySqlDataReader reader = cmd.ExecuteReader();
 
-            while (reader.Read()) {
-                item = new SupplierItem {
-                    supplier_id = reader.GetSafeValue<int>(m_COL_ID),
-                    fk_entity_id = reader.GetSafeValue<int>(m_COL_FK_ENTITY)
-                };
+            if (reader.Read()) {
+                item.supplier_id = reader.GetSafeValue<int>(m_COL_ID);
+                item.fk_entity_id = reader.GetSafeValue<int>(m_COL_FK_ENTITY);
             }
 
             return item;
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return item;
+            return null;
         }
     }
 
 
     public bool deleteSupplierWithEntityFK(string fk_entity) {
 
-        SupplierItem item = getSupplierWithEntityFK(fk_entity);
+        if (string.IsNullOrEmpty(fk_entity)) {
+            return false;
+        }
+
+        SupplierItem? item = getSupplierWithEntityFK(fk_entity);
 
         if (item == null) {
             return false;
