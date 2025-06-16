@@ -146,8 +146,6 @@ public class SupplierModel : ABaseModel,
             return false;
         }
 
-        deleteItem(item.supplier_id);
-        
-        return true;
+        return deleteItem(item.supplier_id);
     }
 }

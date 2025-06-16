@@ -29,7 +29,7 @@ public class EntityModel : ABaseModel,
             ClientModel client_model = new();
             SupplierModel supplier_model = new();
 
-            client_model.deleteListClientWithEntityFK(id);
+            client_model.deleteClientWithEntityFK(id);
             supplier_model.deleteSupplierWithEntityFK(id);
         }
 

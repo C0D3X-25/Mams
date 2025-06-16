@@ -1,20 +1,20 @@
-﻿using Mams.src.databaseOperations;
+﻿using Mams.src.clients;
+using Mams.src.databaseOperations;
 using Mams.src.entities;
 using Mams.src.models;
 using Mams.src.products;
 using Mams.src.receipts;
-using Mams.src.suppliers;
 using System.Collections.ObjectModel;
 
-namespace Mams.src.fees;
+namespace Mams.src.profits;
 
-public class ReceiptFeeDetailedModel : ABaseModel,
-    ICrudOperation<ReceiptFeeDetailedItem> {
+public class ReceiptProfitDetailedModel : ABaseModel,
+    ICrudOperation<ReceiptProfitDetailedItem> {
 
     private readonly ReceiptHandlerModel _m_receipt_handler_model = new();
     private readonly EntityModel _m_entity_model = new();
-    private readonly SupplierModel _m_supplier_model = new();
-    //private readonly ReceiptSupplierModel _m_receipt_supplier_model = new();
+    private readonly ClientModel _m_client_model = new();
+    //private readonly ReceiptClientModel _m_receipt_client_model = new();
     //private readonly ReceiptModel _m_receipts_model = new();
     //private readonly ReceiptProductModel _m_receipt_product_model = new();
     private readonly ProductModel _m_product_model = new();
@@ -28,7 +28,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     }
 
 
-    public ReceiptFeeDetailedItem? getItemByID(string id) {
+    public ReceiptProfitDetailedItem? getItemByID(string id) {
 
         var receipt = _m_receipt_handler_model.getReceiptByID(id);
 
@@ -36,14 +36,14 @@ public class ReceiptFeeDetailedModel : ABaseModel,
             return null;
         }
 
-        ReceiptFeeDetailedItem item = new() {
+        ReceiptProfitDetailedItem item = new() {
             receipt = receipt.receipt_item,
             receipt_products = receipt.receipt_product_items,
-            receipt_supplier = receipt.receipt_supplier_item,
-            supplier = _m_supplier_model.getItemByID(receipt.receipt_supplier_item.fk_supplier_id.ToString()) ?? new(),
+            receipt_client = receipt.receipt_client_item,
+            client = _m_client_model.getItemByID(receipt.receipt_client_item.fk_client_id.ToString()) ?? new(),
         };
 
-        item.entity = _m_entity_model.getItemByID(item.supplier.fk_entity_id.ToString()) ?? new();
+        item.entity = _m_entity_model.getItemByID(item.client.fk_entity_id.ToString()) ?? new();
 
         foreach (var receipt_product in item.receipt_products) {
             ProductItem? product = _m_product_model.getItemByID(receipt_product.product_item.product_id.ToString());
@@ -55,25 +55,25 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     }
 
 
-    public ObservableCollection<ReceiptFeeDetailedItem> getTable() {
+    public ObservableCollection<ReceiptProfitDetailedItem> getTable() {
 
-        ObservableCollection<ReceiptFeeDetailedItem> items = new();
+        ObservableCollection<ReceiptProfitDetailedItem> items = new();
 
         foreach (var receipt in _m_receipt_handler_model.getTable()) {
 
-            // Skip because it's a profit receipt
-            if (receipt.receipt_client_item.fk_client_id != 0) {
+            // Skip because it's a fee receipt
+            if (receipt.receipt_supplier_item.fk_supplier_id != 0) {
                 continue;
             }
 
-            ReceiptFeeDetailedItem item = new() {
+            ReceiptProfitDetailedItem item = new() {
                 receipt = receipt.receipt_item,
                 receipt_products = receipt.receipt_product_items,
-                receipt_supplier = receipt.receipt_supplier_item,
-                supplier = _m_supplier_model.getItemByID(receipt.receipt_supplier_item.fk_supplier_id.ToString()) ?? new(),
+                receipt_client = receipt.receipt_client_item,
+                client = _m_client_model.getItemByID(receipt.receipt_client_item.fk_client_id.ToString()) ?? new(),
             };
 
-            item.entity = _m_entity_model.getItemByID(item.supplier.fk_entity_id.ToString()) ?? new();
+            item.entity = _m_entity_model.getItemByID(item.client.fk_entity_id.ToString()) ?? new();
 
             foreach (var receipt_product in item.receipt_products) {
                 ProductItem? product = _m_product_model.getItemByID(receipt_product.product_item.product_id.ToString());
@@ -88,7 +88,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     }
 
 
-    public bool saveItem(ReceiptFeeDetailedItem item) {
+    public bool saveItem(ReceiptProfitDetailedItem item) {
 
         if (item == null) {
             return false;
@@ -100,44 +100,44 @@ public class ReceiptFeeDetailedModel : ABaseModel,
             return false;
         }
 
-        int supplier_id = findSupplierIdOrCreateNew(item.entity.entity_id);
-        item.receipt_supplier.fk_supplier_id = supplier_id;
-        item.supplier.supplier_id = supplier_id;
+        int client_id = findClientIdOrCreateNew(item.entity.entity_id);
+        item.receipt_client.fk_client_id = client_id;
+        item.client.client_id = client_id;
 
         UpdateReceiptTotalPrice(item);
 
         var handlerItem = new ReceiptHandlerItem {
             receipt_item = item.receipt,
             receipt_product_items = item.receipt_products,
-            receipt_supplier_item = item.receipt_supplier
+            receipt_client_item = item.receipt_client
         };
 
-        return _m_receipt_handler_model.saveReceipt(handlerItem); 
+        return _m_receipt_handler_model.saveReceipt(handlerItem);
     }
 
 
-    private int findSupplierIdOrCreateNew(int entity_id) {
+    private int findClientIdOrCreateNew(int entity_id) {
 
         if (entity_id <= 0) {
             return 0;
         }
 
-        var supplier = _m_supplier_model.getSupplierWithEntityFK(entity_id.ToString());
-        if (supplier != null && supplier.supplier_id > 0) {
-            return supplier.supplier_id;
+        var client = _m_client_model.getClientWithEntityFK(entity_id.ToString());
+        if (client != null && client.client_id > 0) {
+            return client.client_id;
         }
 
-        var new_supplier = new SupplierItem {
-            fk_entity_id = entity_id 
+        var new_client = new ClientItem {
+            fk_entity_id = entity_id
         };
-        _m_supplier_model.saveItem(new_supplier);
+        _m_client_model.saveItem(new_client);
 
-        supplier = _m_supplier_model.getSupplierWithEntityFK(entity_id.ToString());
-        return supplier?.supplier_id ?? 0;
+        client = _m_client_model.getClientWithEntityFK(entity_id.ToString());
+        return client?.client_id ?? 0;
     }
 
 
-    private void UpdateReceiptTotalPrice(ReceiptFeeDetailedItem item) {
+    private void UpdateReceiptTotalPrice(ReceiptProfitDetailedItem item) {
         decimal total = 0;
         foreach (var product in item.receipt_products) {
             total += product.receipt_product_quantity * product.receipt_product_unity_price;
@@ -145,3 +145,4 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         item.receipt.receipt_total_price = total;
     }
 }
+

@@ -76,8 +76,8 @@ public class ResumeController : ABaseController {
     }
 
 
-    private ObservableCollection<ProfitItem>? _m_list_profit_item;
-    public ObservableCollection<ProfitItem>? m_list_profit_item {
+    private ObservableCollection<ReceiptProfitDetailedItem>? _m_list_profit_item;
+    public ObservableCollection<ReceiptProfitDetailedItem>? m_list_profit_item {
         get { return _m_list_profit_item; }
         set {
             _m_list_profit_item = value;
@@ -176,6 +176,7 @@ public class ResumeController : ABaseController {
 
         m_list_profit_item = resume_item.profit_items;
         m_list_fee_item = resume_item.fee_items;
+
         updateDisplayedTotalTransactions();
     }
 
@@ -186,8 +187,8 @@ public class ResumeController : ABaseController {
         m_total_fee = 0.00M;
 
         if (m_list_profit_item != null) {
-            foreach (ProfitItem item in m_list_profit_item) {
-                m_total_profit += item.profit_price_total;
+            foreach (ReceiptProfitDetailedItem item in m_list_profit_item) {
+                m_total_profit += item.receipt.receipt_total_price;
             }
         }
         if (m_list_fee_item != null) {

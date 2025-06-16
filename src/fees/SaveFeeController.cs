@@ -4,10 +4,8 @@ using Mams.src.entities;
 using Mams.src.helpers;
 using Mams.src.navigations;
 using Mams.src.products;
-using Mams.src.productsCategories;
 using Mams.src.productsLots;
 using Mams.src.receipts;
-using Mams.src.suppliers;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -24,30 +22,6 @@ public class SaveFeeController : ABaseController {
     public ICommand m_abort_command { get; set; }
     public ICommand m_add_fee_item_command { get; set; }
     public ICommand m_delete_fee_item_command { get; set; }
-
-
-    //private string _receipt_product_unity_price_string;
-    //public string receipt_product_unity_price_string {
-    //    get => _receipt_product_unity_price_string;
-    //    set {
-    //        _receipt_product_unity_price_string = value;
-    //        onPropertyChanged();
-
-    //        if (decimal.TryParse(value.Replace('.', ','), out var parsed)) {
-    //            receipt_product_unity_price = parsed;
-    //        }
-    //    }
-    //}
-
-    //private decimal _receipt_product_unity_price;
-    //public decimal receipt_product_unity_price {
-    //    get => _receipt_product_unity_price;
-    //    set {
-    //        _receipt_product_unity_price = value;
-    //        onPropertyChanged();
-    //    }
-    //}
-
 
 
     // Hold the receipt ID, supplier, date of all the items in m_list_receipt_product

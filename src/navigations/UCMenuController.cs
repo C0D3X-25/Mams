@@ -43,7 +43,7 @@ public class UCMenuController {
     }
 
     private void navigateToListProfit(object? obj) {
-        SPageNavigationController.navigateTo(new SaveProfitPage());
+        SPageNavigationController.navigateTo(new ListProfitPage());
     }
 
     private void navigateToListEntity(object? obj) {

@@ -101,7 +101,4 @@ public class ReceiptHandlerModel : ABaseModel {
         }
         return false;
     }
-
-
-
 }

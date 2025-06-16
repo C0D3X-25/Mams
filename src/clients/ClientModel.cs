@@ -53,57 +53,6 @@ public class ClientModel : ABaseModel,
     }
 
 
-    public ObservableCollection<ClientItem> getListClientWithEntityFK(string fk_entity) {
-
-        ObservableCollection<ClientItem> items = new();
-
-        if (string.IsNullOrEmpty(fk_entity)) {
-            return items;
-        }
-
-        using MySqlConnection? conn = _m_conn.openConnection();
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_FK_ENTITY} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_ENTITY} = @fk_entity;",
-                conn
-            );
-
-            cmd.Parameters.AddWithValue("@fk_entity", fk_entity);
-
-            using MySqlDataReader reader = cmd.ExecuteReader();
-
-            while (reader.Read()) {
-                items.Add(new ClientItem {
-                    client_id = reader.GetSafeValue<int>(m_COL_ID),
-                    fk_entity_id = reader.GetSafeValue<int>(m_COL_FK_ENTITY)
-                });
-            }
-
-            return items;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return items;
-        }
-    }
-
-
-    public bool deleteListClientWithEntityFK(string fk_entity) {
-
-        ObservableCollection<ClientItem> items = getListClientWithEntityFK(fk_entity);
-
-        if (items.Count == 0) {
-            return false;
-        }
-        foreach (ClientItem item in items) {
-            deleteItem(item.client_id);
-        }
-        return true;
-    }
-
-
     public ObservableCollection<ClientItem> getTable() {
         return SDatabaseModel.getAllData<ClientItem>(this, m_TBL_NAME);
     }
@@ -143,5 +92,56 @@ public class ClientModel : ABaseModel,
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return false;
         }
+    }
+
+
+    public ClientItem? getClientWithEntityFK(string fk_entity) {
+
+        if (string.IsNullOrEmpty(fk_entity)) {
+            return null;
+        }
+
+        ClientItem item = new();
+
+        using MySqlConnection? conn = _m_conn.openConnection();
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT {m_COL_ID}, {m_COL_FK_ENTITY} " +
+                $"FROM {m_TBL_NAME} " +
+                $"WHERE {m_COL_FK_ENTITY} = @fk_entity;",
+                conn
+            );
+
+            cmd.Parameters.AddWithValue("@fk_entity", fk_entity);
+
+            using MySqlDataReader reader = cmd.ExecuteReader();
+
+            if (reader.Read()) {
+                item.client_id = reader.GetSafeValue<int>(m_COL_ID);
+                item.fk_entity_id = reader.GetSafeValue<int>(m_COL_FK_ENTITY);
+            }
+
+            return item;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return item;
+        }
+    }
+
+
+    public bool deleteClientWithEntityFK(string fk_entity) {
+
+        if (string.IsNullOrEmpty(fk_entity)) {
+            return false;
+        }
+
+        ClientItem? item = getClientWithEntityFK(fk_entity);
+
+        if (item == null) {
+            return false;
+        }
+
+        return deleteItem(item.client_id);
     }
 }

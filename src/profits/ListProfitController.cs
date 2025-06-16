@@ -5,10 +5,11 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Mams.src.fees; 
-public class ListFeeController : ABaseController {
+namespace Mams.src.profits;
 
-    private readonly ReceiptFeeDetailedModel _m_item_model = new();
+public class ListProfitController : ABaseController {
+
+    private readonly ReceiptProfitDetailedModel _m_item_model = new();
 
     public ICommand m_add_new_item_command { get; set; }
     public ICommand m_modify_item_command { get; set; }
@@ -16,8 +17,8 @@ public class ListFeeController : ABaseController {
 
 
 
-    private ObservableCollection<ReceiptFeeDetailedItem>? _m_list_items;
-    public ObservableCollection<ReceiptFeeDetailedItem>? m_list_items {
+    private ObservableCollection<ReceiptProfitDetailedItem>? _m_list_items;
+    public ObservableCollection<ReceiptProfitDetailedItem>? m_list_items {
         get { return _m_list_items; }
         set {
             _m_list_items = value;
@@ -26,8 +27,8 @@ public class ListFeeController : ABaseController {
     }
 
 
-    private ReceiptFeeDetailedItem? _m_selected_item;
-    public ReceiptFeeDetailedItem? m_selected_item {
+    private ReceiptProfitDetailedItem? _m_selected_item;
+    public ReceiptProfitDetailedItem? m_selected_item {
         get { return _m_selected_item; }
         set {
             _m_selected_item = value;
@@ -36,7 +37,7 @@ public class ListFeeController : ABaseController {
     }
 
 
-    public ListFeeController() {
+    public ListProfitController() {
 
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
@@ -51,7 +52,7 @@ public class ListFeeController : ABaseController {
 
 
     private void navigateToSavePage(object? obj) {
-        SPageNavigationController.navigateTo(new SaveFeePage());
+        SPageNavigationController.navigateTo(new SaveProfitPage());
     }
 
 
@@ -62,7 +63,7 @@ public class ListFeeController : ABaseController {
 
     private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
-            SPageNavigationController.navigateTo(new SaveFeePage(_m_selected_item.receipt.receipt_id));
+            SPageNavigationController.navigateTo(new SaveProfitPage(_m_selected_item.receipt.receipt_id));
         }
     }
 
@@ -79,4 +80,5 @@ public class ListFeeController : ABaseController {
         }
     }
 }
+
 

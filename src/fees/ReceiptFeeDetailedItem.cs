@@ -1,6 +1,5 @@
 ﻿using Mams.src.entities;
 using Mams.src.items;
-using Mams.src.products;
 using Mams.src.receipts;
 using Mams.src.suppliers;
 using System.Collections.ObjectModel;
