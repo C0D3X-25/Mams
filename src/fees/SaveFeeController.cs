@@ -26,6 +26,30 @@ public class SaveFeeController : ABaseController {
     public ICommand m_delete_fee_item_command { get; set; }
 
 
+    //private string _receipt_product_unity_price_string;
+    //public string receipt_product_unity_price_string {
+    //    get => _receipt_product_unity_price_string;
+    //    set {
+    //        _receipt_product_unity_price_string = value;
+    //        onPropertyChanged();
+
+    //        if (decimal.TryParse(value.Replace('.', ','), out var parsed)) {
+    //            receipt_product_unity_price = parsed;
+    //        }
+    //    }
+    //}
+
+    //private decimal _receipt_product_unity_price;
+    //public decimal receipt_product_unity_price {
+    //    get => _receipt_product_unity_price;
+    //    set {
+    //        _receipt_product_unity_price = value;
+    //        onPropertyChanged();
+    //    }
+    //}
+
+
+
     // Hold the receipt ID, supplier, date of all the items in m_list_receipt_product
     private ReceiptFeeDetailedItem _m_fee_receipt_detail;
     public ReceiptFeeDetailedItem m_fee_receipt_detail {
@@ -106,6 +130,7 @@ public class SaveFeeController : ABaseController {
         }
     }
 
+
     public SaveFeeController(int id_to_load = 0) {
 
         _m_product_model = new();
@@ -150,7 +175,7 @@ public class SaveFeeController : ABaseController {
     }
 
 
-    private bool canSaveFee(object? arg) {
+    private bool canSaveFee(object? arg) {        
 
         return m_selected_entity != null
             && SDateValidation.isDateValidFormatEU(m_fee_receipt_detail.receipt.receipt_date_created)
