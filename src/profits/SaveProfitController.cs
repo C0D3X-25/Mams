@@ -20,8 +20,8 @@ public class SaveProfitController : ABaseController {
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
-    public ICommand m_add_fee_item_command { get; set; }
-    public ICommand m_delete_fee_item_command { get; set; }
+    public ICommand m_add_profit_item_command { get; set; }
+    public ICommand m_delete_profit_item_command { get; set; }
 
 
     // Hold the receipt ID, supplier, date of all the items in m_list_receipt_product
@@ -144,8 +144,8 @@ public class SaveProfitController : ABaseController {
 
         m_save_command = new RelayCommand(saveProfit, canSaveProfit);
         m_abort_command = new RelayCommand(abortProfit);
-        m_add_fee_item_command = new RelayCommand(addProfitItem);
-        m_delete_fee_item_command = new RelayCommand(DeleteProfitItem);
+        m_add_profit_item_command = new RelayCommand(addProfitItem);
+        m_delete_profit_item_command = new RelayCommand(DeleteProfitItem);
     }
 
 
@@ -191,7 +191,7 @@ public class SaveProfitController : ABaseController {
             SPageNavigationController.navigateTo(new ListProfitPage());
         }
         else {
-            MessageBox.Show("Error saving the fee");
+            MessageBox.Show("Error when saving the profit");
         }
     }
 

@@ -118,7 +118,7 @@
                         FontSize="16"
                     ></Button>
 
-                        <!--Add new Broduct Buttons-->
+                        <!--Add new Product Buttons-->
                         <Button 
                         Grid.Row="2"
                         Content="Nouveau Frais"

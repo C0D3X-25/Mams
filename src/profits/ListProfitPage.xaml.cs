@@ -20,6 +20,7 @@ namespace Mams.src.profits {
     public partial class ListProfitPage : Page {
         public ListProfitPage() {
             InitializeComponent();
+            DataContext = new ListProfitController();
         }
     }
 }

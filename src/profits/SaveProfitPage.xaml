@@ -83,7 +83,7 @@
                             <userControls:UCLabelTextBox
                                 Grid.Column="0" Grid.Row="0"
                                 label="N° de Facture"
-                                text="{Binding m_fee_receipt_detail.receipt.receipt_id, UpdateSourceTrigger=PropertyChanged}"
+                                text="{Binding m_profit_receipt_detail.receipt.receipt_id, UpdateSourceTrigger=PropertyChanged}"
                                 isEnabled="False"
                             ></userControls:UCLabelTextBox>
 
@@ -126,7 +126,7 @@
                             <userControls:UCLabelTextBox
                                 Grid.Column="2" Grid.Row="0"
                                 label="Date*"
-                                text="{Binding m_fee_receipt_detail.receipt.receipt_date_created, UpdateSourceTrigger=PropertyChanged}"
+                                text="{Binding m_profit_receipt_detail.receipt.receipt_date_created, UpdateSourceTrigger=PropertyChanged}"
                                 VerticalAlignment="Center" HorizontalAlignment="Center"
                             ></userControls:UCLabelTextBox>
                         </Grid>
@@ -260,11 +260,11 @@
                                             VerticalAlignment="Center"
                                         ></TextBox>
 
-                                            <!--Delete Product Fee Button-->
+                                            <!--Delete Product Profit Button-->
                                             <Button 
                                             Grid.Column="6" Grid.Row="0"
                                             Content="X"
-                                            Command="{Binding DataContext.m_delete_fee_item_command, 
+                                            Command="{Binding DataContext.m_delete_profit_item_command, 
                                                         RelativeSource={RelativeSource AncestorType=ListView}}"
                                             CommandParameter="{Binding}"
                                             Height="20" Width="20"
@@ -276,12 +276,12 @@
                             </ListView>
                         </Grid>
 
-                        <!--Create Product Fee Button-->
+                        <!--Create Product Profit Button-->
                         <Button 
                             Grid.Column="0" Grid.Row="1"
                             Content="+"
                             VerticalContentAlignment="Center"
-                            Command="{Binding m_add_fee_item_command}"
+                            Command="{Binding m_add_profit_item_command}"
                             Height="25" Width="100"
                             MaxHeight="25" MaxWidth="100"
                             HorizontalAlignment="Center" VerticalAlignment="Bottom"
