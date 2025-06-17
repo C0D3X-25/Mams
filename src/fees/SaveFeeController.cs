@@ -74,7 +74,7 @@ public class SaveFeeController : ABaseController {
         }
     }
 
-    
+    // Selected product in 1 line of the receipt, used to bind the product name in the UI
     private ProductItem? _m_selected_product;
     public ProductItem? m_selected_product {
         get { return _m_selected_product; }
@@ -84,7 +84,7 @@ public class SaveFeeController : ABaseController {
         }
     }
 
-
+    // Selected entity in the header of the receipt, used to bind the entity name in the UI
     private EntityItem? _m_selected_entity;
     public EntityItem? m_selected_entity {
         get { return _m_selected_entity; }
@@ -94,7 +94,7 @@ public class SaveFeeController : ABaseController {
         }
     }
 
-
+    // Selected product lot in 1 line of the receipt, used to bind the product lot name in the UI
     private ProductLotItem? _m_selected_product_lot;
     public ProductLotItem? m_selected_product_lot {
         get { return _m_selected_product_lot; }

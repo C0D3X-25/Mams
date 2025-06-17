@@ -92,14 +92,14 @@ public class ReceiptSupplierModel : ABaseModel,
         
         try {
             // Check if the item already exists in the database
-            using MySqlCommand existCmd = new(
+            using MySqlCommand exist_cmd = new(
                 $"SELECT COUNT(*) FROM {m_TBL_NAME} " +
                 $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
                 conn
             );
-            existCmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
+            exist_cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
             
-            int exists = Convert.ToInt32(existCmd.ExecuteScalar());
+            int exists = Convert.ToInt32(exist_cmd.ExecuteScalar());
 
             string query;
             if (exists == 0) {
