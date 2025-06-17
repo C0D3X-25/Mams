@@ -45,7 +45,7 @@ public class ReceiptModel : ABaseModel,
                 return new ReceiptItem {
                     receipt_id = reader.GetSafeValue<int>(m_COL_ID),
                     receipt_total_price = reader.GetSafeValue<decimal>(m_COL_RECEIPT_TOTAL_PRICE),
-                    receipt_date_created = reader.GetSafeValue(m_COL_RECEIPT_DATE_CREATED, DateOnly.MinValue).ToString("dd.MM.yyyy")
+                    receipt_date_created = reader.GetSafeValue(m_COL_RECEIPT_DATE_CREATED, DateOnly.MinValue).ToString(globals.SGlobals.g_DATE_FORMAT)
                 };
             }
             return null;
@@ -72,7 +72,7 @@ public class ReceiptModel : ABaseModel,
 
         string query = string.Empty;
         
-        DateTime parsed_date = DateTime.ParseExact(item.receipt_date_created, "dd.MM.yyyy", null);
+        DateTime parsed_date = DateTime.ParseExact(item.receipt_date_created, globals.SGlobals.g_DATE_FORMAT, null);
         string mysql_formatted_date = parsed_date.ToString("yyyy-MM-dd");
 
         if (item.receipt_id == 0) {
@@ -125,7 +125,7 @@ public class ReceiptModel : ABaseModel,
 
         string query = string.Empty;
 
-        DateTime parsed_date = DateTime.ParseExact(item.receipt_date_created, "dd.MM.yyyy", null);
+        DateTime parsed_date = DateTime.ParseExact(item.receipt_date_created, globals.SGlobals.g_DATE_FORMAT, null);
         string mysql_formatted_date = parsed_date.ToString("yyyy-MM-dd");
 
         if (item.receipt_id == 0) {
