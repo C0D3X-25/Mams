@@ -90,7 +90,7 @@ public class ProductLotModel :
     }
 
 
-    public bool saveItem(ProductLotItem item) {
+    public int saveItem(ProductLotItem item) {
 
         using MySqlConnection? conn = _m_conn.openConnection();
 
@@ -98,8 +98,8 @@ public class ProductLotModel :
 
         if (item.product_lot_id == 0) {
 
-            if (checkIfItemExist(m_TBL_NAME, m_COL_NAME, item.product_lot_name)) {
-                return false;
+            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.product_lot_name)) {
+                return 0;
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE}) " +
@@ -124,7 +124,7 @@ public class ProductLotModel :
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 

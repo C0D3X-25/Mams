@@ -69,7 +69,7 @@ public class ProductTypeModel :
         return SDatabaseModel.getAllData<ProductTypeItem>(this, m_TBL_NAME);
     }
 
-    public bool saveItem(ProductTypeItem item) {
+    public int saveItem(ProductTypeItem item) {
 
         using MySqlConnection? conn = _m_conn.openConnection();
 
@@ -77,8 +77,8 @@ public class ProductTypeModel :
 
         if (item.product_type_id == 0) {
 
-            if (checkIfItemExist(m_TBL_NAME, m_COL_NAME, item.product_type_name)) {
-                return false;
+            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.product_type_name)) {
+                return 0;
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}) " +
@@ -101,7 +101,7 @@ public class ProductTypeModel :
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 }

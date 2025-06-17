@@ -79,15 +79,15 @@ public class EntityModel : ABaseModel,
     }
 
 
-    public bool saveItem(EntityItem item) {
+    public int saveItem(EntityItem item) {
         using MySqlConnection? conn = _m_conn.openConnection();
 
         string query = string.Empty;
 
         if (item.entity_id == 0) {
 
-            if (checkIfItemExist(m_TBL_NAME, m_COL_NAME, item.entity_name)) {
-                return false;
+            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.entity_name)) {
+                return 0;
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_PHONE}, {m_COL_EMAIL}, {m_COL_CITY}, {m_COL_ADDRESS}) " +
@@ -114,7 +114,7 @@ public class EntityModel : ABaseModel,
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 

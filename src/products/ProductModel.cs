@@ -99,7 +99,7 @@ internal class ProductModel : ABaseModel,
     }
 
 
-    public bool saveItem(ProductItem item) {
+    public int saveItem(ProductItem item) {
 
         using MySqlConnection? conn = _m_conn.openConnection();
 
@@ -107,8 +107,8 @@ internal class ProductModel : ABaseModel,
 
         if (item.product_id == 0) {
 
-            if (checkIfItemExist(m_TBL_NAME, m_COL_NAME, item.product_name)) {
-                return false;
+            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.product_name)) {
+                return 0;
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_WEIGHT}, " +
@@ -140,7 +140,7 @@ internal class ProductModel : ABaseModel,
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 

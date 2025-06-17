@@ -46,7 +46,7 @@ public class SaveProductTypeController : ABaseController {
 
 
     private void saveProduct(object? obj) {
-        if (_m_product_type_model.saveItem(m_product_type)) {
+        if (_m_product_type_model.saveItem(m_product_type) > 0) {
             SPageNavigationController.navigateTo(new ListProductTypePage());
         }
         else {

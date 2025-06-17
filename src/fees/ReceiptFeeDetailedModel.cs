@@ -88,17 +88,10 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     }
 
 
-    public bool saveItem(ReceiptFeeDetailedItem item) {
+    public int saveItem(ReceiptFeeDetailedItem item) {
 
-        if (item == null) {
-            return false;
-        }
-        if (item.receipt_products.Count() < 1) {
-            return false;
-        }
-        if (item.entity.entity_id == 0) {
-            return false;
-        }
+        if (item == null || item.receipt_products.Count() < 1 || item.entity.entity_id == 0)
+            return 0;
 
         int supplier_id = findSupplierIdOrCreateNew(item.entity.entity_id);
         item.receipt_supplier.fk_supplier_id = supplier_id;

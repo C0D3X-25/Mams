@@ -88,17 +88,10 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     }
 
 
-    public bool saveItem(ReceiptProfitDetailedItem item) {
+    public int saveItem(ReceiptProfitDetailedItem item) {
 
-        if (item == null) {
-            return false;
-        }
-        if (item.receipt_products.Count() < 1) {
-            return false;
-        }
-        if (item.entity.entity_id == 0) {
-            return false;
-        }
+        if (item == null || item.receipt_products.Count() < 1 || item.entity.entity_id == 0) 
+            return 0;
 
         int client_id = findClientIdOrCreateNew(item.entity.entity_id);
         item.receipt_client.fk_client_id = client_id;

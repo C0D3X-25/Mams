@@ -29,13 +29,6 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return SDatabaseModel.deleteItem(this, id, m_COL_FK_RECEIPT, string.Empty, m_TBL_NAME, delete_type);
     }
-
-    /// <summary>
-    /// Deletes a receipt-client relationship from the database using an integer ID.
-    /// </summary>
-    /// <param name="id">The receipt ID to delete as an integer.</param>
-    /// <param name="delete_type">The type of deletion operation to perform.</param>
-    /// <returns>True if deletion was successful, false otherwise.</returns>
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
@@ -67,9 +60,13 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// </summary>
     /// <returns>An ObservableCollection of all ReceiptClientItems.</returns>
     public ObservableCollection<ReceiptClientItem> getTable() {
+
         var items = new ObservableCollection<ReceiptClientItem>();
+
         using MySqlConnection? conn = _m_conn.openConnection();
-        if (conn == null) return items;
+
+        if (conn == null) 
+            return items;
 
         try {
             using var cmd = new MySqlCommand(BASE_SELECT_QUERY, conn);
@@ -78,54 +75,56 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
             while (reader.Read()) {
                 items.Add(CreateItemFromReader(reader));
             }
+            return items;
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return items;
         }
-        return items;
     }
 
     /// <summary>
-    /// Saves a receipt-client relationship to the database. Creates new record if it doesn't exist,
-    /// updates existing record if it does.
+    /// Saves a receipt item to the database. If the item's ID is 0, creates a new record;
+    /// otherwise updates the existing record.
     /// </summary>
-    /// <param name="item">The ReceiptClientItem to save.</param>
-    /// <returns>True if the save operation was successful, false otherwise.</returns>
-    public bool saveItem(ReceiptClientItem item) {
-        if (item?.fk_receipt_id == 0 || item?.fk_client_id == 0) return false;
+    /// <param name="item">The ReceiptClientItem to save</param>
+    /// <returns>The ID of the saved receipt; 0 if the operation failed</returns>
+    public int saveItem(ReceiptClientItem item) {
+        if (item == null || item.fk_receipt_id == 0 || item.fk_client_id == 0) 
+            return 0;
 
         using MySqlConnection? conn = _m_conn.openConnection();
-        if (conn == null) return false;
+        if (conn == null) 
+            return 0;
+
+        int item_id = item.fk_receipt_id;    
+
+        using var transaction = conn.BeginTransaction();
 
         try {
-            using var transaction = conn.BeginTransaction();
-            try {
-                using var exist_cmd = new MySqlCommand(
-                    $"SELECT COUNT(*) FROM {m_TBL_NAME} WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
-                    conn, transaction);
-                exist_cmd.Parameters.AddWithValue("@fk_receipt", item?.fk_receipt_id);
+            //using var exist_cmd = new MySqlCommand(
+            //    $"SELECT COUNT(*) FROM {m_TBL_NAME} WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
+            //    conn, transaction);
+            //exist_cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
+            //bool exists = Convert.ToInt32(exist_cmd.ExecuteScalar()) > 0;
+                
+            string query = isItemPresentInDatabase(m_TBL_NAME, m_COL_FK_RECEIPT, item_id.ToString())
+                ? $"UPDATE {m_TBL_NAME} SET {m_COL_FK_CLIENT} = @fk_client WHERE {m_COL_FK_RECEIPT} = @fk_receipt; SELECT @fk_receipt;"
+                : $"INSERT INTO {m_TBL_NAME} ({m_COL_FK_RECEIPT}, {m_COL_FK_CLIENT}) VALUES (@fk_receipt, @fk_client); SELECT LAST_INSERT_ID();";
 
-                bool exists = Convert.ToInt32(exist_cmd.ExecuteScalar()) > 0;
-                string query = exists
-                    ? $"UPDATE {m_TBL_NAME} SET {m_COL_FK_CLIENT} = @fk_client WHERE {m_COL_FK_RECEIPT} = @fk_receipt;"
-                    : $"INSERT INTO {m_TBL_NAME} ({m_COL_FK_RECEIPT}, {m_COL_FK_CLIENT}) VALUES (@fk_receipt, @fk_client);";
+            using var cmd = new MySqlCommand(query, conn, transaction);
+            cmd.Parameters.AddWithValue("@fk_receipt", item_id);
+            cmd.Parameters.AddWithValue("@fk_client", item.fk_client_id);
 
-                using var cmd = new MySqlCommand(query, conn, transaction);
-                cmd.Parameters.AddWithValue("@fk_receipt", item?.fk_receipt_id);
-                cmd.Parameters.AddWithValue("@fk_client", item?.fk_client_id);
+            item_id = Convert.ToInt32(cmd.ExecuteScalar());
 
-                bool success = cmd.ExecuteNonQuery() > 0;
-                transaction.Commit();
-                return success;
-            }
-            catch {
-                transaction.Rollback();
-                throw;
-            }
+            transaction.Commit();
+            return item_id;
         }
         catch (MySqlException ex) {
+            transaction.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 

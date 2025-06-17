@@ -80,7 +80,7 @@ public class SaveProductLotController : ABaseController {
             m_product_lot.beehive_name = m_selected_beehive.beehive_name;
         }
 
-        if (_m_product_lot_model.saveItem(m_product_lot)) {
+        if (_m_product_lot_model.saveItem(m_product_lot) > 0) {
             SPageNavigationController.navigateTo(new ListProductLotPage());
         }
         else {

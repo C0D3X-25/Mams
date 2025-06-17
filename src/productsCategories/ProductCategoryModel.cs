@@ -73,7 +73,7 @@ public class ProductCategoryModel :
     }
 
 
-    public bool saveItem(ProductCategoryItem item) {
+    public int saveItem(ProductCategoryItem item) {
 
         using MySqlConnection? conn = _m_conn.openConnection();
 
@@ -81,8 +81,8 @@ public class ProductCategoryModel :
 
         if (item.product_category_id == 0) {
 
-            if (checkIfItemExist(m_TBL_NAME, m_COL_NAME, item.product_category_name)) {
-                return false;
+            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.product_category_name)) {
+                return 0;
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}) " +
@@ -105,7 +105,7 @@ public class ProductCategoryModel :
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 }

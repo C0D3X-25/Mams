@@ -46,7 +46,7 @@ public class SaveProductCategoryController : ABaseController {
 
 
     private void saveProduct(object? obj) {
-        if (_m_product_category_model.saveItem(m_product_category)) {
+        if (_m_product_category_model.saveItem(m_product_category) > 0) {
             SPageNavigationController.navigateTo(new ListProductCategoryPage());
         }
         else {

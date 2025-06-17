@@ -62,7 +62,7 @@ public class SupplierModel : ABaseModel,
     }
 
 
-    public bool saveItem(SupplierItem item) {
+    public int saveItem(SupplierItem item) {
 
         using MySqlConnection? conn = _m_conn.openConnection();
 
@@ -70,8 +70,8 @@ public class SupplierModel : ABaseModel,
 
         if (item.supplier_id == 0) {
 
-            if (checkIfItemExist(m_TBL_NAME, m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
-                return false;
+            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
+                return 0;
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_FK_ENTITY}) " +
@@ -94,7 +94,7 @@ public class SupplierModel : ABaseModel,
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 

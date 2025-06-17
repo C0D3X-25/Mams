@@ -187,7 +187,7 @@ public class SaveProfitController : ABaseController {
         // Update the receipt products collection
         m_profit_receipt_detail.receipt_products = m_list_receipt_product;
 
-        if (_m_receipt_profit_detailed_model.saveItem(m_profit_receipt_detail)) {
+        if (_m_receipt_profit_detailed_model.saveItem(m_profit_receipt_detail) > 0) {
             SPageNavigationController.navigateTo(new ListProfitPage());
         }
         else {

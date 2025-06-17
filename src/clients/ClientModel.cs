@@ -3,6 +3,7 @@ using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
+using System.Transactions;
 using System.Windows;
 
 namespace Mams.src.clients;
@@ -58,20 +59,21 @@ public class ClientModel : ABaseModel,
     }
 
 
-    public bool saveItem(ClientItem item) {
+    public int saveItem(ClientItem item) {
 
         using MySqlConnection? conn = _m_conn.openConnection();
 
         string query = string.Empty;
+        int item_id = item.client_id;
 
-        if (item.client_id == 0) {
+        if (item_id == 0) {
 
-            if (checkIfItemExist(m_TBL_NAME, m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
-                return false;
+            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
+                return 0;
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_FK_ENTITY}) " +
-                $"VALUES (@fk_entity);";
+                $"VALUES (@fk_entity); SELECT LAST_INSERT_ID();";
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
@@ -81,16 +83,24 @@ public class ClientModel : ABaseModel,
 
         try {
             using MySqlCommand cmd = new(query, conn);
-            if (item.client_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item.client_id);
+            if (item_id != 0) {
+                cmd.Parameters.AddWithValue("@id", item_id);
             }
             cmd.Parameters.AddWithValue("@fk_entity", item.fk_entity_id);
-            cmd.ExecuteNonQuery();
-            return true;
+
+
+            if (item_id == 0) {
+                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else {
+                cmd.ExecuteNonQuery();
+            }
+
+            return item_id;
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 

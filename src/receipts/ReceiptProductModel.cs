@@ -116,10 +116,10 @@ public class ReceiptProductModel : ABaseModel,
     }
 
 
-    public bool saveItem(ReceiptProductItem item) {
+    public int saveItem(ReceiptProductItem item) {
 
         if (!ValidateReceiptProduct(item)) {
-            return false;
+            return 0;
         }
 
         using MySqlConnection? conn = _m_conn.openConnection();
@@ -147,7 +147,7 @@ public class ReceiptProductModel : ABaseModel,
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 

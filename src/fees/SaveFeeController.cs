@@ -187,7 +187,7 @@ public class SaveFeeController : ABaseController {
         // Update the receipt products collection
         m_fee_receipt_detail.receipt_products = m_list_receipt_product;
 
-        if (_m_receipt_fee_detailed_model.saveItem(m_fee_receipt_detail)) {
+        if (_m_receipt_fee_detailed_model.saveItem(m_fee_receipt_detail) > 0) {
             SPageNavigationController.navigateTo(new ListFeePage());
         }
         else {

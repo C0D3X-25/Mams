@@ -31,7 +31,7 @@ public abstract class ABaseModel {
     /// This method uses a parameterized query to prevent SQL injection.
     /// If a MySQL exception occurs, an error message is displayed, and <c>false</c> is returned.
     /// </remarks>
-    protected bool checkIfItemExist(string table_name, string colomn_to_search, string item_to_find) {
+    protected bool isItemPresentInDatabase(string table_name, string colomn_to_search, string item_to_find) {
 
         using MySqlConnection? conn = _m_conn.openConnection();
 

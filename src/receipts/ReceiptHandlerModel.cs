@@ -53,7 +53,7 @@ public class ReceiptHandlerModel : ABaseModel {
 
         // Insert new receipt
         if (item.receipt_item.receipt_id == 0) {
-            receipt_id = _m_receipt_model.saveAndGetLastID(item.receipt_item);
+            receipt_id = _m_receipt_model.saveItem(item.receipt_item);
         }
         // Update existing receipt
         else {
@@ -69,7 +69,7 @@ public class ReceiptHandlerModel : ABaseModel {
         // Save the receipt products
         foreach (var product in item.receipt_product_items) {
             product.fk_receipt_id = receipt_id;
-            if (!_m_receipt_product_model.saveItem(product)) {
+            if (_m_receipt_product_model.saveItem(product) <= 0) {
                 return false;
             }
         }
@@ -77,13 +77,13 @@ public class ReceiptHandlerModel : ABaseModel {
         // Save the client
         if (item.receipt_client_item.fk_client_id > 0) {
             item.receipt_client_item.fk_receipt_id = receipt_id;
-            return _m_receipt_client_model.saveItem(item.receipt_client_item);
+            return _m_receipt_client_model.saveItem(item.receipt_client_item) > 0;
         }
         // Or save the supplier
         else {
             if (item.receipt_supplier_item.fk_supplier_id > 0) {
                 item.receipt_supplier_item.fk_receipt_id = receipt_id;
-                return _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
+                return _m_receipt_supplier_model.saveItem(item.receipt_supplier_item) > 0;
             }
         }
         return false;

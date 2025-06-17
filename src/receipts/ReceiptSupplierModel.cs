@@ -82,7 +82,7 @@ public class ReceiptSupplierModel : ABaseModel,
     }
 
 
-    public bool saveItem(ReceiptSupplierItem item) {
+    public int saveItem(ReceiptSupplierItem item) {
 
         if (item == null || item.fk_receipt_id == 0 || item.fk_supplier_id == 0) {
             return false;

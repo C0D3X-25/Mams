@@ -141,7 +141,7 @@ public class SaveProductController : ABaseController {
             m_product.fk_product_shape_id = _m_selected_product_shape.product_shape_id;
         }
 
-        if (_m_product_model.saveItem(m_product)) {
+        if (_m_product_model.saveItem(m_product) > 0) {
             SPageNavigationController.navigateTo(new ListProductPage());
         }
         else { MessageBox.Show("Un produit avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); }

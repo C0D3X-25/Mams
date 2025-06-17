@@ -45,7 +45,7 @@ public class SaveProductShapeController : ABaseController {
 
 
     private void saveProduct(object? obj) {
-        if (_m_product_shape_model.saveItem(m_product_shape)) {
+        if (_m_product_shape_model.saveItem(m_product_shape) > 0) {
             SPageNavigationController.navigateTo(new ListProductShapePage());
         }
         else {
