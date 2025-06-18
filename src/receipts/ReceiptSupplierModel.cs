@@ -83,51 +83,51 @@ public class ReceiptSupplierModel : ABaseModel,
 
 
     public int saveItem(ReceiptSupplierItem item) {
-
         if (item == null || item.fk_receipt_id == 0 || item.fk_supplier_id == 0) {
-            return false;
+            return 0;
+        }
+        using MySqlConnection? conn = _m_conn.openConnection();
+        if (conn == null) {
+            return 0;
         }
 
-        using MySqlConnection? conn = _m_conn.openConnection();
-        
-        try {
-            // Check if the item already exists in the database
-            using MySqlCommand exist_cmd = new(
-                $"SELECT COUNT(*) FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
-                conn
-            );
-            exist_cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
-            
-            int exists = Convert.ToInt32(exist_cmd.ExecuteScalar());
+        using var transaction = conn.BeginTransaction();
 
-            string query;
-            if (exists == 0) {
+        try {
+            string query = string.Empty;
+            //int item_id = item.fk_receipt_id;
+
+            //if (isItemPresentInDatabase(m_TBL_NAME, m_COL_FK_RECEIPT, item.fk_receipt_id.ToString())) {
                 // Insert new record
                 query = $"INSERT INTO {m_TBL_NAME} " +
                     $"({m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER}) " +
-                    $"VALUES (@fk_receipt, @fk_supplier);";
-            }
-            else {
-                // Update existing record
-                query = $"UPDATE {m_TBL_NAME} " +
-                    $"SET {m_COL_FK_SUPPLIER} = @fk_supplier " +
-                    $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;";
-            }
+                    $"VALUES (@fk_receipt, @fk_supplier); SELECT LAST_INSERT_ID();";
+            //}
+            //else {
+            //    // Update existing record
+            //    query = $"UPDATE {m_TBL_NAME} " +
+            //        $"SET {m_COL_FK_SUPPLIER} = @fk_supplier " +
+            //        $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;";
+            //}
 
-            using MySqlCommand cmd = new(query, conn);
+            using MySqlCommand cmd = new(query, conn, transaction);
+
             cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
             cmd.Parameters.AddWithValue("@fk_supplier", item.fk_supplier_id);
-            return cmd.ExecuteNonQuery() > 0;
+
+            int item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            transaction.Commit();
+            return item_id;
         }
         catch (MySqlException ex) {
+            transaction.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 
 
-    public ObservableCollection<ReceiptSupplierItem> getListItemWithSuppliertID(string supplier_id) {
+    public ObservableCollection<ReceiptSupplierItem> getListItemWithSupplierID(string supplier_id) {
 
         ObservableCollection<ReceiptSupplierItem> items = new();
 

@@ -72,19 +72,25 @@ public class ProductShapeModel :
 
 
     public int saveItem(ProductShapeItem item) {
-
+        if (item == null) {
+            return 0;
+        }
         using MySqlConnection? conn = _m_conn.openConnection();
+        if (conn == null) {
+            return 0;
+        }
 
         string query = string.Empty;
+        int item_id = item.product_shape_id;
 
-        if (item.product_shape_id == 0) {
+        if (item_id == 0) {
 
             if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.product_shape_name)) {
                 return 0;
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}) " +
-                $"VALUES (@name);";
+                $"VALUES (@name); SELECT LAST_INSERT_ID();";
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
@@ -92,16 +98,28 @@ public class ProductShapeModel :
                 $"WHERE {m_COL_ID} = @id;";
         }
 
+        using var transaction = conn.BeginTransaction();
+
         try {
-            using MySqlCommand cmd = new(query, conn);
-            if (item.product_shape_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item.product_shape_id);
+            using MySqlCommand cmd = new(query, conn, transaction);
+
+            if (item_id != 0) {
+                cmd.Parameters.AddWithValue("@id", item_id);
             }
             cmd.Parameters.AddWithValue("@name", item.product_shape_name);
-            cmd.ExecuteNonQuery();
-            return true;
+
+            if (item_id == 0) {
+                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else {
+                cmd.ExecuteNonQuery();
+            }
+
+            transaction.Commit();
+            return item_id;
         }
         catch (MySqlException ex) {
+            transaction.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

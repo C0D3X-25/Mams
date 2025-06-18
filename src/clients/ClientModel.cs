@@ -3,6 +3,7 @@ using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
+using System.Data.Common;
 using System.Transactions;
 using System.Windows;
 
@@ -53,15 +54,29 @@ public class ClientModel : ABaseModel,
         }
     }
 
-
+    /// <summary>
+    /// Retrieves all receipt items from the database.
+    /// </summary>
+    /// <returns>An ObservableCollection of ReceiptItem objects</returns>
     public ObservableCollection<ClientItem> getTable() {
         return SDatabaseModel.getAllData<ClientItem>(this, m_TBL_NAME);
     }
 
-
+    /// <summary>
+    /// Saves a receipt item to the database. If the item's ID is 0, creates a new record;
+    /// otherwise updates the existing record.
+    /// </summary>
+    /// <param name="item">The ClientItem to save</param>
+    /// <returns>The ID of the saved receipt; 0 if the operation failed</returns>
     public int saveItem(ClientItem item) {
 
+        if (item == null) {
+            return 0;
+        }
         using MySqlConnection? conn = _m_conn.openConnection();
+        if (conn == null) {
+            return 0;
+        }
 
         string query = string.Empty;
         int item_id = item.client_id;
@@ -73,7 +88,8 @@ public class ClientModel : ABaseModel,
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_FK_ENTITY}) " +
-                $"VALUES (@fk_entity); SELECT LAST_INSERT_ID();";
+                $"VALUES (@fk_entity); " +
+                $"SELECT LAST_INSERT_ID();";
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
@@ -81,13 +97,15 @@ public class ClientModel : ABaseModel,
                 $"WHERE {m_COL_ID} = @id;";
         }
 
+        using var transaction = conn.BeginTransaction();
+
         try {
-            using MySqlCommand cmd = new(query, conn);
+            using MySqlCommand cmd = new(query, conn, transaction);
+
             if (item_id != 0) {
                 cmd.Parameters.AddWithValue("@id", item_id);
             }
             cmd.Parameters.AddWithValue("@fk_entity", item.fk_entity_id);
-
 
             if (item_id == 0) {
                 item_id = Convert.ToInt32(cmd.ExecuteScalar());
@@ -96,9 +114,11 @@ public class ClientModel : ABaseModel,
                 cmd.ExecuteNonQuery();
             }
 
+            transaction.Commit();
             return item_id;
         }
         catch (MySqlException ex) {
+            transaction.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

@@ -160,7 +160,7 @@
                                     label="ID"
                                     text="{Binding m_product_lot.product_lot_id, UpdateSourceTrigger=PropertyChanged}"
                                     isEnabled="False"
-                                    Visibility="Visible"
+                                    Visibility="Hidden"
                                 ></userControls:UCLabelTextBox>
                             </Grid>
                         </Grid>

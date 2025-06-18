@@ -43,10 +43,10 @@ public class ReceiptHandlerModel : ABaseModel {
     }
 
 
-    public bool saveReceipt(ReceiptHandlerItem item) {
+    public int saveReceipt(ReceiptHandlerItem item) {
 
         if (item == null) {
-            return false;
+            return 0;
         }
 
         int receipt_id = 0;
@@ -70,23 +70,23 @@ public class ReceiptHandlerModel : ABaseModel {
         foreach (var product in item.receipt_product_items) {
             product.fk_receipt_id = receipt_id;
             if (_m_receipt_product_model.saveItem(product) <= 0) {
-                return false;
+                return 0;
             }
         }
 
         // Save the client
         if (item.receipt_client_item.fk_client_id > 0) {
             item.receipt_client_item.fk_receipt_id = receipt_id;
-            return _m_receipt_client_model.saveItem(item.receipt_client_item) > 0;
+            return _m_receipt_client_model.saveItem(item.receipt_client_item);
         }
         // Or save the supplier
         else {
             if (item.receipt_supplier_item.fk_supplier_id > 0) {
                 item.receipt_supplier_item.fk_receipt_id = receipt_id;
-                return _m_receipt_supplier_model.saveItem(item.receipt_supplier_item) > 0;
+                return _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
             }
         }
-        return false;
+        return 0;
     }
 
 

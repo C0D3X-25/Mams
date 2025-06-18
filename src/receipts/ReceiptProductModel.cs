@@ -118,34 +118,42 @@ public class ReceiptProductModel : ABaseModel,
 
     public int saveItem(ReceiptProductItem item) {
 
-        if (!ValidateReceiptProduct(item)) {
+        if (!ValidateReceiptProduct(item)) { 
+            return 0;
+        }
+        using MySqlConnection? conn = _m_conn.openConnection();
+        if (conn == null) {
             return 0;
         }
 
-        using MySqlConnection? conn = _m_conn.openConnection();
-
-        try {
-            // Check if the item already exists in the database, if not insert the item into the database
-            using MySqlCommand cmd = new(
-                $"INSERT INTO {m_TBL_NAME} ({m_COL_QUANTITY}, {m_COL_UNITY_PRICE}, " +
+        // TODO: Will probably need to be refactored
+        // Check if the item already exists in the database, if not insert the item into the database
+        string query = $"INSERT INTO {m_TBL_NAME} ({m_COL_QUANTITY}, {m_COL_UNITY_PRICE}, " +
                 $"{m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT}, {m_COL_FK_PRODUCT_LOT}) " +
                 $"SELECT @quantity, @unity_price, @fk_receipt, @fk_product, @fk_product_lot " +
                 $"WHERE NOT EXISTS (SELECT 1 FROM {m_TBL_NAME} " +
                 $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt " +
                 $"AND {m_COL_FK_PRODUCT} = @fk_product " +
                 $"AND {m_COL_QUANTITY} = @quantity " +
-                $"AND {m_COL_UNITY_PRICE} = @unity_price)",
-                conn
-            );
+                $"AND {m_COL_UNITY_PRICE} = @unity_price); " +
+                $"SELECT LAST_INSERT_ID();";
+
+        using var transaction = conn.BeginTransaction();
+
+        try {
+            using MySqlCommand cmd = new(query, conn, transaction);
             cmd.Parameters.AddWithValue("@quantity", item.receipt_product_quantity);
             cmd.Parameters.AddWithValue("@unity_price", item.receipt_product_unity_price);
             cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
             cmd.Parameters.AddWithValue("@fk_product", item.product_item.product_id);
             cmd.Parameters.AddWithValue("@fk_product_lot", item.product_lot_item.product_lot_id);
-            return cmd.ExecuteNonQuery() > 0;
-            
+
+            int item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            transaction.Commit();
+            return item_id;
         }
         catch (MySqlException ex) {
+            transaction.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

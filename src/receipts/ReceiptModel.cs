@@ -84,10 +84,10 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         if (item == null) {
             return 0;
         }
-
         using MySqlConnection? conn = _m_conn.openConnection();
-        if (conn == null)
+        if (conn == null) {
             return 0;
+        }
 
         int item_id = item.receipt_id;
 

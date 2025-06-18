@@ -101,11 +101,18 @@ internal class ProductModel : ABaseModel,
 
     public int saveItem(ProductItem item) {
 
+        if (item == null) {
+            return 0;
+        }
         using MySqlConnection? conn = _m_conn.openConnection();
+        if (conn == null) {
+            return 0;
+        }
 
         string query = string.Empty;
+        int item_id = item.product_id;
 
-        if (item.product_id == 0) {
+        if (item_id == 0) {
 
             if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.product_name)) {
                 return 0;
@@ -114,7 +121,7 @@ internal class ProductModel : ABaseModel,
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_WEIGHT}, " +
                 $"{m_COL_FK_PRODUCT_TYPE}, {m_COL_FK_PRODUCT_CATEGORY}, " +
                 $"{m_COL_FK_PRODUCT_SHAPE}) " +
-                $"VALUES (@name, @weight, @fk_product_type, @fk_product_category, @fk_product_shape);";
+                $"VALUES (@name, @weight, @fk_product_type, @fk_product_category, @fk_product_shape); SELECT LAST_INSERT_ID();";
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
@@ -125,20 +132,32 @@ internal class ProductModel : ABaseModel,
                 $"WHERE {m_COL_ID} = @id;";
         }
 
+        using var transaction = conn.BeginTransaction();
+
         try {
-            using MySqlCommand cmd = new(query, conn);
-            if (item.product_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item.product_id);
+            using MySqlCommand cmd = new(query, conn, transaction);
+
+            if (item_id != 0) {
+                cmd.Parameters.AddWithValue("@id", item_id);
             }
             cmd.Parameters.AddWithValue("@name", item.product_name);
             cmd.Parameters.AddWithValue("@weight", item.product_weight);
             cmd.Parameters.AddWithValue("@fk_product_type", item.fk_product_type_id);
             cmd.Parameters.AddWithValue("@fk_product_category", item.fk_product_category_id);
             cmd.Parameters.AddWithValue("@fk_product_shape", item.fk_product_shape_id);
-            cmd.ExecuteNonQuery();
-            return true;
+
+            if (item_id == 0) {
+                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else {
+                cmd.ExecuteNonQuery();
+            }
+
+            transaction.Commit();
+            return item_id;
         }
         catch (MySqlException ex) {
+            transaction.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

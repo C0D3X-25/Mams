@@ -202,6 +202,7 @@
                                                 Content="lot" 
                                                 FontSize="16" 
                                                 VerticalAlignment="Center"
+                                                Visibility="Hidden"
                                             ></Label>
 
                                                 <ComboBox
@@ -214,7 +215,8 @@
                                                 ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.m_list_product_lot}"
                                                 SelectedItem="{Binding product_lot_item, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                 DisplayMemberPath="product_lot_name" 
-                                                SelectedValuePath="product_lot_id">
+                                                SelectedValuePath="product_lot_id"
+                                                Visibility="Hidden">
                                                 </ComboBox>
                                             </Grid>
 

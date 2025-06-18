@@ -232,7 +232,7 @@
                                     label="ID"
                                     text="{Binding m_product.product_id, UpdateSourceTrigger=PropertyChanged}"
                                     isEnabled="False"
-                                    Visibility="Visible"
+                                    Visibility="Hidden"
                                 ></userControls:UCLabelTextBox>
 
                             </Grid>

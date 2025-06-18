@@ -116,7 +116,7 @@
                                     Grid.Row="0"
                                     label="ID"
                                     text="{Binding m_beehive.beehive_id, UpdateSourceTrigger=PropertyChanged}"
-                                    Visibility="Visible"
+                                    Visibility="Hidden"
                                     isEnabled="False"
                                 ></userControls:UCLabelTextBox>
                             </Grid>

@@ -91,19 +91,25 @@ public class ProductLotModel :
 
 
     public int saveItem(ProductLotItem item) {
-
+        if (item == null) {
+            return 0;
+        }
         using MySqlConnection? conn = _m_conn.openConnection();
+        if (conn == null) {
+            return 0;
+        }
 
         string query = string.Empty;
+        int item_id = item.product_lot_id;
 
-        if (item.product_lot_id == 0) {
+        if (item_id == 0) {
 
             if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.product_lot_name)) {
                 return 0;
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE}) " +
-                $"VALUES (@name, @year, @fk_beehive)";
+                $"VALUES (@name, @year, @fk_beehive); SELECT LAST_INSERT_ID();";
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
@@ -111,18 +117,30 @@ public class ProductLotModel :
                 $"WHERE {m_COL_ID} = @id";
         }
 
+        using var transaction = conn.BeginTransaction();
+
         try {
-            using MySqlCommand cmd = new(query, conn);
-            if (item.product_lot_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item.product_lot_id);
+            using MySqlCommand cmd = new(query, conn, transaction);
+
+            if (item_id != 0) {
+                cmd.Parameters.AddWithValue("@id", item_id);
             }
             cmd.Parameters.AddWithValue("@name", item.product_lot_name);
             cmd.Parameters.AddWithValue("@year", item.product_lot_year);
             cmd.Parameters.AddWithValue("@fk_beehive", item.fk_beehive_id);
-            cmd.ExecuteNonQuery();
-            return true;
+
+            if (item_id == 0) {
+                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else {
+                cmd.ExecuteNonQuery();
+            }
+
+            transaction.Commit();
+            return item_id;
         }
         catch (MySqlException ex) {
+            transaction.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

@@ -6,6 +6,7 @@ using Mams.src.suppliers;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 
 namespace Mams.src.entities;
 
@@ -80,18 +81,26 @@ public class EntityModel : ABaseModel,
 
 
     public int saveItem(EntityItem item) {
+        if (item == null) {
+            return 0;
+        }
         using MySqlConnection? conn = _m_conn.openConnection();
+        if (conn == null) {
+            return 0;
+        }
 
         string query = string.Empty;
+        int item_id = item.entity_id;
 
-        if (item.entity_id == 0) {
+        if (item_id == 0) {
 
             if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.entity_name)) {
                 return 0;
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_PHONE}, {m_COL_EMAIL}, {m_COL_CITY}, {m_COL_ADDRESS}) " +
-                $"VALUES (@name, @phone, @email, @city, @address)";
+                $"VALUES (@name, @phone, @email, @city, @address); " +
+                $"SELECT LAST_INSERT_ID(); ";
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
@@ -99,20 +108,32 @@ public class EntityModel : ABaseModel,
                 $"WHERE {m_COL_ID} = @id";
         }
 
+        using var transaction = conn.BeginTransaction();
+
         try {
-            using MySqlCommand cmd = new(query, conn);
-            if (item.entity_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item.entity_id);
+            using MySqlCommand cmd = new(query, conn, transaction);
+
+            if (item_id != 0) {
+                cmd.Parameters.AddWithValue("@id", item_id);
             }
             cmd.Parameters.AddWithValue("@name", item.entity_name);
             cmd.Parameters.AddWithValue("@phone", item.entity_phone);
             cmd.Parameters.AddWithValue("@email", item.entity_email);
             cmd.Parameters.AddWithValue("@city", item.entity_city);
             cmd.Parameters.AddWithValue("@address", item.entity_address);
-            cmd.ExecuteNonQuery();
-            return true;
+
+            if (item_id == 0) {
+                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else {
+                cmd.ExecuteNonQuery();
+            }
+
+            transaction.Commit();
+            return item_id;
         }
         catch (MySqlException ex) {
+            transaction.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

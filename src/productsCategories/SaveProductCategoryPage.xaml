@@ -115,7 +115,7 @@
                                     label="ID"
                                     text="{Binding m_product_category.product_category_id, UpdateSourceTrigger=PropertyChanged}"
                                     isEnabled="False"
-                                    Visibility="Visible"
+                                    Visibility="Hidden"
                                 ></userControls:UCLabelTextBox>
 
                             </Grid>

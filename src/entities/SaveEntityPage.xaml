@@ -150,7 +150,7 @@
                                     Grid.Row="2"
                                     label="ID"
                                     text="{Binding m_entity.entity_id, UpdateSourceTrigger=PropertyChanged}"
-                                    Visibility="Visible"
+                                    Visibility="Hidden"
                                     isEnabled="False"
                                 ></userControls:UCLabelTextBox>
                             </Grid>

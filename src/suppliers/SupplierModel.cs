@@ -64,18 +64,25 @@ public class SupplierModel : ABaseModel,
 
     public int saveItem(SupplierItem item) {
 
+        if (item == null) {
+            return 0;
+        }
         using MySqlConnection? conn = _m_conn.openConnection();
+        if (conn == null) {  
+            return 0; 
+        }
 
         string query = string.Empty;
+        int item_id = item.supplier_id;
 
-        if (item.supplier_id == 0) {
+        if (item_id == 0) {
 
             if (isItemPresentInDatabase(m_TBL_NAME, m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
                 return 0;
             }
 
             query = $"INSERT INTO {m_TBL_NAME} ({m_COL_FK_ENTITY}) " +
-                $"VALUES (@fk_entity);";
+                $"VALUES (@fk_entity); SELECT LAST_INSERT_ID();";
         }
         else {
             query = $"UPDATE {m_TBL_NAME} " +
@@ -83,16 +90,28 @@ public class SupplierModel : ABaseModel,
                 $"WHERE {m_COL_ID} = @id;";
         }
 
+        using var transaction = conn.BeginTransaction();
+
         try {
-            using MySqlCommand cmd = new(query, conn);
-            if (item.supplier_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item.supplier_id);
+            using MySqlCommand cmd = new(query, conn, transaction);
+
+            if (item_id != 0) {
+                cmd.Parameters.AddWithValue("@id", item_id);
             }
             cmd.Parameters.AddWithValue("@fk_entity", item.fk_entity_id);
-            cmd.ExecuteNonQuery();
-            return true;
+
+            if (item_id == 0) {
+                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else {
+                cmd.ExecuteNonQuery();
+            }
+
+            transaction.Commit();
+            return item_id;
         }
         catch (MySqlException ex) {
+            transaction.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
