@@ -22,34 +22,16 @@ public class EntityModel : ABaseModel,
     private const string _m_COL_ADDRESS = "entity_address";
     private const string _m_COL_ARCHIVE = "entity_archive";
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-
-        // Cascad delete the supplier and client items
-        startTransaction();
-
-        if (delete_type == EDeleteItemOperation.HARD_DELETE) {
-
-            ClientModel client_model = new();
-            SupplierModel supplier_model = new();
-
-            client_model.deleteClientWithEntityFK(id);
-            supplier_model.deleteSupplierWithEntityFK(id);
-        }
-        if (SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type)) { 
-            commitTransaction();
-            return true;
-        }
-        rollbackTransaction();
-        return false;
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+        return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
 
 
     public EntityItem? getItemByID(string id) {
         
-
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}, {_m_COL_ARCHIVE} " +

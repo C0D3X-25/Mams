@@ -14,12 +14,14 @@ CREATE TABLE IF NOT EXISTS entities (
 
 CREATE TABLE IF NOT EXISTS suppliers (
     supplier_id INT PRIMARY KEY AUTO_INCREMENT,
-    fk_entity_id INT NOT NULL REFERENCES entities(entity_id)
+    fk_entity_id INT NOT NULL,
+    FOREIGN KEY (fk_entity_id) REFERENCES entities(entity_id)
 );
 
 CREATE TABLE IF NOT EXISTS clients (
     client_id INT PRIMARY KEY AUTO_INCREMENT,
-    fk_entity_id INT NOT NULL REFERENCES entities(entity_id)
+    fk_entity_id INT NOT NULL,
+    FOREIGN KEY (fk_entity_id) REFERENCES entities(entity_id)
 );
 
 CREATE TABLE IF NOT EXISTS receipts (
@@ -29,13 +31,17 @@ CREATE TABLE IF NOT EXISTS receipts (
 );
 
 CREATE TABLE IF NOT EXISTS receipts_suppliers(
-    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id),
-    fk_supplier_id INT NOT NULL REFERENCES suppliers(supplier_id)
+    fk_receipt_id INT NOT NULL,
+    fk_supplier_id INT NOT NULL,
+    FOREIGN KEY (fk_receipt_id) REFERENCES receipts(receipt_id),
+    FOREIGN KEY (fk_supplier_id) REFERENCES suppliers(supplier_id)
 );
 
 CREATE TABLE IF NOT EXISTS receipts_clients(
-    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id),
-    fk_client_id INT NOT NULL REFERENCES clients(client_id)
+    fk_receipt_id INT NOT NULL,
+    fk_client_id INT NOT NULL,
+    FOREIGN KEY (fk_receipt_id) REFERENCES receipts(receipt_id),
+    FOREIGN KEY (fk_client_id) REFERENCES clients(client_id)
 );
 
 CREATE TABLE IF NOT EXISTS products_types (
@@ -67,7 +73,8 @@ CREATE TABLE IF NOT EXISTS products_lots (
     product_lot_name VARCHAR(50) NOT NULL,
     product_lot_year INT NOT NULL,
     product_lot_archive DATE,
-    fk_beehive_id INT REFERENCES beehives(beehive_id)
+    fk_beehive_id INT,
+    FOREIGN KEY (fk_beehive_id) REFERENCES beehives(beehive_id)
 );
 
 CREATE TABLE IF NOT EXISTS products (
@@ -75,16 +82,22 @@ CREATE TABLE IF NOT EXISTS products (
     product_name VARCHAR(100) NOT NULL,
     product_weight INT,
     product_archive DATE,
-    fk_product_type_id INT NOT NULL REFERENCES products_types(product_type_id),
-    fk_product_category_id INT NOT NULL REFERENCES products_categories(product_category_id),
-    fk_product_shape_id INT NOT NULL REFERENCES products_shapes(product_shape_id)
+    fk_product_type_id INT NOT NULL,
+    fk_product_category_id INT NOT NULL,
+    fk_product_shape_id INT,
+    FOREIGN KEY (fk_product_type_id) REFERENCES products_types(product_type_id),
+    FOREIGN KEY (fk_product_category_id) REFERENCES products_categories(product_category_id),
+    FOREIGN KEY (fk_product_shape_id) REFERENCES products_shapes(product_shape_id)
 );
 
 CREATE TABLE IF NOT EXISTS receipts_products (
     receipt_product_id INT PRIMARY KEY AUTO_INCREMENT,
     receipt_product_quantity INT NOT NULL,
     receipt_product_unity_price DECIMAL(9,2) NOT NULL,
-    fk_product_id INT NOT NULL REFERENCES products(product_id),
-    fk_receipt_id INT NOT NULL REFERENCES receipts(receipt_id),
-    fk_product_lot_id INT REFERENCES products_lots(product_lot_id)
+    fk_product_id INT NOT NULL,
+    fk_receipt_id INT NOT NULL,
+    fk_product_lot_id INT,
+    FOREIGN KEY (fk_product_id) REFERENCES products(product_id),
+    FOREIGN KEY (fk_receipt_id) REFERENCES receipts(receipt_id),
+    FOREIGN KEY (fk_product_lot_id) REFERENCES products_lots(product_lot_id)
 );

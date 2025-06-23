@@ -67,16 +67,54 @@ public abstract class SDatabaseModel : ABaseModel {
     /// The method supports three types of delete operations:
     /// - Soft Delete: Sets an archive date without removing the record
     /// - Hard Delete: Permanently removes the record from the database
+    /// - Safe Delete: Intended for checking linked records in other tables
     /// - Restore: Clears the archive date to restore a soft-deleted record
     /// </remarks>
     /// <exception cref="MySqlException">Thrown when a database error occurs during the operation.</exception>
-    public static bool deleteRow(string id, string field_name_id, string field_name_archive, string table_name, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+    public static bool deleteRow(
+        string id, 
+        string field_name_id, 
+        string field_name_archive,
+        string table_name, 
+        EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE
+        ) {
+        if (!areDeleteParametersProvided(id, field_name_id, table_name)) {
+            return false;
+        }
 
+        return deleteOperation(id, field_name_id, field_name_archive, table_name, delete_type);
+    }
+
+    public static bool deleteRow(
+        string id,
+        string field_name_id,
+        string table_name,
+        EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE
+        ) {
+        if (!areDeleteParametersProvided(id, field_name_id, table_name)) {
+            return false;
+        }
+
+        return deleteOperation(id, field_name_id, string.Empty, table_name, delete_type);
+    }
+
+    private static bool deleteOperation(
+        string id,
+        string field_name_id,
+        string field_name_archive,
+        string table_name,
+        EDeleteItemOperation delete_type
+        ) {
+        
         string query = string.Empty;
 
         switch (delete_type) {
             // Archive the data
             case EDeleteItemOperation.SOFT_DELETE:
+                if (!isArchiveFieldProvided(field_name_archive)) {
+                    return false;
+                }
+
                 query = $"UPDATE {table_name} " +
                     $"SET {field_name_archive} = CURDATE() " +
                     $"WHERE {field_name_id} = @id";
@@ -87,10 +125,17 @@ public abstract class SDatabaseModel : ABaseModel {
                 break;
             // Check if the data is linked in another table, then SOFT_DELETE or HARD_DELETE
             case EDeleteItemOperation.SAFE_DELETE:
-                // TODO: check if the linked tables is used, then SOFT_DELETE or HARD_DELETE
+                if (!isArchiveFieldProvided(field_name_archive)) {
+                    return false;
+                }
+                query = $"DELETE FROM {table_name} WHERE {field_name_id} = @id;";
                 break;
             // Restore the data from the archive
             case EDeleteItemOperation.RESTORE:
+                if (!isArchiveFieldProvided(field_name_archive)) {
+                    return false;
+                }
+
                 query = $"UPDATE {table_name} " +
                     $"SET {field_name_archive} = NULL " +
                     $"WHERE {field_name_id} = @id";
@@ -114,6 +159,22 @@ public abstract class SDatabaseModel : ABaseModel {
             return true;
         }
         catch (MySqlException ex) {
+
+            // In case of a foreign key constraint violation, we can try to soft delete the record
+            // if the archive field is provided, otherwise there is a rollback
+            if (ex.ErrorCode == MySqlErrorCode.RowIsReferenced2
+                || ex.ErrorCode == MySqlErrorCode.RowIsReferenced
+                && isArchiveFieldProvided(field_name_archive)
+                ) {
+                clearTransaction();
+                return deleteOperation(
+                    id, 
+                    field_name_id, 
+                    field_name_archive, 
+                    table_name, 
+                    EDeleteItemOperation.SOFT_DELETE
+                );
+            }
             if (need_transaction) {
                 rollbackTransaction();
             }
@@ -122,6 +183,23 @@ public abstract class SDatabaseModel : ABaseModel {
         }
     }
 
+    private static bool isArchiveFieldProvided(string field_name_archive) {
+        if (string.IsNullOrWhiteSpace(field_name_archive)) {
+            MessageBox.Show("Archive field name cannot be empty for soft or safe delete operation.");
+            return false;
+        }
+        return true;
+    }
+
+    private static bool areDeleteParametersProvided(string id, string field_name_id, string table_name) {
+        if (string.IsNullOrWhiteSpace(id)
+            || string.IsNullOrWhiteSpace(field_name_id)
+            || string.IsNullOrWhiteSpace(table_name)) {
+            MessageBox.Show("Invalid parameters provided for delete operation.");
+            return false;
+        }
+        return true;
+    }
 
     /// <summary>
     /// Retrieves all records from a specified database table.

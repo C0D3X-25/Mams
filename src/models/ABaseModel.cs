@@ -16,7 +16,7 @@ public abstract class ABaseModel {
     /// <summary>
     /// Every derived Class will use this session to interact with the database.
     /// </summary>
-    public static MySqlConnection? m_conn {
+    protected static MySqlConnection? m_conn {
         get { return _m_connection; }
     }
 
@@ -24,9 +24,17 @@ public abstract class ABaseModel {
     /// <summary>
     /// Represents the current MySQL transaction associated with the operation, if any.
     /// </summary>
-    public static MySqlTransaction? m_transaction {
+    protected static MySqlTransaction? m_transaction {
         get { return _m_transaction; }
     }
+
+
+    private static List<string> _m_list_linked_table = new();
+    public static List<string> m_list_linked_table {
+        get { return _m_list_linked_table; }
+        set { }
+    }
+
 
     /// <summary>
     /// Starts a new database transaction on the current connection.
@@ -93,6 +101,20 @@ public abstract class ABaseModel {
         m_transaction.Rollback();
         _m_transaction = null;
     }
+
+    /// <summary>
+    /// Clears the current transaction, releasing any associated resources.
+    /// </summary>
+    /// <remarks>If no transaction is active, the method does nothing. If a transaction is active, it is
+    /// disposed and the reference is set to <see langword="null"/>.</remarks>
+    public static void clearTransaction() {
+        if (m_transaction == null) {
+            return;
+        }
+        m_transaction.Dispose();
+        _m_transaction = null;
+    }
+
 
     /// <summary>
     /// Checks if a specific item exists in a given table and column in the database.
