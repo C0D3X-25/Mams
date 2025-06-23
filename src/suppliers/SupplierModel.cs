@@ -7,16 +7,27 @@ using System.Windows;
 
 namespace Mams.src.suppliers;
 
+/// <summary>
+/// Represents a model for managing supplier data, including CRUD operations for supplier items.
+/// </summary>
 public class SupplierModel : ABaseModel,
     ICrudOperation<SupplierItem> {
 
-    private const string m_TBL_NAME = "suppliers";
-    private const string m_COL_ID = "supplier_id";
-    private const string m_COL_FK_ENTITY = "fk_entity_id";
+    private const string _m_TBL_NAME = "suppliers";
+    private const string _m_COL_ID = "supplier_id";
+    private const string _m_COL_FK_ENTITY = "fk_entity_id";
 
-
+    /// <summary>
+    /// Deletes an item from the database based on the specified identifier and delete operation type.
+    /// </summary>
+    /// <remarks>The delete operation type determines whether the item is permanently removed (<see
+    /// cref="EDeleteItemOperation.HARD_DELETE"/>) or marked as deleted (<see
+    /// cref="EDeleteItemOperation.SOFT_DELETE"/>).</remarks>
+    /// <param name="id">The unique identifier of the item to delete. Cannot be null or empty.</param>
+    /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.HARD_DELETE"/>.</param>
+    /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_ID, string.Empty, m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return deleteItem(id.ToString(), delete_type);
@@ -29,13 +40,11 @@ public class SupplierModel : ABaseModel,
             return null;
         }
 
-        using MySqlConnection? conn = _m_conn.openConnection();
-
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_FK_ENTITY} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_ID} = @id;",
+                $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_ID} = @id;",
                 conn
             );
 
@@ -44,8 +53,8 @@ public class SupplierModel : ABaseModel,
 
             if (reader.Read()) {
                 return new SupplierItem {
-                    supplier_id = reader.GetSafeValue<int>(m_COL_ID),
-                    fk_entity_id = reader.GetSafeValue<int>(m_COL_FK_ENTITY, 0)
+                    supplier_id = reader.GetSafeValue<int>(_m_COL_ID),
+                    fk_entity_id = reader.GetSafeValue<int>(_m_COL_FK_ENTITY, 0)
                 };
             }
             return null;
@@ -58,7 +67,7 @@ public class SupplierModel : ABaseModel,
 
 
     public ObservableCollection<SupplierItem> getTable() {
-        return SDatabaseModel.getAllData<SupplierItem>(this, m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<SupplierItem>(_m_TBL_NAME);
     }
 
 
@@ -67,31 +76,26 @@ public class SupplierModel : ABaseModel,
         if (item == null) {
             return 0;
         }
-        using MySqlConnection? conn = _m_conn.openConnection();
-        if (conn == null) {  
-            return 0; 
-        }
 
         string query = string.Empty;
         int item_id = item.supplier_id;
 
         if (item_id == 0) {
-
-            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
                 return 0;
             }
 
-            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_FK_ENTITY}) " +
+            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_FK_ENTITY}) " +
                 $"VALUES (@fk_entity); SELECT LAST_INSERT_ID();";
         }
         else {
-            query = $"UPDATE {m_TBL_NAME} " +
-                $"SET {m_COL_FK_ENTITY} = @fk_entity " +
-                $"WHERE {m_COL_ID} = @id;";
+            query = $"UPDATE {_m_TBL_NAME} " +
+                $"SET {_m_COL_FK_ENTITY} = @fk_entity " +
+                $"WHERE {_m_COL_ID} = @id;";
         }
 
-        using var transaction = conn.BeginTransaction();
 
+        transaction = conn?.BeginTransaction();
         try {
             using MySqlCommand cmd = new(query, conn, transaction);
 
@@ -107,11 +111,11 @@ public class SupplierModel : ABaseModel,
                 cmd.ExecuteNonQuery();
             }
 
-            transaction.Commit();
+            transaction?.Commit();
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction.Rollback();
+            transaction?.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -126,12 +130,11 @@ public class SupplierModel : ABaseModel,
 
         SupplierItem item = new();
 
-        using MySqlConnection? conn = _m_conn.openConnection();
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_FK_ENTITY} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_ENTITY} = @fk_entity;",
+                $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_FK_ENTITY} = @fk_entity;",
                 conn
             );
 
@@ -140,8 +143,8 @@ public class SupplierModel : ABaseModel,
             using MySqlDataReader reader = cmd.ExecuteReader();
 
             if (reader.Read()) {
-                item.supplier_id = reader.GetSafeValue<int>(m_COL_ID);
-                item.fk_entity_id = reader.GetSafeValue<int>(m_COL_FK_ENTITY);
+                item.supplier_id = reader.GetSafeValue<int>(_m_COL_ID);
+                item.fk_entity_id = reader.GetSafeValue<int>(_m_COL_FK_ENTITY);
             }
 
             return item;

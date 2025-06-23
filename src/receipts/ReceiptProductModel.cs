@@ -14,17 +14,17 @@ namespace Mams.src.receipts;
 public class ReceiptProductModel : ABaseModel,
     ICrudOperation<ReceiptProductItem> {
 
-    private const string m_TBL_NAME = "receipts_products";
-    private const string m_COL_ID = "receipt_product_id";
-    private const string m_COL_QUANTITY = "receipt_product_quantity";
-    private const string m_COL_UNITY_PRICE = "receipt_product_unity_price";
-    private const string m_COL_FK_PRODUCT = "fk_product_id";
-    private const string m_COL_FK_RECEIPT = "fk_receipt_id";
-    private const string m_COL_FK_PRODUCT_LOT = "fk_product_lot_id";
+    private const string _m_TBL_NAME = "receipts_products";
+    private const string _m_COL_ID = "receipt_product_id";
+    private const string _m_COL_QUANTITY = "receipt_product_quantity";
+    private const string _m_COL_UNITY_PRICE = "receipt_product_unity_price";
+    private const string _m_COL_FK_PRODUCT = "fk_product_id";
+    private const string _m_COL_FK_RECEIPT = "fk_receipt_id";
+    private const string _m_COL_FK_PRODUCT_LOT = "fk_product_lot_id";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_FK_RECEIPT, string.Empty, m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, _m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return deleteItem(id.ToString(), delete_type);
@@ -33,18 +33,16 @@ public class ReceiptProductModel : ABaseModel,
 
     public ReceiptProductItem? getItemByID(string id) {
 
-        using MySqlConnection? conn = _m_conn.openConnection();
-
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, " +
-                $"{m_COL_QUANTITY}, " +
-                $"{m_COL_UNITY_PRICE}, " +
-                $"{m_COL_FK_PRODUCT}, " +
-                $"{m_COL_FK_RECEIPT}, " +
-                $"{m_COL_FK_PRODUCT_LOT} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_ID} = @id;",
+                $"SELECT {_m_COL_ID}, " +
+                $"{_m_COL_QUANTITY}, " +
+                $"{_m_COL_UNITY_PRICE}, " +
+                $"{_m_COL_FK_PRODUCT}, " +
+                $"{_m_COL_FK_RECEIPT}, " +
+                $"{_m_COL_FK_PRODUCT_LOT} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_ID} = @id;",
                 conn
             );
 
@@ -53,15 +51,15 @@ public class ReceiptProductModel : ABaseModel,
 
             if (reader.Read()) {
                 return new ReceiptProductItem {
-                    receipt_product_id = reader.GetSafeValue<int>(m_COL_ID),
-                    receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
-                    fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
+                    receipt_product_id = reader.GetSafeValue<int>(_m_COL_ID),
+                    receipt_product_quantity = reader.GetSafeValue<int>(_m_COL_QUANTITY),
+                    receipt_product_unity_price = reader.GetSafeValue<decimal>(_m_COL_UNITY_PRICE),
+                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
                     product_item = new ProductItem {
-                        product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
+                        product_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT)
                     },
                     product_lot_item = new ProductLotItem {
-                        product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
+                        product_lot_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
                     },
                 };
             }
@@ -78,32 +76,30 @@ public class ReceiptProductModel : ABaseModel,
 
         ObservableCollection<ReceiptProductItem> items = new();
 
-        using MySqlConnection? conn = _m_conn.openConnection();
-
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, " +
-                $"{m_COL_QUANTITY}, " +
-                $"{m_COL_UNITY_PRICE}, " +
-                $"{m_COL_FK_PRODUCT}, " +
-                $"{m_COL_FK_RECEIPT}, " +
-                $"{m_COL_FK_PRODUCT_LOT} " +
-                $"FROM {m_TBL_NAME};",
+                $"SELECT {_m_COL_ID}, " +
+                $"{_m_COL_QUANTITY}, " +
+                $"{_m_COL_UNITY_PRICE}, " +
+                $"{_m_COL_FK_PRODUCT}, " +
+                $"{_m_COL_FK_RECEIPT}, " +
+                $"{_m_COL_FK_PRODUCT_LOT} " +
+                $"FROM {_m_TBL_NAME};",
                 conn
             );
             using MySqlDataReader reader = cmd.ExecuteReader();
 
             while (reader.Read()) {
                 items.Add(new ReceiptProductItem {
-                    receipt_product_id = reader.GetSafeValue<int>(m_COL_ID),
-                    receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
-                    fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
+                    receipt_product_id = reader.GetSafeValue<int>(_m_COL_ID),
+                    receipt_product_quantity = reader.GetSafeValue<int>(_m_COL_QUANTITY),
+                    receipt_product_unity_price = reader.GetSafeValue<decimal>(_m_COL_UNITY_PRICE),
+                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
                     product_item = new ProductItem {
-                        product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
+                        product_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT)
                     },
                     product_lot_item = new ProductLotItem {
-                        product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
+                        product_lot_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
                     },
                 });
             }
@@ -121,25 +117,24 @@ public class ReceiptProductModel : ABaseModel,
         if (!ValidateReceiptProduct(item)) { 
             return 0;
         }
-        using MySqlConnection? conn = _m_conn.openConnection();
+        
         if (conn == null) {
             return 0;
         }
 
         // TODO: Will probably need to be refactored
         // Check if the item already exists in the database, if not insert the item into the database
-        string query = $"INSERT INTO {m_TBL_NAME} ({m_COL_QUANTITY}, {m_COL_UNITY_PRICE}, " +
-                $"{m_COL_FK_RECEIPT}, {m_COL_FK_PRODUCT}, {m_COL_FK_PRODUCT_LOT}) " +
+        string query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_QUANTITY}, {_m_COL_UNITY_PRICE}, " +
+                $"{_m_COL_FK_RECEIPT}, {_m_COL_FK_PRODUCT}, {_m_COL_FK_PRODUCT_LOT}) " +
                 $"SELECT @quantity, @unity_price, @fk_receipt, @fk_product, @fk_product_lot " +
-                $"WHERE NOT EXISTS (SELECT 1 FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt " +
-                $"AND {m_COL_FK_PRODUCT} = @fk_product " +
-                $"AND {m_COL_QUANTITY} = @quantity " +
-                $"AND {m_COL_UNITY_PRICE} = @unity_price); " +
+                $"WHERE NOT EXISTS (SELECT 1 FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_FK_RECEIPT} = @fk_receipt " +
+                $"AND {_m_COL_FK_PRODUCT} = @fk_product " +
+                $"AND {_m_COL_QUANTITY} = @quantity " +
+                $"AND {_m_COL_UNITY_PRICE} = @unity_price); " +
                 $"SELECT LAST_INSERT_ID();";
 
-        using var transaction = conn.BeginTransaction();
-
+        //transaction = conn?.BeginTransaction();
         try {
             using MySqlCommand cmd = new(query, conn, transaction);
             cmd.Parameters.AddWithValue("@quantity", item.receipt_product_quantity);
@@ -149,11 +144,11 @@ public class ReceiptProductModel : ABaseModel,
             cmd.Parameters.AddWithValue("@fk_product_lot", item.product_lot_item.product_lot_id);
 
             int item_id = Convert.ToInt32(cmd.ExecuteScalar());
-            transaction.Commit();
+            //transaction?.Commit();
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction.Rollback();
+            //transaction?.Rollback(); // TODO: Move
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -168,18 +163,18 @@ public class ReceiptProductModel : ABaseModel,
             return items;
         }
 
-        using MySqlConnection? conn = _m_conn.openConnection();
+        
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, " +
-                $"{m_COL_QUANTITY}, " +
-                $"{m_COL_UNITY_PRICE}, " +
-                $"{m_COL_FK_PRODUCT}, " +
-                $"{m_COL_FK_RECEIPT}, " +
-                $"{m_COL_FK_PRODUCT_LOT} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
+                $"SELECT {_m_COL_ID}, " +
+                $"{_m_COL_QUANTITY}, " +
+                $"{_m_COL_UNITY_PRICE}, " +
+                $"{_m_COL_FK_PRODUCT}, " +
+                $"{_m_COL_FK_RECEIPT}, " +
+                $"{_m_COL_FK_PRODUCT_LOT} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_FK_RECEIPT} = @fk_receipt;",
                 conn
             );
 
@@ -189,15 +184,15 @@ public class ReceiptProductModel : ABaseModel,
 
             while (reader.Read()) {
                 items.Add(new ReceiptProductItem {
-                    receipt_product_id = reader.GetSafeValue<int>(m_COL_ID),
-                    receipt_product_quantity = reader.GetSafeValue<int>(m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.GetSafeValue<decimal>(m_COL_UNITY_PRICE),
-                    fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
+                    receipt_product_id = reader.GetSafeValue<int>(_m_COL_ID),
+                    receipt_product_quantity = reader.GetSafeValue<int>(_m_COL_QUANTITY),
+                    receipt_product_unity_price = reader.GetSafeValue<decimal>(_m_COL_UNITY_PRICE),
+                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
                     product_item = new ProductItem {
-                        product_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT)
+                        product_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT)
                     },
                     product_lot_item = new ProductLotItem {
-                        product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT)
+                        product_lot_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
                     },
                 });
             }

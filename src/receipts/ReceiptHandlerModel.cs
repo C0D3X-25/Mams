@@ -49,15 +49,16 @@ public class ReceiptHandlerModel : ABaseModel {
             return 0;
         }
 
-        int receipt_id = 0;
+        int receipt_id = item.receipt_item.receipt_id;
+
+        transaction = conn?.BeginTransaction();
 
         // Insert new receipt
-        if (item.receipt_item.receipt_id == 0) {
+        if (receipt_id == 0) {
             receipt_id = _m_receipt_model.saveItem(item.receipt_item);
         }
         // Update existing receipt
         else {
-            receipt_id = item.receipt_item.receipt_id;
 
             // TODO: Gonna need a better way to update a receipt
             _m_receipt_model.saveItem(item.receipt_item);
@@ -70,6 +71,7 @@ public class ReceiptHandlerModel : ABaseModel {
         foreach (var product in item.receipt_product_items) {
             product.fk_receipt_id = receipt_id;
             if (_m_receipt_product_model.saveItem(product) <= 0) {
+                transaction?.Rollback();
                 return 0;
             }
         }
@@ -77,28 +79,54 @@ public class ReceiptHandlerModel : ABaseModel {
         // Save the client
         if (item.receipt_client_item.fk_client_id > 0) {
             item.receipt_client_item.fk_receipt_id = receipt_id;
-            return _m_receipt_client_model.saveItem(item.receipt_client_item);
+
+            int receipt_client_id = _m_receipt_client_model.saveItem(item.receipt_client_item);
+            // If saving the client was successful, return the ID
+            if (receipt_client_id > 0) {
+                transaction?.Commit();
+                return receipt_client_id;
+            }
+
+            transaction?.Rollback();
+            return 0;
         }
         // Or save the supplier
         else {
             if (item.receipt_supplier_item.fk_supplier_id > 0) {
                 item.receipt_supplier_item.fk_receipt_id = receipt_id;
-                return _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
+
+                int receipt_supplier_id = _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
+                if (receipt_supplier_id > 0) {
+                    transaction?.Commit();
+                    return receipt_supplier_id;
+                }
+
+                transaction?.Rollback();
+                return 0;
             }
         }
+        transaction?.Rollback();
         return 0;
     }
 
 
     public bool deleteReceipt(string receipt_id) {
 
+        if (string.IsNullOrEmpty(receipt_id)) {
+            return false;
+        }
+
+        transaction = conn?.BeginTransaction();
+
         if (_m_receipt_product_model.deleteItem(receipt_id)
             && _m_receipt_client_model.deleteItem(receipt_id)
             && _m_receipt_supplier_model.deleteItem(receipt_id)
             && _m_receipt_model.deleteItem(receipt_id)
-        ) { 
+        ) {
+            transaction?.Commit();
             return true;
         }
+        transaction?.Rollback();
         return false;
     }
 }

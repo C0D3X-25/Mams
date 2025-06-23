@@ -15,19 +15,17 @@ public class ProductLotModel :
     ABaseModel,
     ICrudOperation<ProductLotItem> {
 
-    private const string m_TBL_NAME = "products_lots";
-    private const string m_COL_ID = "product_lot_id";
-    private const string m_COL_NAME = "product_lot_name";
-    private const string m_COL_YEAR = "product_lot_year";
-    private const string m_COL_FK_BEEHIVE = "fk_beehive_id";
-    private const string m_COL_ARCHIVE = "product_lot_archive";
+    private const string _m_TBL_NAME = "products_lots";
+    private const string _m_COL_ID = "product_lot_id";
+    private const string _m_COL_NAME = "product_lot_name";
+    private const string _m_COL_YEAR = "product_lot_year";
+    private const string _m_COL_FK_BEEHIVE = "fk_beehive_id";
+    private const string _m_COL_ARCHIVE = "product_lot_archive";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_ID, m_COL_ARCHIVE, m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
-
-
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
     }
@@ -40,35 +38,39 @@ public class ProductLotModel :
 
     public ProductLotItem? getItemByID(string id) {
 
-        using MySqlConnection? conn = _m_conn.openConnection();
+        
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE}, {m_COL_ARCHIVE} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_ID} = @id;",
+                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE}, {_m_COL_ARCHIVE} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_ID} = @id;",
                 conn
             );
 
+            ProductLotItem product_lot = new();
+            BeehiveModel beehive_model = new();
+            int beehive_id = 0;
+
             cmd.Parameters.AddWithValue("@id", id);
-            using MySqlDataReader reader = cmd.ExecuteReader();
+            {
+                using MySqlDataReader reader = cmd.ExecuteReader();
 
-            if (reader.Read()) {
+                if (reader.Read()) {
 
-                int beehive_id = reader.GetSafeValue<int>(m_COL_FK_BEEHIVE, 0);
+                    beehive_id = reader.GetSafeValue<int>(_m_COL_FK_BEEHIVE, 0);
 
-                BeehiveModel beehive_model = new();
-
-                return new ProductLotItem {
-                    product_lot_id = reader.GetSafeValue<int>(m_COL_ID),
-                    product_lot_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
-                    product_lot_year = reader.GetSafeValue<int>(m_COL_YEAR),
-                    fk_beehive_id = beehive_id,
-                    beehive_name = beehive_model.getItemByID(beehive_id.ToString())?.beehive_name ?? string.Empty,
-                    product_lot_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
-                };
+                    product_lot.product_lot_id = reader.GetSafeValue<int>(_m_COL_ID);
+                    product_lot.product_lot_name = reader.GetSafeValue(_m_COL_NAME, string.Empty);
+                    product_lot.product_lot_year = reader.GetSafeValue<int>(_m_COL_YEAR);
+                    product_lot.fk_beehive_id = beehive_id;
+                    product_lot.product_lot_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString();
+                }
             }
-            return null;
+
+            product_lot.beehive_name = beehive_model.getItemByID(beehive_id.ToString())?.beehive_name ?? string.Empty;
+
+            return product_lot;
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
@@ -78,7 +80,7 @@ public class ProductLotModel :
 
 
     public ObservableCollection<ProductLotItem> getTable() {
-        ObservableCollection<ProductLotItem> table = SDatabaseModel.getAllData<ProductLotItem>(this, m_TBL_NAME);
+        ObservableCollection<ProductLotItem> table = SDatabaseModel.getAllRowsInTable<ProductLotItem>(_m_TBL_NAME);
 
         BeehiveModel beehive_model = new();
 
@@ -91,11 +93,8 @@ public class ProductLotModel :
 
 
     public int saveItem(ProductLotItem item) {
+
         if (item == null) {
-            return 0;
-        }
-        using MySqlConnection? conn = _m_conn.openConnection();
-        if (conn == null) {
             return 0;
         }
 
@@ -103,21 +102,21 @@ public class ProductLotModel :
         int item_id = item.product_lot_id;
 
         if (item_id == 0) {
-
-            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.product_lot_name)) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_lot_name)) {
                 return 0;
             }
 
-            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE}) " +
-                $"VALUES (@name, @year, @fk_beehive); SELECT LAST_INSERT_ID();";
+            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE}) " +
+                $"VALUES (@name, @year, @fk_beehive); " +
+                $"SELECT LAST_INSERT_ID();";
         }
         else {
-            query = $"UPDATE {m_TBL_NAME} " +
-                $"SET {m_COL_NAME} = @name, {m_COL_YEAR} = @year, {m_COL_FK_BEEHIVE} = @fk_beehive " +
-                $"WHERE {m_COL_ID} = @id";
+            query = $"UPDATE {_m_TBL_NAME} " +
+                $"SET {_m_COL_NAME} = @name, {_m_COL_YEAR} = @year, {_m_COL_FK_BEEHIVE} = @fk_beehive " +
+                $"WHERE {_m_COL_ID} = @id";
         }
 
-        using var transaction = conn.BeginTransaction();
+        transaction = conn?.BeginTransaction();
 
         try {
             using MySqlCommand cmd = new(query, conn, transaction);
@@ -136,18 +135,18 @@ public class ProductLotModel :
                 cmd.ExecuteNonQuery();
             }
 
-            transaction.Commit();
+            transaction?.Commit();
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction.Rollback();
+            transaction?.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
     }
 
 
-    public ObservableCollection<ProductLotItem> getProductLotWithBeehiveId(List<int> beehive_ids) {
+    public ObservableCollection<ProductLotItem> getProductLotsWithBeehiveId(List<int> beehive_ids) {
 
         ObservableCollection<ProductLotItem> table = new();
 
@@ -155,21 +154,19 @@ public class ProductLotModel :
             return table;
         }
 
-        using MySqlConnection? conn = _m_conn.openConnection();
-
-        string query = $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_YEAR}, {m_COL_FK_BEEHIVE} " +
-            $"FROM {m_TBL_NAME} " +
-            $"WHERE {m_COL_FK_BEEHIVE} IN ({string.Join(",", beehive_ids)})";
+        string query = $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE} " +
+            $"FROM {_m_TBL_NAME} " +
+            $"WHERE {_m_COL_FK_BEEHIVE} IN ({string.Join(",", beehive_ids)})";
 
         try {
             using MySqlCommand cmd = new(query, conn);
             using MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read()) {
                 table.Add(new ProductLotItem {
-                    product_lot_id = reader.GetSafeValue<int>(m_COL_ID),
-                    product_lot_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
-                    product_lot_year = reader.GetSafeValue<int>(m_COL_YEAR),
-                    fk_beehive_id = reader.GetSafeValue<int>(m_COL_FK_BEEHIVE)
+                    product_lot_id = reader.GetSafeValue<int>(_m_COL_ID),
+                    product_lot_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
+                    product_lot_year = reader.GetSafeValue<int>(_m_COL_YEAR),
+                    fk_beehive_id = reader.GetSafeValue<int>(_m_COL_FK_BEEHIVE)
                 });
             }
         }

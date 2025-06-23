@@ -10,13 +10,13 @@ namespace Mams.src.receipts;
 public class ReceiptSupplierModel : ABaseModel,
     ICrudOperation<ReceiptSupplierItem> {
 
-    private const string m_TBL_NAME = "receipts_suppliers";
-    private const string m_COL_FK_RECEIPT = "fk_receipt_id";
-    private const string m_COL_FK_SUPPLIER = "fk_supplier_id";
+    private const string _m_TBL_NAME = "receipts_suppliers";
+    private const string _m_COL_FK_RECEIPT = "fk_receipt_id";
+    private const string _m_COL_FK_SUPPLIER = "fk_supplier_id";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_FK_RECEIPT, string.Empty, m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, _m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return deleteItem(id.ToString(), delete_type);
@@ -26,13 +26,11 @@ public class ReceiptSupplierModel : ABaseModel,
     // Parameter `id` is expected to be a receipt ID
     public ReceiptSupplierItem? getItemByID(string id) {
 
-        using MySqlConnection? conn = _m_conn.openConnection();
-
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_RECEIPT} = @id;",
+                $"SELECT {_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_FK_RECEIPT} = @id;",
                 conn
             );
             cmd.Parameters.AddWithValue("@id", id);
@@ -40,8 +38,8 @@ public class ReceiptSupplierModel : ABaseModel,
             using MySqlDataReader reader = cmd.ExecuteReader();
             if (reader.Read()) {
                 return new ReceiptSupplierItem {
-                    fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
-                    fk_supplier_id = reader.GetSafeValue<int>(m_COL_FK_SUPPLIER)
+                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
+                    fk_supplier_id = reader.GetSafeValue<int>(_m_COL_FK_SUPPLIER)
                 };
             }
             return null;
@@ -57,20 +55,18 @@ public class ReceiptSupplierModel : ABaseModel,
 
         ObservableCollection<ReceiptSupplierItem> items = new();
 
-        using MySqlConnection? conn = _m_conn.openConnection();
-
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER} " +
-                $"FROM {m_TBL_NAME};",
+                $"SELECT {_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER} " +
+                $"FROM {_m_TBL_NAME};",
                 conn
             );
             using MySqlDataReader reader = cmd.ExecuteReader();
 
             while (reader.Read()) {
                 items.Add(new ReceiptSupplierItem {
-                    fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
-                    fk_supplier_id = reader.GetSafeValue<int>(m_COL_FK_SUPPLIER)
+                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
+                    fk_supplier_id = reader.GetSafeValue<int>(_m_COL_FK_SUPPLIER)
                 });
             }
             return items;
@@ -86,29 +82,15 @@ public class ReceiptSupplierModel : ABaseModel,
         if (item == null || item.fk_receipt_id == 0 || item.fk_supplier_id == 0) {
             return 0;
         }
-        using MySqlConnection? conn = _m_conn.openConnection();
-        if (conn == null) {
-            return 0;
-        }
 
-        using var transaction = conn.BeginTransaction();
-
+        string query = string.Empty;
+        
+        //transaction = conn?.BeginTransaction();
         try {
-            string query = string.Empty;
-            //int item_id = item.fk_receipt_id;
 
-            //if (isItemPresentInDatabase(m_TBL_NAME, m_COL_FK_RECEIPT, item.fk_receipt_id.ToString())) {
-                // Insert new record
-                query = $"INSERT INTO {m_TBL_NAME} " +
-                    $"({m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER}) " +
-                    $"VALUES (@fk_receipt, @fk_supplier); SELECT LAST_INSERT_ID();";
-            //}
-            //else {
-            //    // Update existing record
-            //    query = $"UPDATE {m_TBL_NAME} " +
-            //        $"SET {m_COL_FK_SUPPLIER} = @fk_supplier " +
-            //        $"WHERE {m_COL_FK_RECEIPT} = @fk_receipt;";
-            //}
+            query = $"INSERT INTO {_m_TBL_NAME} " +
+                $"({_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER}) " +
+                $"VALUES (@fk_receipt, @fk_supplier); SELECT LAST_INSERT_ID();";
 
             using MySqlCommand cmd = new(query, conn, transaction);
 
@@ -116,11 +98,11 @@ public class ReceiptSupplierModel : ABaseModel,
             cmd.Parameters.AddWithValue("@fk_supplier", item.fk_supplier_id);
 
             int item_id = Convert.ToInt32(cmd.ExecuteScalar());
-            transaction.Commit();
+            //transaction?.Commit(); // TODO: Move
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction.Rollback();
+            //transaction?.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -135,13 +117,11 @@ public class ReceiptSupplierModel : ABaseModel,
             return items;
         }
 
-        using MySqlConnection? conn = _m_conn.openConnection();
-
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_FK_RECEIPT}, {m_COL_FK_SUPPLIER} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_SUPPLIER} = @supplier_id;",
+                $"SELECT {_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_FK_SUPPLIER} = @supplier_id;",
                 conn
             );
 
@@ -151,8 +131,8 @@ public class ReceiptSupplierModel : ABaseModel,
 
             while (reader.Read()) {
                 items.Add(new ReceiptSupplierItem {
-                    fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
-                    fk_supplier_id = reader.GetSafeValue<int>(m_COL_FK_SUPPLIER)
+                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
+                    fk_supplier_id = reader.GetSafeValue<int>(_m_COL_FK_SUPPLIER)
                 });
             }
 

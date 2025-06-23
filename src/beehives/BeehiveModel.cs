@@ -27,7 +27,7 @@ public class BeehiveModel
     /// <param name="delete_type">The type of delete operation to perform. Defaults to soft delete.</param>
     /// <returns>True if deletion was successful, false otherwise.</returns>
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
@@ -39,8 +39,7 @@ public class BeehiveModel
     /// <param name="id">The ID of the beehive to retrieve.</param>
     /// <returns>The BeehiveItem if found, null otherwise.</returns>
     public BeehiveItem? getItemByID(string id) {
-        using MySqlConnection? conn = _m_conn.openConnection();
-
+        
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
@@ -72,7 +71,7 @@ public class BeehiveModel
     /// </summary>
     /// <returns>An observable collection of all beehive items.</returns>
     public ObservableCollection<BeehiveItem> getTable() {
-        return SDatabaseModel.getAllData<BeehiveItem>(this, _m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<BeehiveItem>(_m_TBL_NAME);
     }
 
     /// <summary>
@@ -82,14 +81,14 @@ public class BeehiveModel
     /// <param name="item">The BeehiveItem to save.</param>
     /// <returns>The ID of the entry if the save operation was successful, 0 otherwise.</returns>
     public int saveItem(BeehiveItem item) {
-        using MySqlConnection? conn = _m_conn.openConnection();
+        
 
         string query = string.Empty;
 
         int item_id = item.beehive_id;
 
         if (item_id == 0) {
-            if (isItemPresentInDatabase(_m_TBL_NAME, _m_COL_NAME, item.beehive_name)) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.beehive_name)) {
                 return 0;
             }
 

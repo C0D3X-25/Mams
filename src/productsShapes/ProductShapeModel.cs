@@ -13,14 +13,14 @@ public class ProductShapeModel :
     ABaseModel,
     ICrudOperation<ProductShapeItem> {
 
-    private const string m_TBL_NAME = "products_shapes";
-    private const string m_COL_ID = "product_shape_id";
-    private const string m_COL_NAME = "product_shape_name";
-    private const string m_COL_ARCHIVE = "product_shape_archive";
+    private const string _m_TBL_NAME = "products_shapes";
+    private const string _m_COL_ID = "product_shape_id";
+    private const string _m_COL_NAME = "product_shape_name";
+    private const string _m_COL_ARCHIVE = "product_shape_archive";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_ID, m_COL_ARCHIVE, m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
 
@@ -36,13 +36,13 @@ public class ProductShapeModel :
 
     public ProductShapeItem? getItemByID(string id) {
 
-        using MySqlConnection? conn = _m_conn.openConnection();
+        
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_ARCHIVE} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_ID} = @id;",
+                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_ID} = @id;",
                 conn
             );
 
@@ -51,9 +51,9 @@ public class ProductShapeModel :
 
             if (reader.Read()) {
                 return new ProductShapeItem {
-                    product_shape_id = reader.GetSafeValue<int>(m_COL_ID),
-                    product_shape_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
-                    product_shape_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    product_shape_id = reader.GetSafeValue<int>(_m_COL_ID),
+                    product_shape_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
+                    product_shape_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;
@@ -66,7 +66,7 @@ public class ProductShapeModel :
 
 
     public ObservableCollection<ProductShapeItem> getTable() {
-        return SDatabaseModel.getAllData<ProductShapeItem>(this, m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<ProductShapeItem>(_m_TBL_NAME);
 
     }
 
@@ -75,30 +75,27 @@ public class ProductShapeModel :
         if (item == null) {
             return 0;
         }
-        using MySqlConnection? conn = _m_conn.openConnection();
-        if (conn == null) {
-            return 0;
-        }
 
         string query = string.Empty;
         int item_id = item.product_shape_id;
 
         if (item_id == 0) {
 
-            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.product_shape_name)) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_shape_name)) {
                 return 0;
             }
 
-            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}) " +
-                $"VALUES (@name); SELECT LAST_INSERT_ID();";
+            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
+                $"VALUES (@name); " +
+                $"SELECT LAST_INSERT_ID();";
         }
         else {
-            query = $"UPDATE {m_TBL_NAME} " +
-                $"SET {m_COL_NAME} = @name " +
-                $"WHERE {m_COL_ID} = @id;";
+            query = $"UPDATE {_m_TBL_NAME} " +
+                $"SET {_m_COL_NAME} = @name " +
+                $"WHERE {_m_COL_ID} = @id;";
         }
 
-        using var transaction = conn.BeginTransaction();
+        transaction = conn?.BeginTransaction();
 
         try {
             using MySqlCommand cmd = new(query, conn, transaction);
@@ -115,11 +112,11 @@ public class ProductShapeModel :
                 cmd.ExecuteNonQuery();
             }
 
-            transaction.Commit();
+            transaction?.Commit();
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction.Rollback();
+            transaction?.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

@@ -12,13 +12,13 @@ namespace Mams.src.clients;
 public class ClientModel : ABaseModel,
     ICrudOperation<ClientItem> {
 
-    private const string m_TBL_NAME = "clients";
-    private const string m_COL_ID = "client_id";
-    private const string m_COL_FK_ENTITY = "fk_entity_id";
+    private const string _m_TBL_NAME = "clients";
+    private const string _m_COL_ID = "client_id";
+    private const string _m_COL_FK_ENTITY = "fk_entity_id";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_ID, string.Empty, m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return deleteItem(id.ToString(), delete_type);
@@ -27,13 +27,11 @@ public class ClientModel : ABaseModel,
 
     public ClientItem? getItemByID(string id) {
 
-        using MySqlConnection? conn = _m_conn.openConnection();
-
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_FK_ENTITY} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_ID} = @id;",
+                $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_ID} = @id;",
                 conn
             );
 
@@ -42,8 +40,8 @@ public class ClientModel : ABaseModel,
 
             if (reader.Read()) {
                 return new ClientItem {
-                    client_id = reader.GetSafeValue<int>(m_COL_ID),
-                    fk_entity_id = reader.GetSafeValue<int>(m_COL_FK_ENTITY, 0)
+                    client_id = reader.GetSafeValue<int>(_m_COL_ID),
+                    fk_entity_id = reader.GetSafeValue<int>(_m_COL_FK_ENTITY, 0)
                 };
             }
             return null;
@@ -59,7 +57,7 @@ public class ClientModel : ABaseModel,
     /// </summary>
     /// <returns>An ObservableCollection of ReceiptItem objects</returns>
     public ObservableCollection<ClientItem> getTable() {
-        return SDatabaseModel.getAllData<ClientItem>(this, m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<ClientItem>(_m_TBL_NAME);
     }
 
     /// <summary>
@@ -73,31 +71,27 @@ public class ClientModel : ABaseModel,
         if (item == null) {
             return 0;
         }
-        using MySqlConnection? conn = _m_conn.openConnection();
-        if (conn == null) {
-            return 0;
-        }
 
         string query = string.Empty;
         int item_id = item.client_id;
 
         if (item_id == 0) {
 
-            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
                 return 0;
             }
 
-            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_FK_ENTITY}) " +
+            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_FK_ENTITY}) " +
                 $"VALUES (@fk_entity); " +
                 $"SELECT LAST_INSERT_ID();";
         }
         else {
-            query = $"UPDATE {m_TBL_NAME} " +
-                $"SET {m_COL_FK_ENTITY} = @fk_entity " +
-                $"WHERE {m_COL_ID} = @id;";
+            query = $"UPDATE {_m_TBL_NAME} " +
+                $"SET {_m_COL_FK_ENTITY} = @fk_entity " +
+                $"WHERE {_m_COL_ID} = @id;";
         }
 
-        using var transaction = conn.BeginTransaction();
+        transaction = conn?.BeginTransaction();
 
         try {
             using MySqlCommand cmd = new(query, conn, transaction);
@@ -114,11 +108,11 @@ public class ClientModel : ABaseModel,
                 cmd.ExecuteNonQuery();
             }
 
-            transaction.Commit();
+            transaction?.Commit();
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction.Rollback();
+            transaction?.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -133,12 +127,12 @@ public class ClientModel : ABaseModel,
 
         ClientItem item = new();
 
-        using MySqlConnection? conn = _m_conn.openConnection();
+        
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_FK_ENTITY} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_FK_ENTITY} = @fk_entity;",
+                $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_FK_ENTITY} = @fk_entity;",
                 conn
             );
 
@@ -147,8 +141,8 @@ public class ClientModel : ABaseModel,
             using MySqlDataReader reader = cmd.ExecuteReader();
 
             if (reader.Read()) {
-                item.client_id = reader.GetSafeValue<int>(m_COL_ID);
-                item.fk_entity_id = reader.GetSafeValue<int>(m_COL_FK_ENTITY);
+                item.client_id = reader.GetSafeValue<int>(_m_COL_ID);
+                item.fk_entity_id = reader.GetSafeValue<int>(_m_COL_FK_ENTITY);
             }
 
             return item;

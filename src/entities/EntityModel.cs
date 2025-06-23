@@ -13,18 +13,20 @@ namespace Mams.src.entities;
 public class EntityModel : ABaseModel,
     ICrudOperation<EntityItem> {
 
-    private const string m_TBL_NAME  = "entities";
-    private const string m_COL_ID = "entity_id";
-    private const string m_COL_NAME = "entity_name";
-    private const string m_COL_PHONE = "entity_phone";
-    private const string m_COL_EMAIL = "entity_email";
-    private const string m_COL_CITY = "entity_city";
-    private const string m_COL_ADDRESS = "entity_address";
-    private const string m_COL_ARCHIVE = "entity_archive";
+    private const string _m_TBL_NAME  = "entities";
+    private const string _m_COL_ID = "entity_id";
+    private const string _m_COL_NAME = "entity_name";
+    private const string _m_COL_PHONE = "entity_phone";
+    private const string _m_COL_EMAIL = "entity_email";
+    private const string _m_COL_CITY = "entity_city";
+    private const string _m_COL_ADDRESS = "entity_address";
+    private const string _m_COL_ARCHIVE = "entity_archive";
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
 
         // Cascad delete the supplier and client items
+        transaction = conn?.BeginTransaction();
+
         if (delete_type == EDeleteItemOperation.HARD_DELETE) {
 
             ClientModel client_model = new();
@@ -33,8 +35,12 @@ public class EntityModel : ABaseModel,
             client_model.deleteClientWithEntityFK(id);
             supplier_model.deleteSupplierWithEntityFK(id);
         }
-
-        return SDatabaseModel.deleteItem(this, id, m_COL_ID, m_COL_ARCHIVE, m_TBL_NAME, delete_type);
+        if (SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type)) { 
+            transaction?.Commit();
+            return true;
+        }
+        transaction?.Rollback();
+        return false;
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
@@ -42,13 +48,13 @@ public class EntityModel : ABaseModel,
 
 
     public EntityItem? getItemByID(string id) {
-        using MySqlConnection? conn = _m_conn.openConnection();
+        
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_PHONE}, {m_COL_EMAIL}, {m_COL_CITY}, {m_COL_ADDRESS}, {m_COL_ARCHIVE} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_ID} = @id ",
+                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}, {_m_COL_ARCHIVE} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_ID} = @id ",
                 conn
             );
 
@@ -57,13 +63,13 @@ public class EntityModel : ABaseModel,
 
             if (reader.Read()) {
                 return new EntityItem {
-                    entity_id = reader.GetSafeValue<int>(m_COL_ID),
-                    entity_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
-                    entity_phone = reader.GetSafeValue(m_COL_PHONE, string.Empty),
-                    entity_email = reader.GetSafeValue(m_COL_EMAIL, string.Empty),
-                    entity_city = reader.GetSafeValue(m_COL_CITY, string.Empty),
-                    entity_address = reader.GetSafeValue(m_COL_ADDRESS, string.Empty),
-                    entity_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    entity_id = reader.GetSafeValue<int>(_m_COL_ID),
+                    entity_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
+                    entity_phone = reader.GetSafeValue(_m_COL_PHONE, string.Empty),
+                    entity_email = reader.GetSafeValue(_m_COL_EMAIL, string.Empty),
+                    entity_city = reader.GetSafeValue(_m_COL_CITY, string.Empty),
+                    entity_address = reader.GetSafeValue(_m_COL_ADDRESS, string.Empty),
+                    entity_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;
@@ -76,16 +82,12 @@ public class EntityModel : ABaseModel,
 
 
     public ObservableCollection<EntityItem> getTable() {
-        return SDatabaseModel.getAllData<EntityItem>(this, m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<EntityItem>(_m_TBL_NAME);
     }
 
 
     public int saveItem(EntityItem item) {
         if (item == null) {
-            return 0;
-        }
-        using MySqlConnection? conn = _m_conn.openConnection();
-        if (conn == null) {
             return 0;
         }
 
@@ -94,21 +96,21 @@ public class EntityModel : ABaseModel,
 
         if (item_id == 0) {
 
-            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.entity_name)) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.entity_name)) {
                 return 0;
             }
 
-            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_PHONE}, {m_COL_EMAIL}, {m_COL_CITY}, {m_COL_ADDRESS}) " +
+            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}) " +
                 $"VALUES (@name, @phone, @email, @city, @address); " +
                 $"SELECT LAST_INSERT_ID(); ";
         }
         else {
-            query = $"UPDATE {m_TBL_NAME} " +
-                $"SET {m_COL_NAME} = @name, {m_COL_PHONE} = @phone, {m_COL_EMAIL} = @email, {m_COL_CITY} = @city, {m_COL_ADDRESS} = @address " +
-                $"WHERE {m_COL_ID} = @id";
+            query = $"UPDATE {_m_TBL_NAME} " +
+                $"SET {_m_COL_NAME} = @name, {_m_COL_PHONE} = @phone, {_m_COL_EMAIL} = @email, {_m_COL_CITY} = @city, {_m_COL_ADDRESS} = @address " +
+                $"WHERE {_m_COL_ID} = @id";
         }
 
-        using var transaction = conn.BeginTransaction();
+        transaction = conn?.BeginTransaction();
 
         try {
             using MySqlCommand cmd = new(query, conn, transaction);
@@ -129,11 +131,11 @@ public class EntityModel : ABaseModel,
                 cmd.ExecuteNonQuery();
             }
 
-            transaction.Commit();
+            transaction?.Commit();
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction.Rollback();
+            transaction?.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -148,16 +150,16 @@ public class EntityModel : ABaseModel,
 
     //    try {
     //        using MySqlCommand cmd = new(
-    //            $"SELECT DISTINCT {_m_COL_NAME} " +
-    //            $"FROM {_m_TBL_NAME} " +
-    //            //$"WHERE {_m_COL_ARCHIVE} = '' " + // Only non-archived items
-    //            $"ORDER BY {_m_COL_NAME};",
+    //            $"SELECT DISTINCT {__m_COL_NAME} " +
+    //            $"FROM {__m_TBL_NAME} " +
+    //            //$"WHERE {__m_COL_ARCHIVE} = '' " + // Only non-archived items
+    //            $"ORDER BY {__m_COL_NAME};",
     //            conn
     //        );
 
     //        using MySqlDataReader reader = cmd.ExecuteReader();
     //        while (reader.Read()) {
-    //            results.Add(reader.GetString(_m_COL_NAME));
+    //            results.Add(reader.GetString(__m_COL_NAME));
     //        }
     //        return results;
     //    }

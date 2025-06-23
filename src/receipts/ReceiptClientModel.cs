@@ -14,10 +14,10 @@ namespace Mams.src.receipts;
 public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> {
 
     private const string m_TBL_NAME = "receipts_clients";
-    private const string m_COL_FK_RECEIPT = "fk_receipt_id";
-    private const string m_COL_FK_CLIENT = "fk_client_id";
+    private const string _m_COL_FK_RECEIPT = "fk_receipt_id";
+    private const string _m_COL_FK_CLIENT = "fk_client_id";
 
-    private const string SELECT_COLUMNS = $"{m_COL_FK_RECEIPT}, {m_COL_FK_CLIENT}";
+    private const string SELECT_COLUMNS = $"{_m_COL_FK_RECEIPT}, {_m_COL_FK_CLIENT}";
     private const string BASE_SELECT_QUERY = $"SELECT {SELECT_COLUMNS} FROM {m_TBL_NAME}";
 
     /// <summary>
@@ -27,7 +27,7 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// <param name="delete_type">The type of deletion operation to perform.</param>
     /// <returns>True if deletion was successful, false otherwise.</returns>
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_FK_RECEIPT, string.Empty, m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return deleteItem(id.ToString(), delete_type);
@@ -39,11 +39,11 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// <param name="id">The receipt ID to search for.</param>
     /// <returns>The matching ReceiptClientItem if found, null otherwise.</returns>
     public ReceiptClientItem? getItemByID(string id) {
-        using MySqlConnection? conn = _m_conn.openConnection();
+        
         if (conn == null) return null;
         
         try {
-            using var cmd = new MySqlCommand($"{BASE_SELECT_QUERY} WHERE {m_COL_FK_RECEIPT} = @id;", conn);
+            using var cmd = new MySqlCommand($"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @id;", conn);
             cmd.Parameters.AddWithValue("@id", id);
 
             using var reader = cmd.ExecuteReader();
@@ -62,8 +62,6 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     public ObservableCollection<ReceiptClientItem> getTable() {
 
         var items = new ObservableCollection<ReceiptClientItem>();
-
-        using MySqlConnection? conn = _m_conn.openConnection();
 
         if (conn == null) 
             return items;
@@ -93,24 +91,20 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
         if (item == null || item.fk_receipt_id == 0 || item.fk_client_id == 0) 
             return 0;
 
-        using MySqlConnection? conn = _m_conn.openConnection();
-        if (conn == null) 
-            return 0;
-
         int item_id = item.fk_receipt_id;    
 
-        using var transaction = conn.BeginTransaction();
+        //transaction = conn?.BeginTransaction();
 
         try {
             //using var exist_cmd = new MySqlCommand(
-            //    $"SELECT COUNT(*) FROM {m_TBL_NAME} WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
+            //    $"SELECT COUNT(*) FROM {m_TBL_NAME} WHERE {_m_COL_FK_RECEIPT} = @fk_receipt;",
             //    conn, transaction);
             //exist_cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
             //bool exists = Convert.ToInt32(exist_cmd.ExecuteScalar()) > 0;
                 
-            string query = isItemPresentInDatabase(m_TBL_NAME, m_COL_FK_RECEIPT, item_id.ToString())
-                ? $"UPDATE {m_TBL_NAME} SET {m_COL_FK_CLIENT} = @fk_client WHERE {m_COL_FK_RECEIPT} = @fk_receipt; SELECT @fk_receipt;"
-                : $"INSERT INTO {m_TBL_NAME} ({m_COL_FK_RECEIPT}, {m_COL_FK_CLIENT}) VALUES (@fk_receipt, @fk_client); SELECT LAST_INSERT_ID();";
+            string query = isIdenticItemPresentInTable(m_TBL_NAME, _m_COL_FK_RECEIPT, item_id.ToString())
+                ? $"UPDATE {m_TBL_NAME} SET {_m_COL_FK_CLIENT} = @fk_client WHERE {_m_COL_FK_RECEIPT} = @fk_receipt; SELECT @fk_receipt;"
+                : $"INSERT INTO {m_TBL_NAME} ({_m_COL_FK_RECEIPT}, {_m_COL_FK_CLIENT}) VALUES (@fk_receipt, @fk_client); SELECT LAST_INSERT_ID();";
 
             using var cmd = new MySqlCommand(query, conn, transaction);
             cmd.Parameters.AddWithValue("@fk_receipt", item_id);
@@ -118,11 +112,11 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
 
             item_id = Convert.ToInt32(cmd.ExecuteScalar());
 
-            transaction.Commit();
+            //transaction?.Commit();
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction.Rollback();
+            //transaction?.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -137,12 +131,12 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
         var items = new ObservableCollection<ReceiptClientItem>();
         if (string.IsNullOrEmpty(fk_receipt)) return items;
 
-        using MySqlConnection? conn = _m_conn.openConnection();
+        
         if (conn == null) return items;
 
         try {
             using var cmd = new MySqlCommand(
-                $"{BASE_SELECT_QUERY} WHERE {m_COL_FK_RECEIPT} = @fk_receipt;",
+                $"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @fk_receipt;",
                 conn);
             cmd.Parameters.AddWithValue("@fk_receipt", fk_receipt);
 
@@ -164,8 +158,8 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// <returns>A ReceiptClientItem populated with data from the reader.</returns>
     private static ReceiptClientItem CreateItemFromReader(MySqlDataReader reader) {
         return new ReceiptClientItem {
-            fk_receipt_id = reader.GetSafeValue<int>(m_COL_FK_RECEIPT),
-            fk_client_id = reader.GetSafeValue<int>(m_COL_FK_CLIENT)
+            fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
+            fk_client_id = reader.GetSafeValue<int>(_m_COL_FK_CLIENT)
         };
     }
 }

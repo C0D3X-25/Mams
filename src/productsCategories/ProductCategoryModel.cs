@@ -16,14 +16,14 @@ public class ProductCategoryModel :
     ABaseModel,
     ICrudOperation<ProductCategoryItem> {
 
-    private const string m_TBL_NAME = "products_categories";
-    private const string m_COL_ID = "product_category_id";
-    private const string m_COL_NAME = "product_category_name";
-    private const string m_COL_ARCHIVE = "product_category_archive";
+    private const string _m_TBL_NAME = "products_categories";
+    private const string _m_COL_ID = "product_category_id";
+    private const string _m_COL_NAME = "product_category_name";
+    private const string _m_COL_ARCHIVE = "product_category_archive";
 
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_ID, m_COL_ARCHIVE, m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
 
@@ -39,13 +39,13 @@ public class ProductCategoryModel :
 
     public ProductCategoryItem? getItemByID(string id) {
 
-        using MySqlConnection? conn = _m_conn.openConnection();
+        
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_ARCHIVE} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_ID} = @id;",
+                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_ID} = @id;",
                 conn
             );
 
@@ -54,9 +54,9 @@ public class ProductCategoryModel :
 
             if (reader.Read()) {
                 return new ProductCategoryItem {
-                    product_category_id = reader.GetSafeValue<int>(m_COL_ID),
-                    product_category_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
-                    product_category_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    product_category_id = reader.GetSafeValue<int>(_m_COL_ID),
+                    product_category_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
+                    product_category_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;
@@ -69,7 +69,7 @@ public class ProductCategoryModel :
 
 
     public ObservableCollection<ProductCategoryItem> getTable() {
-        return SDatabaseModel.getAllData<ProductCategoryItem>(this, m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<ProductCategoryItem>(_m_TBL_NAME);
     }
 
 
@@ -77,7 +77,7 @@ public class ProductCategoryModel :
         if (item == null) {
             return 0;
         }
-        using MySqlConnection? conn = _m_conn.openConnection();
+        
         if (conn == null) {
             return 0;
         }
@@ -87,20 +87,20 @@ public class ProductCategoryModel :
 
         if (item_id == 0) {
 
-            if (isItemPresentInDatabase(m_TBL_NAME, m_COL_NAME, item.product_category_name)) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_category_name)) {
                 return 0;
             }
 
-            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}) " +
+            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
                 $"VALUES (@name); SELECT LAST_INSERT_ID();";
         }
         else {
-            query = $"UPDATE {m_TBL_NAME} " +
-                $"SET {m_COL_NAME} = @name " +
-                $"WHERE {m_COL_ID} = @id;";
+            query = $"UPDATE {_m_TBL_NAME} " +
+                $"SET {_m_COL_NAME} = @name " +
+                $"WHERE {_m_COL_ID} = @id;";
         }
 
-        using var transaction = conn.BeginTransaction();
+        transaction = conn?.BeginTransaction();
 
         try {
             using MySqlCommand cmd = new(query, conn, transaction);
@@ -117,11 +117,11 @@ public class ProductCategoryModel :
                 cmd.ExecuteNonQuery();
             }
 
-            transaction.Commit();
+            transaction?.Commit();
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction.Rollback();
+            transaction?.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
