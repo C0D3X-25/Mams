@@ -45,7 +45,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 $"{_m_COL_RECEIPT_DATE_CREATED} " +
                 $"FROM {_m_TBL_NAME} " +
                 $"WHERE {_m_COL_ID} = @id;",
-                conn
+                m_conn
             );
 
             cmd.Parameters.AddWithValue("@id", id);
@@ -91,15 +91,12 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         string mysql_formatted_date = parsed_date.ToString("yyyy-MM-dd");
 
         string query = item_id == 0
-            ? $"INSERT INTO {_m_TBL_NAME} ({_m_COL_RECEIPT_TOTAL_PRICE}, {_m_COL_RECEIPT_DATE_CREATED}) VALUES (@total_price, @date_created); SELECT LAST_INSERT_ID();"
+            ? $"INSERT INTO {_m_TBL_NAME} ({_m_COL_RECEIPT_TOTAL_PRICE}, {_m_COL_RECEIPT_DATE_CREATED}) VALUES (@total_price, @date_created); " +
+            $"SELECT LAST_INSERT_ID();"
             : $"UPDATE {_m_TBL_NAME} SET {_m_COL_RECEIPT_TOTAL_PRICE} = @total_price, {_m_COL_RECEIPT_DATE_CREATED} = @date_created WHERE {_m_COL_ID} = @id;";
 
-        //if (transaction == null) {
-        //    transaction = conn?.BeginTransaction();
-        //}
-
         try {
-            using MySqlCommand cmd = new(query, conn, transaction);
+            using MySqlCommand cmd = new(query, m_conn, m_transaction);
             if (item_id != 0) {
                 cmd.Parameters.AddWithValue("@id", item_id);
             }
@@ -113,11 +110,9 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 cmd.ExecuteNonQuery();
             }
 
-            //transaction?.Commit();
             return item_id;
         }
         catch (MySqlException ex) {
-            //transaction?.Rollback();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -136,7 +131,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME};",
-                conn
+                m_conn
             );
             using MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read()) {
@@ -164,7 +159,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 $"AS year " +
                 $"FROM {_m_TBL_NAME} " +
                 $"ORDER BY year DESC;",
-                conn
+                m_conn
             );
             using MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read()) {

@@ -51,7 +51,7 @@ public class ReceiptHandlerModel : ABaseModel {
 
         int receipt_id = item.receipt_item.receipt_id;
 
-        transaction = conn?.BeginTransaction();
+        startTransaction();
 
         // Insert new receipt
         if (receipt_id == 0) {
@@ -71,7 +71,7 @@ public class ReceiptHandlerModel : ABaseModel {
         foreach (var product in item.receipt_product_items) {
             product.fk_receipt_id = receipt_id;
             if (_m_receipt_product_model.saveItem(product) <= 0) {
-                transaction?.Rollback();
+                rollbackTransaction();
                 return 0;
             }
         }
@@ -83,11 +83,11 @@ public class ReceiptHandlerModel : ABaseModel {
             int receipt_client_id = _m_receipt_client_model.saveItem(item.receipt_client_item);
             // If saving the client was successful, return the ID
             if (receipt_client_id > 0) {
-                transaction?.Commit();
+                commitTransaction();
                 return receipt_client_id;
             }
 
-            transaction?.Rollback();
+            rollbackTransaction();
             return 0;
         }
         // Or save the supplier
@@ -97,15 +97,15 @@ public class ReceiptHandlerModel : ABaseModel {
 
                 int receipt_supplier_id = _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
                 if (receipt_supplier_id > 0) {
-                    transaction?.Commit();
+                    commitTransaction();
                     return receipt_supplier_id;
                 }
 
-                transaction?.Rollback();
+                rollbackTransaction();
                 return 0;
             }
         }
-        transaction?.Rollback();
+        rollbackTransaction();
         return 0;
     }
 
@@ -116,17 +116,17 @@ public class ReceiptHandlerModel : ABaseModel {
             return false;
         }
 
-        transaction = conn?.BeginTransaction();
+        startTransaction();
 
         if (_m_receipt_product_model.deleteItem(receipt_id)
             && _m_receipt_client_model.deleteItem(receipt_id)
             && _m_receipt_supplier_model.deleteItem(receipt_id)
             && _m_receipt_model.deleteItem(receipt_id)
         ) {
-            transaction?.Commit();
+            commitTransaction();
             return true;
         }
-        transaction?.Rollback();
+        rollbackTransaction();
         return false;
     }
 }

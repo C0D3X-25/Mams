@@ -45,7 +45,7 @@ public class BeehiveModel
                 $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
                 $"FROM {_m_TBL_NAME} " +
                 $"WHERE {_m_COL_ID} = @id;",
-                conn
+                m_conn
             );
 
             cmd.Parameters.AddWithValue("@id", id);
@@ -102,7 +102,7 @@ public class BeehiveModel
         }
 
         try {
-            using MySqlCommand cmd = new(query, conn);
+            using MySqlCommand cmd = new(query, m_conn);
             if (item_id != 0) {
                 cmd.Parameters.AddWithValue("@id", item_id);
             }

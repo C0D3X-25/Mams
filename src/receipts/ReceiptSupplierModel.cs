@@ -31,7 +31,7 @@ public class ReceiptSupplierModel : ABaseModel,
                 $"SELECT {_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER} " +
                 $"FROM {_m_TBL_NAME} " +
                 $"WHERE {_m_COL_FK_RECEIPT} = @id;",
-                conn
+                m_conn
             );
             cmd.Parameters.AddWithValue("@id", id);
 
@@ -59,7 +59,7 @@ public class ReceiptSupplierModel : ABaseModel,
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER} " +
                 $"FROM {_m_TBL_NAME};",
-                conn
+                m_conn
             );
             using MySqlDataReader reader = cmd.ExecuteReader();
 
@@ -85,24 +85,24 @@ public class ReceiptSupplierModel : ABaseModel,
 
         string query = string.Empty;
         
-        //transaction = conn?.BeginTransaction();
+        //startTransaction();
         try {
 
             query = $"INSERT INTO {_m_TBL_NAME} " +
                 $"({_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER}) " +
                 $"VALUES (@fk_receipt, @fk_supplier); SELECT LAST_INSERT_ID();";
 
-            using MySqlCommand cmd = new(query, conn, transaction);
+            using MySqlCommand cmd = new(query, m_conn, m_transaction);
 
             cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
             cmd.Parameters.AddWithValue("@fk_supplier", item.fk_supplier_id);
 
             int item_id = Convert.ToInt32(cmd.ExecuteScalar());
-            //transaction?.Commit(); // TODO: Move
+            //commitTransaction(); // TODO: Move
             return item_id;
         }
         catch (MySqlException ex) {
-            //transaction?.Rollback();
+            //rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -122,7 +122,7 @@ public class ReceiptSupplierModel : ABaseModel,
                 $"SELECT {_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER} " +
                 $"FROM {_m_TBL_NAME} " +
                 $"WHERE {_m_COL_FK_SUPPLIER} = @supplier_id;",
-                conn
+                m_conn
             );
 
             cmd.Parameters.AddWithValue("@supplier_id", supplier_id);

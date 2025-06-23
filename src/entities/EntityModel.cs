@@ -25,7 +25,7 @@ public class EntityModel : ABaseModel,
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
 
         // Cascad delete the supplier and client items
-        transaction = conn?.BeginTransaction();
+        startTransaction();
 
         if (delete_type == EDeleteItemOperation.HARD_DELETE) {
 
@@ -36,10 +36,10 @@ public class EntityModel : ABaseModel,
             supplier_model.deleteSupplierWithEntityFK(id);
         }
         if (SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type)) { 
-            transaction?.Commit();
+            commitTransaction();
             return true;
         }
-        transaction?.Rollback();
+        rollbackTransaction();
         return false;
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
@@ -55,7 +55,7 @@ public class EntityModel : ABaseModel,
                 $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}, {_m_COL_ARCHIVE} " +
                 $"FROM {_m_TBL_NAME} " +
                 $"WHERE {_m_COL_ID} = @id ",
-                conn
+                m_conn
             );
 
             cmd.Parameters.AddWithValue("@id", id);
@@ -110,10 +110,10 @@ public class EntityModel : ABaseModel,
                 $"WHERE {_m_COL_ID} = @id";
         }
 
-        transaction = conn?.BeginTransaction();
+        startTransaction();
 
         try {
-            using MySqlCommand cmd = new(query, conn, transaction);
+            using MySqlCommand cmd = new(query, m_conn, m_transaction);
 
             if (item_id != 0) {
                 cmd.Parameters.AddWithValue("@id", item_id);
@@ -131,11 +131,11 @@ public class EntityModel : ABaseModel,
                 cmd.ExecuteNonQuery();
             }
 
-            transaction?.Commit();
+            commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction?.Rollback();
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

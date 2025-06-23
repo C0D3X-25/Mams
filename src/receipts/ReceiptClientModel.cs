@@ -40,10 +40,10 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// <returns>The matching ReceiptClientItem if found, null otherwise.</returns>
     public ReceiptClientItem? getItemByID(string id) {
         
-        if (conn == null) return null;
+        if (m_conn == null) return null;
         
         try {
-            using var cmd = new MySqlCommand($"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @id;", conn);
+            using var cmd = new MySqlCommand($"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @id;", m_conn);
             cmd.Parameters.AddWithValue("@id", id);
 
             using var reader = cmd.ExecuteReader();
@@ -63,11 +63,11 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
 
         var items = new ObservableCollection<ReceiptClientItem>();
 
-        if (conn == null) 
+        if (m_conn == null) 
             return items;
 
         try {
-            using var cmd = new MySqlCommand(BASE_SELECT_QUERY, conn);
+            using var cmd = new MySqlCommand(BASE_SELECT_QUERY, m_conn);
             using var reader = cmd.ExecuteReader();
 
             while (reader.Read()) {
@@ -93,7 +93,7 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
 
         int item_id = item.fk_receipt_id;    
 
-        //transaction = conn?.BeginTransaction();
+        //startTransaction();
 
         try {
             //using var exist_cmd = new MySqlCommand(
@@ -106,17 +106,17 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
                 ? $"UPDATE {m_TBL_NAME} SET {_m_COL_FK_CLIENT} = @fk_client WHERE {_m_COL_FK_RECEIPT} = @fk_receipt; SELECT @fk_receipt;"
                 : $"INSERT INTO {m_TBL_NAME} ({_m_COL_FK_RECEIPT}, {_m_COL_FK_CLIENT}) VALUES (@fk_receipt, @fk_client); SELECT LAST_INSERT_ID();";
 
-            using var cmd = new MySqlCommand(query, conn, transaction);
+            using var cmd = new MySqlCommand(query, m_conn, m_transaction);
             cmd.Parameters.AddWithValue("@fk_receipt", item_id);
             cmd.Parameters.AddWithValue("@fk_client", item.fk_client_id);
 
             item_id = Convert.ToInt32(cmd.ExecuteScalar());
 
-            //transaction?.Commit();
+            //commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            //transaction?.Rollback();
+            //rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -132,12 +132,12 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
         if (string.IsNullOrEmpty(fk_receipt)) return items;
 
         
-        if (conn == null) return items;
+        if (m_conn == null) return items;
 
         try {
             using var cmd = new MySqlCommand(
                 $"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @fk_receipt;",
-                conn);
+                m_conn);
             cmd.Parameters.AddWithValue("@fk_receipt", fk_receipt);
 
             using var reader = cmd.ExecuteReader();

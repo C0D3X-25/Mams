@@ -38,24 +38,26 @@ public class ProductLotModel :
 
     public ProductLotItem? getItemByID(string id) {
 
-        
+        if (string.IsNullOrWhiteSpace(id)) {
+            return null;
+        }
 
-        try {
-            using MySqlCommand cmd = new(
+        using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE}, {_m_COL_ARCHIVE} " +
                 $"FROM {_m_TBL_NAME} " +
                 $"WHERE {_m_COL_ID} = @id;",
-                conn
-            );
+                m_conn
+        );
 
-            ProductLotItem product_lot = new();
-            BeehiveModel beehive_model = new();
-            int beehive_id = 0;
+        ProductLotItem product_lot = new();
+        BeehiveModel beehive_model = new();
+        int beehive_id = 0;
 
-            cmd.Parameters.AddWithValue("@id", id);
+        cmd.Parameters.AddWithValue("@id", id);
+
+        try {
             {
                 using MySqlDataReader reader = cmd.ExecuteReader();
-
                 if (reader.Read()) {
 
                     beehive_id = reader.GetSafeValue<int>(_m_COL_FK_BEEHIVE, 0);
@@ -116,10 +118,10 @@ public class ProductLotModel :
                 $"WHERE {_m_COL_ID} = @id";
         }
 
-        transaction = conn?.BeginTransaction();
+        startTransaction();
 
         try {
-            using MySqlCommand cmd = new(query, conn, transaction);
+            using MySqlCommand cmd = new(query, m_conn, m_transaction);
 
             if (item_id != 0) {
                 cmd.Parameters.AddWithValue("@id", item_id);
@@ -135,11 +137,11 @@ public class ProductLotModel :
                 cmd.ExecuteNonQuery();
             }
 
-            transaction?.Commit();
+            commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction?.Rollback();
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -159,7 +161,7 @@ public class ProductLotModel :
             $"WHERE {_m_COL_FK_BEEHIVE} IN ({string.Join(",", beehive_ids)})";
 
         try {
-            using MySqlCommand cmd = new(query, conn);
+            using MySqlCommand cmd = new(query, m_conn);
             using MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read()) {
                 table.Add(new ProductLotItem {

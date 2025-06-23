@@ -43,7 +43,7 @@ public class ReceiptProductModel : ABaseModel,
                 $"{_m_COL_FK_PRODUCT_LOT} " +
                 $"FROM {_m_TBL_NAME} " +
                 $"WHERE {_m_COL_ID} = @id;",
-                conn
+                m_conn
             );
 
             cmd.Parameters.AddWithValue("@id", id);
@@ -85,7 +85,7 @@ public class ReceiptProductModel : ABaseModel,
                 $"{_m_COL_FK_RECEIPT}, " +
                 $"{_m_COL_FK_PRODUCT_LOT} " +
                 $"FROM {_m_TBL_NAME};",
-                conn
+                m_conn
             );
             using MySqlDataReader reader = cmd.ExecuteReader();
 
@@ -118,7 +118,7 @@ public class ReceiptProductModel : ABaseModel,
             return 0;
         }
         
-        if (conn == null) {
+        if (m_conn == null) {
             return 0;
         }
 
@@ -134,9 +134,9 @@ public class ReceiptProductModel : ABaseModel,
                 $"AND {_m_COL_UNITY_PRICE} = @unity_price); " +
                 $"SELECT LAST_INSERT_ID();";
 
-        //transaction = conn?.BeginTransaction();
+        //startTransaction();
         try {
-            using MySqlCommand cmd = new(query, conn, transaction);
+            using MySqlCommand cmd = new(query, m_conn, m_transaction);
             cmd.Parameters.AddWithValue("@quantity", item.receipt_product_quantity);
             cmd.Parameters.AddWithValue("@unity_price", item.receipt_product_unity_price);
             cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
@@ -144,11 +144,11 @@ public class ReceiptProductModel : ABaseModel,
             cmd.Parameters.AddWithValue("@fk_product_lot", item.product_lot_item.product_lot_id);
 
             int item_id = Convert.ToInt32(cmd.ExecuteScalar());
-            //transaction?.Commit();
+            //commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            //transaction?.Rollback(); // TODO: Move
+            //rollbackTransaction(); // TODO: Move
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -175,7 +175,7 @@ public class ReceiptProductModel : ABaseModel,
                 $"{_m_COL_FK_PRODUCT_LOT} " +
                 $"FROM {_m_TBL_NAME} " +
                 $"WHERE {_m_COL_FK_RECEIPT} = @fk_receipt;",
-                conn
+                m_conn
             );
 
             cmd.Parameters.AddWithValue("@fk_receipt", fk_receipt);

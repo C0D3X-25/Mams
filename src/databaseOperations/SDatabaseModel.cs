@@ -98,26 +98,24 @@ public abstract class SDatabaseModel : ABaseModel {
         }
 
         bool need_transaction = false;
-        if (isTransactionActive()) {
+        if (!isTransactionActive()) {
             need_transaction = true;
-        }
-        if (need_transaction) {
-            transaction = conn?.BeginTransaction();
+            startTransaction();
         }
 
         try {
-            using MySqlCommand cmd = new(query, conn, transaction);
+            using MySqlCommand cmd = new(query, m_conn, m_transaction);
             cmd.Parameters.AddWithValue("@id", id);
             cmd.ExecuteNonQuery();
 
             if (need_transaction) {
-                transaction?.Commit();
+                commitTransaction();
             }
             return true;
         }
         catch (MySqlException ex) {
             if (need_transaction) {
-                transaction?.Rollback();
+                rollbackTransaction();
             }
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return false;
@@ -140,7 +138,7 @@ public abstract class SDatabaseModel : ABaseModel {
         DataTable data_table = new();
 
         try {
-            using MySqlCommand cmd = new($"SELECT * FROM {table};", conn);
+            using MySqlCommand cmd = new($"SELECT * FROM {table};", m_conn);
             using MySqlDataReader reader = cmd.ExecuteReader();
             data_table.Load(reader);
 

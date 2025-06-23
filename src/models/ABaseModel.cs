@@ -10,49 +10,88 @@ namespace Mams.src.models;
 /// </summary>
 public abstract class ABaseModel {
 
-    /// <summary>
-    /// SQL connection model instance used to manage database connections.
-    /// </summary>
-    private static SQLConnectionModel m_sql_connection_model = new();
+    private static SQLConnectionModel _m_sql_connection_model = new();
 
+    private static MySqlConnection? _m_connection = _m_sql_connection_model.openConnection();
     /// <summary>
     /// Every derived Class will use this session to interact with the database.
     /// </summary>
-    public static MySqlConnection? conn = m_sql_connection_model.openConnection();
+    public static MySqlConnection? m_conn {
+        get { return _m_connection; }
+    }
 
+    private static MySqlTransaction? _m_transaction = null;
     /// <summary>
     /// Represents the current MySQL transaction associated with the operation, if any.
     /// </summary>
-    public static MySqlTransaction? transaction = null;
+    public static MySqlTransaction? m_transaction {
+        get { return _m_transaction; }
+    }
 
-
+    /// <summary>
+    /// Starts a new database transaction on the current connection.
+    /// </summary>
+    /// <remarks>This method initializes a transaction on the active database connection.  Ensure that a valid
+    /// connection is established before calling this method.</remarks>
+    /// <exception cref="InvalidOperationException">Thrown if the database connection is not established.</exception>
     public static void startTransaction() {
-        if (conn == null) {
+        if (m_conn == null) {
             throw new InvalidOperationException("Database connection is not established.");
         }
-        transaction = conn.BeginTransaction();
+        _m_transaction = m_conn.BeginTransaction();
     }
 
+    /// <summary>
+    /// Determines whether a transaction is currently active.
+    /// </summary>
+    /// <remarks>A transaction is considered active if it is not null, has an associated connection,  and the
+    /// connection's state is <see cref="System.Data.ConnectionState.Open"/>.</remarks>
+    /// <returns><see langword="true"/> if a transaction is active and its associated connection is open;  otherwise, <see
+    /// langword="false"/>.</returns>
     public static bool isTransactionActive() {
-        return transaction != null 
-            && transaction.Connection != null 
-            && transaction.Connection.State == System.Data.ConnectionState.Open;
+        return m_transaction != null 
+            && m_transaction.Connection != null 
+            && m_transaction.Connection.State == System.Data.ConnectionState.Open;
     }
 
+    /// <summary>
+    /// Commits the current transaction, finalizing all changes made during the transaction.
+    /// </summary>
+    /// <remarks>This method ensures that all operations performed within the transaction are permanently
+    /// applied. If no transaction is active, an exception is thrown. After committing, the transaction is
+    /// cleared. 
+    /// Transaction is set to <see langword="null"/> if the commit is a success.</remarks>
+    /// <exception cref="InvalidOperationException">Thrown if there is no active transaction to commit.</exception>
     public static void commitTransaction() {
-        if (transaction == null) {
+        if (m_transaction == null) {
             throw new InvalidOperationException("No transaction to commit.");
         }
-        transaction.Commit();
-        transaction = null;
+
+        try {
+            m_transaction.Commit();
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            throw;
+        }
+        finally {
+            _m_transaction = null;
+        }
     }
 
+    /// <summary>
+    /// Rolls back the current transaction, if one exists.
+    /// </summary>
+    /// <remarks>This method reverts all changes made during the current transaction and resets the
+    /// transaction state. If no transaction is active, an <see cref="InvalidOperationException"/> is thrown.
+    /// Transaction is set to <see langword="null"/> if the rollback is a success.</remarks>
+    /// <exception cref="InvalidOperationException">Thrown if there is no active transaction to roll back.</exception>
     public static void rollbackTransaction() {
-        if (transaction == null) {
+        if (m_transaction == null) {
             throw new InvalidOperationException("No transaction to roll back.");
         }
-        transaction.Rollback();
-        transaction = null;
+        m_transaction.Rollback();
+        _m_transaction = null;
     }
 
     /// <summary>
@@ -69,7 +108,7 @@ public abstract class ABaseModel {
         try {
             using MySqlCommand cmd = new(
                 $"SELECT COUNT(*) FROM {table_name} WHERE {column_to_search} = @item_to_find",
-                conn, transaction
+                m_conn, m_transaction
             );
             cmd.Parameters.AddWithValue("@item_to_find", item_to_find);
             int count = Convert.ToInt32(cmd.ExecuteScalar());

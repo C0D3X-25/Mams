@@ -49,7 +49,7 @@ internal class ProductModel : ABaseModel,
                 $"{_m_COL_ARCHIVE} " +
                 $"FROM {_m_TBL_NAME} " +
                 $"WHERE {_m_COL_ID} = @id;",
-                conn
+                m_conn
             );
 
             cmd.Parameters.AddWithValue("@id", id);
@@ -148,10 +148,10 @@ internal class ProductModel : ABaseModel,
                 $"WHERE {_m_COL_ID} = @id;";
         }
 
-        transaction = conn?.BeginTransaction();
+        startTransaction();
 
         try {
-            using MySqlCommand cmd = new(query, conn, transaction);
+            using MySqlCommand cmd = new(query, m_conn, m_transaction);
 
             if (item_id != 0) {
                 cmd.Parameters.AddWithValue("@id", item_id);
@@ -169,11 +169,11 @@ internal class ProductModel : ABaseModel,
                 cmd.ExecuteNonQuery();
             }
 
-            transaction?.Commit();
+            commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            transaction?.Rollback();
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -207,7 +207,7 @@ internal class ProductModel : ABaseModel,
                 $"{_m_COL_FK_PRODUCT_SHAPE} " +
                 $"FROM {_m_TBL_NAME} " +
                 $"WHERE {col_name} IN ({string.Join(",", ids.Select((id, index) => $"@id{index}"))});",
-                conn
+                m_conn
             );
 
             // Add parameters for each ID
