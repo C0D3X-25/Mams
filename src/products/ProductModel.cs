@@ -10,7 +10,11 @@ using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace Mams.src.products;
-internal class ProductModel : ABaseModel,
+
+/// <summary>
+/// Represents a model for managing product-related data and operations.
+/// </summary>
+public class ProductModel : ABaseModel,
     ICrudOperation<ProductItem> {
 
     private const string _m_TBL_NAME = "products";
@@ -25,10 +29,17 @@ internal class ProductModel : ABaseModel,
     private const int       _m_DEFAUL_FK_PRODUCT_SHAPE = 1;
     private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
 
+    /// <summary>
+    /// Deletes an item from the database based on the specified identifier and delete operation type.
+    /// </summary>
+    /// <remarks>The behavior of the delete operation depends on the specified <paramref name="delete_type"/>.
+    /// For <see cref="EDeleteItemOperation.SAFE_DELETE"/>, the item is archived instead of being permanently removed.</remarks>
+    /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
+    /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
+    /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
-
 
     /// <summary>
     /// Retrieves a <see cref="ProductItem"/> by its unique identifier.
@@ -97,7 +108,12 @@ internal class ProductModel : ABaseModel,
         }
     }
 
-
+    /// <summary>
+    /// Retrieves a collection of product items from the database, with additional details populated for related
+    /// entities.
+    /// </summary>
+    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ProductItem"/> objects, where each item includes
+    /// additional details for related entities such as product type, category, and shape.</returns>
     public ObservableCollection<ProductItem> getTable() {
 
         ObservableCollection<ProductItem> table = SDatabaseModel.getAllRowsInTable<ProductItem>(_m_TBL_NAME);
@@ -121,7 +137,11 @@ internal class ProductModel : ABaseModel,
         return table;
     }
 
-
+    /// <summary>
+    /// Saves the specified <see cref="ProductItem"/> to the database.
+    /// </summary>
+    /// <param name="item">The <see cref="ProductItem"/> to save. Must not be <c>null</c>.</param>
+    /// <returns>The <c>product_id</c> of the saved item. Returns <c>0</c> if the operation fails or the item is invalid.</returns>
     public int saveItem(ProductItem item) {
 
         if (item == null) {
@@ -130,10 +150,11 @@ internal class ProductModel : ABaseModel,
 
         string query = string.Empty;
         int item_id = item.product_id;
+        string item_product_name = item.product_name.Trim();
 
         if (item_id == 0) {
 
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_name)) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_product_name)) {
                 return 0;
             }
 
@@ -160,7 +181,7 @@ internal class ProductModel : ABaseModel,
             if (item_id != 0) {
                 cmd.Parameters.AddWithValue("@id", item_id);
             }
-            cmd.Parameters.AddWithValue("@name", item.product_name);
+            cmd.Parameters.AddWithValue("@name", item_product_name);
             cmd.Parameters.AddWithValue("@weight", item.product_weight);
             cmd.Parameters.AddWithValue("@fk_product_type", item.fk_product_type_id);
             cmd.Parameters.AddWithValue("@fk_product_category", item.fk_product_category_id);
@@ -186,39 +207,69 @@ internal class ProductModel : ABaseModel,
         }
     }
 
-
+    /// <summary>
+    /// Retrieves a collection of products filtered by the specified product type IDs.
+    /// </summary>
+    /// <param name="product_type_id">A list of product type IDs to filter the products. Each ID represents a specific product type.</param>
+    /// <returns>An observable collection of <see cref="ProductItem"/> objects that match the specified product type IDs. If no
+    /// products match, the collection will be empty.</returns>
     public ObservableCollection<ProductItem> getProductWithProductTypeId(List<int> product_type_id) {
         return getProductWith(_m_COL_FK_PRODUCT_TYPE, product_type_id);
     }
 
-
+    /// <summary>
+    /// Retrieves a collection of products that belong to the specified product category IDs.
+    /// </summary>
+    /// <param name="product_category_id">A list of product category IDs used to filter the products. Each ID must correspond to a valid product category.</param>
+    /// <returns>An observable collection of <see cref="ProductItem"/> objects that match the specified product category IDs. If
+    /// no products are found, the collection will be empty.</returns>
     public ObservableCollection<ProductItem> getProductWithProductCategoryId(List<int> product_category_id) {
         return getProductWith(_m_COL_FK_PRODUCT_CATEGORY, product_category_id);
     }
 
-
+    /// <summary>
+    /// Retrieves a collection of products that match the specified product shape IDs.
+    /// </summary>
+    /// <param name="product_shape_id">A list of product shape IDs to filter the products. Each ID in the list must correspond to a valid product
+    /// shape.</param>
+    /// <returns>An <see cref="ObservableCollection{ProductItem}"/> containing the products that match the specified product
+    /// shape IDs. If no products match, the collection will be empty.</returns>
     public ObservableCollection<ProductItem> getProductWithProductShapeId(List<int> product_shape_id) {
         return getProductWith(_m_COL_FK_PRODUCT_SHAPE, product_shape_id);
     }
 
-
-    private ObservableCollection<ProductItem> getProductWith(string col_name, List<int> ids) {
+    /// <summary>
+    /// Retrieves a collection of product items from the database based on the specified column name and a list of IDs.
+    /// </summary>
+    /// <param name="column_name">The name of the column to filter the query by. This must correspond to a valid column in the database.</param>
+    /// <param name="ids">A list of integer IDs used to filter the query results. Each ID is matched against the specified column.</param>
+    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ProductItem"/> objects representing the products that
+    /// match the specified criteria. If no matching products are found, the collection will be empty.</returns>
+    private ObservableCollection<ProductItem> getProductWith(string column_name, List<int> ids) {
 
         ObservableCollection<ProductItem> product_items = new();
-        
 
+        if (string.IsNullOrEmpty(column_name)
+            || ids.Count == 0)
+            {
+            return product_items;
+        }
+        
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_WEIGHT}, " +
                 $"{_m_COL_FK_PRODUCT_TYPE}, {_m_COL_FK_PRODUCT_CATEGORY}, " +
                 $"{_m_COL_FK_PRODUCT_SHAPE} " +
                 $"FROM {_m_TBL_NAME} " +
-                $"WHERE {col_name} IN ({string.Join(",", ids.Select((id, index) => $"@id{index}"))});",
+                $"WHERE {column_name} IN ({string.Join(",", ids.Select((id, index) => $"@id{index}"))});",
                 m_conn
             );
 
             // Add parameters for each ID
             for (int i = 0; i < ids.Count; i++) {
+                if (!SDataValidation.isIdValid(ids[i])) {
+                    return product_items;
+                }
                 cmd.Parameters.AddWithValue($"@id{i}", ids[i]);
             }
 
@@ -237,7 +288,6 @@ internal class ProductModel : ABaseModel,
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
         }
-
         return product_items;
     }
 }

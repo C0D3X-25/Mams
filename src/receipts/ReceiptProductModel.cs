@@ -27,7 +27,7 @@ public class ReceiptProductModel : ABaseModel,
     private const int       _m_DEFAULT_FK_PRODUCT_LOT = 1;
     private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, _m_TBL_NAME, delete_type);
     }
 

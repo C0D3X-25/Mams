@@ -140,7 +140,7 @@ public class ClientModel : ABaseModel,
     /// langword="null"/> if the <paramref name="fk_entity"/> is null or empty, or if no matching record exists.</returns>
     public ClientItem? getClientWithEntityFK(string fk_entity) {
 
-        if (SDataValidation.isIdValid(fk_entity)) {
+        if (!SDataValidation.isIdValid(fk_entity)) {
             return null;
         }
 
@@ -179,7 +179,7 @@ public class ClientModel : ABaseModel,
     /// foreign key is invalid,  no client is found, or the deletion fails.</returns>
     public bool deleteClientWithEntityFK(string fk_entity) {
 
-        if (SDataValidation.isIdValid(fk_entity)) {
+        if (!SDataValidation.isIdValid(fk_entity)) {
             return false;
         }
 

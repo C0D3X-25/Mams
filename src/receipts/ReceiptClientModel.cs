@@ -8,9 +8,11 @@ using System.Windows;
 namespace Mams.src.receipts;
 
 /// <summary>
-/// Manages database operations for receipt-client relationships.
-/// Implements CRUD operations for ReceiptClientItem entities.
+/// Represents a model for managing receipt-client relationships in the database.
 /// </summary>
+/// <remarks>This class provides methods to perform CRUD operations on receipt-client relationships,  including
+/// retrieving, saving, and deleting records. It interacts with the database using  predefined queries and supports
+/// operations such as hard and soft deletion.</remarks>
 public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> {
 
     private const string m_TBL_NAME = "receipts_clients";
@@ -21,21 +23,24 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     private const string BASE_SELECT_QUERY = $"SELECT {SELECT_COLUMNS} FROM {m_TBL_NAME}";
 
     /// <summary>
-    /// Deletes a receipt-client relationship from the database.
+    /// Deletes an item from the database based on the specified identifier and delete operation type.
     /// </summary>
-    /// <param name="id">The receipt ID to delete.</param>
-    /// <param name="delete_type">The type of deletion operation to perform.</param>
-    /// <returns>True if deletion was successful, false otherwise.</returns>
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+    /// <remarks>The behavior of the delete operation depends on the specified <paramref name="delete_type"/>.
+    /// For <see cref="EDeleteItemOperation.SAFE_DELETE"/>, the item is archived instead of being permanently removed.</remarks>
+    /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
+    /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
+    /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, m_TBL_NAME, delete_type);
     }
 
 
     /// <summary>
-    /// Retrieves a specific receipt-client relationship by receipt ID.
+    /// Retrieves a <see cref="ReceiptClientItem"/> object by its unique identifier.
     /// </summary>
-    /// <param name="id">The receipt ID to search for.</param>
-    /// <returns>The matching ReceiptClientItem if found, null otherwise.</returns>
+    /// <param name="id">The unique identifier of the item to retrieve. Must be a valid identifier.</param>
+    /// <returns>A <see cref="ReceiptClientItem"/> object if an item with the specified identifier exists; otherwise, <see
+    /// langword="null"/>.</returns>
     public ReceiptClientItem? getItemByID(string id) {
 
         if (!SDataValidation.isIdValid(id)) {
@@ -56,15 +61,14 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     }
 
     /// <summary>
-    /// Retrieves all receipt-client relationships from the database.
+    /// Retrieves a collection of receipt client items from the database.
     /// </summary>
-    /// <returns>An ObservableCollection of all ReceiptClientItems.</returns>
+    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ReceiptClientItem"/> objects representing the receipt
+    /// client items retrieved from the database. Returns an empty collection if the connection is null or if an error
+    /// occurs during execution.</returns>
     public ObservableCollection<ReceiptClientItem> getTable() {
 
         var items = new ObservableCollection<ReceiptClientItem>();
-
-        if (m_conn == null) 
-            return items;
 
         try {
             using var cmd = new MySqlCommand(BASE_SELECT_QUERY, m_conn);
@@ -82,26 +86,26 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     }
 
     /// <summary>
-    /// Saves a receipt item to the database. If the item's ID is 0, creates a new record;
-    /// otherwise updates the existing record.
+    /// Saves the specified <see cref="ReceiptClientItem"/> to the database.
     /// </summary>
-    /// <param name="item">The ReceiptClientItem to save</param>
-    /// <returns>The ID of the saved receipt; 0 if the operation failed</returns>
+    /// <param name="item">The <see cref="ReceiptClientItem"/> to save. The item must not be <see langword="null"/>, and its
+    /// <c>fk_receipt_id</c> and <c>fk_client_id</c> properties must be non-zero.</param>
+    /// <returns>The ID of the saved item. Returns <c>0</c> if the input is invalid or if an error occurs during the operation.</returns>
     public int saveItem(ReceiptClientItem item) {
-        if (item == null || item.fk_receipt_id == 0 || item.fk_client_id == 0) 
+        if (item == null 
+            || item.fk_receipt_id == 0 
+            || item.fk_client_id == 0) 
+            {
             return 0;
+        }
 
-        int item_id = item.fk_receipt_id;    
+        int item_id = item.fk_receipt_id;
 
+
+        // TODO: Look if has any use, maybe check if the transaction is open
         //startTransaction();
 
-        try {
-            //using var exist_cmd = new MySqlCommand(
-            //    $"SELECT COUNT(*) FROM {m_TBL_NAME} WHERE {_m_COL_FK_RECEIPT} = @fk_receipt;",
-            //    conn, transaction);
-            //exist_cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
-            //bool exists = Convert.ToInt32(exist_cmd.ExecuteScalar()) > 0;
-                
+        try {  
             string query = isIdenticItemPresentInTable(m_TBL_NAME, _m_COL_FK_RECEIPT, item_id.ToString())
                 ? $"UPDATE {m_TBL_NAME} SET {_m_COL_FK_CLIENT} = @fk_client WHERE {_m_COL_FK_RECEIPT} = @fk_receipt; SELECT @fk_receipt;"
                 : $"INSERT INTO {m_TBL_NAME} ({_m_COL_FK_RECEIPT}, {_m_COL_FK_CLIENT}) VALUES (@fk_receipt, @fk_client); SELECT LAST_INSERT_ID();";

@@ -24,7 +24,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <param name="id">The ID of the receipt to delete</param>
     /// <param name="delete_type">The type of deletion to perform (default: HARD_DELETE)</param>
     /// <returns>True if deletion was successful, false otherwise</returns>
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
     }
 

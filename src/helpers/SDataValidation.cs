@@ -35,6 +35,26 @@ public static class SDataValidation {
     }
 
     /// <summary>
+    /// Determines whether the specified string represents a valid non-negative integer identifier.
+    /// </summary>
+    /// <remarks>A valid identifier is a non-null, non-empty string that represents a non-negative integer.
+    /// This method returns <see langword="false"/> if the string is null, empty, not an integer,  or represents a
+    /// negative value.</remarks>
+    /// <param name="id">The string to evaluate as an identifier.</param>
+    /// <returns><see langword="true"/> if the string is a valid non-negative integer identifier;  otherwise, <see
+    /// langword="false"/>. </returns>
+    public static bool isIdValid(int? id) {
+
+        if (id == null) {
+            return false;
+        }
+        if (id < 0) {
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>
     /// Determines whether the specified string represents a valid integer value.
     /// </summary>
     /// <remarks>This method checks if the input string can be parsed as a 64-bit signed integer  (<see

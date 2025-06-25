@@ -3,8 +3,17 @@ using System.Windows;
 
 namespace Mams.src.databaseConnections;
 
+/// <summary>
+/// Represents a model for managing connections to a MySQL database.
+/// </summary>
+/// <remarks>This class provides methods to open and validate connections to a MySQL database, as well as
+/// utilities for handling database connection states. It uses predefined server, user credentials, and database
+/// configuration to establish connections. The class is designed to simplify database connection management and handle
+/// common connection-related scenarios, such as verifying connection status and responding to connection
+/// failures.</remarks>
 public class SQLConnectionModel {
 
+    // Very safe credentials !!
     private const string _m_SERVER = "localhost";
     private const string _m_USER = "root";
     private const string _m_PASSWORD = "root";
@@ -69,7 +78,9 @@ public class SQLConnectionModel {
     /// cref="EDatabaseConnection.EXIT"/>.</param>
     /// <returns><see langword="true"/> if the connection is open; otherwise, <see langword="false"/>.</returns>
     public bool isConnectionOpen(MySqlConnection? connection, EDatabaseConnection cmd = EDatabaseConnection.EXIT) {
-        if (connection != null && connection.State == System.Data.ConnectionState.Open) {
+        if (connection != null 
+            && connection.State == System.Data.ConnectionState.Open
+            ) {
             return true;
         }
 
