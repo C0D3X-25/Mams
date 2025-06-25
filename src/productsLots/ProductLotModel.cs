@@ -27,17 +27,14 @@ public class ProductLotModel : ABaseModel,
     private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
 
     
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
-    }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
     }
 
 
     public ProductLotItem? getItemByID(string id) {
 
-        if (string.IsNullOrWhiteSpace(id)) {
+        if (!SDataValidation.isIdValid(id)) {
             return null;
         }
 
@@ -59,13 +56,13 @@ public class ProductLotModel : ABaseModel,
                 using MySqlDataReader reader = cmd.ExecuteReader();
                 if (reader.Read()) {
 
-                    beehive_id = reader.GetSafeValue<int>(_m_COL_FK_BEEHIVE, 0);
+                    beehive_id = reader.getSafeValue<int>(_m_COL_FK_BEEHIVE, 0);
 
-                    product_lot.product_lot_id = reader.GetSafeValue<int>(_m_COL_ID);
-                    product_lot.product_lot_name = reader.GetSafeValue(_m_COL_NAME, string.Empty);
-                    product_lot.product_lot_year = reader.GetSafeValue<int>(_m_COL_YEAR);
+                    product_lot.product_lot_id = reader.getSafeValue<int>(_m_COL_ID);
+                    product_lot.product_lot_name = reader.getSafeValue(_m_COL_NAME, string.Empty);
+                    product_lot.product_lot_year = reader.getSafeValue<int>(_m_COL_YEAR);
                     product_lot.fk_beehive_id = beehive_id;
-                    product_lot.product_lot_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString();
+                    product_lot.product_lot_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString();
                 }
             }
 
@@ -88,7 +85,6 @@ public class ProductLotModel : ABaseModel,
         foreach (ProductLotItem item in table) {
             item.beehive_name = item.fk_beehive_id > 0 ? beehive_model.getItemByID(item.fk_beehive_id.ToString())?.beehive_name ?? string.Empty : string.Empty;
         }
-
         return table;
     }
 
@@ -168,10 +164,10 @@ public class ProductLotModel : ABaseModel,
             using MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read()) {
                 table.Add(new ProductLotItem {
-                    product_lot_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    product_lot_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
-                    product_lot_year = reader.GetSafeValue<int>(_m_COL_YEAR),
-                    fk_beehive_id = reader.GetSafeValue<int>(_m_COL_FK_BEEHIVE)
+                    product_lot_id = reader.getSafeValue<int>(_m_COL_ID),
+                    product_lot_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                    product_lot_year = reader.getSafeValue<int>(_m_COL_YEAR),
+                    fk_beehive_id = reader.getSafeValue<int>(_m_COL_FK_BEEHIVE)
                 });
             }
         }

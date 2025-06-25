@@ -74,7 +74,7 @@ public class ListFeeController : ABaseController {
             if (result == MessageBoxResult.No) {
                 return;
             }
-            _m_item_model.deleteItem(_m_selected_item.receipt.receipt_id);
+            _m_item_model.deleteItem(_m_selected_item.receipt.receipt_id.ToString());
             updateListItems();
         }
     }

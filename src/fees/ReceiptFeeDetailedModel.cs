@@ -17,11 +17,8 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     private readonly ProductModel _m_product_model = new();
 
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return _m_receipt_handler_model.deleteReceipt(id);
-    }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
     }
 
 

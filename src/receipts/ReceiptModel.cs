@@ -24,11 +24,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <param name="id">The ID of the receipt to delete</param>
     /// <param name="delete_type">The type of deletion to perform (default: HARD_DELETE)</param>
     /// <returns>True if deletion was successful, false otherwise</returns>
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
-    }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
     }
 
     /// <summary>
@@ -37,7 +34,11 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <param name="id">The ID of the receipt to retrieve</param>
     /// <returns>A ReceiptItem object if found; null otherwise</returns>
     public ReceiptItem? getItemByID(string id) {
-        
+
+        if (!SDataValidation.isIdValid(id)) {
+            return null;
+        }
+
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID}, " +
@@ -53,9 +54,9 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
 
             if (reader.Read()) {
                 return new ReceiptItem {
-                    receipt_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    receipt_total_price = reader.GetSafeValue<decimal>(_m_COL_RECEIPT_TOTAL_PRICE),
-                    receipt_date_created = reader.GetSafeValue(_m_COL_RECEIPT_DATE_CREATED, DateOnly.MinValue).ToString(globals.SGlobals.g_DATE_FORMAT)
+                    receipt_id = reader.getSafeValue<int>(_m_COL_ID),
+                    receipt_total_price = reader.getSafeValue<decimal>(_m_COL_RECEIPT_TOTAL_PRICE),
+                    receipt_date_created = reader.getSafeValue(_m_COL_RECEIPT_DATE_CREATED, DateOnly.MinValue).ToString(globals.SGlobals.g_EU_DATE_FORMAT)
                 };
             }
             return null;
@@ -87,7 +88,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
 
         int item_id = item.receipt_id;
 
-        DateTime parsed_date = DateTime.ParseExact(item.receipt_date_created, globals.SGlobals.g_DATE_FORMAT, null);
+        DateTime parsed_date = DateTime.ParseExact(item.receipt_date_created, globals.SGlobals.g_EU_DATE_FORMAT, null);
         string mysql_formatted_date = parsed_date.ToString("yyyy-MM-dd");
 
         string query = item_id == 0
@@ -118,8 +119,6 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         }
     }
 
-
-
     /// <summary>
     /// Retrieves all receipt IDs from the database.
     /// </summary>
@@ -135,7 +134,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             );
             using MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read()) {
-                items.Add(reader.GetSafeValue<int>(_m_COL_ID));
+                items.Add(reader.getSafeValue<int>(_m_COL_ID));
             }
             return items;
         }
@@ -163,7 +162,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             );
             using MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read()) {
-                items.Add(reader.GetSafeValue<int>("year").ToString());
+                items.Add(reader.getSafeValue<int>("year").ToString());
             }
             return items;
         }

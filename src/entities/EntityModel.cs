@@ -25,9 +25,6 @@ public class EntityModel : ABaseModel,
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
-    }
 
 
     public EntityItem? getItemByID(string id) {
@@ -45,13 +42,13 @@ public class EntityModel : ABaseModel,
 
             if (reader.Read()) {
                 return new EntityItem {
-                    entity_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    entity_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
-                    entity_phone = reader.GetSafeValue(_m_COL_PHONE, string.Empty),
-                    entity_email = reader.GetSafeValue(_m_COL_EMAIL, string.Empty),
-                    entity_city = reader.GetSafeValue(_m_COL_CITY, string.Empty),
-                    entity_address = reader.GetSafeValue(_m_COL_ADDRESS, string.Empty),
-                    entity_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    entity_id = reader.getSafeValue<int>(_m_COL_ID),
+                    entity_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                    entity_phone = reader.getSafeValue(_m_COL_PHONE, string.Empty),
+                    entity_email = reader.getSafeValue(_m_COL_EMAIL, string.Empty),
+                    entity_city = reader.getSafeValue(_m_COL_CITY, string.Empty),
+                    entity_address = reader.getSafeValue(_m_COL_ADDRESS, string.Empty),
+                    entity_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;

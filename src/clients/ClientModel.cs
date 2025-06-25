@@ -3,12 +3,13 @@ using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
-using System.Data.Common;
-using System.Transactions;
 using System.Windows;
 
 namespace Mams.src.clients;
 
+/// <summary>
+/// Represents a model for managing client data in the database.
+/// </summary>
 public class ClientModel : ABaseModel,
     ICrudOperation<ClientItem> {
 
@@ -16,16 +17,29 @@ public class ClientModel : ABaseModel,
     private const string _m_COL_ID = "client_id";
     private const string _m_COL_FK_ENTITY = "fk_entity_id";
 
-
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
+    /// <summary>
+    /// Deletes an item from the database based on the specified identifier and delete operation type.
+    /// </summary>
+    /// <remarks>The behavior of the delete operation depends on the specified <paramref name="delete_type"/>.
+    /// For safe delete operations, additional checks may be performed to ensure data integrity.</remarks>
+    /// <param name="id">The unique identifier of the item to delete. Cannot be null or empty.</param>
+    /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
+    /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
     }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
-    }
 
-
+    /// <summary>
+    /// Retrieves a <see cref="ClientItem"/> object by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the item to retrieve. Cannot be null or empty.</param>
+    /// <returns>A <see cref="ClientItem"/> object representing the item with the specified identifier,  or <see
+    /// langword="null"/> if no matching item is found.</returns>
     public ClientItem? getItemByID(string id) {
+
+        if (!SDataValidation.isIdValid(id)) {
+            return null;
+        }
 
         try {
             using MySqlCommand cmd = new(
@@ -40,8 +54,8 @@ public class ClientModel : ABaseModel,
 
             if (reader.Read()) {
                 return new ClientItem {
-                    client_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    fk_entity_id = reader.GetSafeValue<int>(_m_COL_FK_ENTITY, 0)
+                    client_id = reader.getSafeValue<int>(_m_COL_ID),
+                    fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY, 0)
                 };
             }
             return null;
@@ -118,16 +132,20 @@ public class ClientModel : ABaseModel,
         }
     }
 
-
+    /// <summary>
+    /// Retrieves a <see cref="ClientItem"/> object based on the specified foreign key value.
+    /// </summary>
+    /// <param name="fk_entity">The foreign key value used to query the client. Cannot be null or empty.</param>
+    /// <returns>A <see cref="ClientItem"/> object populated with client data if a matching record is found;  otherwise, <see
+    /// langword="null"/> if the <paramref name="fk_entity"/> is null or empty, or if no matching record exists.</returns>
     public ClientItem? getClientWithEntityFK(string fk_entity) {
 
-        if (string.IsNullOrEmpty(fk_entity)) {
+        if (SDataValidation.isIdValid(fk_entity)) {
             return null;
         }
 
         ClientItem item = new();
 
-        
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
@@ -141,8 +159,8 @@ public class ClientModel : ABaseModel,
             using MySqlDataReader reader = cmd.ExecuteReader();
 
             if (reader.Read()) {
-                item.client_id = reader.GetSafeValue<int>(_m_COL_ID);
-                item.fk_entity_id = reader.GetSafeValue<int>(_m_COL_FK_ENTITY);
+                item.client_id = reader.getSafeValue<int>(_m_COL_ID);
+                item.fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY);
             }
 
             return item;
@@ -153,10 +171,15 @@ public class ClientModel : ABaseModel,
         }
     }
 
-
+    /// <summary>
+    /// Deletes a client associated with the specified foreign key.
+    /// </summary>
+    /// <param name="fk_entity">The foreign key of the entity associated with the client to be deleted. Must not be null or empty.</param>
+    /// <returns><see langword="true"/> if the client was successfully deleted;  otherwise, <see langword="false"/> if the
+    /// foreign key is invalid,  no client is found, or the deletion fails.</returns>
     public bool deleteClientWithEntityFK(string fk_entity) {
 
-        if (string.IsNullOrEmpty(fk_entity)) {
+        if (SDataValidation.isIdValid(fk_entity)) {
             return false;
         }
 
@@ -166,6 +189,6 @@ public class ClientModel : ABaseModel,
             return false;
         }
 
-        return deleteItem(item.client_id);
+        return deleteItem(item.client_id.ToString());
     }
 }

@@ -26,12 +26,10 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// <param name="id">The receipt ID to delete.</param>
     /// <param name="delete_type">The type of deletion operation to perform.</param>
     /// <returns>True if deletion was successful, false otherwise.</returns>
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, m_TBL_NAME, delete_type);
     }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
-    }
+
 
     /// <summary>
     /// Retrieves a specific receipt-client relationship by receipt ID.
@@ -39,9 +37,11 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// <param name="id">The receipt ID to search for.</param>
     /// <returns>The matching ReceiptClientItem if found, null otherwise.</returns>
     public ReceiptClientItem? getItemByID(string id) {
-        
-        if (m_conn == null) return null;
-        
+
+        if (!SDataValidation.isIdValid(id)) {
+            return null;
+        }
+
         try {
             using var cmd = new MySqlCommand($"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @id;", m_conn);
             cmd.Parameters.AddWithValue("@id", id);
@@ -158,8 +158,8 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// <returns>A ReceiptClientItem populated with data from the reader.</returns>
     private static ReceiptClientItem CreateItemFromReader(MySqlDataReader reader) {
         return new ReceiptClientItem {
-            fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
-            fk_client_id = reader.GetSafeValue<int>(_m_COL_FK_CLIENT)
+            fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
+            fk_client_id = reader.getSafeValue<int>(_m_COL_FK_CLIENT)
         };
     }
 }

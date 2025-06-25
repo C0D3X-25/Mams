@@ -22,24 +22,15 @@ public class ProductCategoryModel :
     private const string _m_COL_ARCHIVE = "product_category_archive";
 
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
-
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
-    }
-
-
-    public ProductCategoryItem? getItem(string search) {
-        throw new NotImplementedException();
-    }
-
-
     public ProductCategoryItem? getItemByID(string id) {
 
-        
+        if (!SDataValidation.isIdValid(id)) {
+            return null;
+        }
 
         try {
             using MySqlCommand cmd = new(
@@ -54,9 +45,9 @@ public class ProductCategoryModel :
 
             if (reader.Read()) {
                 return new ProductCategoryItem {
-                    product_category_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    product_category_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
-                    product_category_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    product_category_id = reader.getSafeValue<int>(_m_COL_ID),
+                    product_category_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                    product_category_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;

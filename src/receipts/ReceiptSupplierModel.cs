@@ -15,16 +15,17 @@ public class ReceiptSupplierModel : ABaseModel,
     private const string _m_COL_FK_SUPPLIER = "fk_supplier_id";
 
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, _m_TBL_NAME, delete_type);
-    }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
     }
 
 
     // Parameter `id` is expected to be a receipt ID
     public ReceiptSupplierItem? getItemByID(string id) {
+
+        if (!SDataValidation.isIdValid(id)) {
+            return null;
+        }
 
         try {
             using MySqlCommand cmd = new(
@@ -38,8 +39,8 @@ public class ReceiptSupplierModel : ABaseModel,
             using MySqlDataReader reader = cmd.ExecuteReader();
             if (reader.Read()) {
                 return new ReceiptSupplierItem {
-                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
-                    fk_supplier_id = reader.GetSafeValue<int>(_m_COL_FK_SUPPLIER)
+                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
+                    fk_supplier_id = reader.getSafeValue<int>(_m_COL_FK_SUPPLIER)
                 };
             }
             return null;
@@ -65,8 +66,8 @@ public class ReceiptSupplierModel : ABaseModel,
 
             while (reader.Read()) {
                 items.Add(new ReceiptSupplierItem {
-                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
-                    fk_supplier_id = reader.GetSafeValue<int>(_m_COL_FK_SUPPLIER)
+                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
+                    fk_supplier_id = reader.getSafeValue<int>(_m_COL_FK_SUPPLIER)
                 });
             }
             return items;
@@ -131,8 +132,8 @@ public class ReceiptSupplierModel : ABaseModel,
 
             while (reader.Read()) {
                 items.Add(new ReceiptSupplierItem {
-                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
-                    fk_supplier_id = reader.GetSafeValue<int>(_m_COL_FK_SUPPLIER)
+                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
+                    fk_supplier_id = reader.getSafeValue<int>(_m_COL_FK_SUPPLIER)
                 });
             }
 

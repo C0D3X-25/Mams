@@ -102,10 +102,10 @@ public class ListProductController : ABaseController {
     private void deleteOrRestoreItem(object? obj) {
         if (_m_selected_item != null) {
             if (_m_is_show_archived_checked) {
-                _m_item_model.deleteItem(_m_selected_item.product_id, EDeleteItemOperation.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.product_id.ToString(), EDeleteItemOperation.RESTORE);
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.product_id);
+                _m_item_model.deleteItem(_m_selected_item.product_id.ToString());
             }
             updateListItems();
         }

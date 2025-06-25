@@ -19,24 +19,16 @@ public class ProductShapeModel :
     private const string _m_COL_ARCHIVE = "product_shape_archive";
 
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
-    }
-
-
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
-    }
-
-
-    public ProductShapeItem? getItem(string search) {
-        throw new NotImplementedException();
     }
 
 
     public ProductShapeItem? getItemByID(string id) {
 
-        
+        if (string.IsNullOrEmpty(id)) {
+            return null;
+        }
 
         try {
             using MySqlCommand cmd = new(
@@ -51,9 +43,9 @@ public class ProductShapeModel :
 
             if (reader.Read()) {
                 return new ProductShapeItem {
-                    product_shape_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    product_shape_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
-                    product_shape_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    product_shape_id = reader.getSafeValue<int>(_m_COL_ID),
+                    product_shape_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                    product_shape_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;

@@ -23,15 +23,16 @@ public class ProductTypeModel :
     private const string _m_COL_ARCHIVE = "product_type_archive";
 
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
-    }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
     }
 
 
     public ProductTypeItem? getItemByID(string id) {
+
+        if (!SDataValidation.isIdValid(id)) {
+            return null;
+        }
 
         try {
             using MySqlCommand cmd = new(
@@ -46,9 +47,9 @@ public class ProductTypeModel :
 
             if (reader.Read()) {
                 return new ProductTypeItem {
-                    product_type_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    product_type_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
-                    product_type_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    product_type_id = reader.getSafeValue<int>(_m_COL_ID),
+                    product_type_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                    product_type_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;

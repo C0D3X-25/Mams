@@ -62,9 +62,9 @@ public class ReceiptHandlerModel : ABaseModel {
 
             // TODO: Gonna need a better way to update a receipt
             _m_receipt_model.saveItem(item.receipt_item);
-            _m_receipt_product_model.deleteItem(receipt_id);
-            _m_receipt_client_model.deleteItem(receipt_id);
-            _m_receipt_supplier_model.deleteItem(receipt_id);
+            _m_receipt_product_model.deleteItem(receipt_id.ToString());
+            _m_receipt_client_model.deleteItem(receipt_id.ToString());
+            _m_receipt_supplier_model.deleteItem(receipt_id.ToString());
         }
 
         // Save the receipt products

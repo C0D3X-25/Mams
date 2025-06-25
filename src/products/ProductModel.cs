@@ -25,12 +25,10 @@ internal class ProductModel : ABaseModel,
     private const int       _m_DEFAUL_FK_PRODUCT_SHAPE = 1;
     private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
-    }
+
 
     /// <summary>
     /// Retrieves a <see cref="ProductItem"/> by its unique identifier.
@@ -42,6 +40,10 @@ internal class ProductModel : ABaseModel,
     /// <param name="id">The unique identifier of the product to retrieve. This value cannot be null or empty.</param>
     /// <returns>A <see cref="ProductItem"/> object containing the product details if found; otherwise, <see langword="null"/>.</returns>
     public ProductItem? getItemByID(string id) {
+
+        if (!SDataValidation.isIdValid(id)) {
+            return null;
+        }
 
         try {
             using MySqlCommand cmd = new(
@@ -69,17 +71,17 @@ internal class ProductModel : ABaseModel,
                 using MySqlDataReader reader = cmd.ExecuteReader();
                 if (reader.Read()) {
 
-                    product_type_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_TYPE, 0);
-                    product_category_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY, 0);
-                    product_shape_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0);
+                    product_type_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_TYPE, 0);
+                    product_category_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY, 0);
+                    product_shape_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0);
 
-                    product.product_id = reader.GetSafeValue<int>(_m_COL_ID);
-                    product.product_name = reader.GetSafeValue(_m_COL_NAME, string.Empty);
-                    product.product_weight = reader.GetSafeValue(_m_COL_WEIGHT, 0);
+                    product.product_id = reader.getSafeValue<int>(_m_COL_ID);
+                    product.product_name = reader.getSafeValue(_m_COL_NAME, string.Empty);
+                    product.product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0);
                     product.fk_product_type_id = product_type_id;
                     product.fk_product_category_id = product_category_id;
                     product.fk_product_shape_id = product_shape_id;
-                    product.product_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString();
+                    product.product_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString();
                 }
             }
 
@@ -223,12 +225,12 @@ internal class ProductModel : ABaseModel,
             using MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read()) {
                 product_items.Add(new ProductItem {
-                    product_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    product_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
-                    product_weight = reader.GetSafeValue(_m_COL_WEIGHT, 0),
-                    fk_product_type_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_TYPE, 0),
-                    fk_product_category_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY, 0),
-                    fk_product_shape_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0),
+                    product_id = reader.getSafeValue<int>(_m_COL_ID),
+                    product_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                    product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0),
+                    fk_product_type_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_TYPE, 0),
+                    fk_product_category_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY, 0),
+                    fk_product_shape_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0),
                 });
             }
         }

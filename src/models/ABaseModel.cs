@@ -115,9 +115,16 @@ public abstract class ABaseModel {
     /// <param name="column_to_search">The name of the column to search within.</param>
     /// <param name="item_to_find">The value to search for in the specified column.</param>
     /// <returns>
-    /// Returns <c>true</c> if the item exists in the table; otherwise, <c>false</c>.
+    /// Returns <c>true</c> if the item exists in the table; otherwise, <see langword="false"/>.
     /// </returns>
     protected bool isIdenticItemPresentInTable(string table_name, string column_to_search, string item_to_find) {
+
+        if (string.IsNullOrEmpty(table_name) 
+            || string.IsNullOrEmpty(column_to_search) 
+            || string.IsNullOrEmpty(item_to_find)
+            ){
+            throw new ArgumentException("Table name, column to search, and item to find cannot be null or empty.");
+        }
 
         try {
             using MySqlCommand cmd = new(

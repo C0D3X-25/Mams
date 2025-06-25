@@ -387,7 +387,7 @@ public class ResumeModel {
             sorted_items.profit_items = new ObservableCollection<ReceiptProfitDetailedItem>(
                 query_profit.OrderByDescending(item =>
                 DateTime.ParseExact(item.receipt.receipt_date_created,
-                globals.SGlobals.g_DATE_FORMAT,
+                globals.SGlobals.g_EU_DATE_FORMAT,
                 System.Globalization.CultureInfo.InvariantCulture).Date)
             );
         }
@@ -396,7 +396,7 @@ public class ResumeModel {
             sorted_items.fee_items = new ObservableCollection<ReceiptFeeDetailedItem>(
                 query_fee.OrderByDescending(item =>
                 DateTime.ParseExact(item.receipt.receipt_date_created,
-                globals.SGlobals.g_DATE_FORMAT,
+                globals.SGlobals.g_EU_DATE_FORMAT,
                 System.Globalization.CultureInfo.InvariantCulture).Date)
             );
         }
@@ -416,7 +416,7 @@ public class ResumeModel {
         }
 
         DateTime parsed_date = DateTime.ParseExact(date,
-            globals.SGlobals.g_DATE_FORMAT,
+            globals.SGlobals.g_EU_DATE_FORMAT,
             System.Globalization.CultureInfo.InvariantCulture
         );
 

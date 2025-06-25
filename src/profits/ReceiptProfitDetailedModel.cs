@@ -1,6 +1,7 @@
 ﻿using Mams.src.clients;
 using Mams.src.databaseOperations;
 using Mams.src.entities;
+using Mams.src.helpers;
 using Mams.src.models;
 using Mams.src.products;
 using Mams.src.receipts;
@@ -14,21 +15,18 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     private readonly ReceiptHandlerModel _m_receipt_handler_model = new();
     private readonly EntityModel _m_entity_model = new();
     private readonly ClientModel _m_client_model = new();
-    //private readonly ReceiptClientModel _m_receipt_client_model = new();
-    //private readonly ReceiptModel _m_receipts_model = new();
-    //private readonly ReceiptProductModel _m_receipt_product_model = new();
     private readonly ProductModel _m_product_model = new();
 
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return _m_receipt_handler_model.deleteReceipt(id);
     }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
-    }
-
 
     public ReceiptProfitDetailedItem? getItemByID(string id) {
+
+        if (!SDataValidation.isIdValid(id)) {
+            return null;
+        }
 
         var receipt = _m_receipt_handler_model.getReceiptByID(id);
 

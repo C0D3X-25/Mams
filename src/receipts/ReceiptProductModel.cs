@@ -27,11 +27,8 @@ public class ReceiptProductModel : ABaseModel,
     private const int       _m_DEFAULT_FK_PRODUCT_LOT = 1;
     private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, _m_TBL_NAME, delete_type);
-    }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
     }
 
 
@@ -55,15 +52,15 @@ public class ReceiptProductModel : ABaseModel,
 
             if (reader.Read()) {
                 return new ReceiptProductItem {
-                    receipt_product_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    receipt_product_quantity = reader.GetSafeValue<int>(_m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.GetSafeValue<decimal>(_m_COL_UNITY_PRICE),
-                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
+                    receipt_product_id = reader.getSafeValue<int>(_m_COL_ID),
+                    receipt_product_quantity = reader.getSafeValue<int>(_m_COL_QUANTITY),
+                    receipt_product_unity_price = reader.getSafeValue<decimal>(_m_COL_UNITY_PRICE),
+                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
                     product_item = new ProductItem {
-                        product_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT)
+                        product_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT)
                     },
                     product_lot_item = new ProductLotItem {
-                        product_lot_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
+                        product_lot_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
                     },
                 };
             }
@@ -95,15 +92,15 @@ public class ReceiptProductModel : ABaseModel,
 
             while (reader.Read()) {
                 items.Add(new ReceiptProductItem {
-                    receipt_product_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    receipt_product_quantity = reader.GetSafeValue<int>(_m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.GetSafeValue<decimal>(_m_COL_UNITY_PRICE),
-                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
+                    receipt_product_id = reader.getSafeValue<int>(_m_COL_ID),
+                    receipt_product_quantity = reader.getSafeValue<int>(_m_COL_QUANTITY),
+                    receipt_product_unity_price = reader.getSafeValue<decimal>(_m_COL_UNITY_PRICE),
+                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
                     product_item = new ProductItem {
-                        product_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT)
+                        product_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT)
                     },
                     product_lot_item = new ProductLotItem {
-                        product_lot_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
+                        product_lot_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
                     },
                 });
             }
@@ -181,15 +178,15 @@ public class ReceiptProductModel : ABaseModel,
 
             while (reader.Read()) {
                 items.Add(new ReceiptProductItem {
-                    receipt_product_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    receipt_product_quantity = reader.GetSafeValue<int>(_m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.GetSafeValue<decimal>(_m_COL_UNITY_PRICE),
-                    fk_receipt_id = reader.GetSafeValue<int>(_m_COL_FK_RECEIPT),
+                    receipt_product_id = reader.getSafeValue<int>(_m_COL_ID),
+                    receipt_product_quantity = reader.getSafeValue<int>(_m_COL_QUANTITY),
+                    receipt_product_unity_price = reader.getSafeValue<decimal>(_m_COL_UNITY_PRICE),
+                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
                     product_item = new ProductItem {
-                        product_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT)
+                        product_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT)
                     },
                     product_lot_item = new ProductLotItem {
-                        product_lot_id = reader.GetSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
+                        product_lot_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
                     },
                 });
             }

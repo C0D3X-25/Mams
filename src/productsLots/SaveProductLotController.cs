@@ -70,7 +70,7 @@ public class SaveProductLotController : ABaseController {
 
     private bool canSaveProduct(object? arg) {
         return !string.IsNullOrEmpty(m_product_lot.product_lot_name)
-            && SDateValidation.isYearInRange(m_product_lot.product_lot_year);
+            && SDataValidation.isYearInRange(m_product_lot.product_lot_year);
     }
 
 

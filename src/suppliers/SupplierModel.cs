@@ -8,7 +8,7 @@ using System.Windows;
 namespace Mams.src.suppliers;
 
 /// <summary>
-/// Represents a model for managing supplier data, including CRUD operations for supplier items.
+/// Represents a model for managing supplier data from the Database.
 /// </summary>
 public class SupplierModel : ABaseModel,
     ICrudOperation<SupplierItem> {
@@ -26,11 +26,8 @@ public class SupplierModel : ABaseModel,
     /// <param name="id">The unique identifier of the item to delete. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.HARD_DELETE"/>.</param>
     /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
-    }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
     }
 
 
@@ -53,8 +50,8 @@ public class SupplierModel : ABaseModel,
 
             if (reader.Read()) {
                 return new SupplierItem {
-                    supplier_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    fk_entity_id = reader.GetSafeValue<int>(_m_COL_FK_ENTITY, 0)
+                    supplier_id = reader.getSafeValue<int>(_m_COL_ID),
+                    fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY, 0)
                 };
             }
             return null;
@@ -93,7 +90,6 @@ public class SupplierModel : ABaseModel,
                 $"SET {_m_COL_FK_ENTITY} = @fk_entity " +
                 $"WHERE {_m_COL_ID} = @id;";
         }
-
 
         startTransaction();
         try {
@@ -143,8 +139,8 @@ public class SupplierModel : ABaseModel,
             using MySqlDataReader reader = cmd.ExecuteReader();
 
             if (reader.Read()) {
-                item.supplier_id = reader.GetSafeValue<int>(_m_COL_ID);
-                item.fk_entity_id = reader.GetSafeValue<int>(_m_COL_FK_ENTITY);
+                item.supplier_id = reader.getSafeValue<int>(_m_COL_ID);
+                item.fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY);
             }
 
             return item;
@@ -168,6 +164,6 @@ public class SupplierModel : ABaseModel,
             return false;
         }
 
-        return deleteItem(item.supplier_id);
+        return deleteItem(item.supplier_id.ToString());
     }
 }

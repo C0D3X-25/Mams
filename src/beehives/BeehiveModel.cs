@@ -9,10 +9,8 @@ namespace Mams.src.beehives;
 
 /// <summary>
 /// Represents a model for managing beehive data in the database.
-/// Implements CRUD (Create, Read, Update, Delete) operations for beehive items.
 /// </summary>
-public class BeehiveModel
-    : ABaseModel,
+public class BeehiveModel : ABaseModel,
     ICrudOperation<BeehiveItem> {
 
     private const string _m_TBL_NAME = "beehives";
@@ -26,20 +24,22 @@ public class BeehiveModel
     /// <param name="id">The ID of the beehive to delete.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to soft delete.</param>
     /// <returns>True if deletion was successful, false otherwise.</returns>
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
-    }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
     }
 
     /// <summary>
-    /// Retrieves a beehive item by its unique identifier.
+    /// Retrieves a <see cref="BeehiveItem"/> object by its unique identifier.
     /// </summary>
-    /// <param name="id">The ID of the beehive to retrieve.</param>
-    /// <returns>The BeehiveItem if found, null otherwise.</returns>
+    /// <param name="id">The unique identifier of the item to retrieve. Must be a valid ID string.</param>
+    /// <returns>A <see cref="BeehiveItem"/> object representing the item with the specified ID,  or <see langword="null"/> if no
+    /// matching item is found or if the ID is invalid.</returns>
     public BeehiveItem? getItemByID(string id) {
-        
+
+        if (!SDataValidation.isIdValid(id)) {
+            return null;
+        }
+
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
@@ -53,9 +53,9 @@ public class BeehiveModel
 
             if (reader.Read()) {
                 return new BeehiveItem {
-                    beehive_id = reader.GetSafeValue<int>(_m_COL_ID),
-                    beehive_name = reader.GetSafeValue(_m_COL_NAME, string.Empty),
-                    beehive_archive = reader.GetSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    beehive_id = reader.getSafeValue<int>(_m_COL_ID),
+                    beehive_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                    beehive_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;
@@ -67,31 +67,38 @@ public class BeehiveModel
     }
 
     /// <summary>
-    /// Retrieves all beehive items from the database.
+    /// Retrieves all rows from the beehive table as an observable collection.
     /// </summary>
-    /// <returns>An observable collection of all beehive items.</returns>
+    /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows in the beehive table. If the table is empty, the
+    /// collection will be empty.</returns>
     public ObservableCollection<BeehiveItem> getTable() {
         return SDatabaseModel.getAllRowsInTable<BeehiveItem>(_m_TBL_NAME, _m_COL_ARCHIVE);
     }
 
     /// <summary>
-    /// Creates new record if it doesn't exist in the Database,
-    /// updates existing record if it does.
+    /// Saves the specified <see cref="BeehiveItem"/> to the database.
     /// </summary>
-    /// <param name="item">The BeehiveItem to save.</param>
-    /// <returns>The ID of the entry if the save operation was successful, 0 otherwise.</returns>
+    /// <param name="item">The <see cref="BeehiveItem"/> to save. Cannot be <see langword="null"/>.</param>
+    /// <returns>The ID of the saved item. Returns <c>0</c> if the operation fails, the item is <see langword="null"/>, or the
+    /// item name already exists in the database.</returns>
     public int saveItem(BeehiveItem item) {
+
+        if (item == null) {
+            return 0;
+        }
 
         string query = string.Empty;
         int item_id = item.beehive_id;
+        string item_name = item.beehive_name.Trim();
 
         if (item_id == 0) {
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.beehive_name)) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
                 return 0;
             }
 
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
-                $"VALUES (@name); SELECT LAST_INSERT_ID();";
+                $"VALUES (@name); " +
+                $"SELECT LAST_INSERT_ID();";
         }
         else {
             query = $"UPDATE {_m_TBL_NAME} " +
@@ -99,12 +106,13 @@ public class BeehiveModel
                 $"WHERE {_m_COL_ID} = @id;";
         }
 
+        startTransaction();
         try {
             using MySqlCommand cmd = new(query, m_conn);
             if (item_id != 0) {
                 cmd.Parameters.AddWithValue("@id", item_id);
             }
-            cmd.Parameters.AddWithValue("@name", item.beehive_name);
+            cmd.Parameters.AddWithValue("@name", item_name);
 
             if (item_id == 0) {
                 item_id = Convert.ToInt32(cmd.ExecuteScalar());
@@ -113,9 +121,11 @@ public class BeehiveModel
                 cmd.ExecuteNonQuery();
             }
 
+            commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

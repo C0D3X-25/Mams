@@ -152,7 +152,7 @@ public class SaveProfitController : ABaseController {
     private bool canSaveProfit(object? arg) {
 
         return m_selected_entity != null
-            && SDateValidation.isDateValidFormatEU(m_profit_receipt_detail.receipt.receipt_date_created)
+            && SDataValidation.isDateValidFormatEU(m_profit_receipt_detail.receipt.receipt_date_created)
             && m_list_receipt_product.Count > 0
             && m_list_receipt_product.All(item =>
                 item.receipt_product_unity_price >= 0

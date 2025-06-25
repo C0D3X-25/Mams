@@ -1,4 +1,5 @@
-﻿using Mams.src.items;
+﻿using Mams.src.helpers;
+using Mams.src.items;
 using Mams.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
@@ -10,11 +11,11 @@ namespace Mams.src.databaseOperations;
 /// <summary>
 /// Provides static database operations for handling data models in the application.
 /// Contains methods for retrieving, deleting, and managing database records.
+/// Evem if the Class is abstract, all methods are static and can be used without instantiation.
 /// </summary>
 public abstract class SDatabaseModel : ABaseModel {
 
-    private const string _m_DEFAULT_ARCHIVE_DATE = "1901-01-01";
-
+    private static string _m_DEFAULT_ARCHIVE_DATE = "1901-01-01";
 
     /// <summary>
     /// Retrieves all records from a specified database table and converts them into a collection of typed objects.
@@ -59,9 +60,9 @@ public abstract class SDatabaseModel : ABaseModel {
     /// Performs a delete operation on a specified database table based on the provided delete type.
     /// </summary>
     /// <param name="id">The identifier of the record to be deleted or modified.</param>
-    /// <param name="field_name_id">The name of the ID field in the database table.</param>
-    /// <param name="field_name_archive">The name of the archive date field used for soft deletes.</param>
-    /// <param name="table_name">The name of the database table to perform the operation on.</param>
+    /// <param name="field_id">The name of the ID field in the database table.</param>
+    /// <param name="field_archive">The name of the archive date field used for soft deletes.</param>
+    /// <param name="table">The name of the database table to perform the operation on.</param>
     /// <param name="delete_type">The type of delete operation to perform.</param>
     /// <returns>
     /// Returns true if the operation was successful; otherwise, false.
@@ -77,24 +78,24 @@ public abstract class SDatabaseModel : ABaseModel {
     /// <exception cref="MySqlException">Thrown when a database error occurs during the operation.</exception>
     public static bool deleteRow(
         string id, 
-        string field_name_id, 
-        string field_name_archive,
-        string table_name, 
+        string field_id, 
+        string field_archive,
+        string table, 
         EDeleteItemOperation delete_type
         ) {
-        if (!areDeleteParametersProvided(id, field_name_id, table_name, delete_type)) {
+        if (!areDeleteParametersProvided(id, field_id, table, delete_type)) {
             return false;
         }
 
-        return deleteOperation(id, field_name_id, field_name_archive, table_name, delete_type);
+        return deleteOperation(id, field_id, field_archive, table, delete_type);
     }
 
     /// <summary>
     /// Performs a delete operation on a specified database table based on the provided delete type.
     /// </summary>
     /// <param name="id">The identifier of the record to be deleted or modified.</param>
-    /// <param name="field_name_id">The name of the ID field in the database table.</param>
-    /// <param name="table_name">The name of the database table to perform the operation on.</param>
+    /// <param name="field_id">The name of the ID field in the database table.</param>
+    /// <param name="table">The name of the database table to perform the operation on.</param>
     /// <param name="delete_type">The type of delete operation to perform.</param>
     /// <returns>
     /// Returns true if the operation was successful; otherwise, false.
@@ -110,15 +111,15 @@ public abstract class SDatabaseModel : ABaseModel {
     /// <exception cref="MySqlException">Thrown when a database error occurs during the operation.</exception>
     public static bool deleteRow(
         string id,
-        string field_name_id,
-        string table_name,
+        string field_id,
+        string table,
         EDeleteItemOperation delete_type
         ) {
-        if (!areDeleteParametersProvided(id, field_name_id, table_name, delete_type)) {
+        if (!areDeleteParametersProvided(id, field_id, table, delete_type)) {
             return false;
         }
 
-        return deleteOperation(id, field_name_id, string.Empty, table_name, delete_type);
+        return deleteOperation(id, field_id, string.Empty, table, delete_type);
     }
 
     /// <summary>
@@ -135,19 +136,19 @@ public abstract class SDatabaseModel : ABaseModel {
     /// constraint violation during a hard delete, the method will attempt a soft delete if the archive field is
     /// provided.</remarks>
     /// <param name="id">The unique identifier of the record to be deleted or modified. Cannot be <see langword="null"/> or empty.</param>
-    /// <param name="field_name_id">The name of the field representing the record's unique identifier in the database table. Cannot be <see
+    /// <param name="field_id">The name of the field representing the record's unique identifier in the database table. Cannot be <see
     /// langword="null"/> or empty.</param>
-    /// <param name="field_name_archive">The name of the field used for archiving records. Required for soft delete and restore operations. Can be <see
+    /// <param name="field_archive">The name of the field used for archiving records. Required for soft delete and restore operations. Can be <see
     /// langword="null"/> for hard delete.</param>
-    /// <param name="table_name">The name of the database table containing the record. Cannot be <see langword="null"/> or empty.</param>
+    /// <param name="table">The name of the database table containing the record. Cannot be <see langword="null"/> or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Must be one of the values defined in <see
     /// cref="EDeleteItemOperation"/>.</param>
     /// <returns><see langword="true"/> if the operation is successful; otherwise, <see langword="false"/>.</returns>
     private static bool deleteOperation(
         string id,
-        string field_name_id,
-        string field_name_archive,
-        string table_name,
+        string field_id,
+        string field_archive,
+        string table,
         EDeleteItemOperation delete_type
         ) {
         
@@ -156,32 +157,32 @@ public abstract class SDatabaseModel : ABaseModel {
         switch (delete_type) {
             // Archive the record
             case EDeleteItemOperation.SOFT_DELETE:
-                if (!isArchiveFieldProvided(field_name_archive)) {
+                if (!isArchiveFieldProvided(field_archive)) {
                     return false;
                 }
-                query = $"UPDATE {table_name} " +
-                    $"SET {field_name_archive} = CURDATE() " +
-                    $"WHERE {field_name_id} = @id";
+                query = $"UPDATE {table} " +
+                    $"SET {field_archive} = CURDATE() " +
+                    $"WHERE {field_id} = @id";
                 break;
             // Complete delete of the record
             case EDeleteItemOperation.HARD_DELETE:
-                query = $"DELETE FROM {table_name} WHERE {field_name_id} = @id;";
+                query = $"DELETE FROM {table} WHERE {field_id} = @id;";
                 break;
             // Check if the record is linked in another table, then SOFT_DELETE or HARD_DELETE
             case EDeleteItemOperation.SAFE_DELETE:
-                if (!isArchiveFieldProvided(field_name_archive)) {
+                if (!isArchiveFieldProvided(field_archive)) {
                     return false;
                 }
-                query = $"DELETE FROM {table_name} WHERE {field_name_id} = @id;";
+                query = $"DELETE FROM {table} WHERE {field_id} = @id;";
                 break;
             // Restore the record from the archive
             case EDeleteItemOperation.RESTORE:
-                if (!isArchiveFieldProvided(field_name_archive)) {
+                if (!isArchiveFieldProvided(field_archive)) {
                     return false;
                 }
-                query = $"UPDATE {table_name} " +
-                    $"SET {field_name_archive} = NULL " +
-                    $"WHERE {field_name_id} = @id";
+                query = $"UPDATE {table} " +
+                    $"SET {field_archive} = NULL " +
+                    $"WHERE {field_id} = @id";
                 break;
         }
 
@@ -207,14 +208,14 @@ public abstract class SDatabaseModel : ABaseModel {
             // if the archive field is provided, otherwise there is a rollback
             if (ex.ErrorCode == MySqlErrorCode.RowIsReferenced2
                 || ex.ErrorCode == MySqlErrorCode.RowIsReferenced
-                && isArchiveFieldProvided(field_name_archive)
+                && isArchiveFieldProvided(field_archive)
                 ) {
                 clearTransaction();
                 return deleteOperation(
                     id, 
-                    field_name_id, 
-                    field_name_archive, 
-                    table_name, 
+                    field_id, 
+                    field_archive, 
+                    table, 
                     EDeleteItemOperation.SOFT_DELETE
                 );
             }
@@ -226,18 +227,31 @@ public abstract class SDatabaseModel : ABaseModel {
         }
     }
 
-    private static bool isArchiveFieldProvided(string field_name_archive) {
-        if (string.IsNullOrWhiteSpace(field_name_archive)) {
+    /// <summary>
+    /// Determines whether the provided archive field name is valid for a soft delete operation.
+    /// </summary>
+    /// <param name="field_archive">The name of the archive field to validate. Must not be null, empty, or consist solely of whitespace.</param>
+    /// <returns><see langword="true"/> if the archive field name is valid; otherwise, <see langword="false"/>.</returns>
+    private static bool isArchiveFieldProvided(string field_archive) {
+        if (string.IsNullOrWhiteSpace(field_archive)) {
             MessageBox.Show("Archive field name cannot be empty for soft delete operation.");
             return false;
         }
         return true;
     }
 
-    private static bool areDeleteParametersProvided(string id, string field_name_id, string table_name, EDeleteItemOperation delete_type) {
-        if (string.IsNullOrWhiteSpace(id)
-            || string.IsNullOrWhiteSpace(field_name_id)
-            || string.IsNullOrWhiteSpace(table_name)
+    /// <summary>
+    /// Determines whether the required parameters for a delete operation are valid and provided.
+    /// </summary>
+    /// <param name="id">The identifier of the item to be deleted. Cannot be null, empty, or whitespace.</param>
+    /// <param name="field_id">The name of the field representing the item's identifier in the database. Cannot be null, empty, or whitespace.</param>
+    /// <param name="table">The name of the database table where the item resides. Cannot be null, empty, or whitespace.</param>
+    /// <param name="delete_type">The type of delete operation to perform. Must not be <see cref="EDeleteItemOperation.NONE"/>.</param>
+    /// <returns><see langword="true"/> if all required parameters are valid and provided; otherwise, <see langword="false"/>.</returns>
+    private static bool areDeleteParametersProvided(string id, string field_id, string table, EDeleteItemOperation delete_type) {
+        if (!SDataValidation.isIdValid(id)
+            || string.IsNullOrWhiteSpace(field_id)
+            || string.IsNullOrWhiteSpace(table)
             || delete_type == EDeleteItemOperation.NONE
             ) {
             MessageBox.Show("Invalid parameters provided for delete operation.");
