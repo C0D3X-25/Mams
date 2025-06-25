@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MySqlConnector" Version="2.4.0" />
+    <None Include="schemas\MLD.simp.user" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="schemas\MLD.simp.user" />
+    <PackageReference Include="MySqlConnector" Version="2.4.0" />
   </ItemGroup>
 
   <ItemGroup>

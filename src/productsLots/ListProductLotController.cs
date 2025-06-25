@@ -56,7 +56,6 @@ public class ListProductLotController : ABaseController {
 
 
     public ListProductLotController() {
-        
         _m_delete_button_text = string.Empty;
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);

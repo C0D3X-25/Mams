@@ -11,8 +11,7 @@ using System.Windows;
 
 namespace Mams.src.productsLots;
 
-public class ProductLotModel :
-    ABaseModel,
+public class ProductLotModel : ABaseModel,
     ICrudOperation<ProductLotItem> {
 
     private const string _m_TBL_NAME = "products_lots";
@@ -22,17 +21,17 @@ public class ProductLotModel :
     private const string _m_COL_FK_BEEHIVE = "fk_beehive_id";
     private const string _m_COL_ARCHIVE = "product_lot_archive";
 
+    // This default data are directly inserted in the database when she is created.
+    // They are used because a FK can't be null, so we need to have a default value.
+    private const int       _m_DEFAULT_LOT_FK_BEEHIVE = 1;
+    private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
 
+    
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
     public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return deleteItem(id.ToString(), delete_type);
-    }
-
-
-    public ProductLotItem? getItem(string search) {
-        throw new NotImplementedException();
     }
 
 
@@ -82,7 +81,7 @@ public class ProductLotModel :
 
 
     public ObservableCollection<ProductLotItem> getTable() {
-        ObservableCollection<ProductLotItem> table = SDatabaseModel.getAllRowsInTable<ProductLotItem>(_m_TBL_NAME);
+        ObservableCollection<ProductLotItem> table = SDatabaseModel.getAllRowsInTable<ProductLotItem>(_m_TBL_NAME, _m_COL_ARCHIVE);
 
         BeehiveModel beehive_model = new();
 
@@ -126,8 +125,12 @@ public class ProductLotModel :
             if (item_id != 0) {
                 cmd.Parameters.AddWithValue("@id", item_id);
             }
+
             cmd.Parameters.AddWithValue("@name", item.product_lot_name);
             cmd.Parameters.AddWithValue("@year", item.product_lot_year);
+            if (item.fk_beehive_id == 0) {
+                item.fk_beehive_id = _m_DEFAULT_LOT_FK_BEEHIVE;
+            }
             cmd.Parameters.AddWithValue("@fk_beehive", item.fk_beehive_id);
 
             if (item_id == 0) {

@@ -22,6 +22,8 @@ internal class ProductModel : ABaseModel,
     private const string _m_COL_FK_PRODUCT_SHAPE = "fk_product_shape_id";
     private const string _m_COL_ARCHIVE = "product_archive";
 
+    private const int       _m_DEFAUL_FK_PRODUCT_SHAPE = 1;
+    private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
@@ -160,6 +162,9 @@ internal class ProductModel : ABaseModel,
             cmd.Parameters.AddWithValue("@weight", item.product_weight);
             cmd.Parameters.AddWithValue("@fk_product_type", item.fk_product_type_id);
             cmd.Parameters.AddWithValue("@fk_product_category", item.fk_product_category_id);
+            if (item.fk_product_shape_id == 0) {
+                item.fk_product_shape_id = _m_DEFAUL_FK_PRODUCT_SHAPE;
+            }
             cmd.Parameters.AddWithValue("@fk_product_shape", item.fk_product_shape_id);
 
             if (item_id == 0) {

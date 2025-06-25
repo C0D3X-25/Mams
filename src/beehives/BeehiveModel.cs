@@ -71,7 +71,7 @@ public class BeehiveModel
     /// </summary>
     /// <returns>An observable collection of all beehive items.</returns>
     public ObservableCollection<BeehiveItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<BeehiveItem>(_m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<BeehiveItem>(_m_TBL_NAME, _m_COL_ARCHIVE);
     }
 
     /// <summary>
@@ -81,10 +81,8 @@ public class BeehiveModel
     /// <param name="item">The BeehiveItem to save.</param>
     /// <returns>The ID of the entry if the save operation was successful, 0 otherwise.</returns>
     public int saveItem(BeehiveItem item) {
-        
 
         string query = string.Empty;
-
         int item_id = item.beehive_id;
 
         if (item_id == 0) {

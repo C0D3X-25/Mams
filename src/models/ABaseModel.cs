@@ -28,14 +28,6 @@ public abstract class ABaseModel {
         get { return _m_transaction; }
     }
 
-
-    private static List<string> _m_list_linked_table = new();
-    public static List<string> m_list_linked_table {
-        get { return _m_list_linked_table; }
-        set { }
-    }
-
-
     /// <summary>
     /// Starts a new database transaction on the current connection.
     /// </summary>

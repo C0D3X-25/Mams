@@ -22,6 +22,10 @@ public class ReceiptProductModel : ABaseModel,
     private const string _m_COL_FK_RECEIPT = "fk_receipt_id";
     private const string _m_COL_FK_PRODUCT_LOT = "fk_product_lot_id";
 
+    // This default data are directly inserted in the database when she is created.
+    // They are used because a FK can't be null, so we need to have a default value.
+    private const int       _m_DEFAULT_FK_PRODUCT_LOT = 1;
+    private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
 
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, _m_TBL_NAME, delete_type);
@@ -126,29 +130,24 @@ public class ReceiptProductModel : ABaseModel,
         // Check if the item already exists in the database, if not insert the item into the database
         string query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_QUANTITY}, {_m_COL_UNITY_PRICE}, " +
                 $"{_m_COL_FK_RECEIPT}, {_m_COL_FK_PRODUCT}, {_m_COL_FK_PRODUCT_LOT}) " +
-                $"SELECT @quantity, @unity_price, @fk_receipt, @fk_product, @fk_product_lot " +
-                $"WHERE NOT EXISTS (SELECT 1 FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_FK_RECEIPT} = @fk_receipt " +
-                $"AND {_m_COL_FK_PRODUCT} = @fk_product " +
-                $"AND {_m_COL_QUANTITY} = @quantity " +
-                $"AND {_m_COL_UNITY_PRICE} = @unity_price); " +
+                $"VALUES (@quantity, @unity_price, @fk_receipt, @fk_product, @fk_product_lot); " +
                 $"SELECT LAST_INSERT_ID();";
 
-        //startTransaction();
         try {
             using MySqlCommand cmd = new(query, m_conn, m_transaction);
             cmd.Parameters.AddWithValue("@quantity", item.receipt_product_quantity);
             cmd.Parameters.AddWithValue("@unity_price", item.receipt_product_unity_price);
             cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
             cmd.Parameters.AddWithValue("@fk_product", item.product_item.product_id);
+            if (item.product_lot_item.product_lot_id == 0) {
+                item.product_lot_item.product_lot_id = _m_DEFAULT_FK_PRODUCT_LOT;
+            }
             cmd.Parameters.AddWithValue("@fk_product_lot", item.product_lot_item.product_lot_id);
 
             int item_id = Convert.ToInt32(cmd.ExecuteScalar());
-            //commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            //rollbackTransaction(); // TODO: Move
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -162,8 +161,6 @@ public class ReceiptProductModel : ABaseModel,
         if (string.IsNullOrEmpty(fk_receipt)) {
             return items;
         }
-
-        
 
         try {
             using MySqlCommand cmd = new(

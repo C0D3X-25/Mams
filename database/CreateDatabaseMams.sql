@@ -101,3 +101,11 @@ CREATE TABLE IF NOT EXISTS receipts_products (
     FOREIGN KEY (fk_receipt_id) REFERENCES receipts(receipt_id),
     FOREIGN KEY (fk_product_lot_id) REFERENCES products_lots(product_lot_id)
 );
+
+-- Insert default data to avoid NULL values in foreign keys
+INSERT INTO products_shapes (product_shape_name, product_shape_archive) VALUES
+('', '1901-01-01');
+INSERT INTO beehives (beehive_name, beehive_archive) VALUES
+('', '1901-01-01');
+INSERT INTO products_lots (product_lot_name, product_lot_year, fk_beehive_id, product_lot_archive) VALUES
+('', 0, 1, '1901-01-01');

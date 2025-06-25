@@ -92,7 +92,8 @@ public class ProductCategoryModel :
             }
 
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
-                $"VALUES (@name); SELECT LAST_INSERT_ID();";
+                $"VALUES (@name); " +
+                $"SELECT LAST_INSERT_ID();";
         }
         else {
             query = $"UPDATE {_m_TBL_NAME} " +

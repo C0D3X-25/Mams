@@ -66,7 +66,7 @@ public class ProductShapeModel :
 
 
     public ObservableCollection<ProductShapeItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<ProductShapeItem>(_m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<ProductShapeItem>(_m_TBL_NAME, _m_COL_ARCHIVE);
 
     }
 

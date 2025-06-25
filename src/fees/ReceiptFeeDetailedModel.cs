@@ -14,9 +14,6 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     private readonly ReceiptHandlerModel _m_receipt_handler_model = new();
     private readonly EntityModel _m_entity_model = new();
     private readonly SupplierModel _m_supplier_model = new();
-    //private readonly ReceiptSupplierModel _m_receipt_supplier_model = new();
-    //private readonly ReceiptModel _m_receipts_model = new();
-    //private readonly ReceiptProductModel _m_receipt_product_model = new();
     private readonly ProductModel _m_product_model = new();
 
 
