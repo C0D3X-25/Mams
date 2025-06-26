@@ -1,11 +1,4 @@
 ﻿using Mams.src.commands;
-using Mams.src.entities;
-using Mams.src.views.pages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace Mams.src.navigations;
@@ -15,10 +8,14 @@ public class UCHeaderController {
     public ICommand m_navigate_homepage_command { get; set; }
 
     public UCHeaderController() {
-
         m_navigate_homepage_command = new RelayCommand(navigateToHomepage);
     }
 
+    /// <summary>
+    /// Navigates to the application's homepage.
+    /// </summary>
+    /// <param name="obj">An optional parameter that can be used to pass additional context for navigation. This parameter is currently
+    /// unused.</param>
     private void navigateToHomepage(object? obj) {
         SPageNavigationController.navigateToHomePage();
     }

@@ -14,7 +14,6 @@ namespace Mams.src.navigations;
 
 public class UCMenuController {
 
-    
     public ICommand m_navigate_list_fee_command { get; set; }
     public ICommand m_navigate_list_profit_command { get; set; }
     public ICommand m_navigate_list_entity_command { get; set; }
@@ -26,7 +25,6 @@ public class UCMenuController {
     public ICommand m_navigate_list_product_shape_command { get; set; }
 
     public UCMenuController() {
-
         m_navigate_list_fee_command = new RelayCommand(navigateToListFee);
         m_navigate_list_profit_command = new RelayCommand(navigateToListProfit);
         m_navigate_list_entity_command = new RelayCommand(navigateToListEntity);

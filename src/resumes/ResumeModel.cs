@@ -2,6 +2,7 @@
 using Mams.src.databaseOperations;
 using Mams.src.entities;
 using Mams.src.fees;
+using Mams.src.helpers;
 using Mams.src.products;
 using Mams.src.productsCategories;
 using Mams.src.productsLots;
@@ -18,16 +19,16 @@ namespace Mams.src.resumes;
 // that why this class doesn't inherit from ABaseModel
 public class ResumeModel {
 
-    private readonly ReceiptProfitDetailedModel _m_profit_model;
-    private readonly ReceiptFeeDetailedModel _m_fee_model;
-    private readonly ReceiptModel _m_receipt_model;
-    private readonly EntityModel _m_entity_model;
-    private readonly ProductModel _m_product_model;
-    private readonly ProductShapeModel _m_product_shape_model;
-    private readonly ProductCategoryModel _m_product_category_model;
-    private readonly ProductTypeModel _m_product_type_model;
-    private readonly ProductLotModel _m_product_lot_model;
-    private readonly BeehiveModel _m_beehive_model;
+    private readonly ReceiptProfitDetailedModel _m_profit_model = new();
+    private readonly ReceiptFeeDetailedModel _m_fee_model = new();
+    private readonly ReceiptModel _m_receipt_model = new();
+    private readonly EntityModel _m_entity_model = new();
+    private readonly ProductModel _m_product_model = new();
+    private readonly ProductShapeModel _m_product_shape_model = new();
+    private readonly ProductCategoryModel _m_product_category_model = new();
+    private readonly ProductTypeModel _m_product_type_model = new();
+    private readonly ProductLotModel _m_product_lot_model = new();
+    private readonly BeehiveModel _m_beehive_model = new();
 
     private ObservableCollection<ReceiptProfitDetailedItem>? _m_list_profit_items;
     private ObservableCollection<ReceiptFeeDetailedItem>? _m_list_fee_items;
@@ -53,7 +54,9 @@ public class ResumeModel {
     private ObservableCollection<BeehiveItem>? _m_list_beehive_all;
     private ObservableCollection<BeehiveItem>? _m_list_beehive_not_archived;
 
-
+    /// <summary>
+    /// Represents a predefined collection of database table names and their corresponding display names.
+    /// </summary>
     public readonly ObservableCollection<DatabaseTablesNameItem> m_search_tables = new() {
         new(){ m_name_in_database = EDatabaseTableName.NONE, m_name_to_display = string.Empty }, // Search all
         new(){ m_name_in_database = EDatabaseTableName.ENTITY, m_name_to_display = "Client/Fournisseur" },
@@ -67,27 +70,22 @@ public class ResumeModel {
 
 
     public ResumeModel() {
-
-        _m_profit_model = new();
-        _m_fee_model = new();
-        _m_receipt_model = new();
-        _m_entity_model = new();
-        _m_product_model = new();
-        _m_product_shape_model = new();
-        _m_product_category_model = new();
-        _m_product_type_model = new();
-        _m_product_lot_model = new();
-        _m_beehive_model = new();
-
         populateListOfItems();
     }
 
-
+    /// <summary>
+    /// Retrieves a filtered and sorted resume item based on the specified search criteria.
+    /// </summary>
+    /// <param name="search">The search criteria used to filter and sort the resume item. Can be null.</param>
+    /// <returns>A <see cref="ResumeItem"/> object that matches the specified search criteria, sorted by year. If no filtering
+    /// criteria are provided or the internal data is unavailable, an empty <see cref="ResumeItem"/> is returned.</returns>
     public ResumeItem getFilteredResume(SearchItem? search) {
 
         var resume_item = new ResumeItem();
 
-        if (_m_list_profit_items == null || _m_list_fee_items == null) {
+        if (_m_list_profit_items == null 
+            || _m_list_fee_items == null)
+            {
             return resume_item;
         }
 
@@ -96,7 +94,13 @@ public class ResumeModel {
         return sortByYear(resume_item, search);
     }
 
-
+    /// <summary>
+    /// Retrieves a collection of search items based on the specified database table.
+    /// </summary>
+    /// <param name="selected_table">The database table from which to retrieve search items. The table is identified by its name in the database.</param>
+    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="SearchItem"/> objects, where each item represents an
+    /// entity from the specified table. The collection will be empty if the table contains no items or if the
+    /// corresponding data source is null.</returns>
     public ObservableCollection<SearchItem> getListSearchItems(DatabaseTablesNameItem selected_table) {
 
         var list_search_item = new ObservableCollection<SearchItem>();
@@ -176,7 +180,12 @@ public class ResumeModel {
         return list_search_item;
     }
 
-
+    /// <summary>
+    /// Retrieves a collection of search items representing available years.
+    /// </summary>
+    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="SearchItem"/> objects, where each item represents a year
+    /// retrieved from the underlying data source. If no years are available, the collection will be empty except for a
+    /// default item.</returns>
     public ObservableCollection<SearchItem> getListYears() {
 
         var list_search_year = new ObservableCollection<SearchItem>();
@@ -200,15 +209,27 @@ public class ResumeModel {
         return list_search_year;
     }
 
-
+    /// <summary>
+    /// Filters profit and fee items based on the specified search criteria.
+    /// </summary>
+    /// <remarks>The filtering behavior depends on the <see cref="EDatabaseTableName"/> specified in the
+    /// <paramref name="search"/> parameter: <list type="bullet"> <item> <description> If <see
+    /// cref="EDatabaseTableName.NONE"/> is specified, all profit and fee items are returned. </description> </item>
+    /// <item> <description> For other table names, filtering is applied based on the corresponding identifier in the
+    /// <paramref name="search"/> parameter. </description> </item> </list> If the identifier in <paramref
+    /// name="search"/> is zero, no filtering is applied for that table.</remarks>
+    /// <param name="search">The search criteria used to filter the items. If <paramref name="search"/> is <see langword="null"/>, all profit
+    /// and fee items are returned. If <paramref name="search"/> contains specific criteria, the filtering is applied
+    /// based on the <see cref="EDatabaseTableName"/> and associated identifiers.</param>
+    /// <returns>A <see cref="ResumeItem"/> containing the filtered profit and fee items. If no matching items are found or the
+    /// input parameters are invalid, the returned <see cref="ResumeItem"/> will contain empty collections.</returns>
     private ResumeItem filterBy(SearchItem? search) {
 
         var filtered_data = new ResumeItem();
 
-        if (_m_list_profit_items == null) {
-            return filtered_data;
-        }
-        if (_m_list_fee_items == null) {
+        if (_m_list_profit_items == null
+            || _m_list_fee_items == null) 
+            {
             return filtered_data;
         }
         if (search == null) {
@@ -260,7 +281,6 @@ public class ResumeModel {
                 if (search.search_id == 0) {
                     break;
                 }
-
                 filtered_data.profit_items = new(
                     _m_list_profit_items.Where(profit =>
                         profit.receipt_products.Any(product =>
@@ -280,7 +300,6 @@ public class ResumeModel {
                 if (search.search_id == 0) {
                     break;
                 }
-
                 filtered_data.profit_items = new(
                     _m_list_profit_items.Where(profit =>
                         profit.receipt_products.Any(product =>
@@ -300,7 +319,6 @@ public class ResumeModel {
                 if (search.search_id == 0) {
                     break;
                 }
-
                 filtered_data.profit_items = new(
                     _m_list_profit_items.Where(profit =>
                         profit.receipt_products.Any(product =>
@@ -320,7 +338,6 @@ public class ResumeModel {
                 if (search.search_id == 0) {
                     break;
                 }
-
                 filtered_data.profit_items = new(
                     _m_list_profit_items.Where(profit =>
                         profit.receipt_products.Any(product =>
@@ -340,7 +357,6 @@ public class ResumeModel {
                 if (search.search_id == 0) {
                     break;
                 }
-
                 filtered_data.profit_items = new(
                     _m_list_profit_items.Where(profit =>
                         profit.receipt_products.Any(product =>
@@ -361,7 +377,14 @@ public class ResumeModel {
         return filtered_data;
     }
 
-
+    /// <summary>
+    /// Sorts the profit and fee items within a <see cref="ResumeItem"/> by year and date in descending order.
+    /// </summary>
+    /// <param name="data_to_sort">The <see cref="ResumeItem"/> containing the profit and fee items to be sorted.</param>
+    /// <param name="search">An optional <see cref="SearchItem"/> specifying the year to filter the items by. If <c>null</c>, no filtering is
+    /// applied.</param>
+    /// <returns>A new <see cref="ResumeItem"/> containing the sorted profit and fee items. If both profit and fee items are
+    /// empty, an empty <see cref="ResumeItem"/> is returned.</returns>
     private ResumeItem sortByYear(ResumeItem data_to_sort, SearchItem? search) {
 
         if (data_to_sort.profit_items.Count == 0 && data_to_sort.fee_items.Count == 0) {
@@ -374,9 +397,9 @@ public class ResumeModel {
         // Filter by year if specified in search
         if (search != null) {
             if (search.search_year != string.Empty) {
-                string year_to_match = getYearFromDate(search.search_year);
-                query_profit = query_profit.Where(item => getYearFromDate(item.receipt.receipt_date_created) == year_to_match);
-                query_fee = query_fee.Where(item => getYearFromDate(item.receipt.receipt_date_created) == year_to_match);
+                string year_to_match = SFormatData.getYearFromDate(search.search_year);
+                query_profit = query_profit.Where(item => SFormatData.getYearFromDate(item.receipt.receipt_date_created) == year_to_match);
+                query_fee = query_fee.Where(item => SFormatData.getYearFromDate(item.receipt.receipt_date_created) == year_to_match);
             }
         }
 
@@ -404,26 +427,14 @@ public class ResumeModel {
         return sorted_items;
     }
 
-
-    private string getYearFromDate(string date) {
-
-        if (date == string.Empty) {
-            return string.Empty;
-        }
-        // If the date is already a year (4 digits)
-        if (date.Length == 4) {
-            return date;
-        }
-
-        DateTime parsed_date = DateTime.ParseExact(date,
-            globals.SGlobals.g_EU_DATE_FORMAT,
-            System.Globalization.CultureInfo.InvariantCulture
-        );
-
-        return parsed_date.Year.ToString();
-    }
-
-
+    /// <summary>
+    /// Populates various collections with data retrieved from their respective models, filtering out archived items
+    /// where applicable.
+    /// </summary>
+    /// <remarks>This method initializes collections for entities, products, product shapes, product
+    /// categories, product types, product lots, beehives, profits, and fees. For collections that support archiving,
+    /// only non-archived items are included. Archived items are identified by an empty string in their respective
+    /// archive fields.</remarks>
     private void populateListOfItems() {
 
         // Entity

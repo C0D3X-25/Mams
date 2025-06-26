@@ -12,6 +12,6 @@ public partial class MainWindow : Window {
         //StartApplication.launchServices();
         InitializeComponent();
 
-        SPageNavigationController.Initialize(MainFrame);
+        SPageNavigationController.initialize(MainFrame);
     }
 }
