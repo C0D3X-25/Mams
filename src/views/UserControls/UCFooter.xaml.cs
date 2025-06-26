@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using Mams.src.navigations;
+using System.Windows.Controls;
 
 namespace Mams.src.views.UserControls
 {
@@ -10,6 +11,7 @@ namespace Mams.src.views.UserControls
         public UCFooter()
         {
             InitializeComponent();
+            DataContext = new UCFooterController();
         }
     }
 }

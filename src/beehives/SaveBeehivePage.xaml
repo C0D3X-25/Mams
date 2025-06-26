@@ -9,7 +9,7 @@
       d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveBeehivePage">
 
-    <Grid>
+    <Grid Background="{Binding m_page_background_color}">
         <!--Page is 12* per 12*-->
         <Grid>
             <Grid.RowDefinitions>
@@ -27,7 +27,6 @@
                 title="Ruchers"
 
             ></userControls:UCHeader>
-            <!--Header-->
 
             <!--Body-->
             <Grid Grid.Row="1">
@@ -45,10 +44,9 @@
                 <userControls:UCMenu
 
                 ></userControls:UCMenu>
-                <!--Menu-->
 
                 <!--Content-->
-                <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
+                <Grid Grid.Column="1" Background="{Binding m_body_background_color}" Margin="3,3,10,3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
@@ -110,7 +108,6 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-
                                 <!--ID-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="0"
@@ -132,6 +129,8 @@
                             HorizontalAlignment="Right" VerticalAlignment="Center"
                             Margin="0,0,50,0"
                             FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
                         ></Button>
 
                         <Button 
@@ -143,19 +142,18 @@
                             HorizontalAlignment="Left" VerticalAlignment="Center"
                             Margin="50,0,0,0"
                             FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
                         ></Button>
                     </Grid>
                 </Grid>
-                <!--Content-->
             </Grid>
-            <!--Body-->
 
             <!--Footer-->
-            <userControls:UCFooter x:Name="footer" Grid.Row="2">
+            <userControls:UCFooter
+                Grid.Row="2">
 
             </userControls:UCFooter>
-            <!--Footer-->
         </Grid>
-        <!--Page-->
     </Grid>
 </Page>

@@ -2,12 +2,17 @@
 using Mams.src.databaseOperations;
 using Mams.src.fees;
 using Mams.src.profits;
+using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 
 namespace Mams.src.resumes;
 
 public class ResumeController : ABaseController {
+
+    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
+    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+
 
     private readonly ResumeModel _m_resume_model;
 

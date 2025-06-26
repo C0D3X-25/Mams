@@ -9,7 +9,7 @@
      d:DesignHeight="800" d:DesignWidth="1224"
      Title="ResumePage">
 
-   <Grid>
+   <Grid Background="{Binding m_page_background_color}">
        <!--Page is 12* per 12*-->
        <Grid>
            <Grid.RowDefinitions>
@@ -47,7 +47,7 @@
 
                 <!--Content-->
                <Grid Grid.Column="1" 
-                     Background="#FFE0A5A5" 
+                     Background="{Binding m_body_background_color}" 
                      Margin="3,3,10,3">
                    <Grid.RowDefinitions>
                        <RowDefinition/>

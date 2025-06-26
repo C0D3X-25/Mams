@@ -1,4 +1,5 @@
 ﻿using Mams.src.navigations;
+using Mams.src.views.globalView;
 using System.Windows;
 
 namespace Mams.src.views;
@@ -9,9 +10,7 @@ namespace Mams.src.views;
 public partial class MainWindow : Window {
 
     public MainWindow() {
-        //StartApplication.launchServices();
         InitializeComponent();
-
         SPageNavigationController.initialize(MainFrame);
     }
 }

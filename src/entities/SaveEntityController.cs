@@ -1,6 +1,7 @@
 ﻿using Mams.src.commands;
 using Mams.src.controllers;
 using Mams.src.navigations;
+using Mams.src.views.globalView;
 using System.Windows;
 using System.Windows.Input;
 
@@ -11,7 +12,14 @@ namespace Mams.src.entities;
 /// </summary>
 public class SaveEntityController : ABaseController {
 
-    
+    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
+    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
+    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
+    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+
+
     private readonly EntityModel _m_entity_model;
 
     public ICommand m_save_command { get; set; }
