@@ -29,7 +29,7 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
     /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return _m_receipt_handler_model.deleteReceipt(id);
+        return _m_receipt_handler_model.deleteItem(id);
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public class ReceiptProfitDetailedModel : ABaseModel,
             return null;
         }
 
-        var receipt = _m_receipt_handler_model.getReceiptByID(id);
+        var receipt = _m_receipt_handler_model.getItemByID(id);
 
         if (receipt == null) {
             return null;
@@ -135,7 +135,7 @@ public class ReceiptProfitDetailedModel : ABaseModel,
             receipt_client_item = item.receipt_client
         };
 
-        return _m_receipt_handler_model.saveReceipt(handlerItem);
+        return _m_receipt_handler_model.saveItem(handlerItem);
     }
 
     /// <summary>

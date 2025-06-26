@@ -3,6 +3,7 @@ using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 
 namespace Mams.src.receipts;
@@ -101,14 +102,17 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
 
         int item_id = item.fk_receipt_id;
 
-
-        // TODO: Look if has any use, maybe check if the transaction is open
-        //startTransaction();
+        bool transaction_needed = false;
+        if (!isTransactionActive()) {
+            startTransaction();
+            transaction_needed = true;
+        }
 
         try {  
             string query = isIdenticItemPresentInTable(m_TBL_NAME, _m_COL_FK_RECEIPT, item_id.ToString())
                 ? $"UPDATE {m_TBL_NAME} SET {_m_COL_FK_CLIENT} = @fk_client WHERE {_m_COL_FK_RECEIPT} = @fk_receipt; SELECT @fk_receipt;"
-                : $"INSERT INTO {m_TBL_NAME} ({_m_COL_FK_RECEIPT}, {_m_COL_FK_CLIENT}) VALUES (@fk_receipt, @fk_client); SELECT LAST_INSERT_ID();";
+                : $"INSERT INTO {m_TBL_NAME} ({_m_COL_FK_RECEIPT}, {_m_COL_FK_CLIENT}) VALUES (@fk_receipt, @fk_client); " +
+                $"SELECT LAST_INSERT_ID();";
 
             using var cmd = new MySqlCommand(query, m_conn, m_transaction);
             cmd.Parameters.AddWithValue("@fk_receipt", item_id);
@@ -116,27 +120,34 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
 
             item_id = Convert.ToInt32(cmd.ExecuteScalar());
 
-            //commitTransaction();
+            if (transaction_needed) {
+                commitTransaction();
+            }
             return item_id;
         }
         catch (MySqlException ex) {
-            //rollbackTransaction();
+            if (transaction_needed) 
+            {
+                rollbackTransaction();
+            }
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
     }
 
     /// <summary>
-    /// Retrieves all receipt-client relationships for a specific receipt ID.
+    /// Retrieves a collection of <see cref="ReceiptClientItem"/> objects associated with the specified receipt ID.
     /// </summary>
-    /// <param name="fk_receipt">The receipt ID to search for.</param>
-    /// <returns>An ObservableCollection of ReceiptClientItems associated with the given receipt ID.</returns>
+    /// <param name="fk_receipt">The foreign key receipt ID used to filter the items. Must not be null or empty.</param>
+    /// <returns>An <see cref="ObservableCollection{T}"/> containing the <see cref="ReceiptClientItem"/> objects associated with
+    /// the specified receipt ID. If <paramref name="fk_receipt"/> is null or empty, an empty collection is returned.</returns>
     public ObservableCollection<ReceiptClientItem> getListItemWithReceiptID(string fk_receipt) {
-        var items = new ObservableCollection<ReceiptClientItem>();
-        if (string.IsNullOrEmpty(fk_receipt)) return items;
 
-        
-        if (m_conn == null) return items;
+        var items = new ObservableCollection<ReceiptClientItem>();
+
+        if (string.IsNullOrEmpty(fk_receipt)) {
+            return items;
+        }
 
         try {
             using var cmd = new MySqlCommand(
@@ -156,10 +167,12 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     }
 
     /// <summary>
-    /// Creates a ReceiptClientItem from a MySqlDataReader.
+    /// Creates a new instance of <see cref="ReceiptClientItem"/> using data from the specified <see
+    /// cref="MySqlDataReader"/>.
     /// </summary>
-    /// <param name="reader">The MySqlDataReader containing the data.</param>
-    /// <returns>A ReceiptClientItem populated with data from the reader.</returns>
+    /// <param name="reader">The <see cref="MySqlDataReader"/> containing the data used to populate the <see cref="ReceiptClientItem"/>
+    /// instance. Must not be null.</param>
+    /// <returns>A <see cref="ReceiptClientItem"/> populated with values retrieved from the <paramref name="reader"/>.</returns>
     private static ReceiptClientItem CreateItemFromReader(MySqlDataReader reader) {
         return new ReceiptClientItem {
             fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),

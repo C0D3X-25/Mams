@@ -8,8 +8,7 @@ using System.Windows;
 namespace Mams.src.receipts;
 
 /// <summary>
-/// Manages receipt-related database operations including CRUD functionality.
-/// Implements the ICrudOperation interface for ReceiptItem objects.
+/// Represents a model for managing receipt data in the database.
 /// </summary>
 public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
 
@@ -19,20 +18,23 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     private const string _m_COL_RECEIPT_DATE_CREATED = "receipt_date_created";
 
     /// <summary>
-    /// Deletes a receipt item from the database based on the provided ID.
+    /// Deletes an item from the database based on the specified identifier and delete operation type.
     /// </summary>
-    /// <param name="id">The ID of the receipt to delete</param>
-    /// <param name="delete_type">The type of deletion to perform (default: HARD_DELETE)</param>
-    /// <returns>True if deletion was successful, false otherwise</returns>
+    /// <remarks>The behavior of the delete operation depends on the specified <paramref name="delete_type"/>.
+    /// For <see cref="EDeleteItemOperation.SAFE_DELETE"/>, the item is archived instead of being permanently removed.</remarks>
+    /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
+    /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
+    /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
     }
 
     /// <summary>
-    /// Retrieves a specific receipt item from the database by its ID.
+    /// Retrieves a <see cref="ReceiptItem"/> object by its unique identifier.
     /// </summary>
-    /// <param name="id">The ID of the receipt to retrieve</param>
-    /// <returns>A ReceiptItem object if found; null otherwise</returns>
+    /// <param name="id">The unique identifier of the receipt item to retrieve. Must be a valid identifier.</param>
+    /// <returns>A <see cref="ReceiptItem"/> object representing the receipt item with the specified identifier,  or <see
+    /// langword="null"/> if no matching item is found or if the identifier is invalid.</returns>
     public ReceiptItem? getItemByID(string id) {
 
         if (!SDataValidation.isIdValid(id)) {
@@ -68,33 +70,38 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     }
 
     /// <summary>
-    /// Retrieves all receipt items from the database.
+    /// Retrieves all rows from the table associated with <see cref="ReceiptItem"/>.
     /// </summary>
-    /// <returns>An ObservableCollection of ReceiptItem objects</returns>
+    /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows in the table. If the table is empty, the collection
+    /// will be empty.</returns>
     public ObservableCollection<ReceiptItem> getTable() {
         return SDatabaseModel.getAllRowsInTable<ReceiptItem>(_m_TBL_NAME);
     }
 
     /// <summary>
-    /// Saves a receipt item to the database.If the item's ID is 0, creates a new record;
-    /// otherwise updates the existing record.
+    /// Saves the specified receipt item to the database.
     /// </summary>
-    /// <param name = "item" > The ReceiptItem to save</param>
-    /// <returns>The ID of the saved receipt; 0 if the operation failed</returns>
+    /// <param name="item">The receipt item to save. Cannot be <see langword="null"/>.</param>
+    /// <returns>The ID of the saved receipt item. Returns 0 if the <paramref name="item"/> is <see langword="null"/> or if a
+    /// database error occurs.</returns>
     public int saveItem(ReceiptItem item) {
+
         if (item == null) {
             return 0;
         }
 
         int item_id = item.receipt_id;
 
-        DateTime parsed_date = DateTime.ParseExact(item.receipt_date_created, globals.SGlobals.g_EU_DATE_FORMAT, null);
-        string mysql_formatted_date = parsed_date.ToString("yyyy-MM-dd");
-
         string query = item_id == 0
             ? $"INSERT INTO {_m_TBL_NAME} ({_m_COL_RECEIPT_TOTAL_PRICE}, {_m_COL_RECEIPT_DATE_CREATED}) VALUES (@total_price, @date_created); " +
             $"SELECT LAST_INSERT_ID();"
             : $"UPDATE {_m_TBL_NAME} SET {_m_COL_RECEIPT_TOTAL_PRICE} = @total_price, {_m_COL_RECEIPT_DATE_CREATED} = @date_created WHERE {_m_COL_ID} = @id;";
+
+        bool transaction_needed = false;
+        if (!isTransactionActive()) {
+            startTransaction();
+            transaction_needed = true;
+        }
 
         try {
             using MySqlCommand cmd = new(query, m_conn, m_transaction);
@@ -102,7 +109,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 cmd.Parameters.AddWithValue("@id", item_id);
             }
             cmd.Parameters.AddWithValue("@total_price", item.receipt_total_price);
-            cmd.Parameters.AddWithValue("@date_created", mysql_formatted_date);
+            cmd.Parameters.AddWithValue("@date_created", SFormatData.formatEUDateToMySQLDate(item.receipt_date_created));
 
             if (item_id == 0) {
                 item_id = Convert.ToInt32(cmd.ExecuteScalar());
@@ -111,18 +118,25 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 cmd.ExecuteNonQuery();
             }
 
+            if (transaction_needed) {
+                commitTransaction();
+            }
             return item_id;
         }
         catch (MySqlException ex) {
+            if (transaction_needed) {
+                rollbackTransaction();
+            }
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
     }
 
     /// <summary>
-    /// Retrieves all receipt IDs from the database.
+    /// Retrieves a collection of row IDs from the database table.
     /// </summary>
-    /// <returns>An ObservableCollection of receipt IDs</returns>
+    /// <returns>An <see cref="ObservableCollection{T}"/> containing the IDs of the rows in the specified database table. If an
+    /// error occurs during the query execution, the collection may be empty or partially populated.</returns>
     public ObservableCollection<int> getRowsID() {
         
         ObservableCollection<int> items = new();
@@ -145,9 +159,10 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     }
 
     /// <summary>
-    /// Retrieves all distinct years from receipt dates in the database.
+    /// Retrieves a collection of distinct years from the database based on receipt creation dates.
     /// </summary>
-    /// <returns>An ObservableCollection of years as strings, sorted in descending order</returns>
+    /// <returns>An <see cref="ObservableCollection{T}"/> of strings containing the distinct years in descending order. The
+    /// collection will be empty if no data is found or if an error occurs.</returns>
     public ObservableCollection<string> getExistingYear() {
         
         ObservableCollection<string> items = new();
