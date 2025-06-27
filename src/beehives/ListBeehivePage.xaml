@@ -69,14 +69,14 @@
 
                         <!--CheckBox Archived-->
                         <CheckBox 
-                        Grid.Row="0"
-                        Content="Archives"
-                        IsChecked="{Binding m_is_show_archived_checked, UpdateSourceTrigger=PropertyChanged}"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Margin="0,0,50,0"
-                        FontSize="16">
+                            Grid.Row="0"
+                            Content="Archives"
+                            IsChecked="{Binding m_is_show_archived_checked, UpdateSourceTrigger=PropertyChanged}"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            Margin="0,0,50,0"
+                            FontSize="16">
 
                         </CheckBox>
 
@@ -151,16 +151,13 @@
                         ></Button>
                     </Grid>
                 </Grid>
-                <!--Content-->
             </Grid>
-            <!--Body-->
 
             <!--Footer-->
-            <userControls:UCFooter x:Name="footer" Grid.Row="2">
+            <userControls:UCFooter 
+                Grid.Row="2"
 
-            </userControls:UCFooter>
-            <!--Footer-->
+            ></userControls:UCFooter>
         </Grid>
-        <!--Page-->
     </Grid>
 </Page>
