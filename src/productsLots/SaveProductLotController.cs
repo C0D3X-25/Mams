@@ -1,18 +1,26 @@
-﻿using Mams.src.commands;
+﻿using Mams.src.beehives;
+using Mams.src.commands;
 using Mams.src.controllers;
+using Mams.src.helpers;
 using Mams.src.navigations;
 using Mams.src.products;
-using System.Windows.Input;
-using System.Windows;
-using Mams.src.beehives;
+using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
-using Mams.src.helpers;
+using System.Windows;
+using System.Windows.Input;
 
 namespace Mams.src.productsLots;
 
 public class SaveProductLotController : ABaseController {
 
-    
+    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
+    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
+    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
+    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+
+
     private readonly ProductLotModel _m_product_lot_model;
     private readonly BeehiveModel _m_beehive_model;
 

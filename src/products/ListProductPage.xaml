@@ -9,7 +9,7 @@
       d:DesignHeight="800" d:DesignWidth="1224"
       Title="ListProductPage">
 
-    <Grid>
+    <Grid Background="{Binding m_page_background_color}">
         <!--Page is 12* per 12*-->
         <Grid>
             <Grid.RowDefinitions>
@@ -47,7 +47,10 @@
                 </userControls:UCMenu>
 
                 <!--Content-->
-                <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
+                <Grid 
+                    Grid.Column="1" 
+                    Background="{Binding m_body_background_color}" 
+                    Margin="3,3,10,3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
@@ -120,7 +123,8 @@
                             HorizontalAlignment="left" VerticalAlignment="Center"
                             Margin="50,0,0,0"
                             FontSize="16"
-                            Background="IndianRed"
+                            Background="{Binding m_delete_button_color}"
+                            Foreground="{Binding m_delete_button_text_color}"
                         ></Button>
 
                         <!--Modifiy Buttons-->
@@ -133,6 +137,8 @@
                             HorizontalAlignment="Right" VerticalAlignment="Center"
                             Margin="0,0,200,0"
                             FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
                         ></Button>
 
                         <!--Add new Broduct Buttons-->
@@ -145,6 +151,8 @@
                             HorizontalAlignment="Right" VerticalAlignment="Center"
                             Margin="0,0,50,0"
                             FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
                         ></Button>
                     </Grid>
                 </Grid>

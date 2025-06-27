@@ -9,7 +9,7 @@
       d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveFeePage">
 
-    <Grid>
+    <Grid Background="{Binding m_page_background_color}">
         <!--Page is 12* per 12*-->
         <Grid>
             <Grid.RowDefinitions>
@@ -46,9 +46,10 @@
                 </userControls:UCMenu>
 
                 <!--Content-->
-                <Grid Grid.Column="1" 
-                      Background="#FFE0A5A5" 
-                      Margin="3,3,10,3">
+                <Grid 
+                    Grid.Column="1" 
+                    Background="{Binding m_body_background_color}" 
+                    Margin="3,3,10,3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
@@ -57,7 +58,6 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid Grid.Column="1"
-                          Background="#FFE0A5A5"
                           Margin="5">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="1*"/>
@@ -222,56 +222,58 @@
 
                                             <!--Quantity-->
                                             <Label
-                                            Grid.Column="2" Grid.Row="0"
-                                            Content="Quantité*" 
-                                            FontSize="16" 
-                                            VerticalAlignment="Center" HorizontalAlignment="Right"
-                                            Margin="5,0,0,0"
+                                                Grid.Column="2" Grid.Row="0"
+                                                Content="Quantité*" 
+                                                FontSize="16" 
+                                                VerticalAlignment="Center" HorizontalAlignment="Right"
+                                                Margin="5,0,0,0"
                                                 
-                                        ></Label>
-                                        <TextBox 
-                                            Grid.Column="3" Grid.Row="0"
-                                            Text="{Binding receipt_product_quantity, UpdateSourceTrigger=PropertyChanged}"
-                                            Margin="5"
-                                            MinHeight="25" MinWidth="50"
-                                            MaxHeight="25" MaxWidth="50"
-                                            FontSize="16"
-                                            HorizontalContentAlignment="Center"
-                                            TextWrapping="Wrap"
-                                            VerticalAlignment="Center"
-                                        ></TextBox>
+                                            ></Label>
+                                            <TextBox 
+                                                Grid.Column="3" Grid.Row="0"
+                                                Text="{Binding receipt_product_quantity, UpdateSourceTrigger=PropertyChanged}"
+                                                Margin="5"
+                                                MinHeight="25" MinWidth="50"
+                                                MaxHeight="25" MaxWidth="50"
+                                                FontSize="16"
+                                                HorizontalContentAlignment="Center"
+                                                TextWrapping="Wrap"
+                                                VerticalAlignment="Center"
+                                            ></TextBox>
 
-                                        <!--Price Unity-->
-                                        <Label
-                                            Grid.Column="4" Grid.Row="0"
-                                            Content="Prix unitaire*"
-                                            FontSize="16" 
-                                            VerticalAlignment="Center" HorizontalAlignment="Right"
-                                            Margin="5,0,0,0"
-                                        ></Label>
+                                            <!--Price Unity-->
+                                            <Label
+                                                Grid.Column="4" Grid.Row="0"
+                                                Content="Prix unitaire*"
+                                                FontSize="16" 
+                                                VerticalAlignment="Center" HorizontalAlignment="Right"
+                                                Margin="5,0,0,0"
+                                            ></Label>
 
-                                        <TextBox 
-                                            Grid.Column="5" Grid.Row="0"
-                                            Text="{Binding receipt_product_unity_price, UpdateSourceTrigger=LostFocus, StringFormat={}{0:N2}}"
-                                            Margin="5"
-                                            MinHeight="25" MinWidth="50"
-                                            MaxHeight="25" MaxWidth="50"
-                                            FontSize="16"
-                                            TextWrapping="Wrap"
-                                            HorizontalContentAlignment="Center"
-                                            VerticalAlignment="Center"
-                                        ></TextBox>
+                                            <TextBox 
+                                                Grid.Column="5" Grid.Row="0"
+                                                Text="{Binding receipt_product_unity_price, UpdateSourceTrigger=LostFocus, StringFormat={}{0:N2}}"
+                                                Margin="5"
+                                                MinHeight="25" MinWidth="50"
+                                                MaxHeight="25" MaxWidth="50"
+                                                FontSize="16"
+                                                TextWrapping="Wrap"
+                                                HorizontalContentAlignment="Center"
+                                                VerticalAlignment="Center"
+                                            ></TextBox>
 
                                             <!--Delete Product Fee Button-->
-                                        <Button 
-                                            Grid.Column="6" Grid.Row="0"
-                                            Content="X"
-                                            Command="{Binding DataContext.m_delete_fee_item_command, 
-                                                        RelativeSource={RelativeSource AncestorType=ListView}}"
-                                            CommandParameter="{Binding}"
-                                            Height="20" Width="20"
-                                            Margin="5"
-                                        ></Button>
+                                            <Button 
+                                                Grid.Column="6" Grid.Row="0"
+                                                Content="X"
+                                                Command="{Binding DataContext.m_delete_fee_item_command, 
+                                                            RelativeSource={RelativeSource AncestorType=ListView}}"
+                                                CommandParameter="{Binding}"
+                                                Height="20" Width="20"
+                                                Margin="5"
+                                                Background="{Binding m_delete_button_color}"
+                                                Foreground="{Binding m_delete_button_text_color}"
+                                            ></Button>
                                         </Grid>
                                     </DataTemplate>
                                 </ListView.ItemTemplate>
@@ -288,6 +290,8 @@
                             MaxHeight="25" MaxWidth="100"
                             HorizontalAlignment="Center" VerticalAlignment="Bottom"
                             FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
                         ></Button>
 
                         <!--Abort & Save Buttons-->
@@ -300,6 +304,8 @@
                             HorizontalAlignment="Right" VerticalAlignment="Center"
                             Margin="0,0,50,0"
                             FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
                         ></Button>
 
                         <Button 
@@ -311,6 +317,8 @@
                             HorizontalAlignment="Left" VerticalAlignment="Center"
                             Margin="50,0,0,0"
                             FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
                         ></Button>
                     </Grid>
                 </Grid>

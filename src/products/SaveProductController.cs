@@ -5,6 +5,7 @@ using Mams.src.productsCategories;
 using Mams.src.productsLots;
 using Mams.src.productsShapes;
 using Mams.src.productsTypes;
+using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -12,11 +13,19 @@ using System.Windows.Input;
 namespace Mams.src.products;
 
 public class SaveProductController : ABaseController {
-    
-    private readonly ProductModel _m_product_model;
-    private readonly ProductTypeModel _m_product_type_model;
-    private readonly ProductCategoryModel _m_product_category_model;
-    private readonly ProductShapeModel _m_product_shape_model;
+
+    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
+    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
+    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
+    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+
+
+    private readonly ProductModel _m_product_model = new();
+    private readonly ProductTypeModel _m_product_type_model = new();
+    private readonly ProductCategoryModel _m_product_category_model = new();
+    private readonly ProductShapeModel _m_product_shape_model = new();
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
@@ -93,11 +102,6 @@ public class SaveProductController : ABaseController {
 
 
     public SaveProductController(int id_to_load = 0) {
-
-        _m_product_model = new();
-        _m_product_type_model = new();
-        _m_product_category_model = new();
-        _m_product_shape_model = new();
 
         _m_list_product_category = _m_product_category_model.getTable();
         _m_list_product_type = _m_product_type_model.getTable();

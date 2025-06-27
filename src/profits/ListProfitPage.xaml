@@ -9,7 +9,7 @@
       d:DesignHeight="800" d:DesignWidth="1224"
       Title="ListProfitPage">
 
-    <Grid>
+    <Grid Background="{Binding m_page_background_color}">
         <!--Page is 12* per 12*-->
         <Grid>
             <Grid.RowDefinitions>
@@ -46,7 +46,10 @@
                 </userControls:UCMenu>
 
                 <!--Content-->
-                <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
+                <Grid 
+                    Grid.Column="1" 
+                    Background="{Binding m_body_background_color}" 
+                    Margin="3,3,10,3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
@@ -95,49 +98,54 @@
 
                         <!--Delete Buttons-->
                         <Button 
-                        Grid.Row="2"
-                        Content="Supprimer"
-                        Command="{Binding m_delete_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="left" VerticalAlignment="Center"
-                        Margin="50,0,0,0"
-                        FontSize="16"
-                        Background="IndianRed"
-                    ></Button>
+                            Grid.Row="2"
+                            Content="Supprimer"
+                            Command="{Binding m_delete_item_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="left" VerticalAlignment="Center"
+                            Margin="50,0,0,0"
+                            FontSize="16"
+                            Background="{Binding m_delete_button_color}"
+                            Foreground="{Binding m_delete_button_text_color}"
+                        ></Button>
 
                         <!--Modifiy Buttons-->
                         <Button 
-                        Grid.Row="2"
-                        Content="Modifier"
-                        Command="{Binding m_modify_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Margin="0,0,200,0"
-                        FontSize="16"
-                    ></Button>
+                            Grid.Row="2"
+                            Content="Modifier"
+                            Command="{Binding m_modify_item_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,200,0"
+                            FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
+                        ></Button>
 
                         <!--Add new Product Buttons-->
                         <Button 
-                        Grid.Row="2"
-                        Content="Nouveau Profit"
-                        Command="{Binding m_add_new_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Margin="0,0,50,0"
-                        FontSize="16"
-                    ></Button>
+                            Grid.Row="2"
+                            Content="Nouveau Profit"
+                            Command="{Binding m_add_new_item_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,50,0"
+                            FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
+                        ></Button>
                     </Grid>
                 </Grid>
             </Grid>
 
             <!--Footer-->
             <userControls:UCFooter 
-                Grid.Row="2">
+                Grid.Row="2"
 
-            </userControls:UCFooter>
+            ></userControls:UCFooter>
         </Grid>
     </Grid>
 </Page>
