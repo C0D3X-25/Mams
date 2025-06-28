@@ -6,12 +6,12 @@ public static class SGlobalView {
     // Text
     private static string _m_default_text_color = "#000000";
     // Background
-    private static string _m_default_background_color_1 = "#689d71";
-    private static string _m_default_background_color_2 = "#6d9874";
-    private static string _m_default_background_color_3 = "#ecb3ff"; 
+    private static string _m_default_background_color_1 = "#990099"; // Dark purple
+    private static string _m_default_background_color_2 = "#990099"; // Dark purple
+    private static string _m_default_background_color_3 = "#ecb3ff"; // Light Purple
     private static string _m_default_background_color_4 = "#52143d";
     // Button Background
-    private static string _m_default_button_color_1 = "#e184c2";
+    private static string _m_default_button_color_1 = "#ecb3ff";
     private static string _m_default_button_color_2 = "#dc6fb8";
     // Button Mouse Over
     private static string _m_default_over_button_color_1 = "#fd0098";
