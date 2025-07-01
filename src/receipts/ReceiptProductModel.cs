@@ -266,7 +266,11 @@ public class ReceiptProductModel : ABaseModel,
         return receipt_item;
     }
 
-
+    /// <summary>
+    /// Get the data of the <see cref="ProductItem"/> and <see cref="ProductLotItem"/> for the specified
+    /// </summary>
+    /// <param name="item">A <see cref="ReceiptProductItem"/>.</param>
+    /// <returns>A <see cref="ReceiptProductItem"/>.</returns>
     private ReceiptProductItem completeData(ReceiptProductItem item) {
         ProductModel product_model = new();
         ProductLotModel product_lot_model = new();

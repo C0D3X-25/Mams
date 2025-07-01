@@ -1,5 +1,4 @@
 ﻿using Mams.src.navigations;
-using Mams.src.views.globalView;
 using System.Windows;
 
 namespace Mams.src.views;

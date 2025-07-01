@@ -1,4 +1,5 @@
-﻿using MySqlConnector;
+﻿using Mams.src.databaseOperations;
+using MySqlConnector;
 using System.Windows;
 
 namespace Mams.src.databaseConnections;
@@ -45,6 +46,8 @@ public class SQLConnectionModel {
                 connection?.Close();
                 return null;
             }
+
+            SDatabaseBackup.createBackup(connection);
 
             return connection;
         }
