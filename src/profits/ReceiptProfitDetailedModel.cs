@@ -4,6 +4,7 @@ using Mams.src.entities;
 using Mams.src.helpers;
 using Mams.src.models;
 using Mams.src.products;
+using Mams.src.productsLots;
 using Mams.src.receipts;
 using System.Collections.ObjectModel;
 
@@ -19,6 +20,7 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     private readonly EntityModel _m_entity_model = new();
     private readonly ClientModel _m_client_model = new();
     private readonly ProductModel _m_product_model = new();
+    private readonly ProductLotModel _m_product_lot_model = new();
 
     /// <summary>
     /// Deletes an item from the database based on the specified identifier and delete operation type.
@@ -96,8 +98,12 @@ public class ReceiptProfitDetailedModel : ABaseModel,
 
             foreach (var receipt_product in item.receipt_products) {
                 ProductItem? product = _m_product_model.getItemByID(receipt_product.product_item.product_id.ToString());
+                ProductLotItem? product_lot = _m_product_lot_model.getItemByID(receipt_product.product_lot_item.product_lot_id.ToString());
                 if (product != null) {
                     receipt_product.product_item = product;
+                }
+                if (product_lot != null) {
+                    receipt_product.product_lot_item = product_lot;
                 }
             }
 

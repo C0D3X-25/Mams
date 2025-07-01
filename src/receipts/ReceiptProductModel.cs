@@ -5,6 +5,8 @@ using Mams.src.products;
 using Mams.src.productsLots;
 using MySqlConnector;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Reflection.PortableExecutable;
 using System.Windows;
 
 namespace Mams.src.receipts;
@@ -53,6 +55,8 @@ public class ReceiptProductModel : ABaseModel,
             return null;
         }
 
+        ReceiptProductItem item = new();
+
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID}, {_m_COL_QUANTITY}, {_m_COL_UNITY_PRICE}, " +
@@ -63,23 +67,16 @@ public class ReceiptProductModel : ABaseModel,
             );
 
             cmd.Parameters.AddWithValue("@id", id);
-            
-            using MySqlDataReader reader = cmd.ExecuteReader();
-            if (reader.Read()) {
-                return new ReceiptProductItem {
-                    receipt_product_id = reader.getSafeValue<int>(_m_COL_ID),
-                    receipt_product_quantity = reader.getSafeValue<int>(_m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.getSafeValue<decimal>(_m_COL_UNITY_PRICE),
-                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
-                    product_item = new ProductItem {
-                        product_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT)
-                    },
-                    product_lot_item = new ProductLotItem {
-                        product_lot_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
-                    },
-                };
+            {
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read()) {
+                    item = readDataAndBuildItem(reader);
+                }
             }
-            
+
+            // Complete the items with the product and product lot data
+            completeData(item);
+
             return null;
         }
         catch (MySqlException ex) {
@@ -97,6 +94,10 @@ public class ReceiptProductModel : ABaseModel,
 
         ObservableCollection<ReceiptProductItem> items = new();
 
+        ProductModel product_model = new();
+        ProductLotModel product_lot_model = new();
+        ReceiptProductItem reicept_item = new();
+
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID}, {_m_COL_QUANTITY}, {_m_COL_UNITY_PRICE}, " +
@@ -105,20 +106,26 @@ public class ReceiptProductModel : ABaseModel,
                 m_conn
             );
 
-            using MySqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read()) {
-                items.Add(new ReceiptProductItem {
-                    receipt_product_id = reader.getSafeValue<int>(_m_COL_ID),
-                    receipt_product_quantity = reader.getSafeValue<int>(_m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.getSafeValue<decimal>(_m_COL_UNITY_PRICE),
-                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
-                    product_item = new ProductItem {
-                        product_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT)
-                    },
-                    product_lot_item = new ProductLotItem {
-                        product_lot_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
-                    },
-                });
+            {
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read()) {
+
+                    //reicept_item.receipt_product_id = reader.getSafeValue<int>(_m_COL_ID);
+                    //reicept_item.receipt_product_quantity = reader.getSafeValue<int>(_m_COL_QUANTITY);
+                    //reicept_item.receipt_product_unity_price = reader.getSafeValue<decimal>(_m_COL_UNITY_PRICE);
+                    //reicept_item.fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT);
+
+                    //reicept_item.product_item.product_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT);
+                    //reicept_item.product_lot_item.product_lot_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_LOT);
+
+                    //items.Add(reicept_item);
+                    items.Add(readDataAndBuildItem(reader));
+                }
+            }
+
+            // Complete the items with the product and product lot data
+            foreach (var item in items) {
+                completeData(item);
             }
 
             return items;
@@ -204,21 +211,16 @@ public class ReceiptProductModel : ABaseModel,
             );
 
             cmd.Parameters.AddWithValue("@fk_receipt", fk_receipt);
-            using MySqlDataReader reader = cmd.ExecuteReader();
+            {
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read()) {
+                    items.Add(readDataAndBuildItem(reader));
+                }
+            }
 
-            while (reader.Read()) {
-                items.Add(new ReceiptProductItem {
-                    receipt_product_id = reader.getSafeValue<int>(_m_COL_ID),
-                    receipt_product_quantity = reader.getSafeValue<int>(_m_COL_QUANTITY),
-                    receipt_product_unity_price = reader.getSafeValue<decimal>(_m_COL_UNITY_PRICE),
-                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
-                    product_item = new ProductItem {
-                        product_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT)
-                    },
-                    product_lot_item = new ProductLotItem {
-                        product_lot_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_LOT)
-                    },
-                });
+            // Complete the items with the product and product lot data
+            foreach (var item in items) {
+                completeData(item);
             }
 
             return items;
@@ -241,5 +243,37 @@ public class ReceiptProductModel : ABaseModel,
             && item.receipt_product_unity_price >= 0
             && item.fk_receipt_id > 0
             && item.product_item.product_id > 0;
+    }
+
+    /// <summary>
+    /// Retreve data from the MySQL reader and convert it to a <see cref="ReceiptProductItem"/>.
+    /// </summary>
+    /// <remarks>Still need to get the data of the <see cref="ProductItem"/> and <see cref="ProductLotItem"/>.</remarks>
+    /// <param name="reader"><see cref="MySqlDataReader"/>.</param>
+    /// <returns><see cref="ReceiptProductItem"/>.</returns>
+    private ReceiptProductItem readDataAndBuildItem(MySqlDataReader reader) {
+
+        ReceiptProductItem receipt_item = new();
+        
+        receipt_item.receipt_product_id = reader.getSafeValue<int>(_m_COL_ID);
+        receipt_item.receipt_product_quantity = reader.getSafeValue<int>(_m_COL_QUANTITY);
+        receipt_item.receipt_product_unity_price = reader.getSafeValue<decimal>(_m_COL_UNITY_PRICE);
+        receipt_item.fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT);
+
+        receipt_item.product_item.product_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT);
+        receipt_item.product_lot_item.product_lot_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_LOT);
+
+        return receipt_item;
+    }
+
+
+    private ReceiptProductItem completeData(ReceiptProductItem item) {
+        ProductModel product_model = new();
+        ProductLotModel product_lot_model = new();
+
+        item.product_item = product_model.getItemByID(item.product_item.product_id.ToString()) ?? new ProductItem();
+        item.product_lot_item = product_lot_model.getItemByID(item.product_lot_item.product_lot_id.ToString()) ?? new ProductLotItem();
+
+        return item;
     }
 }
