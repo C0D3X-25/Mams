@@ -1,8 +1,6 @@
-﻿using Mams.src.beehives;
-using Mams.src.databaseOperations;
+﻿using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
-using Mams.src.productsShapes;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -10,41 +8,48 @@ using System.Windows;
 namespace Mams.src.productsTypes;
 
 /// <summary>
-/// Type is about the product utility, where it will be used like "Exploitation", "Production"
-
-
+/// Represents a model for managing product types in the database.
+/// </summary>
 public class ProductTypeModel :
     ABaseModel,
     ICrudOperation<ProductTypeItem> {
 
-    public const string m_TBL_NAME = "products_types";
-    public const string m_COL_ID = "product_type_id";
-    public const string m_COL_NAME = "product_type_name";
-    public const string m_COL_ARCHIVE = "product_type_archive";
+    private const string _m_TBL_NAME = "products_types";
+    private const string _m_COL_ID = "product_type_id";
+    private const string _m_COL_NAME = "product_type_name";
+    private const string _m_COL_ARCHIVE = "product_type_archive";
 
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_ID, m_COL_ARCHIVE, m_TBL_NAME, delete_type);
+    /// <summary>
+    /// Deletes an item from the database based on the specified identifier and delete operation type.
+    /// </summary>
+    /// <remarks>The behavior of the delete operation depends on the specified <paramref name="delete_type"/>.
+    /// For <see cref="EDeleteItemOperation.SAFE_DELETE"/>, the item is archived instead of being permanently removed.</remarks>
+    /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
+    /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
+    /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+        return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
-    }
-
-    public ProductTypeItem? getItem(string search) {
-        throw new NotImplementedException();
-    }
-
+    /// <summary>
+    /// Retrieves a <see cref="ProductTypeItem"/> object by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the product type item to retrieve. Must be a valid identifier.</param>
+    /// <returns>A <see cref="ProductTypeItem"/> object representing the product type item with the specified identifier,  or
+    /// <see langword="null"/> if no matching item is found or if the identifier is invalid.</returns>
     public ProductTypeItem? getItemByID(string id) {
 
-        using MySqlConnection? conn = _m_conn.openConnection();
+        if (!SDataValidation.isIdValid(id)) {
+            return null;
+        }
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_ARCHIVE} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_ID} = @id;",
-                conn
+                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_ID} = @id;",
+                m_conn
             );
 
             cmd.Parameters.AddWithValue("@id", id);
@@ -52,9 +57,9 @@ public class ProductTypeModel :
 
             if (reader.Read()) {
                 return new ProductTypeItem {
-                    product_type_id = reader.GetSafeValue<int>(m_COL_ID),
-                    product_type_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
-                    product_type_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    product_type_id = reader.getSafeValue<int>(_m_COL_ID),
+                    product_type_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                    product_type_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                 };
             }
             return null;
@@ -65,43 +70,68 @@ public class ProductTypeModel :
         }
     }
 
+    /// <summary>
+    /// Retrieves all rows from the specified table and returns them as an observable collection.
+    /// </summary>
+    /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows of type <see cref="ProductTypeItem"/> from the
+    /// table. The collection will be empty if the table contains no rows.</returns>
     public ObservableCollection<ProductTypeItem> getTable() {
-        return SDatabaseModel.getAllData<ProductTypeItem>(this, m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<ProductTypeItem>(_m_TBL_NAME);
     }
 
-    public bool saveItem(ProductTypeItem item) {
+    /// <summary>
+    /// Saves the specified product type item to the database.
+    /// </summary>
+    /// <param name="item">The <see cref="ProductTypeItem"/> to save. Cannot be <see langword="null"/>.</param>
+    /// <returns>The ID of the saved product type item. Returns <c>0</c> if the operation fails or if the item is <see
+    /// langword="null"/>.</returns>
+    public int saveItem(ProductTypeItem item) {
 
-        using MySqlConnection? conn = _m_conn.openConnection();
+        if (item == null) {
+            return 0;
+        }
 
         string query = string.Empty;
+        int item_id = item.product_type_id;
+        string item_name = item.product_type_name.Trim();
 
-        if (item.product_type_id == 0) {
-
-            if (checkIfItemExist(m_TBL_NAME, m_COL_NAME, item.product_type_name)) {
-                return false;
+        if (item_id == 0) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
+                return 0;
             }
-
-            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}) " +
-                $"VALUES (@name);";
+            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
+                $"VALUES (@name); " +
+                $"SELECT LAST_INSERT_ID();";
         }
         else {
-            query = $"UPDATE {m_TBL_NAME} " +
-                $"SET {m_COL_NAME} = @name " +
-                $"WHERE {m_COL_ID} = @id;";
+            query = $"UPDATE {_m_TBL_NAME} " +
+                $"SET {_m_COL_NAME} = @name " +
+                $"WHERE {_m_COL_ID} = @id;";
         }
 
+        startTransaction();
         try {
-            using MySqlCommand cmd = new(query, conn);
-            if (item.product_type_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item.product_type_id);
+            using MySqlCommand cmd = new(query, m_conn, m_transaction);
+
+            if (item_id != 0) {
+                cmd.Parameters.AddWithValue("@id", item_id);
             }
-            cmd.Parameters.AddWithValue("@name", item.product_type_name);
-            cmd.ExecuteNonQuery();
-            return true;
+            cmd.Parameters.AddWithValue("@name", item_name);
+
+            if (item_id == 0) {
+                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else {
+                cmd.ExecuteNonQuery();
+            }
+
+            commitTransaction();
+            return item_id;
         }
         catch (MySqlException ex) {
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 }

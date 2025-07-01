@@ -1,14 +1,22 @@
 ﻿using Mams.src.commands;
-using Mams.src.navigations;
-using System.Windows.Input;
-using System.Windows;
 using Mams.src.controllers;
+using Mams.src.navigations;
+using Mams.src.views.globalView;
+using System.Windows;
+using System.Windows.Input;
 
 namespace Mams.src.productsShapes;
 
 public class SaveProductShapeController : ABaseController {
 
-    
+    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
+    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
+    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
+    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+
+
     private readonly ProductShapeModel _m_product_shape_model;
 
     public ICommand m_save_command { get; set; }
@@ -45,7 +53,7 @@ public class SaveProductShapeController : ABaseController {
 
 
     private void saveProduct(object? obj) {
-        if (_m_product_shape_model.saveItem(m_product_shape)) {
+        if (_m_product_shape_model.saveItem(m_product_shape) > 0) {
             SPageNavigationController.navigateTo(new ListProductShapePage());
         }
         else {

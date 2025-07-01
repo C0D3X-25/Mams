@@ -1,15 +1,23 @@
 ﻿using Mams.src.commands;
 using Mams.src.controllers;
-using Mams.src.databaseOperations;
 using Mams.src.navigations;
-using Mams.src.products;
+using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Mams.src.fees; 
 public class ListFeeController : ABaseController {
 
-    private readonly FeeModel _m_item_model = new();
+    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
+    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
+    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
+    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+
+
+    private readonly ReceiptFeeDetailedModel _m_item_model = new();
 
     public ICommand m_add_new_item_command { get; set; }
     public ICommand m_modify_item_command { get; set; }
@@ -17,8 +25,8 @@ public class ListFeeController : ABaseController {
 
 
 
-    private ObservableCollection<FeeItem>? _m_list_items;
-    public ObservableCollection<FeeItem>? m_list_items {
+    private ObservableCollection<ReceiptFeeDetailedItem>? _m_list_items;
+    public ObservableCollection<ReceiptFeeDetailedItem>? m_list_items {
         get { return _m_list_items; }
         set {
             _m_list_items = value;
@@ -27,8 +35,8 @@ public class ListFeeController : ABaseController {
     }
 
 
-    private FeeItem? _m_selected_item;
-    public FeeItem? m_selected_item {
+    private ReceiptFeeDetailedItem? _m_selected_item;
+    public ReceiptFeeDetailedItem? m_selected_item {
         get { return _m_selected_item; }
         set {
             _m_selected_item = value;
@@ -47,7 +55,7 @@ public class ListFeeController : ABaseController {
 
 
     private void updateListItems() {
-        var all_items = _m_item_model.getTable();
+        m_list_items = _m_item_model.getTable();
     }
 
 
@@ -63,14 +71,19 @@ public class ListFeeController : ABaseController {
 
     private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
-            SPageNavigationController.navigateTo(new SaveFeePage(_m_selected_item.product_id));
+            SPageNavigationController.navigateTo(new SaveFeePage(_m_selected_item.receipt.receipt_id));
         }
     }
 
 
     private void deleteItem(object? obj) {
         if (_m_selected_item != null) {
-            _m_item_model.deleteItem(_m_selected_item.product_id);
+            MessageBoxResult result = MessageBox.Show("Supprimer cette facture définitivement?",
+                "Suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.No) {
+                return;
+            }
+            _m_item_model.deleteItem(_m_selected_item.receipt.receipt_id.ToString());
             updateListItems();
         }
     }

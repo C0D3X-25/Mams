@@ -5,6 +5,7 @@ using Mams.src.productsCategories;
 using Mams.src.productsLots;
 using Mams.src.productsShapes;
 using Mams.src.productsTypes;
+using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -12,12 +13,19 @@ using System.Windows.Input;
 namespace Mams.src.products;
 
 public class SaveProductController : ABaseController {
-    
-    private readonly ProductModel _m_product_model;
-    private readonly ProductTypeModel _m_product_type_model;
-    private readonly ProductCategoryModel _m_product_category_model;
-    private readonly ProductShapeModel _m_product_shape_model;
-    private readonly ProductLotModel _m_product_lot_model;
+
+    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
+    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
+    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
+    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+
+
+    private readonly ProductModel _m_product_model = new();
+    private readonly ProductTypeModel _m_product_type_model = new();
+    private readonly ProductCategoryModel _m_product_category_model = new();
+    private readonly ProductShapeModel _m_product_shape_model = new();
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
@@ -63,16 +71,6 @@ public class SaveProductController : ABaseController {
     }
 
 
-    private ObservableCollection<ProductLotItem> _m_list_product_lot;
-    public ObservableCollection<ProductLotItem> m_list_product_lot {
-        get { return _m_list_product_lot; }
-        set {
-            _m_list_product_lot = value;
-            onPropertyChanged();
-        }
-    }
-
-
     private ProductTypeItem? _m_selected_product_type;
     public ProductTypeItem? m_selected_product_type {
         get { return _m_selected_product_type; }
@@ -103,39 +101,25 @@ public class SaveProductController : ABaseController {
     }
 
 
-    private ProductLotItem? _m_selected_product_lot;
-    public ProductLotItem? m_selected_product_lot {
-        get { return _m_selected_product_lot; }
-        set {
-            _m_selected_product_lot = value;
-            onPropertyChanged();
-        }
-    }
-
-
     public SaveProductController(int id_to_load = 0) {
-
-        _m_product_model = new();
-        _m_product_type_model = new();
-        _m_product_category_model = new();
-        _m_product_shape_model = new();
-        _m_product_lot_model = new();
 
         _m_list_product_category = _m_product_category_model.getTable();
         _m_list_product_type = _m_product_type_model.getTable();
         _m_list_product_shape = _m_product_shape_model.getTable();
-        _m_list_product_lot = _m_product_lot_model.getTable();
 
-        _m_product = new ProductItem();
+        _m_product = new();
 
         if (id_to_load != 0) {
+
             _m_product = _m_product_model.getItemByID(id_to_load.ToString()) ?? new ProductItem();
 
             // Find the matching product in the list and set it as selected or create a new one
-            _m_selected_product_category = _m_list_product_category.FirstOrDefault(b => b.product_category_id == _m_product.fk_product_category_id) ?? new ProductCategoryItem();
-            _m_selected_product_type = _m_list_product_type.FirstOrDefault(b => b.product_type_id == _m_product.fk_product_type_id) ?? new ProductTypeItem();
-            _m_selected_product_shape = _m_list_product_shape.FirstOrDefault(b => b.product_shape_id == _m_product.fk_product_shape_id) ?? new ProductShapeItem();
-            _m_selected_product_lot = _m_list_product_lot.FirstOrDefault(b => b.product_lot_id == _m_product.fk_product_lot_id) ?? new ProductLotItem();
+            _m_selected_product_category = _m_list_product_category.FirstOrDefault(b => 
+                b.product_category_id == _m_product.fk_product_category_id) ?? new ProductCategoryItem();
+            _m_selected_product_type = _m_list_product_type.FirstOrDefault(b => 
+                b.product_type_id == _m_product.fk_product_type_id) ?? new ProductTypeItem();
+            _m_selected_product_shape = _m_list_product_shape.FirstOrDefault(b => 
+                b.product_shape_id == _m_product.fk_product_shape_id) ?? new ProductShapeItem();
         }
         m_save_command = new RelayCommand(saveProduct, canSaveProduct);
         m_abort_command = new RelayCommand(abortProduct);
@@ -160,11 +144,8 @@ public class SaveProductController : ABaseController {
         if (_m_selected_product_shape != null) {
             m_product.fk_product_shape_id = _m_selected_product_shape.product_shape_id;
         }
-        if (_m_selected_product_lot != null) {
-            m_product.fk_product_lot_id = _m_selected_product_lot.product_lot_id;
-        }
 
-        if (_m_product_model.saveItem(m_product)) {
+        if (_m_product_model.saveItem(m_product) > 0) {
             SPageNavigationController.navigateTo(new ListProductPage());
         }
         else { MessageBox.Show("Un produit avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); }

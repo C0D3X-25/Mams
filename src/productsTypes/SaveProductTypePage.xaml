@@ -6,10 +6,10 @@
       xmlns:local="clr-namespace:Mams.src.productsTypes"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="800" d:DesignWidth="1024"
+      d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveProductTypePage">
 
-    <Grid>
+    <Grid Background="{Binding m_page_background_color}">
         <!--Page is 12* per 12*-->
         <Grid>
             <Grid.RowDefinitions>
@@ -23,12 +23,10 @@
 
             <!--Header-->
             <userControls:UCHeader 
-                x:Name="header" 
                 Grid.Row="0"
                 title="Type de produit"
 
             ></userControls:UCHeader>
-            <!--Header-->
 
             <!--Body-->
             <Grid Grid.Row="1">
@@ -46,10 +44,12 @@
                 <userControls:UCMenu
 
                 ></userControls:UCMenu>
-                <!--Menu-->
 
                 <!--Content-->
-                <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
+                <Grid 
+                    Grid.Column="1" 
+                    Background="{Binding m_body_background_color}" 
+                    Margin="3,3,10,3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
@@ -88,14 +88,13 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-
-                                <!--ID-->
+                                
+                                <!--Name-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="0"
-                                    label="ID"
-                                    text="{Binding m_product_type.product_type_id, UpdateSourceTrigger=PropertyChanged}"
-                                    Visibility="Visible"
-                                    isEnabled="False"
+                                    label="Nom du type*"
+                                    text="{Binding m_product_type.product_type_name, UpdateSourceTrigger=PropertyChanged}"
+                                
                                 ></userControls:UCLabelTextBox>
                             </Grid>
 
@@ -112,12 +111,13 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-                                <!--Name-->
+                                <!--ID-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="0"
-                                    label="Nom du type*"
-                                    text="{Binding m_product_type.product_type_name, UpdateSourceTrigger=PropertyChanged}"
-                                
+                                    label="ID"
+                                    text="{Binding m_product_type.product_type_id, UpdateSourceTrigger=PropertyChanged}"
+                                    isEnabled="False"
+                                    Visibility="Hidden"
                                 ></userControls:UCLabelTextBox>
                             </Grid>
                         </Grid>
@@ -132,6 +132,8 @@
                             HorizontalAlignment="Right" VerticalAlignment="Center"
                             Margin="0,0,50,0"
                             FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
                         ></Button>
 
                         <Button 
@@ -143,19 +145,18 @@
                             HorizontalAlignment="Left" VerticalAlignment="Center"
                             Margin="50,0,0,0"
                             FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
                         ></Button>
                     </Grid>
                 </Grid>
-                <!--Content-->
             </Grid>
-            <!--Body-->
 
             <!--Footer-->
-            <userControls:UCFooter x:Name="footer" Grid.Row="2">
+            <userControls:UCFooter
+                Grid.Row="2"
 
-            </userControls:UCFooter>
-            <!--Footer-->
+            ></userControls:UCFooter>
         </Grid>
-        <!--Page-->
     </Grid>
 </Page>

@@ -9,7 +9,7 @@
      d:DesignHeight="800" d:DesignWidth="1224"
      Title="ResumePage">
 
-   <Grid>
+   <Grid Background="{Binding m_page_background_color}">
        <!--Page is 12* per 12*-->
        <Grid>
            <Grid.RowDefinitions>
@@ -47,7 +47,7 @@
 
                 <!--Content-->
                <Grid Grid.Column="1" 
-                     Background="#FFE0A5A5" 
+                     Background="{Binding m_body_background_color}" 
                      Margin="3,3,10,3">
                    <Grid.RowDefinitions>
                        <RowDefinition/>
@@ -102,7 +102,7 @@
                                </ComboBox.ItemTemplate>
                            </ComboBox>
 
-                            <!--Search by value-->
+                            <!--Search by -->
                             <ComboBox
                                Grid.Column="2" Grid.Row="0" 
                                Margin="5,0,5,0" 
@@ -155,7 +155,7 @@
 
                             <Label 
                                Grid.Column="0" Grid.Row="0"
-                               Content="Bénéfices" 
+                               Content="Profits" 
                                FontSize="20"
                                HorizontalAlignment="Center" VerticalAlignment="Center"
                                
@@ -168,16 +168,13 @@
                                Margin="0,0,5,0"
                                ItemsSource="{Binding m_list_profit_item}">
                                <ListView.View>
-                                   <GridView>
-                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding receipt_id}"/>
-                                        <GridViewColumn Header="Client" DisplayMemberBinding="{Binding client_name}"/>
-                                        <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
-                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding profit_date}"/>
-                                        <GridViewColumn Header="Quantité" DisplayMemberBinding="{Binding profit_quantity}"/>
-                                        <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding profit_price_unity}"/>
-                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding profit_price_total}"/>
-                                   </GridView>
-                               </ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_id}"/>
+                                        <GridViewColumn Header="Client" DisplayMemberBinding="{Binding entity.entity_name}"/>
+                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
+                                    </GridView>
+                                </ListView.View>
                            </ListView>
 
                             <Label 
@@ -196,13 +193,10 @@
                                ItemsSource="{Binding m_list_fee_item}">
                                <ListView.View>
                                    <GridView>
-                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding receipt_id}"/>
-                                        <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding supplier_name}"/>
-                                        <GridViewColumn Header="Produit" DisplayMemberBinding="{Binding product_name}"/>
-                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding fee_date}"/>
-                                        <GridViewColumn Header="Quantité" DisplayMemberBinding="{Binding fee_quantity}"/>
-                                        <GridViewColumn Header="Prix Unité" DisplayMemberBinding="{Binding fee_price_unity}"/>
-                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding fee_price_total}"/>
+                                        <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_id}"/>
+                                        <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding entity.entity_name}"/>
+                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
                                    </GridView>
                                </ListView.View>
                            </ListView>
@@ -226,7 +220,7 @@
                                Grid.Column="0" Grid.Row="0"
                                HorizontalContentAlignment="Right"
                                FontSize="16"
-                               Content="Total Bénéfices :"
+                               Content="Total Profits :"
                            ></Label>
                            <Label
                                Grid.Column="0" Grid.Row="1"

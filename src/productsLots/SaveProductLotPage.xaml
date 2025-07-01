@@ -6,10 +6,10 @@
       xmlns:local="clr-namespace:Mams.src.productsLots"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveProductLotPage">
 
-    <Grid>
+    <Grid Background="{Binding m_page_background_color}">
         <!--Page is 12* per 12*-->
         <Grid>
             <Grid.RowDefinitions>
@@ -23,12 +23,10 @@
 
             <!--Header-->
             <userControls:UCHeader 
-            x:Name="header" 
             Grid.Row="0"
             title="Lot">
 
             </userControls:UCHeader>
-            <!--Header-->
 
             <!--Body-->
             <Grid Grid.Row="1">
@@ -50,7 +48,10 @@
                 <!--Menu-->
 
                 <!--Content-->
-                <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
+                <Grid 
+                    Grid.Column="1" 
+                    Background="{Binding m_body_background_color}" 
+                    Margin="3,3,10,3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
@@ -90,49 +91,22 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
-                                
-                                <!--ID-->
+
+                                <!--Name-->
                                 <userControls:UCLabelTextBox
                                 Grid.Row="0"
-                                label="ID"
-                                text="{Binding m_product_lot.product_lot_id, UpdateSourceTrigger=PropertyChanged}"
-                                isEnabled="False"
+                                label="Nom*"
+                                text="{Binding m_product_lot.product_lot_name, UpdateSourceTrigger=PropertyChanged}"
+                                
                                 ></userControls:UCLabelTextBox>
 
-                                <!--Beehive-->
-                                <Grid
-                                    Grid.Row="1">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition/>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <Label
-                                        Grid.Column="0" Grid.Row="0" 
-                                        Content="Rucher"
-                                        FontSize="16" 
-                                        VerticalAlignment="Center" HorizontalAlignment="Right"
-
-                                    ></Label>
-
-                                    <ComboBox
-                                        Grid.Column="1" Grid.Row="0" 
-                                        Margin="5,0,5,0" 
-                                        FontSize="16" 
-                                        VerticalAlignment="Center"
-                                        MinHeight="25" MinWidth="200"
-                                        ItemsSource="{Binding m_list_beehive, UpdateSourceTrigger=PropertyChanged}"
-                                        SelectedItem="{Binding m_selected_beehive, UpdateSourceTrigger=PropertyChanged}">
-                                        <ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding beehive_name, UpdateSourceTrigger=PropertyChanged}"/>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>
-                                    </ComboBox>
-                                </Grid>
+                                <!--Year-->
+                                <userControls:UCLabelTextBox
+                                Grid.Row="1"
+                                label="Année*"                                    
+                                text="{Binding m_product_lot.product_lot_year, UpdateSourceTrigger=PropertyChanged}"
+                                
+                                ></userControls:UCLabelTextBox>
                             </Grid>
 
                             <!--Right Grid-->
@@ -148,58 +122,87 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-                                <!--Name-->
-                                <userControls:UCLabelTextBox
-                                Grid.Row="0"
-                                label="Nom*"
-                                text="{Binding m_product_lot.product_lot_name, UpdateSourceTrigger=PropertyChanged}"
-                                >
-                                </userControls:UCLabelTextBox>
+                                <!--Beehive-->
+                                <Grid
+                                    Grid.Row="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
 
-                                <!--Year-->
+                                    <Label
+                                    Grid.Column="0" Grid.Row="0" 
+                                    Content="Rucher"
+                                    FontSize="16" 
+                                    VerticalAlignment="Center" HorizontalAlignment="Right"
+
+                                    ></Label>
+
+                                    <ComboBox
+                                    Grid.Column="1" Grid.Row="0" 
+                                    Margin="5,0,5,0" 
+                                    FontSize="16" 
+                                    VerticalAlignment="Center"
+                                    MinHeight="25" MinWidth="200"
+                                    ItemsSource="{Binding m_list_beehive, UpdateSourceTrigger=PropertyChanged}"
+                                    SelectedItem="{Binding m_selected_beehive, UpdateSourceTrigger=PropertyChanged}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding beehive_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
+
+                                <!--ID-->
                                 <userControls:UCLabelTextBox
-                                Grid.Row="1"
-                                label="Année*"                                    
-                                text="{Binding m_product_lot.product_lot_year, UpdateSourceTrigger=PropertyChanged}"
-                                >
-                                </userControls:UCLabelTextBox>
+                                    Grid.Row="1"
+                                    label="ID"
+                                    text="{Binding m_product_lot.product_lot_id, UpdateSourceTrigger=PropertyChanged}"
+                                    isEnabled="False"
+                                    Visibility="Hidden"
+                                ></userControls:UCLabelTextBox>
                             </Grid>
                         </Grid>
 
                         <!--Abort Save Buttons-->
                         <Button 
-                        Grid.Row="2"
-                        Content="Enregistrer"
-                        Command="{Binding m_save_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Margin="0,0,50,0"
-                        FontSize="16"
-                    ></Button>
+                            Grid.Row="2"
+                            Content="Enregistrer"
+                            Command="{Binding m_save_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,50,0"
+                            FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
+                        ></Button>
 
                         <Button 
-                        Grid.Row="2"
-                        Content="Annuler"
-                        Command="{Binding m_abort_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="Left" VerticalAlignment="Center"
-                        Margin="50,0,0,0"
-                        FontSize="16"
-                    ></Button>
+                            Grid.Row="2"
+                            Content="Annuler"
+                            Command="{Binding m_abort_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Left" VerticalAlignment="Center"
+                            Margin="50,0,0,0"
+                            FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
+                        ></Button>
                     </Grid>
                 </Grid>
-                <!--Content-->
             </Grid>
-            <!--Body-->
 
             <!--Footer-->
-            <userControls:UCFooter x:Name="footer" Grid.Row="2">
+            <userControls:UCFooter 
+                Grid.Row="2">
 
             </userControls:UCFooter>
-            <!--Footer-->
         </Grid>
-        <!--Page-->
     </Grid>
 </Page>

@@ -9,9 +9,7 @@ namespace Mams.src.views;
 public partial class MainWindow : Window {
 
     public MainWindow() {
-        //StartApplication.launchServices();
         InitializeComponent();
-
-        SPageNavigationController.Initialize(MainFrame);
+        SPageNavigationController.initialize(MainFrame);
     }
 }

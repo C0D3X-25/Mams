@@ -1,20 +1,26 @@
-﻿using Mams.src.commands;
+﻿using Mams.src.beehives;
+using Mams.src.commands;
+using Mams.src.entities;
 using Mams.src.fees;
 using Mams.src.products;
-using Mams.src.productsLots;
 using Mams.src.productsCategories;
-using Mams.src.beehives;
+using Mams.src.productsLots;
 using Mams.src.productsShapes;
 using Mams.src.productsTypes;
 using Mams.src.profits;
+using Mams.src.views.globalView;
 using System.Windows.Input;
-using Mams.src.entities;
 
 namespace Mams.src.navigations;
 
 public class UCMenuController {
 
-    
+    public string m_background_color_1 { get; set; } = SGlobalView.m_menu_background_color_1;
+    public string m_background_color_2 { get; set; } = SGlobalView.m_menu_background_color_2;
+    public string m_button_color { get; set; } = SGlobalView.m_menu_button_background_color;
+    public string m_button_text_color { get; set; } = SGlobalView.m_menu_button_text_color;
+
+
     public ICommand m_navigate_list_fee_command { get; set; }
     public ICommand m_navigate_list_profit_command { get; set; }
     public ICommand m_navigate_list_entity_command { get; set; }
@@ -26,7 +32,6 @@ public class UCMenuController {
     public ICommand m_navigate_list_product_shape_command { get; set; }
 
     public UCMenuController() {
-
         m_navigate_list_fee_command = new RelayCommand(navigateToListFee);
         m_navigate_list_profit_command = new RelayCommand(navigateToListProfit);
         m_navigate_list_entity_command = new RelayCommand(navigateToListEntity);
@@ -43,7 +48,7 @@ public class UCMenuController {
     }
 
     private void navigateToListProfit(object? obj) {
-        SPageNavigationController.navigateTo(new SaveProfitPage());
+        SPageNavigationController.navigateTo(new ListProfitPage());
     }
 
     private void navigateToListEntity(object? obj) {

@@ -6,6 +6,6 @@ using System.Collections.ObjectModel;
 namespace Mams.src.resumes;
 
 public class ResumeItem : ABaseItem {
-    public ObservableCollection<ProfitItem> profit_items { get; set; } = new();
-    public ObservableCollection<FeeItem> fee_items { get; set; } = new();
+    public ObservableCollection<ReceiptProfitDetailedItem> profit_items { get; set; } = new();
+    public ObservableCollection<ReceiptFeeDetailedItem> fee_items { get; set; } = new();
 }

@@ -1,12 +1,11 @@
-﻿using System.ComponentModel;
-
+﻿
 namespace Mams.src.items;
 
-public abstract class ABaseItem : INotifyPropertyChanged {
+/// <summary>
+/// Represents the base class for items in a hierarchy or collection.
+/// </summary>
+/// <remarks>This abstract class serves as a foundation for derived item types, providing shared functionality  or
+/// structure. It cannot be instantiated directly.</remarks>
+public abstract class ABaseItem {
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected void OnPropertyChanged(string propertyName) {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
 }

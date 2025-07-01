@@ -10,74 +10,97 @@ using System.Collections.ObjectModel;
 using System.Windows;
 
 namespace Mams.src.products;
-internal class ProductModel : ABaseModel,
+
+/// <summary>
+/// Represents a model for managing product-related data and operations.
+/// </summary>
+public class ProductModel : ABaseModel,
     ICrudOperation<ProductItem> {
 
-    public const string m_TBL_NAME = "products";
-    public const string m_COL_ID = "product_id";
-    public const string m_COL_NAME = "product_name";
-    public const string m_COL_WEIGHT = "product_weight";
-    public const string m_COL_FK_PRODUCT_TYPE = "fk_product_type_id";
-    public const string m_COL_FK_PRODUCT_CATEGORY = "fk_product_category_id";
-    public const string m_COL_FK_PRODUCT_SHAPE = "fk_product_shape_id";
-    public const string m_COL_FK_PRODUCT_LOT = "fk_product_lot_id";
-    public const string m_COL_ARCHIVE = "product_archive";
+    private const string _m_TBL_NAME = "products";
+    private const string _m_COL_ID = "product_id";
+    private const string _m_COL_NAME = "product_name";
+    private const string _m_COL_WEIGHT = "product_weight";
+    private const string _m_COL_FK_PRODUCT_TYPE = "fk_product_type_id";
+    private const string _m_COL_FK_PRODUCT_CATEGORY = "fk_product_category_id";
+    private const string _m_COL_FK_PRODUCT_SHAPE = "fk_product_shape_id";
+    private const string _m_COL_ARCHIVE = "product_archive";
 
+    private const int       _m_DEFAUL_FK_PRODUCT_SHAPE = 1;
+    private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
 
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return SDatabaseModel.deleteItem(this, id, m_COL_ID, m_COL_ARCHIVE, m_TBL_NAME, delete_type);
+    /// <summary>
+    /// Deletes an item from the database based on the specified identifier and delete operation type.
+    /// </summary>
+    /// <remarks>The behavior of the delete operation depends on the specified <paramref name="delete_type"/>.
+    /// For <see cref="EDeleteItemOperation.SAFE_DELETE"/>, the item is archived instead of being permanently removed.</remarks>
+    /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
+    /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
+    /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
+    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+        return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
-    public bool deleteItem(int id, EDeleteItemOperation delete_type = EDeleteItemOperation.SOFT_DELETE) {
-        return deleteItem(id.ToString(), delete_type);
-    }
 
-
+    /// <summary>
+    /// Retrieves a <see cref="ProductItem"/> by its unique identifier.
+    /// </summary>
+    /// <remarks>This method queries the database to retrieve a product's details based on its unique
+    /// identifier.  If the product is found, its associated type, category, and shape names are also resolved. If an
+    /// error occurs during the database operation, the method returns <see langword="null"/> and displays an error
+    /// message.</remarks>
+    /// <param name="id">The unique identifier of the product to retrieve. This value cannot be null or empty.</param>
+    /// <returns>A <see cref="ProductItem"/> object containing the product details if found; otherwise, <see langword="null"/>.</returns>
     public ProductItem? getItemByID(string id) {
 
-        using MySqlConnection? conn = _m_conn.openConnection();
+        if (!SDataValidation.isIdValid(id)) {
+            return null;
+        }
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_WEIGHT}, " +
-                $"{m_COL_FK_PRODUCT_TYPE}, {m_COL_FK_PRODUCT_CATEGORY}, " +
-                $"{m_COL_FK_PRODUCT_SHAPE}, {m_COL_FK_PRODUCT_LOT}, " +
-                $"{m_COL_ARCHIVE} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {m_COL_ID} = @id;",
-                conn
+                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_WEIGHT}, " +
+                $"{_m_COL_FK_PRODUCT_TYPE}, {_m_COL_FK_PRODUCT_CATEGORY}, " +
+                $"{_m_COL_FK_PRODUCT_SHAPE}, " +
+                $"{_m_COL_ARCHIVE} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {_m_COL_ID} = @id;",
+                m_conn
             );
 
             cmd.Parameters.AddWithValue("@id", id);
-            using MySqlDataReader reader = cmd.ExecuteReader();
 
-            if (reader.Read()) {
+            ProductTypeModel product_type_model = new();
+            ProductCategoryModel product_category_model = new();
+            ProductShapeModel product_shape_model = new();
+            ProductItem product = new();
 
-                int product_type_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_TYPE, 0);
-                int product_category_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_CATEGORY, 0);
-                int product_shape_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_SHAPE, 0);
-                int product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT, 0);
+            int product_type_id = 0;
+            int product_category_id = 0;
+            int product_shape_id = 0;
 
-                ProductTypeModel product_type_model = new();
-                ProductCategoryModel product_category_model = new();
-                ProductShapeModel product_shape_model = new();
-                ProductLotModel product_lot_model = new();
+            { // Using a block to ensure the reader is disposed of properly
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read()) {
 
-                return new ProductItem {
-                    product_id = reader.GetSafeValue<int>(m_COL_ID),
-                    product_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
-                    product_weight = reader.GetSafeValue(m_COL_WEIGHT, 0),
-                    fk_product_type_id = product_type_id,
-                    product_type_name = product_type_model.getItemByID(product_type_id.ToString())?.product_type_name ?? string.Empty,
-                    fk_product_category_id = product_category_id,
-                    product_category_name = product_category_model.getItemByID(product_category_id.ToString())?.product_category_name ?? string.Empty,
-                    fk_product_shape_id = product_shape_id,
-                    product_shape_name = product_shape_model.getItemByID(product_shape_id.ToString())?.product_shape_name ?? string.Empty,
-                    fk_product_lot_id = product_lot_id,
-                    product_lot_name = product_lot_model.getItemByID(product_lot_id.ToString())?.product_lot_name ?? string.Empty,
-                    product_archive = reader.GetSafeValue(m_COL_ARCHIVE, DateOnly.MinValue).ToString()
-                };
+                    product_type_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_TYPE, 0);
+                    product_category_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY, 0);
+                    product_shape_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0);
+
+                    product.product_id = reader.getSafeValue<int>(_m_COL_ID);
+                    product.product_name = reader.getSafeValue(_m_COL_NAME, string.Empty);
+                    product.product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0);
+                    product.fk_product_type_id = product_type_id;
+                    product.fk_product_category_id = product_category_id;
+                    product.fk_product_shape_id = product_shape_id;
+                    product.product_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString();
+                }
             }
-            return null;
+
+            product.product_type_name = product_type_model.getItemByID(product_type_id.ToString())?.product_type_name ?? string.Empty;
+            product.product_category_name = product_category_model.getItemByID(product_category_id.ToString())?.product_category_name ?? string.Empty;
+            product.product_shape_name = product_shape_model.getItemByID(product_shape_id.ToString())?.product_shape_name ?? string.Empty;
+                
+            return product;
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
@@ -85,10 +108,15 @@ internal class ProductModel : ABaseModel,
         }
     }
 
-
+    /// <summary>
+    /// Retrieves a collection of product items from the database, with additional details populated for related
+    /// entities.
+    /// </summary>
+    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ProductItem"/> objects, where each item includes
+    /// additional details for related entities such as product type, category, and shape.</returns>
     public ObservableCollection<ProductItem> getTable() {
 
-        ObservableCollection<ProductItem> table = SDatabaseModel.getAllData<ProductItem>(this, m_TBL_NAME);
+        ObservableCollection<ProductItem> table = SDatabaseModel.getAllRowsInTable<ProductItem>(_m_TBL_NAME);
 
         ProductTypeModel product_type_model = new();
         ProductCategoryModel product_category_model = new();
@@ -96,120 +124,170 @@ internal class ProductModel : ABaseModel,
         ProductLotModel product_lot_model = new();
 
         foreach (ProductItem item in table) {
-            item.product_type_name = item.fk_product_type_id > 0 ? product_type_model.getItemByID(item.fk_product_type_id.ToString())?.product_type_name ?? string.Empty : "";
-            item.product_category_name = item.fk_product_category_id > 0 ? product_category_model.getItemByID(item.fk_product_category_id.ToString())?.product_category_name ?? string.Empty : "";
-            item.product_shape_name = item.fk_product_shape_id > 0 ? product_shape_model.getItemByID(item.fk_product_shape_id.ToString())?.product_shape_name ?? string.Empty : "";
-            item.product_lot_name = item.fk_product_lot_id > 0 ? product_lot_model.getItemByID(item.fk_product_lot_id.ToString())?.product_lot_name ?? string.Empty : "";
+            item.product_type_name = item.fk_product_type_id > 0 
+                ? product_type_model.getItemByID(item.fk_product_type_id.ToString())?.product_type_name ?? string.Empty 
+                : string.Empty;
+            item.product_category_name = item.fk_product_category_id > 0 
+                ? product_category_model.getItemByID(item.fk_product_category_id.ToString())?.product_category_name ?? string.Empty 
+                : string.Empty;
+            item.product_shape_name = item.fk_product_shape_id > 0 
+                ? product_shape_model.getItemByID(item.fk_product_shape_id.ToString())?.product_shape_name ?? string.Empty 
+                : string.Empty;
         }
         return table;
     }
 
+    /// <summary>
+    /// Saves the specified <see cref="ProductItem"/> to the database.
+    /// </summary>
+    /// <param name="item">The <see cref="ProductItem"/> to save. Must not be <c>null</c>.</param>
+    /// <returns>The <c>product_id</c> of the saved item. Returns <c>0</c> if the operation fails or the item is invalid.</returns>
+    public int saveItem(ProductItem item) {
 
-    public bool saveItem(ProductItem item) {
-
-        using MySqlConnection? conn = _m_conn.openConnection();
+        if (item == null) {
+            return 0;
+        }
 
         string query = string.Empty;
+        int item_id = item.product_id;
+        string item_product_name = item.product_name.Trim();
 
-        if (item.product_id == 0) {
+        if (item_id == 0) {
 
-            if (checkIfItemExist(m_TBL_NAME, m_COL_NAME, item.product_name)) {
-                return false;
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_product_name)) {
+                return 0;
             }
 
-            query = $"INSERT INTO {m_TBL_NAME} ({m_COL_NAME}, {m_COL_WEIGHT}, " +
-                $"{m_COL_FK_PRODUCT_TYPE}, {m_COL_FK_PRODUCT_CATEGORY}, " +
-                $"{m_COL_FK_PRODUCT_SHAPE}, {m_COL_FK_PRODUCT_LOT}) " +
-                $"VALUES (@name, @weight, @fk_product_type, @fk_product_category, @fk_product_shape, @fk_product_lot);";
+            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_WEIGHT}, " +
+                $"{_m_COL_FK_PRODUCT_TYPE}, {_m_COL_FK_PRODUCT_CATEGORY}, " +
+                $"{_m_COL_FK_PRODUCT_SHAPE}) " +
+                $"VALUES (@name, @weight, @fk_product_type, @fk_product_category, @fk_product_shape); " +
+                $"SELECT LAST_INSERT_ID();";
         }
         else {
-            query = $"UPDATE {m_TBL_NAME} " +
-                $"SET {m_COL_NAME} = @name, {m_COL_WEIGHT} = @weight, " +
-                $"{m_COL_FK_PRODUCT_TYPE} = @fk_product_type, " +
-                $"{m_COL_FK_PRODUCT_CATEGORY} = @fk_product_category, " +
-                $"{m_COL_FK_PRODUCT_SHAPE} = @fk_product_shape, " +
-                $"{m_COL_FK_PRODUCT_LOT} = @fk_product_lot " +
-                $"WHERE {m_COL_ID} = @id;";
+            query = $"UPDATE {_m_TBL_NAME} " +
+                $"SET {_m_COL_NAME} = @name, {_m_COL_WEIGHT} = @weight, " +
+                $"{_m_COL_FK_PRODUCT_TYPE} = @fk_product_type, " +
+                $"{_m_COL_FK_PRODUCT_CATEGORY} = @fk_product_category, " +
+                $"{_m_COL_FK_PRODUCT_SHAPE} = @fk_product_shape " +
+                $"WHERE {_m_COL_ID} = @id;";
         }
 
+        startTransaction();
+
         try {
-            using MySqlCommand cmd = new(query, conn);
-            if (item.product_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item.product_id);
+            using MySqlCommand cmd = new(query, m_conn, m_transaction);
+
+            if (item_id != 0) {
+                cmd.Parameters.AddWithValue("@id", item_id);
             }
-            cmd.Parameters.AddWithValue("@name", item.product_name);
+            cmd.Parameters.AddWithValue("@name", item_product_name);
             cmd.Parameters.AddWithValue("@weight", item.product_weight);
             cmd.Parameters.AddWithValue("@fk_product_type", item.fk_product_type_id);
             cmd.Parameters.AddWithValue("@fk_product_category", item.fk_product_category_id);
+            if (item.fk_product_shape_id == 0) {
+                item.fk_product_shape_id = _m_DEFAUL_FK_PRODUCT_SHAPE;
+            }
             cmd.Parameters.AddWithValue("@fk_product_shape", item.fk_product_shape_id);
-            cmd.Parameters.AddWithValue("@fk_product_lot", item.fk_product_lot_id);
-            cmd.ExecuteNonQuery();
-            return true;
+
+            if (item_id == 0) {
+                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            }
+            else {
+                cmd.ExecuteNonQuery();
+            }
+
+            commitTransaction();
+            return item_id;
         }
         catch (MySqlException ex) {
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return 0;
         }
     }
 
-
+    /// <summary>
+    /// Retrieves a collection of products filtered by the specified product type IDs.
+    /// </summary>
+    /// <param name="product_type_id">A list of product type IDs to filter the products. Each ID represents a specific product type.</param>
+    /// <returns>An observable collection of <see cref="ProductItem"/> objects that match the specified product type IDs. If no
+    /// products match, the collection will be empty.</returns>
     public ObservableCollection<ProductItem> getProductWithProductTypeId(List<int> product_type_id) {
-        return getProductWith(m_COL_FK_PRODUCT_TYPE, product_type_id);
+        return getProductWith(_m_COL_FK_PRODUCT_TYPE, product_type_id);
     }
 
-
+    /// <summary>
+    /// Retrieves a collection of products that belong to the specified product category IDs.
+    /// </summary>
+    /// <param name="product_category_id">A list of product category IDs used to filter the products. Each ID must correspond to a valid product category.</param>
+    /// <returns>An observable collection of <see cref="ProductItem"/> objects that match the specified product category IDs. If
+    /// no products are found, the collection will be empty.</returns>
     public ObservableCollection<ProductItem> getProductWithProductCategoryId(List<int> product_category_id) {
-        return getProductWith(m_COL_FK_PRODUCT_CATEGORY, product_category_id);
+        return getProductWith(_m_COL_FK_PRODUCT_CATEGORY, product_category_id);
     }
 
-
+    /// <summary>
+    /// Retrieves a collection of products that match the specified product shape IDs.
+    /// </summary>
+    /// <param name="product_shape_id">A list of product shape IDs to filter the products. Each ID in the list must correspond to a valid product
+    /// shape.</param>
+    /// <returns>An <see cref="ObservableCollection{ProductItem}"/> containing the products that match the specified product
+    /// shape IDs. If no products match, the collection will be empty.</returns>
     public ObservableCollection<ProductItem> getProductWithProductShapeId(List<int> product_shape_id) {
-        return getProductWith(m_COL_FK_PRODUCT_SHAPE, product_shape_id);
+        return getProductWith(_m_COL_FK_PRODUCT_SHAPE, product_shape_id);
     }
 
-
-    public ObservableCollection<ProductItem> getProductWithProductLotId(List<int> product_lot_id) {
-        return getProductWith(m_COL_FK_PRODUCT_LOT, product_lot_id);
-    }
-
-
-    private ObservableCollection<ProductItem> getProductWith(string col_name, List<int> ids) {
+    /// <summary>
+    /// Retrieves a collection of product items from the database based on the specified column name and a list of IDs.
+    /// </summary>
+    /// <param name="column_name">The name of the column to filter the query by. This must correspond to a valid column in the database.</param>
+    /// <param name="ids">A list of integer IDs used to filter the query results. Each ID is matched against the specified column.</param>
+    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ProductItem"/> objects representing the products that
+    /// match the specified criteria. If no matching products are found, the collection will be empty.</returns>
+    private ObservableCollection<ProductItem> getProductWith(string column_name, List<int> ids) {
 
         ObservableCollection<ProductItem> product_items = new();
-        using MySqlConnection? conn = _m_conn.openConnection();
 
+        if (string.IsNullOrEmpty(column_name)
+            || ids.Count == 0)
+            {
+            return product_items;
+        }
+        
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {m_COL_ID}, {m_COL_NAME}, {m_COL_WEIGHT}, " +
-                $"{m_COL_FK_PRODUCT_TYPE}, {m_COL_FK_PRODUCT_CATEGORY}, " +
-                $"{m_COL_FK_PRODUCT_SHAPE}, {m_COL_FK_PRODUCT_LOT} " +
-                $"FROM {m_TBL_NAME} " +
-                $"WHERE {col_name} IN ({string.Join(",", ids.Select((id, index) => $"@id{index}"))});",
-                conn
+                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_WEIGHT}, " +
+                $"{_m_COL_FK_PRODUCT_TYPE}, {_m_COL_FK_PRODUCT_CATEGORY}, " +
+                $"{_m_COL_FK_PRODUCT_SHAPE} " +
+                $"FROM {_m_TBL_NAME} " +
+                $"WHERE {column_name} IN ({string.Join(",", ids.Select((id, index) => $"@id{index}"))});",
+                m_conn
             );
 
             // Add parameters for each ID
             for (int i = 0; i < ids.Count; i++) {
+                if (!SDataValidation.isIdValid(ids[i])) {
+                    return product_items;
+                }
                 cmd.Parameters.AddWithValue($"@id{i}", ids[i]);
             }
 
             using MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read()) {
                 product_items.Add(new ProductItem {
-                    product_id = reader.GetSafeValue<int>(m_COL_ID),
-                    product_name = reader.GetSafeValue(m_COL_NAME, string.Empty),
-                    product_weight = reader.GetSafeValue(m_COL_WEIGHT, 0),
-                    fk_product_type_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_TYPE, 0),
-                    fk_product_category_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_CATEGORY, 0),
-                    fk_product_shape_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_SHAPE, 0),
-                    fk_product_lot_id = reader.GetSafeValue<int>(m_COL_FK_PRODUCT_LOT, 0)
+                    product_id = reader.getSafeValue<int>(_m_COL_ID),
+                    product_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                    product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0),
+                    fk_product_type_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_TYPE, 0),
+                    fk_product_category_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY, 0),
+                    fk_product_shape_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0),
                 });
             }
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
         }
-
         return product_items;
     }
 }

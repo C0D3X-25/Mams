@@ -2,8 +2,7 @@
 using Mams.src.controllers;
 using Mams.src.databaseOperations;
 using Mams.src.navigations;
-using Mams.src.productsCategories;
-using Mams.src.productsLots;
+using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
@@ -11,7 +10,14 @@ namespace Mams.src.productsShapes;
 
 public class ListProductShapeController : ABaseController {
 
-    
+    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
+    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
+    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
+    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+
+
     private readonly ProductShapeModel _m_item_model;
 
     public ICommand m_add_new_item_command { get; set; }
@@ -60,7 +66,7 @@ public class ListProductShapeController : ABaseController {
     public ListProductShapeController() {
         
         _m_item_model = new();
-        _m_delete_button_text = "";
+        _m_delete_button_text = string.Empty;
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
         m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
@@ -106,10 +112,10 @@ public class ListProductShapeController : ABaseController {
     private void deleteOrRestoreItem(object? obj) {
         if (_m_selected_item != null) {
             if (!_m_is_show_archived_checked) {
-                _m_item_model.deleteItem(_m_selected_item.product_shape_id);
+                _m_item_model.deleteItem(_m_selected_item.product_shape_id.ToString());
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.product_shape_id, EDeleteItemOperation.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.product_shape_id.ToString(), EDeleteItemOperation.RESTORE);
             }
             updateListItems();
         }

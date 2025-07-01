@@ -6,10 +6,10 @@
       xmlns:local="clr-namespace:Mams.src.productsTypes"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="800" d:DesignWidth="1224"
       Title="ListProductTypePage">
 
-    <Grid>
+    <Grid Background="{Binding m_page_background_color}">
         <!--Page is 12* per 12*-->
         <Grid>
             <Grid.RowDefinitions>
@@ -23,12 +23,10 @@
 
             <!--Header-->
             <userControls:UCHeader 
-        x:Name="header" 
-        Grid.Row="0"
-        title="Liste des types de produit">
+                Grid.Row="0"
+                title="Liste des types de produit"
 
-            </userControls:UCHeader>
-            <!--Header-->
+            ></userControls:UCHeader>
 
             <!--Body-->
             <Grid Grid.Row="1">
@@ -43,13 +41,15 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Menu-->
-                <userControls:UCMenu x:Name="pages_menu">
+                <userControls:UCMenu 
 
-                </userControls:UCMenu>
-                <!--Menu-->
+                ></userControls:UCMenu>
 
                 <!--Content-->
-                <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
+                <Grid 
+                    Grid.Column="1" 
+                    Background="{Binding m_body_background_color}" 
+                    Margin="3,3,10,3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
@@ -110,52 +110,54 @@
 
                         <!--Delete Buttons-->
                         <Button 
-                        Grid.Row="2"
-                        Content="{Binding m_delete_button_text}"
-                        Command="{Binding m_delete_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="left" VerticalAlignment="Center"
-                        Margin="50,0,0,0"
-                        FontSize="16"
-                        Background="IndianRed"
-                    ></Button>
+                            Grid.Row="2"
+                            Content="{Binding m_delete_button_text}"
+                            Command="{Binding m_delete_item_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="left" VerticalAlignment="Center"
+                            Margin="50,0,0,0"
+                            FontSize="16"
+                            Background="{Binding m_delete_button_color}"
+                            Foreground="{Binding m_delete_button_text_color}"
+                        ></Button>
 
                         <!--Modifiy Buttons-->
                         <Button 
-                        Grid.Row="2"
-                        Content="Modifier"
-                        Command="{Binding m_modify_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Margin="0,0,200,0"
-                        FontSize="16"
-                    ></Button>
+                            Grid.Row="2"
+                            Content="Modifier"
+                            Command="{Binding m_modify_item_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,200,0"
+                            FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
+                        ></Button>
 
                         <!--Add new Broduct Buttons-->
                         <Button 
-                        Grid.Row="2"
-                        Content="Nouveau type"
-                        Command="{Binding m_add_new_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Margin="0,0,50,0"
-                        FontSize="16"
-                    ></Button>
+                            Grid.Row="2"
+                            Content="Nouveau type"
+                            Command="{Binding m_add_new_item_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,50,0"
+                            FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
+                        ></Button>
                     </Grid>
                 </Grid>
-                <!--Content-->
             </Grid>
-            <!--Body-->
 
             <!--Footer-->
-            <userControls:UCFooter x:Name="footer" Grid.Row="2">
+            <userControls:UCFooter
+                Grid.Row="2">
 
             </userControls:UCFooter>
-            <!--Footer-->
         </Grid>
-        <!--Page-->
     </Grid>
 </Page>

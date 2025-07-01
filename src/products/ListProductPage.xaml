@@ -6,10 +6,10 @@
       xmlns:local="clr-namespace:Mams.src.products"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
       mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="1224"
+      d:DesignHeight="800" d:DesignWidth="1224"
       Title="ListProductPage">
 
-    <Grid>
+    <Grid Background="{Binding m_page_background_color}">
         <!--Page is 12* per 12*-->
         <Grid>
             <Grid.RowDefinitions>
@@ -23,7 +23,6 @@
 
             <!--Header-->
             <userControls:UCHeader 
-                x:Name="header"  
                 Grid.Row="0"
                 title="Liste des Produits">
 
@@ -43,13 +42,15 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Menu-->
-                <userControls:UCMenu x:Name="pages_menu">
+                <userControls:UCMenu>
 
                 </userControls:UCMenu>
-                <!--Menu-->
 
                 <!--Content-->
-                <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
+                <Grid 
+                    Grid.Column="1" 
+                    Background="{Binding m_body_background_color}" 
+                    Margin="3,3,10,3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
@@ -102,11 +103,10 @@
                                     <GridView>
                                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_id}"/>
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_name}"/>
-                                        <GridViewColumn Header="Poid(g)" DisplayMemberBinding="{Binding product_weight}"/>
+                                        <GridViewColumn Header="Poids(g)" DisplayMemberBinding="{Binding product_weight}"/>
                                         <GridViewColumn Header="Type" DisplayMemberBinding="{Binding product_type_name}"/>
                                         <GridViewColumn Header="Catégorie" DisplayMemberBinding="{Binding product_category_name}"/>
                                         <GridViewColumn Header="Forme" DisplayMemberBinding="{Binding product_shape_name}"/>
-                                        <GridViewColumn Header="Lot" DisplayMemberBinding="{Binding product_lot_name}"/>
                                         <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_archive}"/>
                                     </GridView>
                                 </ListView.View>
@@ -123,7 +123,8 @@
                             HorizontalAlignment="left" VerticalAlignment="Center"
                             Margin="50,0,0,0"
                             FontSize="16"
-                            Background="IndianRed"
+                            Background="{Binding m_delete_button_color}"
+                            Foreground="{Binding m_delete_button_text_color}"
                         ></Button>
 
                         <!--Modifiy Buttons-->
@@ -136,6 +137,8 @@
                             HorizontalAlignment="Right" VerticalAlignment="Center"
                             Margin="0,0,200,0"
                             FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
                         ></Button>
 
                         <!--Add new Broduct Buttons-->
@@ -148,6 +151,8 @@
                             HorizontalAlignment="Right" VerticalAlignment="Center"
                             Margin="0,0,50,0"
                             FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
                         ></Button>
                     </Grid>
                 </Grid>
@@ -155,11 +160,10 @@
             </Grid>
 
             <!--Footer-->
-            <userControls:UCFooter x:Name="footer" Grid.Row="2">
+            <userControls:UCFooter
+                Grid.Row="2">
 
             </userControls:UCFooter>
-            <!--Footer-->
         </Grid>
-        <!--Page-->
     </Grid>
 </Page>

@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Mams.src.controllers;
 
+
 public abstract class ABaseController : INotifyPropertyChanged {
 
 

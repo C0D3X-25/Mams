@@ -2,12 +2,17 @@
 using Mams.src.databaseOperations;
 using Mams.src.fees;
 using Mams.src.profits;
+using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 
 namespace Mams.src.resumes;
 
 public class ResumeController : ABaseController {
+
+    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
+    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+
 
     private readonly ResumeModel _m_resume_model;
 
@@ -76,8 +81,8 @@ public class ResumeController : ABaseController {
     }
 
 
-    private ObservableCollection<ProfitItem>? _m_list_profit_item;
-    public ObservableCollection<ProfitItem>? m_list_profit_item {
+    private ObservableCollection<ReceiptProfitDetailedItem>? _m_list_profit_item;
+    public ObservableCollection<ReceiptProfitDetailedItem>? m_list_profit_item {
         get { return _m_list_profit_item; }
         set {
             _m_list_profit_item = value;
@@ -86,14 +91,15 @@ public class ResumeController : ABaseController {
     }
 
 
-    private ObservableCollection<FeeItem>? _m_list_fee_item;
-    public ObservableCollection<FeeItem>? m_list_fee_item {
+    private ObservableCollection<ReceiptFeeDetailedItem>? _m_list_fee_item;
+    public ObservableCollection<ReceiptFeeDetailedItem>? m_list_fee_item {
         get { return _m_list_fee_item; }
         set {
             _m_list_fee_item = value;
             onPropertyChanged();
         }
     }
+
 
     private decimal _m_total_profit = 0.00M;
     public decimal m_total_profit {
@@ -175,6 +181,7 @@ public class ResumeController : ABaseController {
 
         m_list_profit_item = resume_item.profit_items;
         m_list_fee_item = resume_item.fee_items;
+
         updateDisplayedTotalTransactions();
     }
 
@@ -185,14 +192,14 @@ public class ResumeController : ABaseController {
         m_total_fee = 0.00M;
 
         if (m_list_profit_item != null) {
-            foreach (ProfitItem item in m_list_profit_item) {
-                m_total_profit += item.profit_price_total;
+            foreach (ReceiptProfitDetailedItem item in m_list_profit_item) {
+                m_total_profit += item.receipt.receipt_total_price;
             }
         }
         if (m_list_fee_item != null) {
-            foreach (FeeItem item in m_list_fee_item) {
+            foreach (ReceiptFeeDetailedItem item in m_list_fee_item) {
                 // Subtract the fees to display the correct (negative) value
-                m_total_fee -= item.fee_price_total;
+                m_total_fee -= item.receipt.receipt_total_price;
             }
             if (m_total_fee < 0) {
                 m_total_fee_color = Brushes.Red;

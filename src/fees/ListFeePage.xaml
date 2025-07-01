@@ -9,7 +9,7 @@
       d:DesignHeight="800" d:DesignWidth="1224"
       Title="ListFeePage">
 
-    <Grid>
+    <Grid Background="{Binding m_page_background_color}">
         <!--Page is 12* per 12*-->
         <Grid>
             <Grid.RowDefinitions>
@@ -46,7 +46,10 @@
                 </userControls:UCMenu>
 
                 <!--Content-->
-                <Grid Grid.Column="1" Background="#FFE0A5A5" Margin="3,3,10,3">
+                <Grid 
+                    Grid.Column="1" 
+                    Background="{Binding m_body_background_color}" 
+                    Margin="3,3,10,3">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
@@ -84,10 +87,10 @@
                             SelectedItem="{Binding m_selected_item}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding receipt_id}"/>
-                                        <GridViewColumn Header="Nom Client" DisplayMemberBinding="{Binding supplier_name}"/>
-                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding fee_date}"/>
-                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding fee_price_total}"/>
+                                        <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_id}"/>
+                                        <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding entity.entity_name}"/>
+                                        <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                        <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -95,46 +98,52 @@
 
                         <!--Delete Buttons-->
                         <Button 
-                        Grid.Row="2"
-                        Content="Supprimer"
-                        Command="{Binding m_delete_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="left" VerticalAlignment="Center"
-                        Margin="50,0,0,0"
-                        FontSize="16"
-                        Background="IndianRed"
-                    ></Button>
+                            Grid.Row="2"
+                            Content="Supprimer"
+                            Command="{Binding m_delete_item_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="left" VerticalAlignment="Center"
+                            Margin="50,0,0,0"
+                            FontSize="16"
+                            Background="{Binding m_delete_button_color}"
+                            Foreground="{Binding m_delete_button_text_color}"
+                        ></Button>
 
                         <!--Modifiy Buttons-->
                         <Button 
-                        Grid.Row="2"
-                        Content="Modifier"
-                        Command="{Binding m_modify_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Margin="0,0,200,0"
-                        FontSize="16"
-                    ></Button>
+                            Grid.Row="2"
+                            Content="Modifier"
+                            Command="{Binding m_modify_item_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,200,0"
+                            FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
+                        ></Button>
 
-                        <!--Add new Broduct Buttons-->
+                        <!--Add new Product Buttons-->
                         <Button 
-                        Grid.Row="2"
-                        Content="Nouveau Frais"
-                        Command="{Binding m_add_new_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Margin="0,0,50,0"
-                        FontSize="16"
-                    ></Button>
+                            Grid.Row="2"
+                            Content="Nouveau Frais"
+                            Command="{Binding m_add_new_item_command}"
+                            Height="30" Width="130"
+                            MaxHeight="30" MaxWidth="130"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,50,0"
+                            FontSize="16"
+                            Background="{Binding m_button_color}"
+                            Foreground="{Binding m_button_text_color}"                            
+                        ></Button>
                     </Grid>
                 </Grid>
             </Grid>
 
             <!--Footer-->
-            <userControls:UCFooter x:Name="footer" Grid.Row="2">
+            <userControls:UCFooter 
+                Grid.Row="2">
 
             </userControls:UCFooter>
         </Grid>

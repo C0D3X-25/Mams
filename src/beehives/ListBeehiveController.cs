@@ -2,14 +2,26 @@
 using Mams.src.controllers;
 using Mams.src.databaseOperations;
 using Mams.src.navigations;
+using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
 namespace Mams.src.beehives;
 
+/// <summary>
+/// Provides functionality for managing a list of beehive items, including adding, modifying, deleting, and restoring
+/// items. Supports filtering between archived and active items.
+/// </summary>
 public class ListBeehiveController : ABaseController {
 
-    
+    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
+    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
+    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
+    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+
+
     private readonly BeehiveModel _m_item_model = new();
 
     public ICommand m_add_new_item_command { get; set; }
@@ -27,7 +39,7 @@ public class ListBeehiveController : ABaseController {
         }
     }
 
-    private string _m_delete_button_text;
+    private string _m_delete_button_text = string.Empty;
     public string m_delete_button_text {
         get { return _m_delete_button_text; }
         set {
@@ -56,8 +68,6 @@ public class ListBeehiveController : ABaseController {
 
 
     public ListBeehiveController() {
-        
-        _m_delete_button_text = "";
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
         m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
@@ -103,10 +113,10 @@ public class ListBeehiveController : ABaseController {
     private void deleteOrRestoreItem(object? obj) {
         if (_m_selected_item != null) {
             if (!_m_is_show_archived_checked) {
-                _m_item_model.deleteItem(_m_selected_item.beehive_id);
+                _m_item_model.deleteItem(_m_selected_item.beehive_id.ToString());
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.beehive_id, EDeleteItemOperation.RESTORE);
+                _m_item_model.deleteItem(_m_selected_item.beehive_id.ToString(), EDeleteItemOperation.RESTORE);
             }
             updateListItems();
         }
