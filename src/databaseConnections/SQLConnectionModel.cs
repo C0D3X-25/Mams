@@ -26,7 +26,8 @@ public class SQLConnectionModel {
     /// <remarks>This method attempts to establish a connection to the MySQL database using the provided
     /// connection string. If the connection cannot be opened or is not valid, the method returns <see
     /// langword="null"/>. In the event of a connection failure, an error message is displayed, and the application
-    /// terminates.</remarks>
+    /// terminates.
+    /// There is a backup of the Database who is done every time the application is launched.</remarks>
     /// <returns>A <see cref="MySqlConnection"/> object representing the open connection to the database,  or <see
     /// langword="null"/> if the connection could not be established.</returns>
     public MySqlConnection? openConnection() {
