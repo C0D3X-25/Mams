@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Mams.src.views"
         xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
         mc:Ignorable="d"
-        Title="MainWindow" 
+        Title="Mams" 
         Height="800" Width="1224" 
         MinHeight="800" MinWidth="1224">
 

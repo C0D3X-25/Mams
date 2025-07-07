@@ -6,7 +6,12 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>ressources\app_icon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="ressources\app_icon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="schemas\MLD.simp.user" />
