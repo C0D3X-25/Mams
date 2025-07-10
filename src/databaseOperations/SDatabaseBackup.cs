@@ -5,6 +5,8 @@ namespace Mams.src.databaseOperations;
 
 public static class SDatabaseBackup {
 
+    private static string destination_path = "C:\\MySqlBackup\\";
+
     /// <summary>
     /// Create a backup (a dump) of the current database.
     /// </summary>
@@ -59,10 +61,9 @@ public static class SDatabaseBackup {
         string today_year = DateTime.Now.Year.ToString();
         string today_month = DateTime.Now.Month.ToString();
         string today_day = DateTime.Now.Day.ToString();
-        string destination_folder = "C:\\MySqlBackup\\";
         string destination_file = "backup_" + today_day + "_" + today_month + "_" + today_year + ".sql";
 
-        return destination_folder + destination_file;
+        return destination_path + destination_file;
     }
 
     /// <summary>
