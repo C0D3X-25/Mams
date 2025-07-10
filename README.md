@@ -27,6 +27,8 @@ The files must be opened with Draw.io (https://app.diagrams.net/).
 - Start with `UC` is a User Control, used in the front end.
 
 ## Installer
+The installation is made under ~C:/Program Files/JTH/mams/~ and there is a shortcut on the desktop.
+
 This application needs the `service mysql` for the interactions with the database, which can be found in this installer. You can add MySQL Workbench for later.
 
 https://dev.mysql.com/downloads/installer/
