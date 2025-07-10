@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mams", "Mams.csproj", "{C0F
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Mams_Installer", "..\Mams_Installer\Mams_Installer.vdproj", "{5DFF34E5-DADC-E021-5D8E-04F32333D98D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +24,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C0F3D8FA-FD72-46DC-9341-929DC76E0325} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{5DFF34E5-DADC-E021-5D8E-04F32333D98D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42EF404D-098A-4FA3-B28F-E65E8A18F62B}
