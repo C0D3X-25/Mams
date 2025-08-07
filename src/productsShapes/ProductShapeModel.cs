@@ -75,7 +75,7 @@ public class ProductShapeModel :
     /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows in the table as <see cref="ProductShapeItem"/>
     /// objects. The collection will be empty if no rows are found.</returns>
     public ObservableCollection<ProductShapeItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<ProductShapeItem>(_m_TBL_NAME, _m_COL_ARCHIVE);
+        return SDatabaseModel.getAllRowsInTable<ProductShapeItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
     }
 
     /// <summary>

@@ -22,14 +22,16 @@ public abstract class SDatabaseModel : ABaseModel {
     /// </summary>
     /// <typeparam name="T">The type of objects to create, must inherit from ABaseItem and have a parameterless constructor.</typeparam>
     /// <param name="table">The name of the database table to query.</param>
+    /// <param name="asc_column">The column who need to be order alphabetically (can be null).</param>
+    /// <param name="archive_field">The column where the archive is set (can be null).</param>
     /// <returns>
     /// An ObservableCollection of type T containing the converted database records.
     /// Returns an empty collection if an error occurs during data retrieval or conversion.
     /// </returns>
-    public static ObservableCollection<T> getAllRowsInTable<T>(string table, string? archive_field = null) where T : ABaseItem, new() {
+    public static ObservableCollection<T> getAllRowsInTable<T>(string table, string? asc_column = null, string? archive_field = null) where T : ABaseItem, new() {
 
         ObservableCollection<T> items = new();
-        DataTable? data_table = getDataTable(table, archive_field);
+        DataTable? data_table = getDataTable(table, asc_column, archive_field);
 
         if (data_table != null) {
             try {
@@ -264,11 +266,13 @@ public abstract class SDatabaseModel : ABaseModel {
     /// Retrieves all records from a specified database table.
     /// </summary>
     /// <param name="table">The name of the database table to query.</param>
+    /// <param name="asc_column">The column who need to be order alphabetically (can be null).</param>
+    /// <param name="archive_field">The column where the archive is set (can be null).</param>
     /// <returns>
     /// A DataTable containing all records from the specified table.
     /// Returns null if an error occurs during the database operation.
     /// </returns>
-    private static DataTable? getDataTable(string table, string? archive_field) {
+    private static DataTable? getDataTable(string table, string? asc_column, string? archive_field) {
 
         if (string.IsNullOrWhiteSpace(table)) {
             return null;
@@ -278,25 +282,37 @@ public abstract class SDatabaseModel : ABaseModel {
         
         string query = string.Empty;
 
-        if (archive_field == null) {
-            query = $"SELECT * FROM {table};";
+        if (asc_column == null) {
+            if (archive_field == null) {
+                query = $"SELECT * FROM {table};";
+            }
+            else {
+                query = $"SELECT * FROM {table} " +
+                    $"WHERE {archive_field} != '{_m_DEFAULT_ARCHIVE_DATE}' " +
+                    $"OR {archive_field} IS NULL;";
+            }
         }
         else {
-            query = $"SELECT * FROM {table} " +
-                $"WHERE {archive_field} != '{_m_DEFAULT_ARCHIVE_DATE}' " +
-                $"OR {archive_field} IS NULL;";
+            if (archive_field == null) {
+                query = $"SELECT * FROM {table} ORDER BY {asc_column} ASC;";
+            }
+            else {
+                query = $"SELECT * FROM {table} " +
+                    $"WHERE {archive_field} != '{_m_DEFAULT_ARCHIVE_DATE}' " +
+                    $"OR {archive_field} IS NULL " +
+                    $"ORDER BY {asc_column} ASC;";
+            }
         }
+            try {
+                using MySqlCommand cmd = new(query, m_conn);
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                data_table.Load(reader);
 
-        try {
-            using MySqlCommand cmd = new(query, m_conn);
-            using MySqlDataReader reader = cmd.ExecuteReader();
-            data_table.Load(reader);
-
-            return data_table;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return null;
-        }
+                return data_table;
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return null;
+            }
     }
 }

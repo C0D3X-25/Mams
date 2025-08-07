@@ -81,7 +81,7 @@ public class EntityModel : ABaseModel,
     /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows in the table represented as <see
     /// cref="EntityItem"/> objects. If the table is empty, the collection will be empty.</returns>
     public ObservableCollection<EntityItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<EntityItem>(_m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<EntityItem>(_m_TBL_NAME, _m_COL_NAME);
     }
 
     /// <summary>

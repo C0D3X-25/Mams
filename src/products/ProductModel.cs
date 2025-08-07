@@ -116,7 +116,7 @@ public class ProductModel : ABaseModel,
     /// additional details for related entities such as product type, category, and shape.</returns>
     public ObservableCollection<ProductItem> getTable() {
 
-        ObservableCollection<ProductItem> table = SDatabaseModel.getAllRowsInTable<ProductItem>(_m_TBL_NAME);
+        ObservableCollection<ProductItem> table = SDatabaseModel.getAllRowsInTable<ProductItem>(_m_TBL_NAME, _m_COL_NAME);
 
         ProductTypeModel product_type_model = new();
         ProductCategoryModel product_category_model = new();

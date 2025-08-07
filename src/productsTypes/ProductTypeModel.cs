@@ -76,7 +76,7 @@ public class ProductTypeModel :
     /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows of type <see cref="ProductTypeItem"/> from the
     /// table. The collection will be empty if the table contains no rows.</returns>
     public ObservableCollection<ProductTypeItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<ProductTypeItem>(_m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<ProductTypeItem>(_m_TBL_NAME, _m_COL_NAME);
     }
 
     /// <summary>

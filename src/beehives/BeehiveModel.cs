@@ -74,7 +74,7 @@ public class BeehiveModel : ABaseModel,
     /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows in the beehive table. If the table is empty, the
     /// collection will be empty.</returns>
     public ObservableCollection<BeehiveItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<BeehiveItem>(_m_TBL_NAME, _m_COL_ARCHIVE);
+        return SDatabaseModel.getAllRowsInTable<BeehiveItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
     }
 
     /// <summary>
