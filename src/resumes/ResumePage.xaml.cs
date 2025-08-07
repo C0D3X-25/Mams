@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Mams.src.resumes;
 
@@ -9,5 +10,17 @@ public partial class ResumePage : Page {
     public ResumePage() {
         InitializeComponent();
         DataContext = new ResumeController();
+    }
+
+    private void ProfitListView_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+        if (sender is ListView listView && listView.SelectedItem != null) {
+            ((ResumeController)DataContext).NavigateToProfitDetails(listView.SelectedItem);
+        }
+    }
+
+    private void FeeListView_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
+        if (sender is ListView listView && listView.SelectedItem != null) {
+            ((ResumeController)DataContext).NavigateToFeeDetails(listView.SelectedItem);
+        }
     }
 }

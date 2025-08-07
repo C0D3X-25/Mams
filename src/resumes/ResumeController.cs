@@ -3,6 +3,7 @@ using Mams.src.databaseOperations;
 using Mams.src.fees;
 using Mams.src.profits;
 using Mams.src.views.globalView;
+using Mams.src.navigations;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 
@@ -159,6 +160,20 @@ public class ResumeController : ABaseController {
 
         updateDisplayedProfitsAndFeesLists();
         updateListSearchItems();
+    }
+
+
+    public void NavigateToProfitDetails(object selectedItem) {
+        if (selectedItem is ReceiptProfitDetailedItem profitItem) {
+            SPageNavigationController.navigateTo(new SaveProfitPage(profitItem.receipt.receipt_id));
+        }
+    }
+
+
+    public void NavigateToFeeDetails(object selectedItem) {
+        if (selectedItem is ReceiptFeeDetailedItem feeItem) {
+            SPageNavigationController.navigateTo(new SaveFeePage(feeItem.receipt.receipt_id));
+        }
     }
 
 
