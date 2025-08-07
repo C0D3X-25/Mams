@@ -100,7 +100,7 @@
                             SelectedItem="{Binding m_selected_item}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_type_id}"/>
+                                        <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_type_id}"/>-->
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_type_name}"/>
                                         <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_type_archive}"/>
                                     </GridView>

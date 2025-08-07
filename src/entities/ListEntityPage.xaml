@@ -99,7 +99,7 @@
                                 SelectedItem="{Binding m_selected_item}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding entity_id}"/>
+                                        <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding entity_id}"/>-->
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding entity_name}"/>
                                         <GridViewColumn Header="Téléphone" DisplayMemberBinding="{Binding entity_phone}"/>
                                         <GridViewColumn Header="Email" DisplayMemberBinding="{Binding entity_email}"/>
