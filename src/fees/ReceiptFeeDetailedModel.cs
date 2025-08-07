@@ -128,6 +128,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         item.receipt_supplier.fk_supplier_id = supplier_id;
         item.supplier.supplier_id = supplier_id;
 
+        generateFeeReceiptNumber(item);
         UpdateReceiptTotalPrice(item);
 
         var handlerItem = new ReceiptHandlerItem {
@@ -175,5 +176,35 @@ public class ReceiptFeeDetailedModel : ABaseModel,
             total += product.receipt_product_quantity * product.receipt_product_unity_price;
         }
         item.receipt.receipt_total_price = total;
+    }
+
+    /// <summary>
+    /// Generates and assigns a unique fee receipt number to the specified <see cref="ReceiptFeeDetailedItem"/> if it
+    /// does not already have one.
+    /// </summary>
+    /// <param name="item">The <see cref="ReceiptFeeDetailedItem"/> to which the receipt number will be assigned.  
+    /// If <paramref name="item"/> is <see langword="null"/> or its receipt already has a number, no action is taken.</param>
+    private void generateFeeReceiptNumber(ReceiptFeeDetailedItem item) {
+        
+        if (item == null) { 
+            return; 
+        }
+        if (item.receipt.receipt_number != string.Empty) {
+            return;
+        }
+
+        ReceiptModel receipt_model = new();
+        string base_number;
+        string unique_number;
+        int counter = 1;
+        
+        do {
+            base_number = "F-" + DateTime.Now.ToString(globals.SGlobals.g_EU_DATE_FORMAT);
+            unique_number = $"{base_number}-{counter:D3}";
+            counter++;
+        } 
+        while (receipt_model.isReceiptNumberExisting(unique_number));
+        
+        item.receipt.receipt_number = unique_number;
     }
 }

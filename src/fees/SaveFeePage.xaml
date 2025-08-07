@@ -79,13 +79,12 @@
                                 <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!--Receipt number-->
+                            <!--Receipt number--><!--
                             <userControls:UCLabelTextBox
                                 Grid.Column="0" Grid.Row="0"
-                                label="N° de Facture"
-                                text="{Binding m_fee_receipt_detail.receipt.receipt_id, UpdateSourceTrigger=PropertyChanged}"
-                                isEnabled="False"
-                            ></userControls:UCLabelTextBox>
+                                label="N° de Facture*"
+                                text="{Binding m_fee_receipt_detail.receipt.receipt_number, UpdateSourceTrigger=PropertyChanged}"
+                            ></userControls:UCLabelTextBox>-->
 
                             <!--Supplier-->
                             <Grid

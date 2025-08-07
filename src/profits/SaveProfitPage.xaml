@@ -82,9 +82,8 @@
                             <!--Receipt number-->
                             <userControls:UCLabelTextBox
                                 Grid.Column="0" Grid.Row="0"
-                                label="N° de Facture"
-                                text="{Binding m_profit_receipt_detail.receipt.receipt_id, UpdateSourceTrigger=PropertyChanged}"
-                                isEnabled="False"
+                                label="N° de Facture*"
+                                text="{Binding m_profit_receipt_detail.receipt.receipt_number, UpdateSourceTrigger=PropertyChanged}"
                             ></userControls:UCLabelTextBox>
 
                             <!--Supplier-->

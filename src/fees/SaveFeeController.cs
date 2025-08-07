@@ -161,6 +161,7 @@ public class SaveFeeController : ABaseController {
 
         return m_selected_entity != null
             && SDataValidation.isDateValidFormatEU(m_fee_receipt_detail.receipt.receipt_date_created)
+            //&& m_fee_receipt_detail.receipt.receipt_number != string.Empty // A method check if this receipt number is existing in the DB when saving
             && m_list_receipt_product.Count > 0
             && m_list_receipt_product.All(item =>
                 item.receipt_product_unity_price >= 0
@@ -199,7 +200,7 @@ public class SaveFeeController : ABaseController {
             SPageNavigationController.navigateTo(new ListFeePage());
         }
         else {
-            MessageBox.Show("Error saving the fee");
+            MessageBox.Show("Error when saving the fee");
         }
     }
 

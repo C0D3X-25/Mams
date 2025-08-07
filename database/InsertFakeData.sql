@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS clients (
 
 CREATE TABLE IF NOT EXISTS receipts (
     receipt_id INT PRIMARY KEY AUTO_INCREMENT,
+    receipt_number VARCHAR(50) NOT NULL,
     receipt_total_price DECIMAL(9,2) NOT NULL,
     receipt_date_created DATE NOT NULL
 );
@@ -109,7 +110,6 @@ INSERT INTO beehives (beehive_name, beehive_archive) VALUES
 ('', '1901-01-01');
 INSERT INTO products_lots (product_lot_name, product_lot_year, fk_beehive_id, product_lot_archive) VALUES
 ('', 0, 1, '1901-01-01');
-
 
 -- Insert data into entities (including mixed supplier-client entities)
 INSERT INTO entities (entity_name, entity_phone, entity_email, entity_city, entity_address, entity_archive) VALUES
@@ -216,17 +216,17 @@ INSERT INTO products (product_name, product_weight, fk_product_category_id, fk_p
 ('Thyme Honey'          , NULL, 1, 1, 10, NULL);
 
 -- Insert data into receipts
-INSERT INTO receipts (receipt_total_price, receipt_date_created) VALUES
-(124.50, '2025-01-15'),
-(76.80, '2025-01-22'),
-(198.25, '2021-01-30'),
-(45.00, '2024-02-05'),
-(312.75, '2024-02-12'),
-(87.20, '2022-02-20'),
-(156.40, '2025-02-28'),
-(234.60, '2024-03-05'),
-(67.90, '2020-03-10'),
-(189.30, '2021-03-12');
+INSERT INTO receipts (receipt_number, receipt_total_price, receipt_date_created) VALUES
+('1BA', 124.50, '2025-01-15'),
+('1BC', 76.80, '2025-01-22'),
+('1BB', 198.25, '2021-01-30'),
+('1CA', 45.00, '2024-02-05'),
+('10A', 312.75, '2024-02-12'),
+('100', 87.20, '2022-02-20'),
+('65165', 156.40, '2025-02-28'),
+('Test', 234.60, '2024-03-05'),
+('Vesad', 67.90, '2020-03-10'),
+('1630a', 189.30, '2021-03-12');
 
 -- Insert data into receipts_suppliers
 INSERT INTO receipts_suppliers (fk_supplier_id, fk_receipt_id) VALUES

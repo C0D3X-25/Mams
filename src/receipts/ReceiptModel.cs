@@ -14,8 +14,10 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
 
     private const string _m_TBL_NAME = "receipts";
     private const string _m_COL_ID = "receipt_id";
+    private const string _m_COL_RECEIPT_NUMBER = "receipt_number";
     private const string _m_COL_RECEIPT_TOTAL_PRICE = "receipt_total_price";
     private const string _m_COL_RECEIPT_DATE_CREATED = "receipt_date_created";
+
 
     /// <summary>
     /// Deletes an item from the database based on the specified identifier and delete operation type.
@@ -44,6 +46,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID}, " +
+                $"{_m_COL_RECEIPT_NUMBER}, " +
                 $"{_m_COL_RECEIPT_TOTAL_PRICE}, " +
                 $"{_m_COL_RECEIPT_DATE_CREATED} " +
                 $"FROM {_m_TBL_NAME} " +
@@ -57,6 +60,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             if (reader.Read()) {
                 return new ReceiptItem {
                     receipt_id = reader.getSafeValue<int>(_m_COL_ID),
+                    receipt_number = reader.getSafeValue(_m_COL_RECEIPT_NUMBER, string.Empty),
                     receipt_total_price = reader.getSafeValue<decimal>(_m_COL_RECEIPT_TOTAL_PRICE),
                     receipt_date_created = reader.getSafeValue(_m_COL_RECEIPT_DATE_CREATED, DateOnly.MinValue).ToString(globals.SGlobals.g_EU_DATE_FORMAT)
                 };
@@ -91,11 +95,29 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         }
 
         int item_id = item.receipt_id;
+        string receipt_nbr = item.receipt_number;
+
+        // BUG: Error after a throw even with a correct receipt number
+        if (isReceiptNumberExisting(receipt_nbr)) {
+
+            // A new Fee cannot be created with an existing receipt number
+            if (item_id == 0) {
+                throw new InvalidOperationException("Cannot create a new receipt with an existing receipt number.");
+            }
+            else {
+                int id_to_save = getIdWithReceiptNumber(receipt_nbr);
+
+                // The Fee to modify use a receipt number who already exist and is not the one already assigned
+                if (id_to_save != item_id) {
+                    throw new InvalidOperationException("Cannot create a new receipt with an existing receipt number.");
+                }
+            }
+        }
 
         string query = item_id == 0
-            ? $"INSERT INTO {_m_TBL_NAME} ({_m_COL_RECEIPT_TOTAL_PRICE}, {_m_COL_RECEIPT_DATE_CREATED}) VALUES (@total_price, @date_created); " +
+            ? $"INSERT INTO {_m_TBL_NAME} ({_m_COL_RECEIPT_NUMBER}, {_m_COL_RECEIPT_TOTAL_PRICE}, {_m_COL_RECEIPT_DATE_CREATED}) VALUES (@receipt_number, @total_price, @date_created); " +
             $"SELECT LAST_INSERT_ID();"
-            : $"UPDATE {_m_TBL_NAME} SET {_m_COL_RECEIPT_TOTAL_PRICE} = @total_price, {_m_COL_RECEIPT_DATE_CREATED} = @date_created WHERE {_m_COL_ID} = @id;";
+            : $"UPDATE {_m_TBL_NAME} SET {_m_COL_RECEIPT_NUMBER} = @receipt_number, {_m_COL_RECEIPT_TOTAL_PRICE} = @total_price, {_m_COL_RECEIPT_DATE_CREATED} = @date_created WHERE {_m_COL_ID} = @id;";
 
         bool transaction_needed = false;
         if (!isTransactionActive()) {
@@ -108,6 +130,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             if (item_id != 0) {
                 cmd.Parameters.AddWithValue("@id", item_id);
             }
+            cmd.Parameters.AddWithValue("@receipt_number", receipt_nbr);
             cmd.Parameters.AddWithValue("@total_price", item.receipt_total_price);
             cmd.Parameters.AddWithValue("@date_created", SFormatData.formatEUDateToMySQLDate(item.receipt_date_created));
 
@@ -184,6 +207,58 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return items;
+        }
+    }
+
+    /// <summary>
+    /// Determines whether a receipt number exists in the database.
+    /// </summary>
+    /// <param name="receipt_number">The receipt number to check for existence. Cannot be null, empty, or consist only of white-space characters.</param>
+    /// <returns><see langword="true"/> if the specified receipt number exists in the database; otherwise, 
+    /// <see langword="false"/>.</returns>
+    public bool isReceiptNumberExisting(string receipt_number) {
+
+        if (string.IsNullOrWhiteSpace(receipt_number)) {
+            return false;
+        }
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT COUNT(*) FROM {_m_TBL_NAME} WHERE {_m_COL_RECEIPT_NUMBER} = @receipt_number;",
+                m_conn,
+                m_transaction
+            );
+            cmd.Parameters.AddWithValue("@receipt_number", receipt_number);
+            return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Find the ID of a receipt based on its receipt number.
+    /// </summary>
+    /// <param name="receipt_number">The string attribued to the receipt</param>
+    /// <returns>The ID of the corresponding receipt number. Else 0 if not found</returns>
+    public int getIdWithReceiptNumber(string receipt_number) {
+
+        if (string.IsNullOrWhiteSpace(receipt_number)) {
+            return 0;
+        }
+
+        try {
+            using MySqlCommand cmd = new(
+                $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME} WHERE {_m_COL_RECEIPT_NUMBER} = @receipt_number;",
+                m_conn
+            );
+            cmd.Parameters.AddWithValue("@receipt_number", receipt_number);
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return 0;
         }
     }
 }
