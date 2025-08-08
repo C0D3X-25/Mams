@@ -97,19 +97,17 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         int item_id = item.receipt_id;
         string receipt_nbr = item.receipt_number;
 
-        // BUG: Error after a throw even with a correct receipt number
         if (isReceiptNumberExisting(receipt_nbr)) {
-
             // A new Fee cannot be created with an existing receipt number
             if (item_id == 0) {
-                throw new InvalidOperationException("Cannot create a new receipt with an existing receipt number.");
+                return 0;
             }
             else {
                 int id_to_save = getIdWithReceiptNumber(receipt_nbr);
 
                 // The Fee to modify use a receipt number who already exist and is not the one already assigned
                 if (id_to_save != item_id) {
-                    throw new InvalidOperationException("Cannot create a new receipt with an existing receipt number.");
+                    return 0;
                 }
             }
         }
@@ -167,7 +165,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME};",
-                m_conn
+                m_conn,
+                m_transaction
             );
             using MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read()) {
@@ -196,7 +195,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 $"AS year " +
                 $"FROM {_m_TBL_NAME} " +
                 $"ORDER BY year DESC;",
-                m_conn
+                m_conn,
+                m_transaction
             );
             using MySqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read()) {
@@ -251,7 +251,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         try {
             using MySqlCommand cmd = new(
                 $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME} WHERE {_m_COL_RECEIPT_NUMBER} = @receipt_number;",
-                m_conn
+                m_conn,
+                m_transaction
             );
             cmd.Parameters.AddWithValue("@receipt_number", receipt_number);
             return Convert.ToInt32(cmd.ExecuteScalar());

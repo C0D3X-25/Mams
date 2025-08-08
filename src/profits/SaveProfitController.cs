@@ -197,19 +197,11 @@ public class SaveProfitController : ABaseController {
         // Update the receipt products collection
         m_profit_receipt_detail.receipt_products = m_list_receipt_product;
 
-        try {
-            if (_m_receipt_profit_detailed_model.saveItem(m_profit_receipt_detail) > 0) {
-                SPageNavigationController.navigateTo(new ListProfitPage());
-            }
-            else {
-                MessageBox.Show("Error when saving the profit");
-            }
+        if (_m_receipt_profit_detailed_model.saveItem(m_profit_receipt_detail) > 0) {
+            SPageNavigationController.navigateTo(new ListProfitPage());
         }
-        catch (InvalidOperationException) {
+        else {
             MessageBox.Show($"Le numéro de facture donné ({m_profit_receipt_detail.receipt.receipt_number}) est déjà utilisé.", "Erreur de saisie", MessageBoxButton.OK, MessageBoxImage.Warning);
-        }
-        catch (Exception ex) {
-            MessageBox.Show($"An unexpected error occurred while saving the profit: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
