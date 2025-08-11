@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using Mams.src.profits;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Mams.src.entities;
 

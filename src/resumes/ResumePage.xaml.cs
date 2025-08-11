@@ -14,13 +14,13 @@ public partial class ResumePage : Page {
 
     private void ProfitListView_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
         if (sender is ListView listView && listView.SelectedItem != null) {
-            ((ResumeController)DataContext).NavigateToProfitDetails(listView.SelectedItem);
+            ((ResumeController)DataContext).navigateToProfitDetails(listView.SelectedItem);
         }
     }
 
     private void FeeListView_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
         if (sender is ListView listView && listView.SelectedItem != null) {
-            ((ResumeController)DataContext).NavigateToFeeDetails(listView.SelectedItem);
+            ((ResumeController)DataContext).navigateToFeeDetails(listView.SelectedItem);
         }
     }
 }

@@ -215,7 +215,7 @@ public class SaveFeeController : ABaseController {
                 }
             }
         }
-        SPageNavigationController.navigateTo(new ListFeePage());
+        SPageNavigationController.navigateBack();
     }
 
 

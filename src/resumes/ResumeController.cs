@@ -163,14 +163,14 @@ public class ResumeController : ABaseController {
     }
 
 
-    public void NavigateToProfitDetails(object selectedItem) {
+    public void navigateToProfitDetails(object selectedItem) {
         if (selectedItem is ReceiptProfitDetailedItem profitItem) {
             SPageNavigationController.navigateTo(new SaveProfitPage(profitItem.receipt.receipt_id));
         }
     }
 
 
-    public void NavigateToFeeDetails(object selectedItem) {
+    public void navigateToFeeDetails(object selectedItem) {
         if (selectedItem is ReceiptFeeDetailedItem feeItem) {
             SPageNavigationController.navigateTo(new SaveFeePage(feeItem.receipt.receipt_id));
         }

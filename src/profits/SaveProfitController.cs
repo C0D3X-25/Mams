@@ -201,6 +201,7 @@ public class SaveProfitController : ABaseController {
             SPageNavigationController.navigateTo(new ListProfitPage());
         }
         else {
+            // TODO: Need to be refactored, any error from the save method will return this message.
             MessageBox.Show($"Le numéro de facture donné ({m_profit_receipt_detail.receipt.receipt_number}) est déjà utilisé.", "Erreur de saisie", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
@@ -216,7 +217,7 @@ public class SaveProfitController : ABaseController {
                 }
             }
         }
-        SPageNavigationController.navigateTo(new ListProfitPage());
+        SPageNavigationController.navigateBack();
     }
 
 

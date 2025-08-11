@@ -100,7 +100,7 @@ public class ListProductLotController : ABaseController {
     }
 
 
-    private void navigateToModifyPage(object? obj) {
+    public void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
             SPageNavigationController.navigateTo(new SaveProductLotPage(_m_selected_item.product_lot_id));
         }

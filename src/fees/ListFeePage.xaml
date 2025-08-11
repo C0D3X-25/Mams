@@ -79,12 +79,13 @@
                             </Grid.ColumnDefinitions>
 
                             <ListView 
-                            Grid.Column="1" 
-                            Margin="0,0,0,10"
-                            MinWidth="500"
-                            FontSize="14"
-                            ItemsSource="{Binding m_list_items}"
-                            SelectedItem="{Binding m_selected_item}">
+                                Grid.Column="1" 
+                                Margin="0,0,0,10"
+                                MinWidth="500"
+                                FontSize="14"
+                                ItemsSource="{Binding m_list_items}"
+                                SelectedItem="{Binding m_selected_item}"
+                                MouseDoubleClick="listView_MouseDoubleClick">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>

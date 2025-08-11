@@ -101,7 +101,7 @@ public class ListProductController : ABaseController {
     }
 
 
-    private void navigateToModifyPage(object? obj) {
+    public void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
             SPageNavigationController.navigateTo(new SaveProductPage(_m_selected_item.product_id));
         }

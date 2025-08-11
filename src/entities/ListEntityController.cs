@@ -27,6 +27,8 @@ public class ListEntityController : ABaseController {
     public ICommand m_add_new_item_command { get; set; }
     public ICommand m_modify_item_command { get; set; }
     public ICommand m_delete_item_command { get; set; }
+    public ICommand m_double_click_command { get; set; }
+
 
 
     private bool _m_is_show_archived_checked = false;
@@ -79,8 +81,9 @@ public class ListEntityController : ABaseController {
         _m_delete_button_text = string.Empty;
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
-        m_modify_item_command = new RelayCommand(navigateToModifyItem, isItemSelected);
+        m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
         m_delete_item_command = new RelayCommand(deleteOrRestoreItem, isItemSelected);
+        m_double_click_command = new RelayCommand(navigateToModifyPage, isItemSelected);
     }
 
 
@@ -128,7 +131,7 @@ public class ListEntityController : ABaseController {
     /// Navigates to the save client page for modifying an existing client
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
-    private void navigateToModifyItem(object? obj) {
+    private void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
             SPageNavigationController.navigateTo(new SaveEntityPage(_m_selected_item.entity_id));
         }

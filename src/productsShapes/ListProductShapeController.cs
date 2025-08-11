@@ -102,7 +102,7 @@ public class ListProductShapeController : ABaseController {
     }
 
 
-    private void navigateToModifyPage(object? obj) {
+    public void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
             SPageNavigationController.navigateTo(new SaveProductShapePage(_m_selected_item.product_shape_id));
         }

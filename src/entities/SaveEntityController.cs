@@ -84,6 +84,6 @@ public class SaveEntityController : ABaseController {
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
     private void abortClient(object? obj) {
-        SPageNavigationController.navigateTo(new ListEntityPage());
+        SPageNavigationController.navigateBack();
     }
 }

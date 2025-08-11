@@ -23,6 +23,7 @@ public class ListProfitController : ABaseController {
     public ICommand m_add_new_item_command { get; set; }
     public ICommand m_modify_item_command { get; set; }
     public ICommand m_delete_item_command { get; set; }
+    public ICommand m_double_click_command { get; set; }
 
 
 
@@ -52,8 +53,14 @@ public class ListProfitController : ABaseController {
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
         m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
         m_delete_item_command = new RelayCommand(deleteItem, isItemSelected);
+        m_double_click_command = new RelayCommand(navigateToModifyPage, isItemSelected);
     }
 
+    public void navigateToModifyPage(object? obj) {
+        if (_m_selected_item != null) {
+            SPageNavigationController.navigateTo(new SaveProfitPage(_m_selected_item.receipt.receipt_id));
+        }
+    }
 
     private void updateListItems() {
         m_list_items = _m_item_model.getTable();
@@ -67,13 +74,6 @@ public class ListProfitController : ABaseController {
 
     private bool isItemSelected(object? arg) {
         return m_selected_item != null;
-    }
-
-
-    private void navigateToModifyPage(object? obj) {
-        if (_m_selected_item != null) {
-            SPageNavigationController.navigateTo(new SaveProfitPage(_m_selected_item.receipt.receipt_id));
-        }
     }
 
 

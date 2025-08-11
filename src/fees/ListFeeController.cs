@@ -69,7 +69,7 @@ public class ListFeeController : ABaseController {
     }
 
 
-    private void navigateToModifyPage(object? obj) {
+    public void navigateToModifyPage(object? obj) {
         if (_m_selected_item != null) {
             SPageNavigationController.navigateTo(new SaveFeePage(_m_selected_item.receipt.receipt_id));
         }
