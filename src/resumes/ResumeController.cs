@@ -1,10 +1,13 @@
-﻿using Mams.src.controllers;
+﻿using Mams.src.commands;
+using Mams.src.controllers;
 using Mams.src.databaseOperations;
 using Mams.src.fees;
-using Mams.src.profits;
-using Mams.src.views.globalView;
 using Mams.src.navigations;
+using Mams.src.profits;
+using Mams.src.receipts;
+using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Mams.src.resumes;
@@ -13,6 +16,9 @@ public class ResumeController : ABaseController {
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+
+    public ICommand m_double_click_command_profit { get; set; }
+    public ICommand m_double_click_command_fee { get; set; }
 
 
     private readonly ResumeModel _m_resume_model;
@@ -38,6 +44,8 @@ public class ResumeController : ABaseController {
             onPropertyChanged();
         }
     }
+
+
 
 
     private ObservableCollection<SearchItem>? _m_list_search_item;
@@ -152,30 +160,57 @@ public class ResumeController : ABaseController {
     }
 
 
+    private ReceiptProfitDetailedItem? _m_selected_profit_item;
+    public ReceiptProfitDetailedItem? m_selected_profit_item {
+        get { return _m_selected_profit_item; }
+        set {
+            _m_selected_profit_item = value;
+            onPropertyChanged();
+        }
+    }
+
+    private ReceiptFeeDetailedItem? _m_selected_fee_item;
+    public ReceiptFeeDetailedItem? m_selected_fee_item {
+        get { return _m_selected_fee_item; }
+        set {
+            _m_selected_fee_item = value;
+            onPropertyChanged();
+        }
+    }
+
     public ResumeController() {
 
         _m_resume_model = new();
 
-        populateListTable();
+        m_double_click_command_profit = new RelayCommand(navigateToProfitDetails, isProfitItemSelected);
+        m_double_click_command_fee = new RelayCommand(navigateToFeeDetails, isFeeItemSelected);
 
+        populateListTable();
         updateDisplayedProfitsAndFeesLists();
         updateListSearchItems();
     }
 
 
-    public void navigateToProfitDetails(object selectedItem) {
-        if (selectedItem is ReceiptProfitDetailedItem profitItem) {
-            SPageNavigationController.navigateTo(new SaveProfitPage(profitItem.receipt.receipt_id));
+    public void navigateToProfitDetails(object? obj) {
+        if (_m_selected_profit_item != null) {
+            SPageNavigationController.navigateTo(new SaveProfitPage(_m_selected_profit_item.receipt.receipt_id));
         }
     }
 
 
-    public void navigateToFeeDetails(object selectedItem) {
-        if (selectedItem is ReceiptFeeDetailedItem feeItem) {
-            SPageNavigationController.navigateTo(new SaveFeePage(feeItem.receipt.receipt_id));
+    public void navigateToFeeDetails(object? obj) {
+        if (_m_selected_fee_item != null) {
+            SPageNavigationController.navigateTo(new SaveFeePage(_m_selected_fee_item.receipt.receipt_id));
         }
     }
 
+    private bool isProfitItemSelected(object? arg) {
+        return m_selected_profit_item != null;
+    }
+
+    private bool isFeeItemSelected(object? arg) {
+        return m_selected_fee_item != null;
+    }
 
     private void updateDisplayedProfitsAndFeesLists() {
 

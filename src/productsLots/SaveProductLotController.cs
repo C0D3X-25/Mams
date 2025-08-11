@@ -98,6 +98,6 @@ public class SaveProductLotController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        SPageNavigationController.navigateTo(new ListProductLotPage());
+        SPageNavigationController.navigateBack();
     }
 }

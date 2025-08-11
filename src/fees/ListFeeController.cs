@@ -22,6 +22,7 @@ public class ListFeeController : ABaseController {
     public ICommand m_add_new_item_command { get; set; }
     public ICommand m_modify_item_command { get; set; }
     public ICommand m_delete_item_command { get; set; }
+    public ICommand m_double_click_command { get; set; }
 
 
 
@@ -51,6 +52,7 @@ public class ListFeeController : ABaseController {
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
         m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
         m_delete_item_command = new RelayCommand(deleteItem, isItemSelected);
+        m_double_click_command = new RelayCommand(navigateToModifyPage, isItemSelected);
     }
 
 

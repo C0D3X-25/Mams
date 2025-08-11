@@ -11,10 +11,5 @@ namespace Mams.src.fees {
             InitializeComponent();
             DataContext = new ListFeeController();
         }
-        private void listView_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-            if (sender is ListView listView && listView.SelectedItem != null) {
-                ((ListFeeController)DataContext).navigateToModifyPage(listView.SelectedItem);
-            }
-        }
     }
 }

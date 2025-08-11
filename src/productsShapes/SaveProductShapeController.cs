@@ -63,6 +63,6 @@ public class SaveProductShapeController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        SPageNavigationController.navigateTo(new ListProductShapePage());
+        SPageNavigationController.navigateBack();
     }
 }

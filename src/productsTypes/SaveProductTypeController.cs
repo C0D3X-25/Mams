@@ -64,6 +64,6 @@ public class SaveProductTypeController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        SPageNavigationController.navigateTo(new ListProductTypePage());
+        SPageNavigationController.navigateBack();
     }
 }

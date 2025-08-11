@@ -11,16 +11,4 @@ public partial class ResumePage : Page {
         InitializeComponent();
         DataContext = new ResumeController();
     }
-
-    private void ProfitListView_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-        if (sender is ListView listView && listView.SelectedItem != null) {
-            ((ResumeController)DataContext).navigateToProfitDetails(listView.SelectedItem);
-        }
-    }
-
-    private void FeeListView_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-        if (sender is ListView listView && listView.SelectedItem != null) {
-            ((ResumeController)DataContext).navigateToFeeDetails(listView.SelectedItem);
-        }
-    }
 }

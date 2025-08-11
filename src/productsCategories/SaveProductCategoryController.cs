@@ -33,14 +33,12 @@ public class SaveProductCategoryController : ABaseController {
     }
 
 
-    public SaveProductCategoryController(/*PageNavigationController page_navigation, */int id_to_load = 0) {
-        //
+    public SaveProductCategoryController(int id_to_load = 0) {
         _m_product_category_model = new();
         _m_product_category = new ProductCategoryItem();
 
         if (id_to_load != 0) {
             _m_product_category = _m_product_category_model.getItemByID(id_to_load.ToString()) ?? new ProductCategoryItem();
-            // Find the matching beehive in the list and set it as selected
         }
 
         m_save_command = new RelayCommand(saveProduct, canSaveProduct);
@@ -64,6 +62,6 @@ public class SaveProductCategoryController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        SPageNavigationController.navigateTo(new ListProductCategoryPage());
+        SPageNavigationController.navigateBack();
     }
 }

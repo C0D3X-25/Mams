@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Mams.src.fees"
       xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
+      xmlns:commands="clr-namespace:Mams.src.commands"
       mc:Ignorable="d" 
       d:DesignHeight="800" d:DesignWidth="1224"
       Title="ListFeePage">
@@ -85,7 +86,7 @@
                                 FontSize="14"
                                 ItemsSource="{Binding m_list_items}"
                                 SelectedItem="{Binding m_selected_item}"
-                                MouseDoubleClick="listView_MouseDoubleClick">
+                                commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command}">
                                 <ListView.View>
                                     <GridView>
                                         <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>

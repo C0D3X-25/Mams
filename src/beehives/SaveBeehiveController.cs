@@ -23,6 +23,7 @@ public class SaveBeehiveController : ABaseController {
     public ICommand m_abort_command { get; set; }
 
 
+
     private BeehiveItem _m_beehive;
     public BeehiveItem m_beehive {
         get => _m_beehive;
@@ -64,6 +65,6 @@ public class SaveBeehiveController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        SPageNavigationController.navigateTo(new ListBeehivePage());
+        SPageNavigationController.navigateBack();
     }
 }

@@ -2,7 +2,6 @@
 using Mams.src.controllers;
 using Mams.src.navigations;
 using Mams.src.productsCategories;
-using Mams.src.productsLots;
 using Mams.src.productsShapes;
 using Mams.src.productsTypes;
 using Mams.src.views.globalView;
@@ -153,6 +152,6 @@ public class SaveProductController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        SPageNavigationController.navigateTo(new ListProductPage());
+        SPageNavigationController.navigateBack();
     }
 }
