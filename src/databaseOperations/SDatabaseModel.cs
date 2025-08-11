@@ -22,7 +22,7 @@ public abstract class SDatabaseModel : ABaseModel {
     /// </summary>
     /// <typeparam name="T">The type of objects to create, must inherit from ABaseItem and have a parameterless constructor.</typeparam>
     /// <param name="table">The name of the database table to query.</param>
-    /// <param name="asc_column">The column who need to be order alphabetically (can be null).</param>
+    /// <param name="asc_column">The column who need to be order alphabetically.</param>
     /// <param name="archive_field">The column where the archive is set (can be null).</param>
     /// <returns>
     /// An ObservableCollection of type T containing the converted database records.
@@ -30,33 +30,10 @@ public abstract class SDatabaseModel : ABaseModel {
     /// </returns>
     public static ObservableCollection<T> getAllRowsInTable<T>(string table, string? asc_column = null, string? archive_field = null) where T : ABaseItem, new() {
 
-        ObservableCollection<T> items = new();
         DataTable? data_table = getDataTable(table, asc_column, archive_field);
 
-        if (data_table != null) {
-            try {
-                foreach (DataRow row in data_table.Rows) {
-                    T item = new();
-                    foreach (DataColumn col in data_table.Columns) {
-                        var value = row[col.ColumnName];
-                        if (value != DBNull.Value) {
-                            var property = typeof(T).GetProperty(col.ColumnName);
-                            if (property != null) {
-                                property.SetValue(item, Convert.ChangeType(value, property.PropertyType));
-                            }
-                        }
-                    }
-                    items.Add(item);
-                }
-            }
-            catch (Exception ex) {
-                MessageBox.Show($"Error converting data: {ex.Message}");
-                return new ObservableCollection<T>();
-            }
-        }
-        return items;
+        return populateColumnName<T>(data_table);
     }
-
 
     /// <summary>
     /// Performs a delete operation on a specified database table based on the provided delete type.
@@ -122,6 +99,51 @@ public abstract class SDatabaseModel : ABaseModel {
         }
 
         return deleteOperation(id, field_id, string.Empty, table, delete_type);
+    }
+
+    /// <summary>
+    /// Converts data from a DataTable to a collection of typed objects by mapping column names to object properties.
+    /// </summary>
+    /// <typeparam name="T">The type of objects to create. Must inherit from ABaseItem and have a parameterless constructor.</typeparam>
+    /// <param name="data_table">The DataTable containing the data to be converted. Can be null.</param>
+    /// <returns>
+    /// An ObservableCollection of type T containing the converted database records.
+    /// Returns an empty collection if the data_table is null or an error occurs during conversion.
+    /// </returns>
+    /// <remarks>
+    /// This method iterates through each row in the provided DataTable and creates a new instance of type T for each row.
+    /// For each column in the row, it attempts to find a matching property in the type T and set its value.
+    /// Only non-null values from the database are set on the object properties.
+    /// If a property does not exist on type T for a given column name, that column is skipped.
+    /// </remarks>
+    /// <exception cref="Exception">May throw various exceptions during type conversion or property assignment.</exception>
+    private static ObservableCollection<T> populateColumnName<T>(DataTable? data_table) where T : ABaseItem, new() {
+
+        if (data_table == null) {
+            return new ObservableCollection<T>();
+        }
+
+        try {
+            ObservableCollection<T> items = new();
+            foreach (DataRow row in data_table.Rows) {
+                T item = new();
+                foreach (DataColumn col in data_table.Columns) {
+                    var value = row[col.ColumnName];
+                    if (value != DBNull.Value) {
+                        var property = typeof(T).GetProperty(col.ColumnName);
+                        if (property != null) {
+                            property.SetValue(item, Convert.ChangeType(value, property.PropertyType));
+                        }
+                    }
+                }
+                items.Add(item);
+            }
+            return items;
+        }
+        catch (Exception ex) {
+            MessageBox.Show($"Error converting data: {ex.Message}");
+            return new ObservableCollection<T>();
+        }
     }
 
     /// <summary>
@@ -303,16 +325,70 @@ public abstract class SDatabaseModel : ABaseModel {
                     $"ORDER BY {asc_column} ASC;";
             }
         }
-            try {
-                using MySqlCommand cmd = new(query, m_conn);
-                using MySqlDataReader reader = cmd.ExecuteReader();
-                data_table.Load(reader);
+        try {
+            using MySqlCommand cmd = new(query, m_conn);
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            data_table.Load(reader);
 
-                return data_table;
+            return data_table;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Retrieves all records from a specified database table.
+    /// </summary>
+    /// <param name="table">The name of the database table to query.</param>
+    /// <param name="asc_column">The column who need to be order by date.</param>
+    /// <param name="archive_field">The column where the archive is set (can be null).</param>
+    /// <returns>
+    /// A DataTable containing all records from the specified table.
+    /// Returns null if an error occurs during the database operation.
+    /// </returns>
+    private static DataTable? getDataTableOrderByDate(string table, string asc_column, string? archive_field) {
+
+        if (string.IsNullOrWhiteSpace(table)) {
+            return null;
+        }
+
+        DataTable data_table = new();
+
+        string query = string.Empty;
+
+        if (asc_column == null) {
+            if (archive_field == null) {
+                query = $"SELECT * FROM {table};";
             }
-            catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+            else {
+                query = $"SELECT * FROM {table} " +
+                    $"WHERE {archive_field} != '{_m_DEFAULT_ARCHIVE_DATE}' " +
+                    $"OR {archive_field} IS NULL;";
             }
+        }
+        else {
+            if (archive_field == null) {
+                query = $"SELECT * FROM {table} ORDER BY {asc_column} ASC;";
+            }
+            else {
+                query = $"SELECT * FROM {table} " +
+                    $"WHERE {archive_field} != '{_m_DEFAULT_ARCHIVE_DATE}' " +
+                    $"OR {archive_field} IS NULL " +
+                    $"ORDER BY {asc_column} ASC;";
+            }
+        }
+        try {
+            using MySqlCommand cmd = new(query, m_conn);
+            using MySqlDataReader reader = cmd.ExecuteReader();
+            data_table.Load(reader);
+
+            return data_table;
+        }
+        catch (MySqlException ex) {
+            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            return null;
+        }
     }
 }

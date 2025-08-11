@@ -79,7 +79,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows in the table. If the table is empty, the collection
     /// will be empty.</returns>
     public ObservableCollection<ReceiptItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<ReceiptItem>(_m_TBL_NAME);
+        return SDatabaseModel.getAllRowsInTable<ReceiptItem>(_m_TBL_NAME, _m_COL_RECEIPT_DATE_CREATED);
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
 
         try {
             using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME};",
+                $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME} ORDER BY {_m_COL_RECEIPT_DATE_CREATED} DESC;",
                 m_conn,
                 m_transaction
             );
