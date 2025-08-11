@@ -198,7 +198,7 @@ public class SaveProfitController : ABaseController {
         m_profit_receipt_detail.receipt_products = m_list_receipt_product;
 
         if (_m_receipt_profit_detailed_model.saveItem(m_profit_receipt_detail) > 0) {
-            SPageNavigationController.navigateTo(new ListProfitPage());
+            SPageNavigationController.navigateBack();
         }
         else {
             // TODO: Need to be refactored, any error from the save method will return this message.

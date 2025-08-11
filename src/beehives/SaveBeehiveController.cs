@@ -56,10 +56,10 @@ public class SaveBeehiveController : ABaseController {
 
     private void saveProduct(object? obj) {
         if (_m_beehive_model.saveItem(m_beehive) > 0) {
-            SPageNavigationController.navigateTo(new ListBeehivePage());
+            SPageNavigationController.navigateBack();
         }
         else {
-            MessageBox.Show("Un ruchcer avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Un rucher avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

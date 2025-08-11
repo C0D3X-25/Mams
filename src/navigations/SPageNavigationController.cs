@@ -54,10 +54,20 @@ public static class SPageNavigationController {
         if (_m_frame == null) {
             throw new InvalidOperationException("Frame is not initialized. Call initialize() first.");
         }
-        if (!_m_frame.CanGoBack) {
+        if (_m_previous_page == null) {
             throw new InvalidOperationException("No previous page to navigate back to.");
         }
-        _m_current_page = _m_previous_page;
-        _m_frame.GoBack();
+        
+        // Create a new instance of the previous page type to ensure latest data is loaded
+        Type previous_page_type = _m_previous_page.GetType();
+        if (previous_page_type == null) {
+            throw new InvalidOperationException("Previous page type is null.");
+        }
+        Page? new_page = (Page?)Activator.CreateInstance(previous_page_type);
+        if (new_page == null) {
+            throw new InvalidOperationException($"Failed to create an instance of the previous page type: {previous_page_type.FullName}");
+        }
+
+        navigateTo(new_page);
     }
 }

@@ -53,10 +53,10 @@ public class SaveProductCategoryController : ABaseController {
 
     private void saveProduct(object? obj) {
         if (_m_product_category_model.saveItem(m_product_category) > 0) {
-            SPageNavigationController.navigateTo(new ListProductCategoryPage());
+            SPageNavigationController.navigateBack();
         }
         else {
-            MessageBox.Show("Un produit avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Une catégorie de produit avec le même nom est déjà présente", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

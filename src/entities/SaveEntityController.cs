@@ -73,7 +73,7 @@ public class SaveEntityController : ABaseController {
     /// </remarks>
     private void saveClient(object? obj) {
         if (_m_entity_model.saveItem(m_entity) > 0) {
-            SPageNavigationController.navigateTo(new ListEntityPage());
+            SPageNavigationController.navigateBack();
         }
         else { MessageBox.Show("Un client avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); }
     }
