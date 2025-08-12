@@ -4,6 +4,11 @@
 This project will only work on Windows.
 You need DotNet 9.0 to to run it.
 
+## External Libraries
+- MySqlConnector
+- MySqlBackup for MySqlConnector
+- QuestPDF
+
 ## Dev
 This project is a WPF application that uses the MVVM pattern. It is designed to be a simple and easy-to-use application for managing data. The project is written in C# and use MySQL has a local server.
 The Datatase dump is in the `Database` folder, you can import it in your MySQL server. The database is called `mams`.

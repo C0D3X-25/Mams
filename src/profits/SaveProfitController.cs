@@ -2,6 +2,7 @@
 using Mams.src.controllers;
 using Mams.src.entities;
 using Mams.src.helpers;
+using Mams.src.invoices;
 using Mams.src.navigations;
 using Mams.src.products;
 using Mams.src.productsLots;
@@ -31,6 +32,7 @@ public class SaveProfitController : ABaseController {
     public ICommand m_abort_command { get; set; }
     public ICommand m_add_profit_item_command { get; set; }
     public ICommand m_delete_profit_item_command { get; set; }
+    public ICommand m_generate_invoice_pdf_command { get; set; }
 
 
     // Hold the receipt ID, supplier, date of all the items in m_list_receipt_product
@@ -154,9 +156,9 @@ public class SaveProfitController : ABaseController {
         m_save_command = new RelayCommand(saveProfit, canSaveProfit);
         m_abort_command = new RelayCommand(abortProfit);
         m_add_profit_item_command = new RelayCommand(addProfitItem);
-        m_delete_profit_item_command = new RelayCommand(DeleteProfitItem);
+        m_delete_profit_item_command = new RelayCommand(deleteProfitItem);
+        m_generate_invoice_pdf_command = new RelayCommand(generateInvoicePdf);
     }
-
 
     private bool canSaveProfit(object? arg) {
 
@@ -226,10 +228,16 @@ public class SaveProfitController : ABaseController {
     }
 
 
-    private void DeleteProfitItem(object? parameter) {
-        if (parameter is ReceiptProductItem item) {
+    private void deleteProfitItem(object? obj) {
+        if (obj is ReceiptProductItem item) {
             m_list_receipt_product.Remove(item);
         }
+    }
+
+    private void generateInvoicePdf(object? obj) {
+        var model = InvoicePdfModel.GetInvoiceDetails();
+        var document = new InvoiceTemplate(model);
+        document.generateInvoice();
     }
 }
 
