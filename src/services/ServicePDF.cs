@@ -1,30 +1,45 @@
-﻿
+﻿using Mams.src.helpers;
 using Mams.src.invoices;
+using Mams.src.receipts;
 using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.Windows;
 
 namespace Mams.src.services; 
 
 public class ServicePDF {
 
-    private const string _m_pdf_file_name = "invoice.pdf";
+    private const string _m_invoice_filename = "invoice.pdf";
 
-    public void generateInvoice() {
+    // TODO: Find a better place to save PDF
+    private string _m_invoice_save_path => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+        _m_invoice_filename
+    );
 
-        var invoice_data = InvoicePdfModel.getInvoiceData();
-        InvoiceTemplate document = new(invoice_data);
+    public void generateInvoice(string receipt_id) {
+        if (!SDataValidation.isIdValid(receipt_id)) {
+            MessageBox.Show("Invalid receipt ID.");
+            return;
+        }
 
-        document.GeneratePdf(_m_pdf_file_name);
+        ReceiptHandlerModel receipt_handler_model = new();
+        ReceiptHandlerItem? item = receipt_handler_model.getItemByID(receipt_id);
+        if (item is null) {
+            MessageBox.Show("Receipt not found.");
+            return;
+        }
+        InvoiceTemplate document = new(item);
 
+        document.GeneratePdf(_m_invoice_save_path);
         openInvoice();
     }
 
     public void openInvoice() {
         var p = new Process();
-        p.StartInfo = new ProcessStartInfo(Path.Combine(Directory.GetCurrentDirectory(), _m_pdf_file_name)) {
+        p.StartInfo = new ProcessStartInfo(_m_invoice_save_path) {
             UseShellExecute = true
         };
         p.Start();

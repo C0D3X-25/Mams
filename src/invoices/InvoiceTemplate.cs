@@ -1,4 +1,7 @@
-﻿using QuestPDF.Fluent;
+﻿using Mams.src.clients;
+using Mams.src.entities;
+using Mams.src.receipts;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -9,15 +12,25 @@ namespace Mams.src.invoices;
 /// </summary>
 public class InvoiceTemplate : IDocument {
 
-    private const string _m_path_image = "";
-    private InvoiceItem _m_item { get; set; } 
+    private readonly EntityModel _m_entity_model;
+    private readonly ClientModel _m_client_model;
 
+    private const string _m_path_image = "";
+    private ReceiptHandlerItem _m_item { get; set; }
+
+    
     public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
     public DocumentSettings GetSettings() => DocumentSettings.Default;
 
 
-    public InvoiceTemplate(InvoiceItem item) {
+    public InvoiceTemplate(ReceiptHandlerItem item) {
+
+        // QuestPDF licence NEED to be present
         QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
+        _m_entity_model = new();
+        _m_client_model = new();
+
         _m_item = item;
     }
 
@@ -48,19 +61,13 @@ public class InvoiceTemplate : IDocument {
             row.RelativeItem().Column(column =>
             {
                 column
-                    .Item().Text($"Facture #{_m_item.InvoiceNumber}")
+                    .Item().Text($"Facture #{_m_item.receipt_item.receipt_number}")
                     .FontSize(20).SemiBold().FontColor(Colors.Blue.Medium);
 
                 column.Item().Text(text =>
                 {
-                    text.Span("Date d'émission: ").SemiBold();
-                    text.Span($"{_m_item.IssueDate:d}");
-                });
-
-                column.Item().Text(text =>
-                {
-                    text.Span("Date d'échéance: ").SemiBold();
-                    text.Span($"{_m_item.DueDate:d}");
+                    text.Span("Date de la vente: ").SemiBold();
+                    text.Span($"{_m_item.receipt_item.receipt_date_created:d}");
                 });
             });
 
@@ -73,24 +80,27 @@ public class InvoiceTemplate : IDocument {
 
 
     void ComposeContent(IContainer container) {
-        container.PaddingVertical(40).Column(column =>
-        {
+
+        container.PaddingVertical(40).Column(column => {
             column.Spacing(20);
 
-            column.Item().Row(row =>
-            {
-                row.RelativeItem().Component(new AddressComponent("De", _m_item.SellerAddress));
+            column.Item().Row(row => {
+                var client_item = _m_client_model.getItemByID(_m_item.receipt_client_item.fk_client_id.ToString());
+                EntityItem? entity_item = null;
+                if (client_item != null)
+                {
+                    entity_item = _m_entity_model.getItemByID(client_item.fk_entity_id.ToString());
+                }
+
+                row.RelativeItem().Component(new AddressComponent("De", entity_item ?? new EntityItem()));
                 row.ConstantItem(50);
-                row.RelativeItem().Component(new AddressComponent("Pour", _m_item.CustomerAddress));
+                row.RelativeItem().Component(new AddressComponent("Pour", entity_item ?? new EntityItem()));
             });
 
             column.Item().Element(ComposeTable);
 
-            var totalPrice = _m_item.Items.Sum(x => x.Price * x.Quantity);
-            column.Item().PaddingRight(5).AlignRight().Text($"Total final: {totalPrice:C}").SemiBold();
-
-            if (!string.IsNullOrWhiteSpace(_m_item.Comments))
-                column.Item().PaddingTop(25).Element(ComposeComments);
+            var total_price = _m_item.receipt_product_items.Sum(x => x.receipt_product_unity_price* x.receipt_product_quantity);
+            column.Item().PaddingRight(5).AlignRight().Text($"Total final: {total_price:C}").SemiBold();
         });
     }
 
@@ -120,14 +130,14 @@ public class InvoiceTemplate : IDocument {
                 header.Cell().ColumnSpan(5).PaddingTop(5).BorderBottom(1).BorderColor(Colors.Black);
             });
 
-            foreach (var item in _m_item.Items) {
-                var index = _m_item.Items.IndexOf(item) + 1;
+            foreach (var item in _m_item.receipt_product_items) {
+                var index = _m_item.receipt_product_items.IndexOf(item) + 1;
 
                 table.Cell().Element(CellStyle).Text($"{index}");
-                table.Cell().Element(CellStyle).Text(item.Name);
-                table.Cell().Element(CellStyle).AlignRight().Text($"{item.Price:C}");
-                table.Cell().Element(CellStyle).AlignRight().Text($"{item.Quantity}");
-                table.Cell().Element(CellStyle).AlignRight().Text($"{item.Price * item.Quantity:C}");
+                table.Cell().Element(CellStyle).Text(item.product_item.product_name);
+                table.Cell().Element(CellStyle).AlignRight().Text($"{item.receipt_product_unity_price:C}");
+                table.Cell().Element(CellStyle).AlignRight().Text($"{item.receipt_product_quantity}");
+                table.Cell().Element(CellStyle).AlignRight().Text($"{item.receipt_product_unity_price * item.receipt_product_quantity:C}");
 
                 static IContainer CellStyle(IContainer container) => container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(5);
             }
@@ -135,23 +145,13 @@ public class InvoiceTemplate : IDocument {
     }
 
 
-    void ComposeComments(IContainer container) {
-        container.ShowEntire().Background(Colors.Grey.Lighten3).Padding(10).Column(column =>
-        {
-            column.Spacing(5);
-            column.Item().Text("Commentaire").FontSize(14).SemiBold();
-            column.Item().Text(_m_item.Comments);
-        });
-    }
-
-
     public class AddressComponent : IComponent {
         private string Title { get; }
-        private AddressItem Address { get; }
+        private EntityItem entity { get; }
 
-        public AddressComponent(string title, AddressItem address) {
+        public AddressComponent(string title, EntityItem address) {
             Title = title;
-            Address = address;
+            entity = address;
         }
 
         public void Compose(IContainer container) {
@@ -161,11 +161,10 @@ public class InvoiceTemplate : IDocument {
                 column.Item().Text(Title).SemiBold();
                 column.Item().PaddingBottom(5).LineHorizontal(1);
 
-                column.Item().Text(Address.CompanyName);
-                column.Item().Text(Address.Street);
-                column.Item().Text($"{Address.City}, {Address.State}");
-                column.Item().Text(Address.Email);
-                column.Item().Text(Address.Phone);
+                column.Item().Text(entity.entity_name);
+                column.Item().Text(entity.entity_address);
+                column.Item().Text(entity.entity_email);
+                column.Item().Text(entity.entity_phone);
             });
         }
     }
