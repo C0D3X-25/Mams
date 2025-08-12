@@ -9,7 +9,7 @@ public static class InvoicePdfModel {
 
     private static Random Random = new Random();
 
-    public static InvoiceItem GetInvoiceDetails() {
+    public static InvoiceItem getInvoiceData() {
         var items = Enumerable
             .Range(1, 25)
             .Select(_ => GenerateRandomOrderItem())

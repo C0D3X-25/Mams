@@ -7,6 +7,7 @@ using Mams.src.navigations;
 using Mams.src.products;
 using Mams.src.productsLots;
 using Mams.src.receipts;
+using Mams.src.services;
 using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -157,7 +158,7 @@ public class SaveProfitController : ABaseController {
         m_abort_command = new RelayCommand(abortProfit);
         m_add_profit_item_command = new RelayCommand(addProfitItem);
         m_delete_profit_item_command = new RelayCommand(deleteProfitItem);
-        m_generate_invoice_pdf_command = new RelayCommand(generateInvoicePdf);
+        m_generate_invoice_pdf_command = new RelayCommand(exportInvoicePdf);
     }
 
     private bool canSaveProfit(object? arg) {
@@ -234,10 +235,10 @@ public class SaveProfitController : ABaseController {
         }
     }
 
-    private void generateInvoicePdf(object? obj) {
-        var model = InvoicePdfModel.GetInvoiceDetails();
-        var document = new InvoiceTemplate(model);
-        document.generateInvoice();
+    private void exportInvoicePdf(object? obj) {
+
+        ServicePDF service_pdf = new();
+        service_pdf.generateInvoice();
     }
 }
 
