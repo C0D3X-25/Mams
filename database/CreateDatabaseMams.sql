@@ -110,3 +110,7 @@ INSERT INTO beehives (beehive_name, beehive_archive) VALUES
 ('', '1901-01-01');
 INSERT INTO products_lots (product_lot_name, product_lot_year, fk_beehive_id, product_lot_archive) VALUES
 ('', 0, 1, '1901-01-01');
+
+-- Insert the user data for invoice generation
+INSERT INTO entities (entity_name, entity_phone, entity_email, entity_city, entity_address, entity_archive) VALUES
+('Corinne Thumelin', '+26 667 11 78', '', '1773 Russy', 'Rte de l''Ecole 12', '1901-01-01');

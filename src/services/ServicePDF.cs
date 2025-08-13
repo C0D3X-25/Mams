@@ -9,17 +9,29 @@ using System.Windows;
 
 namespace Mams.src.services; 
 
+/// <summary>
+/// Service class for generating and managing PDF invoices.
+/// Handles the creation, saving, and opening of invoice PDFs based on receipt data.
+/// </summary>
 public class ServicePDF {
 
-    private const string _m_invoice_filename = "invoice.pdf";
+    private string _m_invoice_filename = "Facture.pdf";
 
-    // TODO: Find a better place to save PDF
+    /// <summary>
+    /// The full file path where the invoice PDF will be saved.
+    /// Combines the user's Pictures folder with the current invoice filename.
+    /// </summary>
     private string _m_invoice_save_path => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+        Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
         _m_invoice_filename
     );
 
-    public void generateInvoice(string receipt_id) {
+    /// <summary>
+    /// Generates an invoice PDF for the specified receipt ID and opens it using the default PDF viewer.
+    /// </summary>
+    /// <param name="receipt_id">The ID of the receipt for which to generate an invoice.</param>
+    public void generateAndOpenInvoice(string receipt_id) {
+
         if (!SDataValidation.isIdValid(receipt_id)) {
             MessageBox.Show("Invalid receipt ID.");
             return;
@@ -27,17 +39,23 @@ public class ServicePDF {
 
         ReceiptHandlerModel receipt_handler_model = new();
         ReceiptHandlerItem? item = receipt_handler_model.getItemByID(receipt_id);
+
         if (item is null) {
             MessageBox.Show("Receipt not found.");
             return;
         }
+
+        _m_invoice_filename = $"Facture {item.receipt_item.receipt_number}.pdf";
         InvoiceTemplate document = new(item);
 
         document.GeneratePdf(_m_invoice_save_path);
         openInvoice();
     }
 
-    public void openInvoice() {
+    /// <summary>
+    /// Opens the generated invoice PDF file using the default PDF viewer.
+    /// </summary>
+    private void openInvoice() {
         var p = new Process();
         p.StartInfo = new ProcessStartInfo(_m_invoice_save_path) {
             UseShellExecute = true

@@ -238,7 +238,7 @@ public class SaveProfitController : ABaseController {
     private void exportInvoicePdf(object? obj) {
 
         ServicePDF service_pdf = new();
-        service_pdf.generateInvoice(m_profit_receipt_detail.receipt.receipt_id.ToString());
+        service_pdf.generateAndOpenInvoice(m_profit_receipt_detail.receipt.receipt_id.ToString());
     }
 }
 

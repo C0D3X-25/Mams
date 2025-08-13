@@ -85,16 +85,22 @@ public class InvoiceTemplate : IDocument {
             column.Spacing(20);
 
             column.Item().Row(row => {
+
                 var client_item = _m_client_model.getItemByID(_m_item.receipt_client_item.fk_client_id.ToString());
-                EntityItem? entity_item = null;
-                if (client_item != null)
+                if (client_item == null)
                 {
-                    entity_item = _m_entity_model.getItemByID(client_item.fk_entity_id.ToString());
+                    return;
                 }
 
-                row.RelativeItem().Component(new AddressComponent("De", entity_item ?? new EntityItem()));
+                EntityItem? entity_me_item = new();
+                EntityItem? entity_client_item = new();
+
+                entity_me_item = _m_entity_model.getItemByID(((int)EEntityPredefine.ME).ToString());
+                entity_client_item = _m_entity_model.getItemByID(client_item.fk_entity_id.ToString());
+
+                row.RelativeItem().Component(new InvoiceAddress("De", entity_me_item ?? new EntityItem()));
                 row.ConstantItem(50);
-                row.RelativeItem().Component(new AddressComponent("Pour", entity_item ?? new EntityItem()));
+                row.RelativeItem().Component(new InvoiceAddress("Pour", entity_client_item ?? new EntityItem()));
             });
 
             column.Item().Element(ComposeTable);
@@ -142,30 +148,5 @@ public class InvoiceTemplate : IDocument {
                 static IContainer CellStyle(IContainer container) => container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(5);
             }
         });
-    }
-
-
-    public class AddressComponent : IComponent {
-        private string Title { get; }
-        private EntityItem entity { get; }
-
-        public AddressComponent(string title, EntityItem address) {
-            Title = title;
-            entity = address;
-        }
-
-        public void Compose(IContainer container) {
-            container.ShowEntire().Column(column => {
-                column.Spacing(2);
-
-                column.Item().Text(Title).SemiBold();
-                column.Item().PaddingBottom(5).LineHorizontal(1);
-
-                column.Item().Text(entity.entity_name);
-                column.Item().Text(entity.entity_address);
-                column.Item().Text(entity.entity_email);
-                column.Item().Text(entity.entity_phone);
-            });
-        }
     }
 }
