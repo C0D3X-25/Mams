@@ -126,7 +126,7 @@ public class SaveProfitController : ABaseController {
 
         _m_list_product = _m_product_model.getTable();
         _m_list_product_lot = _m_product_lot_model.getTable();
-        _m_list_entity = _m_entity_model.getTable();
+        _m_list_entity = _m_entity_model.getNonArchivedEntities();
 
         _m_list_receipt_product = new();
         _m_profit_receipt_detail = new();
@@ -234,6 +234,7 @@ public class SaveProfitController : ABaseController {
             m_list_receipt_product.Remove(item);
         }
     }
+
 
     private void exportInvoicePdf(object? obj) {
 

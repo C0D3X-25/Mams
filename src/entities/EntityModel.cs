@@ -85,6 +85,15 @@ public class EntityModel : ABaseModel,
     }
 
     /// <summary>
+    /// Retrieves a collection of entities that are not archived.
+    /// </summary>
+    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="EntityItem"/> objects  that are not archived. The
+    /// collection will be empty if no such entities exist.</returns>
+    public ObservableCollection<EntityItem> getNonArchivedEntities() {
+        return SDatabaseModel.getAllRowsInTable<EntityItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
+    }
+
+    /// <summary>
     /// Saves the specified <see cref="EntityItem"/> to the database.
     /// </summary>
     /// <param name="item">The <see cref="EntityItem"/> to save. Cannot be <c>null</c>.</param>
