@@ -12,7 +12,7 @@ using System.Windows;
 using System.Windows.Input;
 
 namespace Mams.src.fees; 
-public class SaveFeeController : ABaseController {
+public class SaveFeeController : ABaseController, ICompareState {
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
@@ -31,7 +31,7 @@ public class SaveFeeController : ABaseController {
     public ICommand m_add_fee_item_command { get; set; }
     public ICommand m_delete_fee_item_command { get; set; }
 
-
+    private ReceiptFeeDetailedItem _m_original_fee_receipt_detail;
     // Hold the receipt ID, supplier, date of all the items in m_list_receipt_product
     private ReceiptFeeDetailedItem _m_fee_receipt_detail;
     public ReceiptFeeDetailedItem m_fee_receipt_detail {
@@ -98,6 +98,7 @@ public class SaveFeeController : ABaseController {
         get { return _m_selected_entity; }
         set {
             _m_selected_entity = value;
+            m_fee_receipt_detail.entity = _m_selected_entity ?? new();
             onPropertyChanged();
         }
     }
@@ -126,10 +127,59 @@ public class SaveFeeController : ABaseController {
 
         _m_list_receipt_product = new();
         _m_fee_receipt_detail = new();
+        _m_original_fee_receipt_detail = new();
+
+        initializeFee(id_to_load);
+
+        m_save_command = new RelayCommand(saveFee, canSaveFee);
+        m_abort_command = new RelayCommand(abortFee);
+        m_add_fee_item_command = new RelayCommand(addFeeItem);
+        m_delete_fee_item_command = new RelayCommand(DeleteFeeItem);
+    }
+
+    /// <summary>
+    /// Determines whether the current state of the fee receipt details matches the original state.
+    /// </summary>
+    /// <remarks>This method compares the receipt properties, associated entities, and receipt products
+    /// between the original and current fee receipt details. If any discrepancies are found, the method returns <see
+    /// langword="false"/>.</remarks>
+    /// <returns><see langword="true"/> if the current fee receipt details are identical to the original fee receipt details;
+    /// otherwise, <see langword="false"/>.</returns>
+    public bool isStateOriginal() {
+
+        // Compare receipt properties
+        if (_m_original_fee_receipt_detail.receipt.receipt_number != _m_fee_receipt_detail.receipt.receipt_number ||
+            _m_original_fee_receipt_detail.receipt.receipt_date_created != _m_fee_receipt_detail.receipt.receipt_date_created ||
+            _m_original_fee_receipt_detail.entity.entity_id != _m_fee_receipt_detail.entity.entity_id ||
+            _m_original_fee_receipt_detail.receipt_products.Count != _m_fee_receipt_detail.receipt_products.Count) {
+
+            return false;
+        }
+
+        // Compare each receipt product
+        for (int i = 0; i < _m_original_fee_receipt_detail.receipt_products.Count; i++) {
+            var original = _m_original_fee_receipt_detail.receipt_products[i];
+            var current = _m_fee_receipt_detail.receipt_products[i];
+
+            if (original.receipt_product_quantity != current.receipt_product_quantity ||
+                original.receipt_product_unity_price != current.receipt_product_unity_price ||
+                original.product_item.product_id != current.product_item.product_id ||
+                original.product_lot_item.product_lot_id != current.product_lot_item.product_lot_id) {
+
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private void initializeFee(int id_to_load) {
 
         if (id_to_load > 0) {
 
-            _m_fee_receipt_detail = _m_receipt_fee_detailed_model.getItemByID(id_to_load.ToString()) ?? new ReceiptFeeDetailedItem();
+            _m_fee_receipt_detail = _m_receipt_fee_detailed_model.getItemByID(id_to_load.ToString()) ?? new();
+            _m_original_fee_receipt_detail = _m_receipt_fee_detailed_model.getItemByID(id_to_load.ToString()) ?? new();
+
             _m_list_receipt_product = m_fee_receipt_detail.receipt_products;
 
             _m_selected_entity = _m_list_entity.FirstOrDefault(b =>
@@ -149,11 +199,6 @@ public class SaveFeeController : ABaseController {
         else {
             _m_list_receipt_product.Add(new());
         }
-
-        m_save_command = new RelayCommand(saveFee, canSaveFee);
-        m_abort_command = new RelayCommand(abortFee);
-        m_add_fee_item_command = new RelayCommand(addFeeItem);
-        m_delete_fee_item_command = new RelayCommand(DeleteFeeItem);
     }
 
 
@@ -206,16 +251,7 @@ public class SaveFeeController : ABaseController {
 
 
     private void abortFee(object? obj) {
-        if (_m_fee_receipt_detail.receipt.receipt_id == 0) {
-            if (m_list_receipt_product.Count > 1) {
-                MessageBoxResult result = MessageBox.Show("En quittant la page, toutes les données modifiées seront perdues. Voulez-vous continuer?",
-                    "Annuler", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No) {
-                    return;
-                }
-            }
-        }
-        SPageNavigationController.navigateBack();
+        SPageNavigationController.navigateBack(true);
     }
 
 

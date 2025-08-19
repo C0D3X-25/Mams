@@ -1,8 +1,8 @@
-﻿using Mams.src.commands;
+﻿using Mams.src.clients;
+using Mams.src.commands;
 using Mams.src.controllers;
 using Mams.src.entities;
 using Mams.src.helpers;
-using Mams.src.invoices;
 using Mams.src.navigations;
 using Mams.src.products;
 using Mams.src.productsLots;
@@ -14,7 +14,7 @@ using System.Windows;
 using System.Windows.Input;
 
 namespace Mams.src.profits; 
-public class SaveProfitController : ABaseController {
+public class SaveProfitController : ABaseController, ICompareState {
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
@@ -24,10 +24,10 @@ public class SaveProfitController : ABaseController {
     public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
 
 
-    private readonly ProductModel _m_product_model;
-    private readonly EntityModel _m_entity_model;
-    private readonly ProductLotModel _m_product_lot_model;
-    private readonly ReceiptProfitDetailedModel _m_receipt_profit_detailed_model;
+    private readonly ProductModel _m_product_model = new();
+    private readonly EntityModel _m_entity_model = new();
+    private readonly ProductLotModel _m_product_lot_model = new();
+    private readonly ReceiptProfitDetailedModel _m_receipt_profit_detailed_model = new();
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
@@ -36,8 +36,9 @@ public class SaveProfitController : ABaseController {
     public ICommand m_generate_invoice_pdf_command { get; set; }
 
 
+    private ReceiptProfitDetailedItem _m_original_profit_receipt_detail = new();
     // Hold the receipt ID, supplier, date of all the items in m_list_receipt_product
-    private ReceiptProfitDetailedItem _m_profit_receipt_detail;
+    private ReceiptProfitDetailedItem _m_profit_receipt_detail = new();
     public ReceiptProfitDetailedItem m_profit_receipt_detail {
         get => _m_profit_receipt_detail;
         set {
@@ -47,7 +48,7 @@ public class SaveProfitController : ABaseController {
     }
 
     // This in the list of all the products in the receipt, each item is a line in the receipt
-    private ObservableCollection<ReceiptProductItem> _m_list_receipt_product;
+    private ObservableCollection<ReceiptProductItem> _m_list_receipt_product = new();
     public ObservableCollection<ReceiptProductItem> m_list_receipt_product {
         get => _m_list_receipt_product;
         set {
@@ -57,7 +58,7 @@ public class SaveProfitController : ABaseController {
     }
 
     // This is the list of all products available in the database, used to select a product in the receipt
-    private ObservableCollection<ProductItem> _m_list_product;
+    private ObservableCollection<ProductItem> _m_list_product = new();
     public ObservableCollection<ProductItem> m_list_product {
         get { return _m_list_product; }
         set {
@@ -67,7 +68,7 @@ public class SaveProfitController : ABaseController {
     }
 
     // This is the list of all entities available in the database, used to select an entity in the receipt
-    private ObservableCollection<EntityItem> _m_list_entity;
+    private ObservableCollection<EntityItem> _m_list_entity = new();
     public ObservableCollection<EntityItem> m_list_entity {
         get { return _m_list_entity; }
         set {
@@ -77,7 +78,7 @@ public class SaveProfitController : ABaseController {
     }
 
     // This is the list of all product lots available in the database, used to select a product lot in the receipt
-    private ObservableCollection<ProductLotItem> _m_list_product_lot;
+    private ObservableCollection<ProductLotItem> _m_list_product_lot = new();
     public ObservableCollection<ProductLotItem> m_list_product_lot {
         get { return _m_list_product_lot; }
         set {
@@ -87,8 +88,8 @@ public class SaveProfitController : ABaseController {
     }
 
     // Selected product in 1 line of the receipt, used to bind the product name in the UI
-    private ProductItem? _m_selected_product;
-    public ProductItem? m_selected_product {
+    private ProductItem _m_selected_product = new();
+    public ProductItem m_selected_product {
         get { return _m_selected_product; }
         set {
             _m_selected_product = value;
@@ -97,18 +98,19 @@ public class SaveProfitController : ABaseController {
     }
 
     // Selected entity in the header of the receipt, used to bind the entity name in the UI
-    private EntityItem? _m_selected_entity;
-    public EntityItem? m_selected_entity {
+    private EntityItem _m_selected_entity = new();
+    public EntityItem m_selected_entity {
         get { return _m_selected_entity; }
         set {
             _m_selected_entity = value;
+            m_profit_receipt_detail.entity = _m_selected_entity;
             onPropertyChanged();
         }
     }
 
     // Selected product lot in 1 line of the receipt, used to bind the product lot name in the UI
-    private ProductLotItem? _m_selected_product_lot;
-    public ProductLotItem? m_selected_product_lot {
+    private ProductLotItem _m_selected_product_lot = new();
+    public ProductLotItem m_selected_product_lot {
         get { return _m_selected_product_lot; }
         set {
             _m_selected_product_lot = value;
@@ -119,21 +121,59 @@ public class SaveProfitController : ABaseController {
 
     public SaveProfitController(int id_to_load = 0) {
 
-        _m_product_model = new();
-        _m_product_lot_model = new();
-        _m_entity_model = new();
-        _m_receipt_profit_detailed_model = new();
-
         _m_list_product = _m_product_model.getTable();
         _m_list_product_lot = _m_product_lot_model.getTable();
         _m_list_entity = _m_entity_model.getNonArchivedEntities();
 
-        _m_list_receipt_product = new();
-        _m_profit_receipt_detail = new();
+        initializeProfit(id_to_load);
+
+        m_save_command = new RelayCommand(saveProfit, canSaveProfit);
+        m_abort_command = new RelayCommand(abortProfit);
+        m_add_profit_item_command = new RelayCommand(addProfitItem);
+        m_delete_profit_item_command = new RelayCommand(deleteProfitItem);
+        m_generate_invoice_pdf_command = new RelayCommand(exportInvoicePdf);
+    }
+    
+    /// <summary>
+    /// Determines whether the current state of the profit receipt details matches the original state.
+    /// </summary>
+    /// <returns><see langword="true"/> if the current profit receipt details are identical to the original details;  otherwise,
+    /// <see langword="false"/>.</returns>
+    public bool isStateOriginal() {
+
+        // Compare receipt properties
+        if (_m_original_profit_receipt_detail.receipt.receipt_number != _m_profit_receipt_detail.receipt.receipt_number ||
+            _m_original_profit_receipt_detail.receipt.receipt_date_created != _m_profit_receipt_detail.receipt.receipt_date_created ||
+            _m_original_profit_receipt_detail.entity.entity_id != _m_profit_receipt_detail.entity.entity_id ||
+            _m_original_profit_receipt_detail.receipt_products.Count != _m_profit_receipt_detail.receipt_products.Count) {
+
+            return false;
+        }
+        
+        // Compare each receipt product
+        for (int i = 0; i < _m_original_profit_receipt_detail.receipt_products.Count; i++) {
+            var original = _m_original_profit_receipt_detail.receipt_products[i];
+            var current = _m_profit_receipt_detail.receipt_products[i];
+            
+            if (original.receipt_product_quantity != current.receipt_product_quantity ||
+                original.receipt_product_unity_price != current.receipt_product_unity_price ||
+                original.product_item.product_id != current.product_item.product_id ||
+                original.product_lot_item.product_lot_id != current.product_lot_item.product_lot_id) {
+
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private void initializeProfit(int id_to_load) {
 
         if (id_to_load > 0) {
 
-            _m_profit_receipt_detail = _m_receipt_profit_detailed_model.getItemByID(id_to_load.ToString()) ?? new ReceiptProfitDetailedItem();
+            _m_profit_receipt_detail = _m_receipt_profit_detailed_model.getItemByID(id_to_load.ToString()) ?? new();
+            _m_original_profit_receipt_detail = _m_receipt_profit_detailed_model.getItemByID(id_to_load.ToString()) ?? new();
+
             _m_list_receipt_product = m_profit_receipt_detail.receipt_products;
 
             _m_selected_entity = _m_list_entity.FirstOrDefault(b =>
@@ -153,13 +193,8 @@ public class SaveProfitController : ABaseController {
         else {
             _m_list_receipt_product.Add(new());
         }
-
-        m_save_command = new RelayCommand(saveProfit, canSaveProfit);
-        m_abort_command = new RelayCommand(abortProfit);
-        m_add_profit_item_command = new RelayCommand(addProfitItem);
-        m_delete_profit_item_command = new RelayCommand(deleteProfitItem);
-        m_generate_invoice_pdf_command = new RelayCommand(exportInvoicePdf);
     }
+
 
     private bool canSaveProfit(object? arg) {
 
@@ -211,16 +246,7 @@ public class SaveProfitController : ABaseController {
 
 
     private void abortProfit(object? obj) {
-        if (_m_profit_receipt_detail.receipt.receipt_id == 0) {
-            if (m_list_receipt_product.Count > 1) {
-                MessageBoxResult result = MessageBox.Show("En quittant la page, toutes les données modifiées seront perdues. Voulez-vous continuer?",
-                    "Annuler", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                if (result == MessageBoxResult.No) {
-                    return;
-                }
-            }
-        }
-        SPageNavigationController.navigateBack();
+        SPageNavigationController.navigateBack(true);
     }
 
 
