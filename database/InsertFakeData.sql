@@ -113,7 +113,7 @@ INSERT INTO products_lots (product_lot_name, product_lot_year, fk_beehive_id, pr
 
 -- Insert the user data for invoice generation
 INSERT INTO entities (entity_id, entity_name, entity_phone, entity_email, entity_city, entity_address, entity_archive) VALUES
-(1, 'Corinne Thumelin', '+26 667 11 78', '', '1773 Russy', 'Rte de l''Ecole 12', '1901-01-01');
+(35, 'Corinne Thumelin', '+26 667 11 78', '', '1773 Russy', 'Rte de l''Ecole 12', '1901-01-01');
 
 -- Insert data into entities (including mixed supplier-client entities)
 INSERT INTO entities (entity_name, entity_phone, entity_email, entity_city, entity_address, entity_archive) VALUES

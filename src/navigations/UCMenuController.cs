@@ -44,37 +44,37 @@ public class UCMenuController {
     }
 
     private void navigateToListFee(object? obj) {
-        SPageNavigationController.navigateTo(new ListFeePage());
+        SPageNavigationController.navigateTo(new ListFeePage(), true);
     }
 
     private void navigateToListProfit(object? obj) {
-        SPageNavigationController.navigateTo(new ListProfitPage());
+        SPageNavigationController.navigateTo(new ListProfitPage(), true);
     }
 
     private void navigateToListEntity(object? obj) {
-        SPageNavigationController.navigateTo(new ListEntityPage());
+        SPageNavigationController.navigateTo(new ListEntityPage(), true);
     }
     private void navigateToListProduct(object? obj) {
-        SPageNavigationController.navigateTo(new ListProductPage());
+        SPageNavigationController.navigateTo(new ListProductPage(), true);
     }
 
     private void navigateToListLot(object? obj) {
-        SPageNavigationController.navigateTo(new ListProductLotPage());
+        SPageNavigationController.navigateTo(new ListProductLotPage(), true);
     }
 
     private void navigateToListBeehive(object? obj) {
-        SPageNavigationController.navigateTo(new ListBeehivePage());
+        SPageNavigationController.navigateTo(new ListBeehivePage(), true);
     }
 
     private void navigateToListProductCategory(object? obj) {
-        SPageNavigationController.navigateTo(new ListProductCategoryPage());
+        SPageNavigationController.navigateTo(new ListProductCategoryPage(), true);
     }
 
     private void navigateToListProductType(object? obj) {
-        SPageNavigationController.navigateTo(new ListProductTypePage());
+        SPageNavigationController.navigateTo(new ListProductTypePage(), true);
     }
 
     private void navigateToListProductShape(object? obj) {
-        SPageNavigationController.navigateTo(new ListProductShapePage());
+        SPageNavigationController.navigateTo(new ListProductShapePage(), true);
     }
 }

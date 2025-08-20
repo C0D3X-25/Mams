@@ -10,7 +10,7 @@ namespace Mams.src.entities;
 /// <summary>
 /// Controller for managing the creation and modification of client entities
 /// </summary>
-public class SaveEntityController : ABaseController {
+public class SaveEntityController : ABaseController, ICompareState {
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
@@ -20,13 +20,14 @@ public class SaveEntityController : ABaseController {
     public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
 
 
-    private readonly EntityModel _m_entity_model;
+    private readonly EntityModel _m_entity_model = new();
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
 
 
-    private EntityItem _m_entity;
+    private EntityItem _m_original_entity = new();
+    private EntityItem _m_entity = new();
     public EntityItem m_entity {
         get => _m_entity;
         set {
@@ -43,15 +44,29 @@ public class SaveEntityController : ABaseController {
     /// <param name="id_to_load">Optional ID of an existing client to modify. If 0, creates a new client</param>
     public SaveEntityController(int id_to_load = 0) {
         
-        _m_entity_model = new();
-        _m_entity = new EntityItem();
         if (id_to_load != 0) {
             _m_entity = _m_entity_model.getItemByID(id_to_load.ToString()) ?? new EntityItem();
+            _m_original_entity = _m_entity_model.getItemByID(id_to_load.ToString()) ?? new EntityItem();
         }
+
         m_save_command = new RelayCommand(saveClient, canSaveClient);
         m_abort_command = new RelayCommand(abortClient);
     }
 
+    public bool isStateOriginal() {
+
+        if (!_m_original_entity.entity_id.Equals(_m_entity.entity_id)
+            || !_m_original_entity.entity_name.Equals(_m_entity.entity_name, StringComparison.Ordinal)
+            || !_m_original_entity.entity_archive.Equals(_m_entity.entity_archive, StringComparison.Ordinal)
+            || !_m_original_entity.entity_phone.Equals(_m_entity.entity_phone, StringComparison.Ordinal)
+            || !_m_original_entity.entity_email.Equals(_m_entity.entity_email, StringComparison.Ordinal)
+            || !_m_original_entity.entity_city.Equals(_m_entity.entity_city, StringComparison.Ordinal)
+            || !_m_original_entity.entity_address.Equals(_m_entity.entity_address, StringComparison.Ordinal)
+            ) {
+            return false;
+        }
+        return true;
+    }
 
     /// <summary>
     /// Determines if the current client can be saved
@@ -75,7 +90,7 @@ public class SaveEntityController : ABaseController {
         if (_m_entity_model.saveItem(m_entity) > 0) {
             SPageNavigationController.navigateBack();
         }
-        else { MessageBox.Show("Un client avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); }
+        else { MessageBox.Show($"Un contact avec le même nom ({_m_entity.entity_name}) est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); }
     }
 
 
@@ -84,6 +99,6 @@ public class SaveEntityController : ABaseController {
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
     private void abortClient(object? obj) {
-        SPageNavigationController.navigateBack();
+        SPageNavigationController.navigateBack(true);
     }
 }

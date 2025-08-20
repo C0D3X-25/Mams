@@ -79,12 +79,12 @@
                                 <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!--Receipt number--><!--
+                            <!--Receipt number-->
                             <userControls:UCLabelTextBox
                                 Grid.Column="0" Grid.Row="0"
                                 label="N° de Facture*"
                                 text="{Binding m_fee_receipt_detail.receipt.receipt_number, UpdateSourceTrigger=PropertyChanged}"
-                            ></userControls:UCLabelTextBox>-->
+                            ></userControls:UCLabelTextBox>
 
                             <!--Supplier-->
                             <Grid
@@ -147,9 +147,8 @@
                                 ItemsSource="{Binding m_list_receipt_product}"
                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
                                 HorizontalContentAlignment="Stretch"
-                            
-                                >
-                                <ListView.ItemTemplate>
+                                
+                                ><ListView.ItemTemplate>
                                     <DataTemplate>
                                         <Grid 
                                         MaxHeight="75" MinHeight="50"
@@ -172,23 +171,23 @@
                                                     <ColumnDefinition Width="3*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Label 
-                                                Content="Produit*" 
-                                                FontSize="16" 
-                                                VerticalAlignment="Center"
-                                            ></Label>
+                                                    Content="Produit*" 
+                                                    FontSize="16" 
+                                                    VerticalAlignment="Center"
+                                                ></Label>
 
                                                 <ComboBox 
-                                                Grid.Column="1"
-                                                Margin="5,0,5,0" 
-                                                FontSize="16"
-                                                MinHeight="25" MinWidth="200"
-                                                MaxHeight="25" MaxWidth="200"
-                                                VerticalAlignment="Center" HorizontalAlignment="Left"
-                                                ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.m_list_product}"
-                                                SelectedItem="{Binding product_item, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                DisplayMemberPath="product_name"
-                                                SelectedValuePath="product_id">
-                                                </ComboBox>
+                                                    Grid.Column="1"
+                                                    Margin="5,0,5,0" 
+                                                    FontSize="16"
+                                                    MinHeight="25" MinWidth="200"
+                                                    MaxHeight="25" MaxWidth="200"
+                                                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                    ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.m_list_product}"
+                                                    SelectedItem="{Binding product_item, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    DisplayMemberPath="product_name"
+                                                    SelectedValuePath="product_id"
+                                                ></ComboBox>
                                             </Grid>
 
                                             <!--Lot ComboBox-->
@@ -198,25 +197,25 @@
                                                     <ColumnDefinition Width="3*"/>
                                                 </Grid.ColumnDefinitions>
                                                 <Label 
-                                                Content="lot" 
-                                                FontSize="16" 
-                                                VerticalAlignment="Center"
-                                                Visibility="Hidden"
-                                            ></Label>
+                                                    Content="lot" 
+                                                    FontSize="16" 
+                                                    VerticalAlignment="Center"
+                                                    Visibility="Visible"
+                                                ></Label>
 
                                                 <ComboBox
-                                                Grid.Column="1"
-                                                Margin="5,0,5,0" 
-                                                FontSize="16"
-                                                MinHeight="25" MinWidth="200"
-                                                MaxHeight="25" MaxWidth="200"
-                                                VerticalAlignment="Center" HorizontalAlignment="Left"
-                                                ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.m_list_product_lot}"
-                                                SelectedItem="{Binding product_lot_item, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                DisplayMemberPath="product_lot_name" 
-                                                SelectedValuePath="product_lot_id"
-                                                Visibility="Hidden">
-                                                </ComboBox>
+                                                    Grid.Column="1"
+                                                    Margin="5,0,5,0" 
+                                                    FontSize="16"
+                                                    MinHeight="25" MinWidth="200"
+                                                    MaxHeight="25" MaxWidth="200"
+                                                    VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                    ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Page}, Path=DataContext.m_list_product_lot}"
+                                                    SelectedItem="{Binding product_lot_item, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    DisplayMemberPath="product_lot_name" 
+                                                    SelectedValuePath="product_lot_id"
+                                                    Visibility="Visible"
+                                                ></ComboBox>
                                             </Grid>
 
                                             <!--Quantity-->

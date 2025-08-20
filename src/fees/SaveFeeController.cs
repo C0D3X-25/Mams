@@ -21,19 +21,19 @@ public class SaveFeeController : ABaseController, ICompareState {
     public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
     public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
 
-    private readonly ProductModel _m_product_model;
-    private readonly EntityModel _m_entity_model;
-    private readonly ProductLotModel _m_product_lot_model;
-    private readonly ReceiptFeeDetailedModel _m_receipt_fee_detailed_model;
+    private readonly ProductModel _m_product_model = new();
+    private readonly EntityModel _m_entity_model = new();
+    private readonly ProductLotModel _m_product_lot_model = new();
+    private readonly ReceiptFeeDetailedModel _m_receipt_fee_detailed_model = new();
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
     public ICommand m_add_fee_item_command { get; set; }
     public ICommand m_delete_fee_item_command { get; set; }
 
-    private ReceiptFeeDetailedItem _m_original_fee_receipt_detail;
+    private ReceiptFeeDetailedItem _m_original_fee_receipt_detail = new();
     // Hold the receipt ID, supplier, date of all the items in m_list_receipt_product
-    private ReceiptFeeDetailedItem _m_fee_receipt_detail;
+    private ReceiptFeeDetailedItem _m_fee_receipt_detail = new();
     public ReceiptFeeDetailedItem m_fee_receipt_detail {
         get => _m_fee_receipt_detail;
         set {
@@ -43,7 +43,7 @@ public class SaveFeeController : ABaseController, ICompareState {
     }
 
     // This in the list of all the products in the receipt, each item is a line in the receipt
-    private ObservableCollection<ReceiptProductItem> _m_list_receipt_product;
+    private ObservableCollection<ReceiptProductItem> _m_list_receipt_product = new ();
     public ObservableCollection<ReceiptProductItem> m_list_receipt_product {
         get => _m_list_receipt_product;
         set {
@@ -53,7 +53,7 @@ public class SaveFeeController : ABaseController, ICompareState {
     }
 
     // This is the list of all products available in the database, used to select a product in the receipt
-    private ObservableCollection<ProductItem> _m_list_product;
+    private ObservableCollection<ProductItem> _m_list_product = new();
     public ObservableCollection<ProductItem> m_list_product {
         get { return _m_list_product; }
         set {
@@ -63,7 +63,7 @@ public class SaveFeeController : ABaseController, ICompareState {
     }
 
     // This is the list of all entities available in the database, used to select an entity in the receipt
-    private ObservableCollection<EntityItem> _m_list_entity;
+    private ObservableCollection<EntityItem> _m_list_entity = new();
     public ObservableCollection<EntityItem> m_list_entity {
         get { return _m_list_entity; }
         set {
@@ -73,7 +73,7 @@ public class SaveFeeController : ABaseController, ICompareState {
     }
 
     // This is the list of all product lots available in the database, used to select a product lot in the receipt
-    private ObservableCollection<ProductLotItem> _m_list_product_lot;
+    private ObservableCollection<ProductLotItem> _m_list_product_lot = new();
     public ObservableCollection<ProductLotItem> m_list_product_lot {
         get { return _m_list_product_lot; }
         set {
@@ -83,8 +83,8 @@ public class SaveFeeController : ABaseController, ICompareState {
     }
 
     // Selected product in 1 line of the receipt, used to bind the product name in the UI
-    private ProductItem? _m_selected_product;
-    public ProductItem? m_selected_product {
+    private ProductItem _m_selected_product = new();
+    public ProductItem m_selected_product {
         get { return _m_selected_product; }
         set {
             _m_selected_product = value;
@@ -93,19 +93,19 @@ public class SaveFeeController : ABaseController, ICompareState {
     }
 
     // Selected entity in the header of the receipt, used to bind the entity name in the UI
-    private EntityItem? _m_selected_entity;
-    public EntityItem? m_selected_entity {
+    private EntityItem _m_selected_entity = new();
+    public EntityItem m_selected_entity {
         get { return _m_selected_entity; }
         set {
             _m_selected_entity = value;
-            m_fee_receipt_detail.entity = _m_selected_entity ?? new();
+            m_fee_receipt_detail.entity = _m_selected_entity;
             onPropertyChanged();
         }
     }
 
     // Selected product lot in 1 line of the receipt, used to bind the product lot name in the UI
-    private ProductLotItem? _m_selected_product_lot;
-    public ProductLotItem? m_selected_product_lot {
+    private ProductLotItem _m_selected_product_lot = new();
+    public ProductLotItem m_selected_product_lot {
         get { return _m_selected_product_lot; }
         set {
             _m_selected_product_lot = value;
@@ -116,18 +116,9 @@ public class SaveFeeController : ABaseController, ICompareState {
 
     public SaveFeeController(int id_to_load = 0) {
 
-        _m_product_model = new();
-        _m_product_lot_model = new();
-        _m_entity_model = new();
-        _m_receipt_fee_detailed_model = new();
-
         _m_list_product = _m_product_model.getTable();
         _m_list_product_lot = _m_product_lot_model.getTable();
         _m_list_entity = _m_entity_model.getNonArchivedEntities();
-
-        _m_list_receipt_product = new();
-        _m_fee_receipt_detail = new();
-        _m_original_fee_receipt_detail = new();
 
         initializeFee(id_to_load);
 

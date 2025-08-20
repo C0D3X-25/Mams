@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace Mams.src.productsTypes;
 
-public class SaveProductTypeController : ABaseController {
+public class SaveProductTypeController : ABaseController, ICompareState {
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
@@ -17,13 +17,14 @@ public class SaveProductTypeController : ABaseController {
     public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
 
 
-    private readonly ProductTypeModel _m_product_type_model;
+    private readonly ProductTypeModel _m_product_type_model = new();
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
 
 
-    private ProductTypeItem _m_product_type;
+    private ProductTypeItem _m_original_product_type = new();
+    private ProductTypeItem _m_product_type = new();
     public ProductTypeItem m_product_type {
         get => _m_product_type;
         set {
@@ -34,17 +35,23 @@ public class SaveProductTypeController : ABaseController {
 
 
     public SaveProductTypeController(int id_to_load = 0) {
-        
-        _m_product_type_model = new();
-        _m_product_type = new ProductTypeItem();
 
         if (id_to_load != 0) {
+            _m_original_product_type = _m_product_type_model.getItemByID(id_to_load.ToString()) ?? new ProductTypeItem();
             _m_product_type = _m_product_type_model.getItemByID(id_to_load.ToString()) ?? new ProductTypeItem();
-            // Find the matching beehive in the list and set it as selected
         }
 
         m_save_command = new RelayCommand(saveProduct, canSaveProduct);
         m_abort_command = new RelayCommand(abortProduct);
+    }
+
+    public bool isStateOriginal() {
+        if (!_m_original_product_type.product_type_id.Equals(_m_product_type.product_type_id)
+            || !_m_original_product_type.product_type_name.Equals(_m_product_type.product_type_name, StringComparison.Ordinal)
+            || !_m_original_product_type.product_type_archive.Equals(_m_product_type.product_type_archive, StringComparison.Ordinal)) {
+            return false;
+        }
+        return true;
     }
 
 
@@ -64,6 +71,6 @@ public class SaveProductTypeController : ABaseController {
 
 
     private void abortProduct(object? obj) {
-        SPageNavigationController.navigateBack();
+        SPageNavigationController.navigateBack(true);
     }
 }

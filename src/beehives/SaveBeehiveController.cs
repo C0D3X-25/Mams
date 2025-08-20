@@ -48,8 +48,7 @@ public class SaveBeehiveController : ABaseController, ICompareState {
 
 
     public bool isStateOriginal() {
-
-        if (_m_original_beehive.beehive_id.Equals(_m_beehive.beehive_id)
+        if (!_m_original_beehive.beehive_id.Equals(_m_beehive.beehive_id)
             || !_m_original_beehive.beehive_name.Equals(_m_beehive.beehive_name, StringComparison.Ordinal)
             || !_m_original_beehive.beehive_archive.Equals(_m_beehive.beehive_archive, StringComparison.Ordinal)
             ) {
