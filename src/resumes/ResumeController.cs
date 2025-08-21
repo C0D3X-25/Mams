@@ -4,7 +4,6 @@ using Mams.src.databaseOperations;
 using Mams.src.fees;
 using Mams.src.navigations;
 using Mams.src.profits;
-using Mams.src.receipts;
 using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -44,8 +43,6 @@ public class ResumeController : ABaseController {
             onPropertyChanged();
         }
     }
-
-
 
 
     private ObservableCollection<SearchItem>? _m_list_search_item;

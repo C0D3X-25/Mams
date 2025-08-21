@@ -11,7 +11,6 @@ using Mams.src.productsTypes;
 using Mams.src.profits;
 using Mams.src.receipts;
 using System.Collections.ObjectModel;
-using System.Windows;
 
 namespace Mams.src.resumes;
 
@@ -103,7 +102,7 @@ public class ResumeModel {
     /// corresponding data source is null.</returns>
     public ObservableCollection<SearchItem> getListSearchItems(DatabaseTablesNameItem selected_table) {
 
-        var list_search_item = new ObservableCollection<SearchItem>();
+        ObservableCollection<SearchItem> list_search_item = new();
 
         switch (selected_table.m_name_in_database) {
             case EDatabaseTableName.ENTITY:
@@ -188,7 +187,7 @@ public class ResumeModel {
     /// default item.</returns>
     public ObservableCollection<SearchItem> getListYears() {
 
-        var list_search_year = new ObservableCollection<SearchItem>();
+        ObservableCollection<SearchItem> list_search_year = new();
         var years = _m_receipt_model.getExistingYear();
 
         if (years == null) {
@@ -225,16 +224,21 @@ public class ResumeModel {
     /// input parameters are invalid, the returned <see cref="ResumeItem"/> will contain empty collections.</returns>
     private ResumeItem filterBy(SearchItem? search) {
 
-        var filtered_data = new ResumeItem();
+        ResumeItem filtered_data = new();
 
         if (_m_list_profit_items == null
-            || _m_list_fee_items == null) 
-            {
+            || _m_list_fee_items == null 
+            ){
             return filtered_data;
         }
         if (search == null) {
             filtered_data.profit_items = _m_list_profit_items;
             filtered_data.fee_items = _m_list_fee_items;
+            return filtered_data;
+        }
+        if (search.search_id == 0
+            && search.search_table != EDatabaseTableName.NONE
+            ) {
             return filtered_data;
         }
 
@@ -244,9 +248,6 @@ public class ResumeModel {
                 filtered_data.fee_items = _m_list_fee_items;
                 break;
             case EDatabaseTableName.ENTITY:
-                if (search.search_id == 0) {
-                    break;
-                }
                 filtered_data.profit_items = new(
                     _m_list_profit_items.Where(profit => 
                         profit.entity.entity_id == search.search_id
@@ -259,117 +260,416 @@ public class ResumeModel {
                 );
                 break;
             case EDatabaseTableName.PRODUCT:
-                if (search.search_id == 0) {
-                    break;
-                }
                 filtered_data.profit_items = new(
-                    _m_list_profit_items.Where(profit =>
-                        profit.receipt_products.Any(product =>
-                            product.product_item.product_id == search.search_id
-                        )
-                    )
+                    _m_list_profit_items
+                        .Where(profit => profit.receipt_products.Any(product => 
+                            product.product_item.product_id == search.search_id))
+                        .Select(profit => {
+                            // Create a completely new object to avoid reference issues
+                            var filteredItem = new ReceiptProfitDetailedItem {
+                                // Copy all properties explicitly
+                                receipt = new ReceiptItem {
+                                    receipt_id = profit.receipt.receipt_id,
+                                    receipt_number = profit.receipt.receipt_number,
+                                    receipt_date_created = profit.receipt.receipt_date_created,
+                                    // Only calculate total price for filtered products
+                                    receipt_total_price = profit.receipt_products
+                                        .Where(p => p.product_item.product_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = profit.entity,
+                                client = profit.client,
+                                receipt_client = profit.receipt_client,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    profit.receipt_products
+                                        .Where(product => product.product_item.product_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 filtered_data.fee_items = new(
-                    _m_list_fee_items.Where(fee =>
-                        fee.receipt_products.Any(product =>
-                            product.product_item.product_id == search.search_id
-                        )
-                    )
+                    _m_list_fee_items
+                        .Where(fee => fee.receipt_products.Any(product => 
+                            product.product_item.product_id == search.search_id))
+                        .Select(fee => {
+                            var filteredItem = new ReceiptFeeDetailedItem {
+                                receipt = new ReceiptItem {
+                                    receipt_id = fee.receipt.receipt_id,
+                                    receipt_number = fee.receipt.receipt_number,
+                                    receipt_date_created = fee.receipt.receipt_date_created,
+                                    receipt_total_price = fee.receipt_products
+                                        .Where(p => p.product_item.product_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = fee.entity,
+                                supplier = fee.supplier,
+                                receipt_supplier = fee.receipt_supplier,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    fee.receipt_products
+                                        .Where(product => product.product_item.product_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 break;
             case EDatabaseTableName.PRODUCT_TYPE:
-                if (search.search_id == 0) {
-                    break;
-                }
                 filtered_data.profit_items = new(
-                    _m_list_profit_items.Where(profit =>
-                        profit.receipt_products.Any(product =>
-                            product.product_item.fk_product_type_id == search.search_id
-                        )
-                    )
+                    _m_list_profit_items
+                        .Where(profit => profit.receipt_products.Any(product =>
+                            product.product_item.fk_product_type_id == search.search_id))
+                        .Select(profit => {
+                            // Create a completely new object to avoid reference issues
+                            var filteredItem = new ReceiptProfitDetailedItem {
+                                receipt = new ReceiptItem {
+                                    receipt_id = profit.receipt.receipt_id,
+                                    receipt_number = profit.receipt.receipt_number,
+                                    receipt_date_created = profit.receipt.receipt_date_created,
+                                    // Only calculate total price for filtered products
+                                    receipt_total_price = profit.receipt_products
+                                        .Where(p => p.product_item.fk_product_type_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = profit.entity,
+                                client = profit.client,
+                                receipt_client = profit.receipt_client,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    profit.receipt_products
+                                        .Where(product => product.product_item.fk_product_type_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 filtered_data.fee_items = new(
-                    _m_list_fee_items.Where(fee =>
-                        fee.receipt_products.Any(product =>
-                            product.product_item.fk_product_type_id == search.search_id
-                        )
-                    )
+                    _m_list_fee_items
+                        .Where(fee => fee.receipt_products.Any(product =>
+                            product.product_item.fk_product_type_id == search.search_id))
+                        .Select(fee => {
+                            var filteredItem = new ReceiptFeeDetailedItem {
+                                receipt = new ReceiptItem {
+                                    receipt_id = fee.receipt.receipt_id,
+                                    receipt_number = fee.receipt.receipt_number,
+                                    receipt_date_created = fee.receipt.receipt_date_created,
+                                    receipt_total_price = fee.receipt_products
+                                        .Where(p => p.product_item.fk_product_type_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = fee.entity,
+                                supplier = fee.supplier,
+                                receipt_supplier = fee.receipt_supplier,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    fee.receipt_products
+                                        .Where(product => product.product_item.fk_product_type_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 break;
             case EDatabaseTableName.PRODUCT_CATEGORY:
-                if (search.search_id == 0) {
-                    break;
-                }
                 filtered_data.profit_items = new(
-                    _m_list_profit_items.Where(profit =>
-                        profit.receipt_products.Any(product =>
-                            product.product_item.fk_product_category_id == search.search_id
-                        )
-                    )
+                    _m_list_profit_items
+                        .Where(profit => profit.receipt_products.Any(product =>
+                            product.product_item.fk_product_category_id == search.search_id))
+                        .Select(profit => {
+                            var filteredItem = new ReceiptProfitDetailedItem {
+                                receipt = new ReceiptItem {
+                                    receipt_id = profit.receipt.receipt_id,
+                                    receipt_number = profit.receipt.receipt_number,
+                                    receipt_date_created = profit.receipt.receipt_date_created,
+                                    receipt_total_price = profit.receipt_products
+                                        .Where(p => p.product_item.fk_product_category_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = profit.entity,
+                                client = profit.client,
+                                receipt_client = profit.receipt_client,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    profit.receipt_products
+                                        .Where(product => product.product_item.fk_product_category_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 filtered_data.fee_items = new(
-                    _m_list_fee_items.Where(fee =>
-                        fee.receipt_products.Any(product =>
-                            product.product_item.fk_product_category_id == search.search_id
-                        )
-                    )
+                    _m_list_fee_items
+                        .Where(fee => fee.receipt_products.Any(product =>
+                            product.product_item.fk_product_category_id == search.search_id))
+                        .Select(fee => {
+                            var filteredItem = new ReceiptFeeDetailedItem {
+                                receipt = new ReceiptItem {
+                                    receipt_id = fee.receipt.receipt_id,
+                                    receipt_number = fee.receipt.receipt_number,
+                                    receipt_date_created = fee.receipt.receipt_date_created,
+                                    receipt_total_price = fee.receipt_products
+                                        .Where(p => p.product_item.fk_product_category_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = fee.entity,
+                                supplier = fee.supplier,
+                                receipt_supplier = fee.receipt_supplier,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    fee.receipt_products
+                                        .Where(product => product.product_item.fk_product_category_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 break;
             case EDatabaseTableName.PRODUCT_SHAPE:
-                if (search.search_id == 0) {
-                    break;
-                }
                 filtered_data.profit_items = new(
-                    _m_list_profit_items.Where(profit =>
-                        profit.receipt_products.Any(product =>
-                            product.product_item.fk_product_shape_id == search.search_id
-                        )
-                    )
+                    _m_list_profit_items
+                        .Where(profit => profit.receipt_products.Any(product =>
+                            product.product_item.fk_product_shape_id == search.search_id))
+                        .Select(profit => {
+                            var filteredItem = new ReceiptProfitDetailedItem {
+                                receipt = new ReceiptItem {
+                                    receipt_id = profit.receipt.receipt_id,
+                                    receipt_number = profit.receipt.receipt_number,
+                                    receipt_date_created = profit.receipt.receipt_date_created,
+                                    receipt_total_price = profit.receipt_products
+                                        .Where(p => p.product_item.fk_product_shape_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = profit.entity,
+                                client = profit.client,
+                                receipt_client = profit.receipt_client,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    profit.receipt_products
+                                        .Where(product => product.product_item.fk_product_shape_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 filtered_data.fee_items = new(
-                    _m_list_fee_items.Where(fee =>
-                        fee.receipt_products.Any(product =>
-                            product.product_item.fk_product_shape_id == search.search_id
-                        )
-                    )
+                    _m_list_fee_items
+                        .Where(fee => fee.receipt_products.Any(product =>
+                            product.product_item.fk_product_shape_id == search.search_id))
+                        .Select(fee => {
+                            var filteredItem = new ReceiptFeeDetailedItem {
+                                receipt = new ReceiptItem {
+                                    receipt_id = fee.receipt.receipt_id,
+                                    receipt_number = fee.receipt.receipt_number,
+                                    receipt_date_created = fee.receipt.receipt_date_created,
+                                    receipt_total_price = fee.receipt_products
+                                        .Where(p => p.product_item.fk_product_shape_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = fee.entity,
+                                supplier = fee.supplier,
+                                receipt_supplier = fee.receipt_supplier,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    fee.receipt_products
+                                        .Where(product => product.product_item.fk_product_shape_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 break;
             case EDatabaseTableName.PRODUCT_LOT:
-                if (search.search_id == 0) {
-                    break;
-                }
                 filtered_data.profit_items = new(
-                    _m_list_profit_items.Where(profit =>
-                        profit.receipt_products.Any(product =>
-                            product.product_lot_item.product_lot_id == search.search_id
-                        )
-                    )
+                    _m_list_profit_items
+                        .Where(profit => profit.receipt_products.Any(product =>
+                            product.product_lot_item.product_lot_id == search.search_id))
+                        .Select(profit => {
+                            var filteredItem = new ReceiptProfitDetailedItem {
+                                receipt = new ReceiptItem {
+                                    receipt_id = profit.receipt.receipt_id,
+                                    receipt_number = profit.receipt.receipt_number,
+                                    receipt_date_created = profit.receipt.receipt_date_created,
+                                    receipt_total_price = profit.receipt_products
+                                        .Where(p => p.product_lot_item.product_lot_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = profit.entity,
+                                client = profit.client,
+                                receipt_client = profit.receipt_client,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    profit.receipt_products
+                                        .Where(product => product.product_lot_item.product_lot_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 filtered_data.fee_items = new(
-                    _m_list_fee_items.Where(fee =>
-                        fee.receipt_products.Any(product =>
-                            product.product_lot_item.product_lot_id == search.search_id
-                        )
-                    )
+                    _m_list_fee_items
+                        .Where(fee => fee.receipt_products.Any(product =>
+                            product.product_lot_item.product_lot_id == search.search_id))
+                        .Select(fee => {
+                            var filteredItem = new ReceiptFeeDetailedItem {
+                                receipt = new ReceiptItem {
+                                    receipt_id = fee.receipt.receipt_id,
+                                    receipt_number = fee.receipt.receipt_number,
+                                    receipt_date_created = fee.receipt.receipt_date_created,
+                                    receipt_total_price = fee.receipt_products
+                                        .Where(p => p.product_lot_item.product_lot_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = fee.entity,
+                                supplier = fee.supplier,
+                                receipt_supplier = fee.receipt_supplier,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    fee.receipt_products
+                                        .Where(product => product.product_lot_item.product_lot_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 break;
             case EDatabaseTableName.BEEHIVE:
-                if (search.search_id == 0) {
-                    break;
-                }
                 filtered_data.profit_items = new(
-                    _m_list_profit_items.Where(profit =>
-                        profit.receipt_products.Any(product =>
-                            product.product_lot_item.fk_beehive_id == search.search_id
-                        )
-                    )
+                    _m_list_profit_items
+                        .Where(profit => profit.receipt_products.Any(product =>
+                            product.product_lot_item.fk_beehive_id == search.search_id))
+                        .Select(profit => {
+                            var filteredItem = new ReceiptProfitDetailedItem {
+                                receipt = new ReceiptItem {
+                                    receipt_id = profit.receipt.receipt_id,
+                                    receipt_number = profit.receipt.receipt_number,
+                                    receipt_date_created = profit.receipt.receipt_date_created,
+                                    receipt_total_price = profit.receipt_products
+                                        .Where(p => p.product_lot_item.fk_beehive_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = profit.entity,
+                                client = profit.client,
+                                receipt_client = profit.receipt_client,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    profit.receipt_products
+                                        .Where(product => product.product_lot_item.fk_beehive_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 filtered_data.fee_items = new(
-                    _m_list_fee_items.Where(fee =>
-                        fee.receipt_products.Any(product =>
-                            product.product_lot_item.fk_beehive_id == search.search_id
-                        )
-                    )
+                    _m_list_fee_items
+                        .Where(fee => fee.receipt_products.Any(product =>
+                            product.product_lot_item.fk_beehive_id == search.search_id))
+                        .Select(fee => {
+                            var filteredItem = new ReceiptFeeDetailedItem {
+                                receipt = new ReceiptItem {
+                                    receipt_id = fee.receipt.receipt_id,
+                                    receipt_number = fee.receipt.receipt_number,
+                                    receipt_date_created = fee.receipt.receipt_date_created,
+                                    receipt_total_price = fee.receipt_products
+                                        .Where(p => p.product_lot_item.fk_beehive_id == search.search_id)
+                                        .Sum(p => p.receipt_product_quantity * p.receipt_product_unity_price)
+                                },
+                                entity = fee.entity,
+                                supplier = fee.supplier,
+                                receipt_supplier = fee.receipt_supplier,
+                                receipt_products = new ObservableCollection<ReceiptProductItem>(
+                                    fee.receipt_products
+                                        .Where(product => product.product_lot_item.fk_beehive_id == search.search_id)
+                                        .Select(p => new ReceiptProductItem {
+                                            receipt_product_id = p.receipt_product_id,
+                                            receipt_product_quantity = p.receipt_product_quantity,
+                                            receipt_product_unity_price = p.receipt_product_unity_price,
+                                            fk_receipt_id = p.fk_receipt_id,
+                                            product_item = p.product_item,
+                                            product_lot_item = p.product_lot_item
+                                        })
+                                )
+                            };
+                            return filteredItem;
+                        })
                 );
                 break;
         }
