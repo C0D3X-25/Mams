@@ -113,7 +113,11 @@ public class ResumeController : ABaseController {
         set {
             _m_total_profit = value;
             onPropertyChanged();
+            onPropertyChanged(nameof(m_total_profit_ui));
         }
+    }
+    public string m_total_profit_ui {
+        get { return $"{_m_total_profit:F2} CHF"; }
     }
 
 
@@ -123,7 +127,11 @@ public class ResumeController : ABaseController {
         set {
             _m_total_fee = value;
             onPropertyChanged();
+            onPropertyChanged(nameof(m_total_fee_ui));
         }
+    }
+    public string m_total_fee_ui {
+        get { return $"{_m_total_fee:F2} CHF"; }
     }
 
 
@@ -133,7 +141,53 @@ public class ResumeController : ABaseController {
         set {
             _m_total = value;
             onPropertyChanged();
+            onPropertyChanged(nameof(m_total_ui));
         }
+    }
+    public string m_total_ui {
+        get { return $"{_m_total:F2} CHF"; }
+    }
+
+
+    private decimal _m_total_weight = 0.00M;
+    public decimal m_total_weight {
+        get { return _m_total_weight; }
+        set {
+            _m_total_weight = value;
+            onPropertyChanged();
+            onPropertyChanged(nameof(m_total_weight_ui));
+        }
+    }
+    public string m_total_weight_ui {
+        get { return $"{_m_total_weight:F2} kg"; }
+    }
+
+
+    private int _m_total_quantity = 0;
+    public int m_total_quantity {
+        get { return _m_total_quantity; }
+        set {
+            _m_total_quantity = value;
+            onPropertyChanged();
+            onPropertyChanged(nameof(m_total_quantity_ui));
+        }
+    }
+    public string m_total_quantity_ui {
+        get { return $"{_m_total_quantity}"; }
+    }
+
+
+    private decimal _m_average_price = 0.00M;
+    public decimal m_average_price {
+        get { return _m_average_price; }
+        set {
+            _m_average_price = value;
+            onPropertyChanged();
+            onPropertyChanged(nameof(m_average_price_ui));
+        }
+    }
+    public string m_average_price_ui {
+        get { return $"{m_average_price:F2} CHF/u"; }
     }
 
 
@@ -230,6 +284,12 @@ public class ResumeController : ABaseController {
         m_list_fee_item = resume_item.fee_items;
 
         updateDisplayedTotalTransactions();
+
+        //if (m_selected_search_item.search_table != EDatabaseTableName.ENTITY
+        //    || m_selected_search_item.search_table != EDatabaseTableName.NONE
+        //    ) {
+            updateDisplayedDetailTransactions();
+        //}
     }
 
 
@@ -264,6 +324,29 @@ public class ResumeController : ABaseController {
         }
         else {
             m_total_color = Brushes.Black;
+        }
+    }
+
+    private void updateDisplayedDetailTransactions() {
+
+        decimal total_weight = 0.00M;
+        int total_quantity = 0;
+
+        if (m_list_profit_item != null) {
+            foreach (var item in m_list_profit_item) {
+                foreach (var receipt_product in item.receipt_products) {
+                    total_weight += receipt_product.product_item.product_weight;
+                    total_quantity += receipt_product.receipt_product_quantity;
+                }
+            }
+            if (total_quantity == 0) {
+                m_average_price = 0.00M;
+            }
+            else {
+                m_average_price = m_total_profit / total_quantity;
+            }
+            m_total_weight = total_weight / 1000;
+            m_total_quantity = total_quantity;
         }
     }
 
