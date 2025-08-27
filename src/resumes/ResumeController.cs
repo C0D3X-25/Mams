@@ -284,12 +284,7 @@ public class ResumeController : ABaseController {
         m_list_fee_item = resume_item.fee_items;
 
         updateDisplayedTotalTransactions();
-
-        //if (m_selected_search_item.search_table != EDatabaseTableName.ENTITY
-        //    || m_selected_search_item.search_table != EDatabaseTableName.NONE
-        //    ) {
-            updateDisplayedDetailTransactions();
-        //}
+        updateDisplayedDetailTransactions();
     }
 
 
@@ -327,16 +322,27 @@ public class ResumeController : ABaseController {
         }
     }
 
+
     private void updateDisplayedDetailTransactions() {
+
+        // Weight and quantity are only relevant if a specific search item is selected
+        if (m_selected_search_item == null 
+            || m_selected_search_item.search_id == 0
+            ) {
+                m_total_weight = 0.00M;
+                m_total_quantity = 0;
+                m_average_price = 0.00M;
+                return;
+        }
 
         decimal total_weight = 0.00M;
         int total_quantity = 0;
 
         if (m_list_profit_item != null) {
-            foreach (var item in m_list_profit_item) {
-                foreach (var receipt_product in item.receipt_products) {
-                    total_weight += receipt_product.product_item.product_weight;
+            foreach (var profit_item in m_list_profit_item) {
+                foreach (var receipt_product in profit_item.receipt_products) {
                     total_quantity += receipt_product.receipt_product_quantity;
+                    total_weight += (receipt_product.product_item.product_weight * receipt_product.receipt_product_quantity);
                 }
             }
             if (total_quantity == 0) {

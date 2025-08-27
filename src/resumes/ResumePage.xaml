@@ -222,87 +222,87 @@
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
+
+                            <!--Details Label-->
+                            <Label
+                                Grid.Column="0" Grid.Row="0"
+                                HorizontalContentAlignment="Right"
+                                FontSize="16"
+                                Content="Poids Total :"
+                            ></Label>
+                            <Label
+                                Grid.Column="0" Grid.Row="1"
+                                HorizontalContentAlignment="Right"
+                                FontSize="16"
+                                Content="Quantité Total :"
+                            ></Label>
+                            <Label
+                                Grid.Column="0" Grid.Row="2"
+                                HorizontalContentAlignment="Right"
+                                FontSize="16"
+                                Content="Prix Moyen :"
+                            ></Label>
+
+                            <!--Details Value-->
+                            <Label
+                                Grid.Column="1" Grid.Row="0"
+                                HorizontalContentAlignment="Left"
+                                FontSize="16"
+                                Content="{Binding m_total_weight_ui}"
+                            ></Label>
+                            <Label
+                                Grid.Column="1" Grid.Row="1"
+                                HorizontalContentAlignment="Left"
+                                FontSize="16"
+                                Content="{Binding m_total_quantity_ui}"
+                            ></Label>
+                            <Label
+                                Grid.Column="1" Grid.Row="2"
+                                HorizontalContentAlignment="Left"
+                                FontSize="16"
+                                Content="{Binding m_average_price_ui}"
+                            ></Label>        
                            
                            <!--Total Label-->
                            <Label
-                               Grid.Column="0" Grid.Row="0"
+                               Grid.Column="2" Grid.Row="0"
                                HorizontalContentAlignment="Right"
                                FontSize="16"
                                Content="Total Profits :"
                            ></Label>
                            <Label
-                               Grid.Column="0" Grid.Row="1"
+                               Grid.Column="2" Grid.Row="1"
                                HorizontalContentAlignment="Right"
                                FontSize="16"
                                Content="Total Frais :"
                            ></Label>
                            <Label
-                               Grid.Column="0" Grid.Row="2"
+                               Grid.Column="2" Grid.Row="2"
                                HorizontalContentAlignment="Right"
                                FontSize="16"
                                Content="Total :"
                            ></Label>
 
-                           <!--Total Value-->
-                           <Label
-                               Grid.Column="1" Grid.Row="0"
-                               HorizontalContentAlignment="Left"
-                               FontSize="16"
-                               Content="{Binding m_total_profit_ui}"
-                           ></Label>
-                           <Label
-                               Grid.Column="1" Grid.Row="1"
-                               HorizontalContentAlignment="Left"
-                               FontSize="16"
-                               Foreground="{Binding m_total_fee_color}"
-                               Content="{Binding m_total_fee_ui}"
-                           ></Label>
-                           <Label
-                               Grid.Column="1" Grid.Row="2"
-                               HorizontalContentAlignment="Left"
-                               FontSize="16"
-                               Foreground="{Binding m_total_color}"
-                               Content="{Binding m_total_ui}"
-                           ></Label>
-
-                            <!--Details Label-->
+                            <!--Total Value-->
                             <Label
-                               Grid.Column="2" Grid.Row="0"
-                               HorizontalContentAlignment="Right"
-                               FontSize="16"
-                               Content="Poids Total :"
-                           ></Label>
+                                Grid.Column="3" Grid.Row="0"
+                                HorizontalContentAlignment="Left"
+                                FontSize="16"
+                                Content="{Binding m_total_profit_ui}"
+                            ></Label>
                             <Label
-                               Grid.Column="2" Grid.Row="1"
-                               HorizontalContentAlignment="Right"
-                               FontSize="16"
-                               Content="Quantité Total :"
-                           ></Label>
-                            <Label
-                               Grid.Column="2" Grid.Row="2"
-                               HorizontalContentAlignment="Right"
-                               FontSize="16"
-                               Content="Prix Moyen :"
-                           ></Label>
-
-                            <!--Details Value-->
-                            <Label
-                               Grid.Column="3" Grid.Row="0"
-                               HorizontalContentAlignment="Left"
-                               FontSize="16"
-                               Content="{Binding m_total_weight_ui}"
-                           ></Label>
-                            <Label
-                               Grid.Column="3" Grid.Row="1"
-                               HorizontalContentAlignment="Left"
-                               FontSize="16"
-                               Content="{Binding m_total_quantity_ui}"
-                           ></Label>
+                                Grid.Column="3" Grid.Row="1"
+                                HorizontalContentAlignment="Left"
+                                FontSize="16"
+                                Foreground="{Binding m_total_fee_color}"
+                                Content="{Binding m_total_fee_ui}"
+                            ></Label>
                             <Label
                                Grid.Column="3" Grid.Row="2"
                                HorizontalContentAlignment="Left"
                                FontSize="16"
-                               Content="{Binding m_average_price_ui}"
+                               Foreground="{Binding m_total_color}"
+                               Content="{Binding m_total_ui}"
                            ></Label>
                         </Grid>
                    </Grid>
