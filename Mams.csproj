@@ -44,4 +44,10 @@
     <Folder Include="src\localizations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ressources\invoice_pdf_logo.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

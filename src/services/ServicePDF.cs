@@ -15,14 +15,17 @@ namespace Mams.src.services;
 /// </summary>
 public class ServicePDF {
 
+    private string _m_invoice_directory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+    private string _m_invoice_folder_name = "Factures Miel";
     private string _m_invoice_filename = "Facture.pdf";
 
     /// <summary>
     /// The full file path where the invoice PDF will be saved.
-    /// Combines the user's Pictures folder with the current invoice filename.
+    /// Combines the user's Pictures folder, the invoice folder name, and the current invoice filename.
     /// </summary>
     private string _m_invoice_save_path => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyPictures),
+        _m_invoice_directory,
+        _m_invoice_folder_name,
         _m_invoice_filename
     );
 
@@ -46,8 +49,14 @@ public class ServicePDF {
         }
 
         _m_invoice_filename = $"Facture {item.receipt_item.receipt_number}.pdf";
+        
+        // Ensure the directory exists before generating the PDF
+        string directoryPath = Path.Combine(_m_invoice_directory, _m_invoice_folder_name);
+        if (!Directory.Exists(directoryPath)) {
+            Directory.CreateDirectory(directoryPath);
+        }
+        
         InvoiceTemplate document = new(item);
-
         document.GeneratePdf(_m_invoice_save_path);
         openInvoice();
     }

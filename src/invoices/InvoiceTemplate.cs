@@ -4,6 +4,7 @@ using Mams.src.receipts;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System.IO;
 
 namespace Mams.src.invoices;
 
@@ -13,12 +14,16 @@ namespace Mams.src.invoices;
 /// </summary>
 public class InvoiceTemplate : IDocument {
 
-    private readonly EntityModel _m_entity_model;
-    private readonly ClientModel _m_client_model;
+    private readonly EntityModel _m_entity_model = new();
+    private readonly ClientModel _m_client_model = new();
 
-    private const string _m_path_image = "";
+    private string _m_company_logo_path => Path.Combine(
+        AppDomain.CurrentDomain.BaseDirectory, 
+        "ressources", 
+        "invoice_pdf_logo.jpg"
+    );
     
-    private ReceiptHandlerItem _m_item { get; set; }
+    private ReceiptHandlerItem _m_receipt_item { get; set; }
 
     public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
     public DocumentSettings GetSettings() => DocumentSettings.Default;
@@ -26,16 +31,13 @@ public class InvoiceTemplate : IDocument {
     /// <summary>
     /// Initializes a new instance of the InvoiceTemplate class with receipt information.
     /// </summary>
-    /// <param name="item">Receipt data containing all information needed to generate the invoice.</param>
-    public InvoiceTemplate(ReceiptHandlerItem item) {
+    /// <param name="receipt_item">Receipt data containing all information needed to generate the invoice.</param>
+    public InvoiceTemplate(ReceiptHandlerItem receipt_item) {
 
         // QuestPDF licence NEED to be present
         QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
-        _m_entity_model = new();
-        _m_client_model = new();
-
-        _m_item = item;
+        _m_receipt_item = receipt_item;
     }
 
     /// <summary>
@@ -69,19 +71,19 @@ public class InvoiceTemplate : IDocument {
             row.RelativeItem().Column(column =>
             {
                 column
-                    .Item().Text($"Facture #{_m_item.receipt_item.receipt_number}")
+                    .Item().Text($"Facture #{_m_receipt_item.receipt_item.receipt_number}")
                     .FontSize(20).SemiBold().FontColor(Colors.Blue.Medium);
 
                 column.Item().Text(text =>
                 {
                     text.Span("Date de la vente: ").SemiBold();
-                    text.Span($"{_m_item.receipt_item.receipt_date_created:d}");
+                    text.Span($"{_m_receipt_item.receipt_item.receipt_date_created:d}");
                 });
             });
 
-            // To avoid a crash if the image path is invalid or empty
-            if (!string.IsNullOrWhiteSpace(_m_path_image)) {
-                row.ConstantItem(175).Image(_m_path_image);
+            // To avoid a crash if the image path is null or empty
+            if (!string.IsNullOrWhiteSpace(_m_company_logo_path)) {
+                row.ConstantItem(75).Image(_m_company_logo_path);
             }
         });
     }
@@ -98,7 +100,7 @@ public class InvoiceTemplate : IDocument {
 
             column.Item().Row(row => {
 
-                var client_item = _m_client_model.getItemByID(_m_item.receipt_client_item.fk_client_id.ToString());
+                var client_item = _m_client_model.getItemByID(_m_receipt_item.receipt_client_item.fk_client_id.ToString());
                 if (client_item == null)
                 {
                     return;
@@ -117,7 +119,7 @@ public class InvoiceTemplate : IDocument {
 
             column.Item().Element(ComposeTable);
 
-            var total_price = _m_item.receipt_product_items.Sum(x => x.receipt_product_unity_price* x.receipt_product_quantity);
+            var total_price = _m_receipt_item.receipt_product_items.Sum(x => x.receipt_product_unity_price* x.receipt_product_quantity);
             column.Item().PaddingRight(5).AlignRight().Text($"Total final: {total_price:C}").SemiBold();
         });
     }
@@ -128,35 +130,38 @@ public class InvoiceTemplate : IDocument {
     /// </summary>
     /// <param name="container">The container to compose the table within.</param>
     private void ComposeTable(IContainer container) {
-        var headerStyle = TextStyle.Default.SemiBold();
+        var header_style = TextStyle.Default.SemiBold();
 
         container.Table(table =>
         {
             table.ColumnsDefinition(columns =>
             {
-                columns.ConstantColumn(25);
-                columns.RelativeColumn(3);
-                columns.RelativeColumn();
-                columns.RelativeColumn();
-                columns.RelativeColumn();
+                columns.ConstantColumn(25);     // #
+                columns.RelativeColumn(3);      // Produit
+                columns.RelativeColumn();       // Lot
+                columns.RelativeColumn();       // Prix unité
+                columns.RelativeColumn();       // Quantité
+                columns.RelativeColumn();       // Total
             });
 
             table.Header(header =>
             {
                 header.Cell().Text("#");
-                header.Cell().Text("Produit").Style(headerStyle);
-                header.Cell().AlignRight().Text("Prix unité").Style(headerStyle);
-                header.Cell().AlignRight().Text("Quantité").Style(headerStyle);
-                header.Cell().AlignRight().Text("Total").Style(headerStyle);
+                header.Cell().Text("Produit").Style(header_style);
+                header.Cell().Text("Lot").Style(header_style);
+                header.Cell().AlignRight().Text("Prix unité").Style(header_style);
+                header.Cell().AlignRight().Text("Quantité").Style(header_style);
+                header.Cell().AlignRight().Text("Total").Style(header_style);
 
-                header.Cell().ColumnSpan(5).PaddingTop(5).BorderBottom(1).BorderColor(Colors.Black);
+                header.Cell().ColumnSpan(6).PaddingTop(5).BorderBottom(1).BorderColor(Colors.Black);
             });
 
-            foreach (var item in _m_item.receipt_product_items) {
-                var index = _m_item.receipt_product_items.IndexOf(item) + 1;
+            foreach (var item in _m_receipt_item.receipt_product_items) {
+                var index = _m_receipt_item.receipt_product_items.IndexOf(item) + 1;
 
                 table.Cell().Element(CellStyle).Text($"{index}");
                 table.Cell().Element(CellStyle).Text(item.product_item.product_name);
+                table.Cell().Element(CellStyle).Text(item.product_lot_item.product_lot_name);
                 table.Cell().Element(CellStyle).AlignRight().Text($"{item.receipt_product_unity_price:C}");
                 table.Cell().Element(CellStyle).AlignRight().Text($"{item.receipt_product_quantity}");
                 table.Cell().Element(CellStyle).AlignRight().Text($"{item.receipt_product_unity_price * item.receipt_product_quantity:C}");
