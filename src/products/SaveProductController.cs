@@ -123,6 +123,7 @@ public class SaveProductController : ABaseController, ICompareState {
             _m_selected_product_shape = _m_list_product_shape.FirstOrDefault(b => 
                 b.product_shape_id == _m_product.fk_product_shape_id) ?? new();
         }
+
         m_save_command = new RelayCommand(saveProduct, canSaveProduct);
         m_abort_command = new RelayCommand(abortProduct);
     }
@@ -169,5 +170,4 @@ public class SaveProductController : ABaseController, ICompareState {
     private void abortProduct(object? obj) {
         SPageNavigationController.navigateBack(true);
     }
-
 }

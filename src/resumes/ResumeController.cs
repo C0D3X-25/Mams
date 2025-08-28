@@ -15,12 +15,16 @@ public class ResumeController : ABaseController {
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
+    public string m_page_button_color_1 { get; set; } = SGlobalView.m_header_button_background_color;
+    public string m_page_button_text_color { get; set; } = SGlobalView.m_header_button_text_color;
 
+
+    public ICommand m_clear_search_command { get; set; }
     public ICommand m_double_click_command_profit { get; set; }
     public ICommand m_double_click_command_fee { get; set; }
 
 
-    private readonly ResumeModel _m_resume_model;
+    private readonly ResumeModel _m_resume_model = new();
 
 
     private ObservableCollection<DatabaseTablesNameItem>? _m_list_table;
@@ -231,8 +235,7 @@ public class ResumeController : ABaseController {
 
     public ResumeController() {
 
-        _m_resume_model = new();
-
+        m_clear_search_command = new RelayCommand(clearSelectedItems);
         m_double_click_command_profit = new RelayCommand(navigateToProfitDetails, isProfitItemSelected);
         m_double_click_command_fee = new RelayCommand(navigateToFeeDetails, isFeeItemSelected);
 
@@ -253,6 +256,25 @@ public class ResumeController : ABaseController {
         if (_m_selected_fee_item != null) {
             SPageNavigationController.navigateTo(new SaveFeePage(_m_selected_fee_item.receipt.receipt_id));
         }
+    }
+
+
+    private void clearSelectedItems(object? obj) {
+        // Select the first item in each collection (which is blank/empty)
+        if (m_list_table != null && m_list_table.Count > 0) {
+            m_selected_table = m_list_table[0];
+        }
+        
+        if (m_list_search_item != null && m_list_search_item.Count > 0) {
+            m_selected_search_item = m_list_search_item[0];
+        }
+        
+        if (m_list_year != null && m_list_year.Count > 0) {
+            m_selected_year = m_list_year[0];
+        }
+        
+        // Force update display
+        updateDisplayedProfitsAndFeesLists();
     }
 
     private bool isProfitItemSelected(object? arg) {

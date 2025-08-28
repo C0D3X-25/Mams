@@ -74,10 +74,11 @@
                                <RowDefinition/>
                            </Grid.RowDefinitions>
                            <Grid.ColumnDefinitions>
-                               <ColumnDefinition Width="1*"/>
-                               <ColumnDefinition Width="1*"/>
                                <ColumnDefinition Width="2*"/>
-                                <ColumnDefinition Width="1*"/>
+                               <ColumnDefinition Width="2*"/>
+                               <ColumnDefinition Width="4*"/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="2*"/>
                                 <ColumnDefinition Width="1*"/>
                             </Grid.ColumnDefinitions>
 
@@ -141,6 +142,20 @@
                                     </DataTemplate>
                                 </ComboBox.ItemTemplate>
                             </ComboBox>
+
+                            <!--Clear Search Button-->
+                            <Button
+                                Grid.Column="5" Grid.Row="0" 
+                                Margin="5,0,5,0" 
+                                FontSize="16" 
+                                VerticalAlignment="Center" HorizontalAlignment="Center"
+                                Width="25" Height="25"
+                                MaxWidth="25" MaxHeight="25"
+                                Content="X"
+                                Command="{Binding m_clear_search_command}"
+                                Background="{Binding m_page_button_color_1}"
+                                Foreground="{Binding m_page_button_text_color}"
+                            ></Button>
                         </Grid>
 
                        <!--Resume Views-->
