@@ -5,120 +5,175 @@ using System.Windows;
 namespace Mams.src.models;
 
 /// <summary>
-/// Base class for all models who directly interact with te Database to inherit from.
-/// Holds the SQL connection object for all Classes to use.
+/// Base class for all models who directly interact with the Database to inherit from.
+/// Manages database connections and transactions through connection pooling.
 /// </summary>
 public abstract class ABaseModel {
-
     private static SQLConnectionModel _m_sql_connection_model = new();
+    
+    // Connection used for the current transaction - only active during transactions
+    private static MySqlConnection? _m_transaction_connection = null;
+    private static MySqlTransaction? _m_transaction = null;
 
-    private static MySqlConnection? _m_connection = _m_sql_connection_model.openConnection();
     /// <summary>
-    /// Every derived Class will use this session to interact with the database.
+    /// Gets a connection from the pool or returns the active transaction connection if in a transaction
     /// </summary>
-    protected static MySqlConnection? m_conn {
-        get { return _m_connection; }
+    protected static MySqlConnection GetConnection() {
+        // If we're in a transaction, use the transaction connection
+        if (_m_transaction_connection != null && _m_transaction != null) {
+            return _m_transaction_connection;
+        }
+        
+        // Otherwise get a new connection from the pool
+        return _m_sql_connection_model.GetConnection();
     }
 
-    private static MySqlTransaction? _m_transaction = null;
     /// <summary>
-    /// Represents the current MySQL transaction associated with the operation, if any.
+    /// For executing queries that don't return a value
+    /// </summary>
+    protected static void ExecuteWithConnection(Action<MySqlConnection> action) {
+        var isTransactionConnection = (_m_transaction_connection != null);
+        var connection = GetConnection();
+        
+        try {
+            action(connection);
+        }
+        finally {
+            // Only dispose the connection if it's not the transaction connection
+            if (!isTransactionConnection) {
+                connection.Dispose();
+            }
+        }
+    }
+
+    /// <summary>
+    /// For executing queries that return a value
+    /// </summary>
+    protected static T ExecuteWithConnection<T>(Func<MySqlConnection, T> func) {
+        var isTransactionConnection = (_m_transaction_connection != null);
+        var connection = GetConnection();
+        
+        try {
+            return func(connection);
+        }
+        finally {
+            // Only dispose the connection if it's not the transaction connection
+            if (!isTransactionConnection) {
+                connection.Dispose();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the current transaction
     /// </summary>
     protected static MySqlTransaction? m_transaction {
         get { return _m_transaction; }
     }
 
     /// <summary>
-    /// Starts a new database transaction on the current connection.
+    /// Starts a new database transaction.
     /// </summary>
-    /// <remarks>This method initializes a transaction on the active database connection.  Ensure that a valid
-    /// connection is established before calling this method.</remarks>
-    /// <exception cref="InvalidOperationException">Thrown if the database connection is not established.</exception>
+    /// <remarks>
+    /// Creates a dedicated connection for the transaction that will be used
+    /// for all database operations until the transaction is committed or rolled back.
+    /// </remarks>
     public static void startTransaction() {
-        if (m_conn == null) {
-            throw new InvalidOperationException("Database connection is not established.");
+        // If there's already a transaction, throw an exception
+        if (_m_transaction != null || _m_transaction_connection != null) {
+            throw new InvalidOperationException("A transaction is already active.");
         }
-        _m_transaction = m_conn.BeginTransaction();
+        
+        // Get a new connection for this transaction
+        _m_transaction_connection = _m_sql_connection_model.GetConnection();
+        _m_transaction = _m_transaction_connection.BeginTransaction();
     }
 
     /// <summary>
     /// Determines whether a transaction is currently active.
     /// </summary>
-    /// <remarks>A transaction is considered active if it is not null, has an associated connection,  and the
-    /// connection's state is <see cref="System.Data.ConnectionState.Open"/>.</remarks>
-    /// <returns><see langword="true"/> if a transaction is active and its associated connection is open;  otherwise, <see
-    /// langword="false"/>.</returns>
+    /// <returns>True if a transaction is active and its connection is open; otherwise, false.</returns>
     public static bool isTransactionActive() {
-        return m_transaction != null 
-            && m_transaction.Connection != null 
-            && m_transaction.Connection.State == System.Data.ConnectionState.Open;
+        return _m_transaction != null 
+            && _m_transaction_connection != null 
+            && _m_transaction_connection.State == System.Data.ConnectionState.Open;
     }
 
     /// <summary>
     /// Commits the current transaction, finalizing all changes made during the transaction.
     /// </summary>
-    /// <remarks>This method ensures that all operations performed within the transaction are permanently
-    /// applied. If no transaction is active, an exception is thrown. After committing, the transaction is
-    /// cleared. 
-    /// Transaction is set to <see langword="null"/> if the commit is a success.</remarks>
-    /// <exception cref="InvalidOperationException">Thrown if there is no active transaction to commit.</exception>
     public static void commitTransaction() {
-        if (m_transaction == null) {
+        if (_m_transaction == null || _m_transaction_connection == null) {
             throw new InvalidOperationException("No transaction to commit.");
         }
 
         try {
-            m_transaction.Commit();
+            _m_transaction.Commit();
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             throw;
         }
         finally {
+            // Cleanup after commit
+            _m_transaction.Dispose();
             _m_transaction = null;
+            _m_transaction_connection.Dispose();
+            _m_transaction_connection = null;
         }
     }
 
     /// <summary>
     /// Rolls back the current transaction, if one exists.
     /// </summary>
-    /// <remarks>This method reverts all changes made during the current transaction and resets the
-    /// transaction state. If no transaction is active, an <see cref="InvalidOperationException"/> is thrown.
-    /// Transaction is set to <see langword="null"/> if the rollback is a success.</remarks>
-    /// <exception cref="InvalidOperationException">Thrown if there is no active transaction to roll back.</exception>
     public static void rollbackTransaction() {
-        if (m_transaction == null) {
+        if (_m_transaction == null || _m_transaction_connection == null) {
             throw new InvalidOperationException("No transaction to roll back.");
         }
-        m_transaction.Rollback();
-        _m_transaction = null;
+        
+        try {
+            _m_transaction.Rollback();
+        }
+        finally {
+            // Cleanup after rollback
+            _m_transaction.Dispose();
+            _m_transaction = null;
+            _m_transaction_connection.Dispose();
+            _m_transaction_connection = null;
+        }
     }
 
     /// <summary>
     /// Clears the current transaction, releasing any associated resources.
     /// </summary>
-    /// <remarks>If no transaction is active, the method does nothing. If a transaction is active, it is
-    /// disposed and the reference is set to <see langword="null"/>.</remarks>
     public static void clearTransaction() {
-        if (m_transaction == null) {
+        if (_m_transaction == null) {
             return;
         }
-        m_transaction.Dispose();
-        _m_transaction = null;
+        
+        try {
+            _m_transaction.Dispose();
+        }
+        catch { /* Ignore errors when clearing */ }
+        finally {
+            _m_transaction = null;
+            
+            if (_m_transaction_connection != null) {
+                try {
+                    _m_transaction_connection.Dispose();
+                }
+                catch { /* Ignore errors when clearing */ }
+                finally {
+                    _m_transaction_connection = null;
+                }
+            }
+        }
     }
-
 
     /// <summary>
     /// Checks if a specific item exists in a given table and column in the database.
     /// </summary>
-    /// <param name="table_name">The name of the table to search in.</param>
-    /// <param name="column_to_search">The name of the column to search within.</param>
-    /// <param name="item_to_find">The value to search for in the specified column.</param>
-    /// <returns>
-    /// Returns <c>true</c> if the item exists in the table; otherwise, <see langword="false"/>.
-    /// </returns>
     protected bool isIdenticItemPresentInTable(string table_name, string column_to_search, string item_to_find) {
-
         if (string.IsNullOrEmpty(table_name) 
             || string.IsNullOrEmpty(column_to_search) 
             || string.IsNullOrEmpty(item_to_find)
@@ -126,19 +181,21 @@ public abstract class ABaseModel {
             throw new ArgumentException("Table name, column to search, and item to find cannot be null or empty.");
         }
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT COUNT(*) FROM {table_name} WHERE {column_to_search} = @item_to_find",
-                m_conn, m_transaction
-            );
-            cmd.Parameters.AddWithValue("@item_to_find", item_to_find);
-            int count = Convert.ToInt32(cmd.ExecuteScalar());
+        return ExecuteWithConnection(connection => {
+            try {
+                using MySqlCommand cmd = new(
+                    $"SELECT COUNT(*) FROM {table_name} WHERE {column_to_search} = @item_to_find",
+                    connection, _m_transaction
+                );
+                cmd.Parameters.AddWithValue("@item_to_find", item_to_find);
+                int count = Convert.ToInt32(cmd.ExecuteScalar());
 
-            return count > 0;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
-        }
+                return count > 0;
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return false;
+            }
+        });
     }
 }

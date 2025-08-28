@@ -3,6 +3,7 @@ using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 
 namespace Mams.src.receipts;
@@ -13,13 +14,14 @@ namespace Mams.src.receipts;
 /// <remarks>This class provides CRUD operations for the <c>receipts_suppliers</c> table, allowing interaction
 /// with receipt-supplier associations. It includes methods to retrieve, save, delete, and query receipt-supplier
 /// relationships. The model assumes valid database connections and handles common database operations.</remarks>
-public class ReceiptSupplierModel : ABaseModel,
-    ICrudOperation<ReceiptSupplierItem> {
+public class ReceiptSupplierModel : ABaseModel, ICrudOperation<ReceiptSupplierItem> {
 
-    private const string _m_TBL_NAME = "receipts_suppliers";
+    private const string m_TBL_NAME = "receipts_suppliers";
     private const string _m_COL_FK_RECEIPT = "fk_receipt_id";
     private const string _m_COL_FK_SUPPLIER = "fk_supplier_id";
 
+    private const string SELECT_COLUMNS = $"{_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER}";
+    private const string BASE_SELECT_QUERY = $"SELECT {SELECT_COLUMNS} FROM {m_TBL_NAME}";
 
     /// <summary>
     /// Deletes an item from the database based on the specified identifier and delete operation type.
@@ -30,116 +32,99 @@ public class ReceiptSupplierModel : ABaseModel,
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
     /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
-        return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, _m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, m_TBL_NAME, delete_type);
     }
 
-    /// <summary>
-    /// Retrieves a <see cref="ReceiptSupplierItem"/> object based on the specified receipt ID.
-    /// </summary>
-    /// <param name="id">The receipt ID to search for. Must be a valid ID as determined by the application's validation logic.</param>
-    /// <returns>A <see cref="ReceiptSupplierItem"/> object containing the receipt and supplier information if the ID exists;
-    /// otherwise, <see langword="null"/>.</returns>
-    public ReceiptSupplierItem? getItemByID(string id) {
 
+    /// <summary>
+    /// Retrieves a <see cref="ReceiptSupplierItem"/> object by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the item to retrieve. Must be a valid identifier.</param>
+    /// <returns>A <see cref="ReceiptSupplierItem"/> object if an item with the specified identifier exists; otherwise, <see
+    /// langword="null"/>.</returns>
+    public ReceiptSupplierItem? getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
             return null;
         }
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER} " +
-                $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_FK_RECEIPT} = @id;",
-                m_conn
-            );
-            cmd.Parameters.AddWithValue("@id", id);
+        return ExecuteWithConnection<ReceiptSupplierItem?>(connection => {
+            try {
+                using var cmd = new MySqlCommand($"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @id;", connection);
+                cmd.Parameters.AddWithValue("@id", id);
 
-            using MySqlDataReader reader = cmd.ExecuteReader();
-            if (reader.Read()) {
-                return new ReceiptSupplierItem {
-                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
-                    fk_supplier_id = reader.getSafeValue<int>(_m_COL_FK_SUPPLIER)
-                };
+                using var reader = cmd.ExecuteReader();
+                return reader.Read() ? CreateItemFromReader(reader) : null;
             }
-            return null;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return null;
-        }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return null;
+            }
+        });
     }
 
     /// <summary>
-    /// Retrieves a collection of receipt-supplier items from the database.
+    /// Retrieves a collection of receipt supplier items from the database.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> containing <see cref="ReceiptSupplierItem"/> objects representing the
-    /// receipt-supplier relationships. The collection will be empty if no data is found or if an error occurs during
-    /// the database operation.</returns>
+    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ReceiptSupplierItem"/> objects representing the receipt
+    /// supplier items retrieved from the database. Returns an empty collection if the connection is null or if an error
+    /// occurs during execution.</returns>
     public ObservableCollection<ReceiptSupplierItem> getTable() {
+        return ExecuteWithConnection(connection => {
+            var items = new ObservableCollection<ReceiptSupplierItem>();
 
-        ObservableCollection<ReceiptSupplierItem> items = new();
+            try {
+                using var cmd = new MySqlCommand(BASE_SELECT_QUERY, connection);
+                using var reader = cmd.ExecuteReader();
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER} " +
-                $"FROM {_m_TBL_NAME};",
-                m_conn
-            );
-            using MySqlDataReader reader = cmd.ExecuteReader();
-
-            while (reader.Read()) {
-                items.Add(new ReceiptSupplierItem {
-                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
-                    fk_supplier_id = reader.getSafeValue<int>(_m_COL_FK_SUPPLIER)
-                });
+                while (reader.Read()) {
+                    items.Add(CreateItemFromReader(reader));
+                }
             }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            }
+            
             return items;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return items;
-        }
+        });
     }
 
     /// <summary>
-    /// Saves a supplier receipt item to the database and returns the generated item ID.
+    /// Saves the specified <see cref="ReceiptSupplierItem"/> to the database.
     /// </summary>
-    /// <param name="item">The <see cref="ReceiptSupplierItem"/> object containing the supplier receipt data to be saved. The <paramref
-    /// name="item"/> must not be <see langword="null"/> and its <c>fk_receipt_id</c> and <c>fk_supplier_id</c>
-    /// properties must be non-zero.</param>
-    /// <returns>The ID of the newly saved item if the operation succeeds; otherwise, <c>0</c>.</returns>
+    /// <param name="item">The <see cref="ReceiptSupplierItem"/> to save. The item must not be <see langword="null"/>, and its
+    /// <c>fk_receipt_id</c> and <c>fk_supplier_id</c> properties must be non-zero.</param>
+    /// <returns>The ID of the saved item. Returns <c>0</c> if the input is invalid or if an error occurs during the operation.</returns>
     public int saveItem(ReceiptSupplierItem item) {
-        if (item == null 
-            || item.fk_receipt_id == 0 
-            || item.fk_supplier_id == 0) 
-            {
+        if (item == null || item.fk_receipt_id == 0 || item.fk_supplier_id == 0) {
             return 0;
         }
 
-        string query = string.Empty;
+        int item_id = item.fk_receipt_id;
 
-        bool transaction_needed = false;
-        if (!isTransactionActive()) {
+        // Start transaction if needed
+        bool transaction_needed = !isTransactionActive();
+        if (transaction_needed) {
             startTransaction();
-            transaction_needed = true;
         }
 
         try {
-            query = $"INSERT INTO {_m_TBL_NAME} " +
-                $"({_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER}) " +
-                $"VALUES (@fk_receipt, @fk_supplier); " +
-                $"SELECT LAST_INSERT_ID();";
+            string query = isIdenticItemPresentInTable(m_TBL_NAME, _m_COL_FK_RECEIPT, item_id.ToString())
+                ? $"UPDATE {m_TBL_NAME} SET {_m_COL_FK_SUPPLIER} = @fk_supplier WHERE {_m_COL_FK_RECEIPT} = @fk_receipt; SELECT @fk_receipt;"
+                : $"INSERT INTO {m_TBL_NAME} ({_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER}) VALUES (@fk_receipt, @fk_supplier); " +
+                  $"SELECT LAST_INSERT_ID();";
 
-            using MySqlCommand cmd = new(query, m_conn, m_transaction);
+            item_id = ExecuteWithConnection(connection => {
+                using var cmd = new MySqlCommand(query, connection, m_transaction);
+                cmd.Parameters.AddWithValue("@fk_receipt", item_id);
+                cmd.Parameters.AddWithValue("@fk_supplier", item.fk_supplier_id);
 
-            cmd.Parameters.AddWithValue("@fk_receipt", item.fk_receipt_id);
-            cmd.Parameters.AddWithValue("@fk_supplier", item.fk_supplier_id);
-
-            int item_id = Convert.ToInt32(cmd.ExecuteScalar());
+                return Convert.ToInt32(cmd.ExecuteScalar());
+            });
 
             if (transaction_needed) {
                 commitTransaction();
             }
+            
             return item_id;
         }
         catch (MySqlException ex) {
@@ -151,39 +136,50 @@ public class ReceiptSupplierModel : ABaseModel,
         }
     }
 
-
+    /// <summary>
+    /// Retrieves a collection of <see cref="ReceiptSupplierItem"/> objects associated with the specified supplier ID.
+    /// </summary>
+    /// <param name="supplier_id">The foreign key supplier ID used to filter the items. Must not be null or empty.</param>
+    /// <returns>An <see cref="ObservableCollection{T}"/> containing the <see cref="ReceiptSupplierItem"/> objects associated with
+    /// the specified supplier ID. If <paramref name="supplier_id"/> is null or empty, an empty collection is returned.</returns>
     public ObservableCollection<ReceiptSupplierItem> getListItemWithSupplierID(string supplier_id) {
-
-        ObservableCollection<ReceiptSupplierItem> items = new();
-
         if (!SDataValidation.isIdValid(supplier_id)) {
-            return items;
+            return new ObservableCollection<ReceiptSupplierItem>();
         }
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER} " +
-                $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_FK_SUPPLIER} = @supplier_id;",
-                m_conn
-            );
+        return ExecuteWithConnection(connection => {
+            var items = new ObservableCollection<ReceiptSupplierItem>();
 
-            cmd.Parameters.AddWithValue("@supplier_id", supplier_id);
+            try {
+                using var cmd = new MySqlCommand(
+                    $"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_SUPPLIER} = @supplier_id;",
+                    connection);
+                cmd.Parameters.AddWithValue("@supplier_id", supplier_id);
 
-            using MySqlDataReader reader = cmd.ExecuteReader();
-
-            while (reader.Read()) {
-                items.Add(new ReceiptSupplierItem {
-                    fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
-                    fk_supplier_id = reader.getSafeValue<int>(_m_COL_FK_SUPPLIER)
-                });
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read()) {
+                    items.Add(CreateItemFromReader(reader));
+                }
             }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            }
+            
+            return items;
+        });
+    }
 
-            return items;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return items;
-        }
+    /// <summary>
+    /// Creates a new instance of <see cref="ReceiptSupplierItem"/> using data from the specified <see
+    /// cref="MySqlDataReader"/>.
+    /// </summary>
+    /// <param name="reader">The <see cref="MySqlDataReader"/> containing the data used to populate the <see cref="ReceiptSupplierItem"/>
+    /// instance. Must not be null.</param>
+    /// <returns>A <see cref="ReceiptSupplierItem"/> populated with values retrieved from the <paramref name="reader"/>.</returns>
+    private static ReceiptSupplierItem CreateItemFromReader(MySqlDataReader reader) {
+        return new ReceiptSupplierItem {
+            fk_receipt_id = reader.getSafeValue<int>(_m_COL_FK_RECEIPT),
+            fk_supplier_id = reader.getSafeValue<int>(_m_COL_FK_SUPPLIER)
+        };
     }
 }

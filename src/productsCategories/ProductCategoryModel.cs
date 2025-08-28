@@ -38,35 +38,36 @@ public class ProductCategoryModel :
     /// <returns>A <see cref="ProductCategoryItem"/> representing the product category with the specified identifier,  or <see
     /// langword="null"/> if the identifier is invalid or no matching item is found.</returns>
     public ProductCategoryItem? getItemByID(string id) {
-
         if (!SDataValidation.isIdValid(id)) {
             return null;
         }
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
-                $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_ID} = @id;",
-                m_conn
-            );
+        return ExecuteWithConnection<ProductCategoryItem?>(connection => {
+            try {
+                using MySqlCommand cmd = new(
+                    $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
+                    $"FROM {_m_TBL_NAME} " +
+                    $"WHERE {_m_COL_ID} = @id;",
+                    connection
+                );
 
-            cmd.Parameters.AddWithValue("@id", id);
-            using MySqlDataReader reader = cmd.ExecuteReader();
+                cmd.Parameters.AddWithValue("@id", id);
+                using MySqlDataReader reader = cmd.ExecuteReader();
 
-            if (reader.Read()) {
-                return new ProductCategoryItem {
-                    product_category_id = reader.getSafeValue<int>(_m_COL_ID),
-                    product_category_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
-                    product_category_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
-                };
+                if (reader.Read()) {
+                    return new ProductCategoryItem {
+                        product_category_id = reader.getSafeValue<int>(_m_COL_ID),
+                        product_category_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                        product_category_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    };
+                }
+                return null;
             }
-            return null;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return null;
-        }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return null;
+            }
+        });
     }
 
     /// <summary>
@@ -86,19 +87,23 @@ public class ProductCategoryModel :
     /// property determines whether the item is inserted (if 0) or updated (if non-zero).</param>
     /// <returns>The ID of the saved product category item.  Returns 0 if the operation fails or if the item is null.</returns>
     public int saveItem(ProductCategoryItem item) {
-
         if (item == null) {
             return 0;
         }
 
-        string query = string.Empty;
         int item_id = item.product_category_id;
         string item_name = item.product_category_name.Trim();
-
-        if (item_id == 0) {
+        string query;
+        
+        // Determine if we're inserting or updating
+        bool isInsert = (item_id == 0);
+        
+        if (isInsert) {
+            // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
                 return 0;
             }
+            
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
                 $"VALUES (@name); " +
                 $"SELECT LAST_INSERT_ID();";
@@ -109,27 +114,41 @@ public class ProductCategoryModel :
                 $"WHERE {_m_COL_ID} = @id;";
         }
 
-        startTransaction();
+        // Start transaction if needed
+        bool need_transaction = !isTransactionActive();
+        if (need_transaction) {
+            startTransaction();
+        }
+
         try {
-            using MySqlCommand cmd = new(query, m_conn, m_transaction);
-
-            if (item_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item_id);
-            }
-            cmd.Parameters.AddWithValue("@name", item_name);
-
-            if (item_id == 0) {
-                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            if (isInsert) {
+                // For INSERT operations, we need to return the new ID
+                item_id = ExecuteWithConnection(connection => {
+                    using MySqlCommand cmd = new(query, connection, m_transaction);
+                    cmd.Parameters.AddWithValue("@name", item_name);
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                });
             }
             else {
-                cmd.ExecuteNonQuery();
+                // For UPDATE operations, we just execute the command
+                ExecuteWithConnection(connection => {
+                    using MySqlCommand cmd = new(query, connection, m_transaction);
+                    cmd.Parameters.AddWithValue("@id", item_id);
+                    cmd.Parameters.AddWithValue("@name", item_name);
+                    cmd.ExecuteNonQuery();
+                });
             }
-
-            commitTransaction();
+            
+            if (need_transaction) {
+                commitTransaction();
+            }
+            
             return item_id;
         }
         catch (MySqlException ex) {
-            rollbackTransaction();
+            if (need_transaction) {
+                rollbackTransaction();
+            }
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

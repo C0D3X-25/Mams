@@ -736,53 +736,93 @@ public class ResumeModel {
     /// only non-archived items are included. Archived items are identified by an empty string in their respective
     /// archive fields.</remarks>
     private void populateListOfItems() {
-
         // Entity
-        _m_list_entity_all = _m_entity_model.getTable();
-        _m_list_entity_not_archived = new ObservableCollection<EntityItem>(
-            _m_list_entity_all.Where(item => item.entity_archive == string.Empty)
-        );
+        Thread thread_entity = new(new ThreadStart(() => {
+            _m_list_entity_all = _m_entity_model.getTable();
+            _m_list_entity_not_archived = new ObservableCollection<EntityItem>(
+                _m_list_entity_all.Where(item => item.entity_archive == string.Empty)
+            );
+        }));
 
         // Product 
-        _m_list_product_all = _m_product_model.getTable();
-        _m_list_product_not_archived = new ObservableCollection<ProductItem>(
-            _m_list_product_all.Where(item => item.product_archive == string.Empty)
-        );
+        Thread thread_product = new(new ThreadStart(() => {
+            _m_list_product_all = _m_product_model.getTable();
+            _m_list_product_not_archived = new ObservableCollection<ProductItem>(
+                _m_list_product_all.Where(item => item.product_archive == string.Empty)
+            );
+        }));
 
         // Product Shape
-        _m_list_product_shape_all = _m_product_shape_model.getTable();
-        _m_list_product_shape_not_archived = new ObservableCollection<ProductShapeItem>(
-            _m_list_product_shape_all.Where(item => item.product_shape_archive == string.Empty)
-        );
+        Thread thread_product_shape = new(new ThreadStart(() => {
+            _m_list_product_shape_all = _m_product_shape_model.getTable();
+            _m_list_product_shape_not_archived = new ObservableCollection<ProductShapeItem>(
+                _m_list_product_shape_all.Where(item => item.product_shape_archive == string.Empty)
+            );
+        }));
 
         // Product Category
-        _m_list_product_category_all = _m_product_category_model.getTable();
-        _m_list_product_category_not_archived = new ObservableCollection<ProductCategoryItem>(
-            _m_list_product_category_all.Where(item => item.product_category_archive == string.Empty)
-        );
+        Thread thread_product_category = new(new ThreadStart(() => {
+            _m_list_product_category_all = _m_product_category_model.getTable();
+            _m_list_product_category_not_archived = new ObservableCollection<ProductCategoryItem>(
+                _m_list_product_category_all.Where(item => item.product_category_archive == string.Empty)
+            );
+        }));
+
 
         // Product Type
-        _m_list_product_type_all = _m_product_type_model.getTable();
-        _m_list_product_type_not_archived = new ObservableCollection<ProductTypeItem>(
-            _m_list_product_type_all.Where(item => item.product_type_archive == string.Empty)
-        );
+        Thread thread_product_type = new(new ThreadStart(() => {
+            _m_list_product_type_all = _m_product_type_model.getTable();
+            _m_list_product_type_not_archived = new ObservableCollection<ProductTypeItem>(
+                _m_list_product_type_all.Where(item => item.product_type_archive == string.Empty)
+            );
+        }));
 
         // Product Lot
-        _m_list_product_lot_all = _m_product_lot_model.getTable();
-        _m_list_product_lot_not_archived = new ObservableCollection<ProductLotItem>(
-            _m_list_product_lot_all.Where(item => item.product_lot_archive == string.Empty)
-        );
+        Thread thread_product_lot = new(new ThreadStart(() => {
+            _m_list_product_lot_all = _m_product_lot_model.getTable();
+            _m_list_product_lot_not_archived = new ObservableCollection<ProductLotItem>(
+                _m_list_product_lot_all.Where(item => item.product_lot_archive == string.Empty)
+            );
+        }));
 
         // Beehive
-        _m_list_beehive_all = _m_beehive_model.getTable();
-        _m_list_beehive_not_archived = new ObservableCollection<BeehiveItem>(
-            _m_list_beehive_all.Where(item => item.beehive_archive == string.Empty)
-        );
+        Thread thread_beehive = new(new ThreadStart(() => {
+            _m_list_beehive_all = _m_beehive_model.getTable();
+            _m_list_beehive_not_archived = new ObservableCollection<BeehiveItem>(
+                _m_list_beehive_all.Where(item => item.beehive_archive == string.Empty)
+            );
+        }));
 
         // Profit
-        _m_list_profit_items = _m_profit_model.getTable();
+        Thread thread_profit = new(new ThreadStart(() => {
+            _m_list_profit_items = _m_profit_model.getTable();
+        }));
 
         // Fee
-        _m_list_fee_items = _m_fee_model.getTable();
+        Thread thread_fee = new(new ThreadStart(() => {
+            _m_list_fee_items = _m_fee_model.getTable();
+        }));
+
+        // Start all threads
+        thread_entity.Start();
+        thread_product.Start();
+        thread_product_shape.Start();
+        thread_product_category.Start();
+        thread_product_type.Start();
+        thread_product_lot.Start();
+        thread_beehive.Start();
+        thread_profit.Start();
+        thread_fee.Start();
+
+        // Wait for all threads to complete
+        thread_entity.Join();
+        thread_product.Join();
+        thread_product_shape.Join();
+        thread_product_category.Join();
+        thread_product_type.Join();
+        thread_product_lot.Join();
+        thread_beehive.Join();
+        thread_profit.Join();
+        thread_fee.Join();
     }
 }

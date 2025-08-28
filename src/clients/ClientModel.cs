@@ -36,34 +36,35 @@ public class ClientModel : ABaseModel,
     /// <returns>A <see cref="ClientItem"/> object representing the item with the specified identifier,  or <see
     /// langword="null"/> if no matching item is found.</returns>
     public ClientItem? getItemByID(string id) {
-
         if (!SDataValidation.isIdValid(id)) {
             return null;
         }
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
-                $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_ID} = @id;",
-                m_conn
-            );
+        return ExecuteWithConnection<ClientItem?>(connection => { 
+            try {
+                using MySqlCommand cmd = new(
+                    $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
+                    $"FROM {_m_TBL_NAME} " +
+                    $"WHERE {_m_COL_ID} = @id;",
+                    connection
+                );
 
-            cmd.Parameters.AddWithValue("@id", id);
-            using MySqlDataReader reader = cmd.ExecuteReader();
+                cmd.Parameters.AddWithValue("@id", id);
+                using MySqlDataReader reader = cmd.ExecuteReader();
 
-            if (reader.Read()) {
-                return new ClientItem {
-                    client_id = reader.getSafeValue<int>(_m_COL_ID),
-                    fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY, 0)
-                };
+                if (reader.Read()) {
+                    return new ClientItem {
+                        client_id = reader.getSafeValue<int>(_m_COL_ID),
+                        fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY, 0)
+                    };
+                }
+                return null;
             }
-            return null;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return null;
-        }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return null;
+            }
+        });
     }
 
     /// <summary>
@@ -81,20 +82,22 @@ public class ClientModel : ABaseModel,
     /// <param name="item">The ClientItem to save</param>
     /// <returns>The ID of the saved receipt; 0 if the operation failed</returns>
     public int saveItem(ClientItem item) {
-
         if (item == null) {
             return 0;
         }
 
-        string query = string.Empty;
         int item_id = item.client_id;
-
-        if (item_id == 0) {
-
+        string query;
+        
+        // Determine if we're inserting or updating
+        bool isInsert = (item_id == 0);
+        
+        if (isInsert) {
+            // Check for duplicate before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
                 return 0;
             }
-
+            
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_FK_ENTITY}) " +
                 $"VALUES (@fk_entity); " +
                 $"SELECT LAST_INSERT_ID();";
@@ -105,28 +108,41 @@ public class ClientModel : ABaseModel,
                 $"WHERE {_m_COL_ID} = @id;";
         }
 
-        startTransaction();
+        // Start transaction if needed
+        bool need_transaction = !isTransactionActive();
+        if (need_transaction) {
+            startTransaction();
+        }
 
         try {
-            using MySqlCommand cmd = new(query, m_conn, m_transaction);
-
-            if (item_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item_id);
-            }
-            cmd.Parameters.AddWithValue("@fk_entity", item.fk_entity_id);
-
-            if (item_id == 0) {
-                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            if (isInsert) {
+                // For INSERT operations, we need to return the new ID
+                item_id = ExecuteWithConnection(connection => {
+                    using MySqlCommand cmd = new(query, connection, m_transaction);
+                    cmd.Parameters.AddWithValue("@fk_entity", item.fk_entity_id);
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                });
             }
             else {
-                cmd.ExecuteNonQuery();
+                // For UPDATE operations, we just execute the command
+                ExecuteWithConnection(connection => {
+                    using MySqlCommand cmd = new(query, connection, m_transaction);
+                    cmd.Parameters.AddWithValue("@id", item_id);
+                    cmd.Parameters.AddWithValue("@fk_entity", item.fk_entity_id);
+                    cmd.ExecuteNonQuery();
+                });
             }
 
-            commitTransaction();
+            if (need_transaction) {
+                commitTransaction();
+            }
+            
             return item_id;
         }
         catch (MySqlException ex) {
-            rollbackTransaction();
+            if (need_transaction) {
+                rollbackTransaction();
+            }
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -139,36 +155,37 @@ public class ClientModel : ABaseModel,
     /// <returns>A <see cref="ClientItem"/> object populated with client data if a matching record is found;  otherwise, <see
     /// langword="null"/> if the <paramref name="fk_entity"/> is null or empty, or if no matching record exists.</returns>
     public ClientItem? getClientWithEntityFK(string fk_entity) {
-
         if (!SDataValidation.isIdValid(fk_entity)) {
             return null;
         }
 
-        ClientItem item = new();
+        return ExecuteWithConnection<ClientItem?>(connection => {
+            try {
+                using MySqlCommand cmd = new(
+                    $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
+                    $"FROM {_m_TBL_NAME} " +
+                    $"WHERE {_m_COL_FK_ENTITY} = @fk_entity;",
+                    connection
+                );
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
-                $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_FK_ENTITY} = @fk_entity;",
-                m_conn
-            );
+                cmd.Parameters.AddWithValue("@fk_entity", fk_entity);
+                using MySqlDataReader reader = cmd.ExecuteReader();
 
-            cmd.Parameters.AddWithValue("@fk_entity", fk_entity);
+                if (reader.Read()) {
+                    return new ClientItem {
+                        client_id = reader.getSafeValue<int>(_m_COL_ID),
+                        fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY)
+                    };
+                }
 
-            using MySqlDataReader reader = cmd.ExecuteReader();
-
-            if (reader.Read()) {
-                item.client_id = reader.getSafeValue<int>(_m_COL_ID);
-                item.fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY);
+                // Return empty item when no record is found
+                return new ClientItem();
             }
-
-            return item;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return item;
-        }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return new ClientItem();
+            }
+        });
     }
 
     /// <summary>
@@ -178,7 +195,6 @@ public class ClientModel : ABaseModel,
     /// <returns><see langword="true"/> if the client was successfully deleted;  otherwise, <see langword="false"/> if the
     /// foreign key is invalid,  no client is found, or the deletion fails.</returns>
     public bool deleteClientWithEntityFK(string fk_entity) {
-
         if (!SDataValidation.isIdValid(fk_entity)) {
             return false;
         }

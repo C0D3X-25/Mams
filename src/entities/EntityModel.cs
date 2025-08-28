@@ -40,39 +40,40 @@ public class EntityModel : ABaseModel,
     /// <param name="id">The unique identifier of the entity item to retrieve. This value must not be null or empty.</param>
     /// <returns>An <see cref="EntityItem"/> object representing the entity item if found; otherwise, <see langword="null"/>.</returns>
     public EntityItem? getItemByID(string id) {
-
         if (!SDataValidation.isIdValid(id)) {
             return null;
         }
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}, {_m_COL_ARCHIVE} " +
-                $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_ID} = @id ",
-                m_conn
-            );
+        return ExecuteWithConnection<EntityItem?>(connection => {
+            try {
+                using MySqlCommand cmd = new(
+                    $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}, {_m_COL_ARCHIVE} " +
+                    $"FROM {_m_TBL_NAME} " +
+                    $"WHERE {_m_COL_ID} = @id ",
+                    connection
+                );
 
-            cmd.Parameters.AddWithValue("@id", id);
-            using MySqlDataReader reader = cmd.ExecuteReader();
+                cmd.Parameters.AddWithValue("@id", id);
+                using MySqlDataReader reader = cmd.ExecuteReader();
 
-            if (reader.Read()) {
-                return new EntityItem {
-                    entity_id = reader.getSafeValue<int>(_m_COL_ID),
-                    entity_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
-                    entity_phone = reader.getSafeValue(_m_COL_PHONE, string.Empty),
-                    entity_email = reader.getSafeValue(_m_COL_EMAIL, string.Empty),
-                    entity_city = reader.getSafeValue(_m_COL_CITY, string.Empty),
-                    entity_address = reader.getSafeValue(_m_COL_ADDRESS, string.Empty),
-                    entity_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
-                };
+                if (reader.Read()) {
+                    return new EntityItem {
+                        entity_id = reader.getSafeValue<int>(_m_COL_ID),
+                        entity_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                        entity_phone = reader.getSafeValue(_m_COL_PHONE, string.Empty),
+                        entity_email = reader.getSafeValue(_m_COL_EMAIL, string.Empty),
+                        entity_city = reader.getSafeValue(_m_COL_CITY, string.Empty),
+                        entity_address = reader.getSafeValue(_m_COL_ADDRESS, string.Empty),
+                        entity_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    };
+                }
+                return null;
             }
-            return null;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return null;
-        }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return null;
+            }
+        });
     }
 
     /// <summary>
@@ -100,53 +101,76 @@ public class EntityModel : ABaseModel,
     /// <returns>The ID of the saved item. Returns <c>0</c> if the operation fails, the item is <c>null</c>, or a duplicate item
     /// is detected.</returns>
     public int saveItem(EntityItem item) {
-
         if (item == null) {
             return 0;
         }
 
-        string query = string.Empty;
         int item_id = item.entity_id;
-
-        if (item_id == 0) {
+        string query;
+        
+        // Determine if we're inserting or updating
+        bool isInsert = (item_id == 0);
+        
+        if (isInsert) {
+            // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.entity_name)) {
                 return 0;
             }
+            
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}) " +
                 $"VALUES (@name, @phone, @email, @city, @address); " +
                 $"SELECT LAST_INSERT_ID(); ";
         }
         else {
             query = $"UPDATE {_m_TBL_NAME} " +
-                $"SET {_m_COL_NAME} = @name, {_m_COL_PHONE} = @phone, {_m_COL_EMAIL} = @email, {_m_COL_CITY} = @city, {_m_COL_ADDRESS} = @address " +
+                $"SET {_m_COL_NAME} = @name, {_m_COL_PHONE} = @phone, {_m_COL_EMAIL} = @email, " +
+                $"{_m_COL_CITY} = @city, {_m_COL_ADDRESS} = @address " +
                 $"WHERE {_m_COL_ID} = @id";
         }
 
-        startTransaction();
+        // Start transaction if needed
+        bool need_transaction = !isTransactionActive();
+        if (need_transaction) {
+            startTransaction();
+        }
+
         try {
-            using MySqlCommand cmd = new(query, m_conn, m_transaction);
-
-            if (item_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item_id);
-            }
-            cmd.Parameters.AddWithValue("@name", item.entity_name.Trim());
-            cmd.Parameters.AddWithValue("@phone", item.entity_phone.Trim());
-            cmd.Parameters.AddWithValue("@email", item.entity_email.Trim());
-            cmd.Parameters.AddWithValue("@city", item.entity_city.Trim());
-            cmd.Parameters.AddWithValue("@address", item.entity_address.Trim());
-
-            if (item_id == 0) {
-                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            if (isInsert) {
+                // For INSERT operations, we need to return the new ID
+                item_id = ExecuteWithConnection(connection => {
+                    using MySqlCommand cmd = new(query, connection, m_transaction);
+                    cmd.Parameters.AddWithValue("@name", item.entity_name.Trim());
+                    cmd.Parameters.AddWithValue("@phone", item.entity_phone.Trim());
+                    cmd.Parameters.AddWithValue("@email", item.entity_email.Trim());
+                    cmd.Parameters.AddWithValue("@city", item.entity_city.Trim());
+                    cmd.Parameters.AddWithValue("@address", item.entity_address.Trim());
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                });
             }
             else {
-                cmd.ExecuteNonQuery();
+                // For UPDATE operations, we just execute the command
+                ExecuteWithConnection(connection => {
+                    using MySqlCommand cmd = new(query, connection, m_transaction);
+                    cmd.Parameters.AddWithValue("@id", item_id);
+                    cmd.Parameters.AddWithValue("@name", item.entity_name.Trim());
+                    cmd.Parameters.AddWithValue("@phone", item.entity_phone.Trim());
+                    cmd.Parameters.AddWithValue("@email", item.entity_email.Trim());
+                    cmd.Parameters.AddWithValue("@city", item.entity_city.Trim());
+                    cmd.Parameters.AddWithValue("@address", item.entity_address.Trim());
+                    cmd.ExecuteNonQuery();
+                });
             }
-
-            commitTransaction();
+            
+            if (need_transaction) {
+                commitTransaction();
+            }
+            
             return item_id;
         }
         catch (MySqlException ex) {
-            rollbackTransaction();
+            if (need_transaction) {
+                rollbackTransaction();
+            }
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

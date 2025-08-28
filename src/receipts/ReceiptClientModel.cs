@@ -43,22 +43,23 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// <returns>A <see cref="ReceiptClientItem"/> object if an item with the specified identifier exists; otherwise, <see
     /// langword="null"/>.</returns>
     public ReceiptClientItem? getItemByID(string id) {
-
         if (!SDataValidation.isIdValid(id)) {
             return null;
         }
 
-        try {
-            using var cmd = new MySqlCommand($"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @id;", m_conn);
-            cmd.Parameters.AddWithValue("@id", id);
+        return ExecuteWithConnection<ReceiptClientItem?>(connection => {
+            try {
+                using var cmd = new MySqlCommand($"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @id;", connection);
+                cmd.Parameters.AddWithValue("@id", id);
 
-            using var reader = cmd.ExecuteReader();
-            return reader.Read() ? CreateItemFromReader(reader) : null;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return null;
-        }
+                using var reader = cmd.ExecuteReader();
+                return reader.Read() ? CreateItemFromReader(reader) : null;
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return null;
+            }
+        });
     }
 
     /// <summary>
@@ -68,22 +69,23 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// client items retrieved from the database. Returns an empty collection if the connection is null or if an error
     /// occurs during execution.</returns>
     public ObservableCollection<ReceiptClientItem> getTable() {
+        return ExecuteWithConnection(connection => {
+            var items = new ObservableCollection<ReceiptClientItem>();
 
-        var items = new ObservableCollection<ReceiptClientItem>();
+            try {
+                using var cmd = new MySqlCommand(BASE_SELECT_QUERY, connection);
+                using var reader = cmd.ExecuteReader();
 
-        try {
-            using var cmd = new MySqlCommand(BASE_SELECT_QUERY, m_conn);
-            using var reader = cmd.ExecuteReader();
-
-            while (reader.Read()) {
-                items.Add(CreateItemFromReader(reader));
+                while (reader.Read()) {
+                    items.Add(CreateItemFromReader(reader));
+                }
             }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            }
+            
             return items;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return items;
-        }
+        });
     }
 
     /// <summary>
@@ -93,41 +95,40 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// <c>fk_receipt_id</c> and <c>fk_client_id</c> properties must be non-zero.</param>
     /// <returns>The ID of the saved item. Returns <c>0</c> if the input is invalid or if an error occurs during the operation.</returns>
     public int saveItem(ReceiptClientItem item) {
-        if (item == null 
-            || item.fk_receipt_id == 0 
-            || item.fk_client_id == 0) 
-            {
+        if (item == null || item.fk_receipt_id == 0 || item.fk_client_id == 0) {
             return 0;
         }
 
         int item_id = item.fk_receipt_id;
 
-        bool transaction_needed = false;
-        if (!isTransactionActive()) {
+        // Start transaction if needed
+        bool transaction_needed = !isTransactionActive();
+        if (transaction_needed) {
             startTransaction();
-            transaction_needed = true;
         }
 
-        try {  
+        try {
             string query = isIdenticItemPresentInTable(m_TBL_NAME, _m_COL_FK_RECEIPT, item_id.ToString())
                 ? $"UPDATE {m_TBL_NAME} SET {_m_COL_FK_CLIENT} = @fk_client WHERE {_m_COL_FK_RECEIPT} = @fk_receipt; SELECT @fk_receipt;"
                 : $"INSERT INTO {m_TBL_NAME} ({_m_COL_FK_RECEIPT}, {_m_COL_FK_CLIENT}) VALUES (@fk_receipt, @fk_client); " +
-                $"SELECT LAST_INSERT_ID();";
+                  $"SELECT LAST_INSERT_ID();";
 
-            using var cmd = new MySqlCommand(query, m_conn, m_transaction);
-            cmd.Parameters.AddWithValue("@fk_receipt", item_id);
-            cmd.Parameters.AddWithValue("@fk_client", item.fk_client_id);
+            item_id = ExecuteWithConnection(connection => {
+                using var cmd = new MySqlCommand(query, connection, m_transaction);
+                cmd.Parameters.AddWithValue("@fk_receipt", item_id);
+                cmd.Parameters.AddWithValue("@fk_client", item.fk_client_id);
 
-            item_id = Convert.ToInt32(cmd.ExecuteScalar());
+                return Convert.ToInt32(cmd.ExecuteScalar());
+            });
 
             if (transaction_needed) {
                 commitTransaction();
             }
+            
             return item_id;
         }
         catch (MySqlException ex) {
-            if (transaction_needed) 
-            {
+            if (transaction_needed) {
                 rollbackTransaction();
             }
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
@@ -142,28 +143,30 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// <returns>An <see cref="ObservableCollection{T}"/> containing the <see cref="ReceiptClientItem"/> objects associated with
     /// the specified receipt ID. If <paramref name="fk_receipt"/> is null or empty, an empty collection is returned.</returns>
     public ObservableCollection<ReceiptClientItem> getListItemWithReceiptID(string fk_receipt) {
-
-        var items = new ObservableCollection<ReceiptClientItem>();
-
         if (string.IsNullOrEmpty(fk_receipt)) {
-            return items;
+            return new ObservableCollection<ReceiptClientItem>();
         }
 
-        try {
-            using var cmd = new MySqlCommand(
-                $"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @fk_receipt;",
-                m_conn);
-            cmd.Parameters.AddWithValue("@fk_receipt", fk_receipt);
+        return ExecuteWithConnection(connection => {
+            var items = new ObservableCollection<ReceiptClientItem>();
 
-            using var reader = cmd.ExecuteReader();
-            while (reader.Read()) {
-                items.Add(CreateItemFromReader(reader));
+            try {
+                using var cmd = new MySqlCommand(
+                    $"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @fk_receipt;",
+                    connection);
+                cmd.Parameters.AddWithValue("@fk_receipt", fk_receipt);
+
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read()) {
+                    items.Add(CreateItemFromReader(reader));
+                }
             }
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-        }
-        return items;
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            }
+            
+            return items;
+        });
     }
 
     /// <summary>

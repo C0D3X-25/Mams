@@ -1,17 +1,8 @@
-﻿using Mams.src.databaseOperations;
-using MySqlConnector;
+﻿using MySqlConnector;
 using System.Windows;
 
 namespace Mams.src.databaseConnections;
 
-/// <summary>
-/// Represents a model for managing connections to a MySQL database.
-/// </summary>
-/// <remarks>This class provides methods to open and validate connections to a MySQL database, as well as
-/// utilities for handling database connection states. It uses predefined server, user credentials, and database
-/// configuration to establish connections. The class is designed to simplify database connection management and handle
-/// common connection-related scenarios, such as verifying connection status and responding to connection
-/// failures.</remarks>
 public class SQLConnectionModel {
 
     // Very safe credentials !!
@@ -19,37 +10,19 @@ public class SQLConnectionModel {
     private const string _m_USER = "root";
     private const string _m_PASSWORD = "root";
     private const string _m_DB = "mams_db";
+    private const string _connectionString = 
+        $"server={_m_SERVER};" +
+        $"uid={_m_USER};" +
+        $"pwd={_m_PASSWORD};" +
+        $"database={_m_DB};" +
+        $"pooling=true;" +
+        $"min pool size=5;" +
+        $"max pool size=50;";
 
-    /// <summary>
-    /// Opens a connection to the MySQL database using the configured server, user credentials, and database name.
-    /// </summary>
-    /// <remarks>This method attempts to establish a connection to the MySQL database using the provided
-    /// connection string. If the connection cannot be opened or is not valid, the method returns <see
-    /// langword="null"/>. In the event of a connection failure, an error message is displayed, and the application
-    /// terminates.
-    /// There is a backup of the Database who is done every time the application is launched.</remarks>
-    /// <returns>A <see cref="MySqlConnection"/> object representing the open connection to the database,  or <see
-    /// langword="null"/> if the connection could not be established.</returns>
-    public MySqlConnection? openConnection() {
-        string conn_string =
-            $"server={_m_SERVER};" +
-            $"uid={_m_USER};" +
-            $"pwd={_m_PASSWORD};" +
-            $"database={_m_DB};";
-
-        MySqlConnection? connection = null;
-
+    public MySqlConnection GetConnection() {
+        var connection = new MySqlConnection(_connectionString);
         try {
-            connection = new(conn_string);
             connection.Open();
-
-            if (!isConnectionOpen(connection)) {
-                connection?.Close();
-                return null;
-            }
-
-            SDatabaseBackup.createBackup(connection);
-
             return connection;
         }
         catch (MySqlException e) {
@@ -60,8 +33,7 @@ public class SQLConnectionModel {
                 $"State:  {e.SqlState}\n" +
                 $"Source: {e.Source}"
             );
-
-            connection?.Close();
+            connection.Dispose();
             Environment.Exit(1);
             return null;
         }

@@ -37,35 +37,36 @@ public class BeehiveModel : ABaseModel,
     /// <returns>A <see cref="BeehiveItem"/> object representing the item with the specified ID,  or <see langword="null"/> if no
     /// matching item is found or if the ID is invalid.</returns>
     public BeehiveItem? getItemByID(string id) {
-
         if (!SDataValidation.isIdValid(id)) {
             return null;
         }
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
-                $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_ID} = @id;",
-                m_conn
-            );
+        return ExecuteWithConnection<BeehiveItem?>(connection => {
+            try {
+                using MySqlCommand cmd = new(
+                    $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
+                    $"FROM {_m_TBL_NAME} " +
+                    $"WHERE {_m_COL_ID} = @id;",
+                    connection
+                );
 
-            cmd.Parameters.AddWithValue("@id", id);
-            using MySqlDataReader reader = cmd.ExecuteReader();
+                cmd.Parameters.AddWithValue("@id", id);
+                using MySqlDataReader reader = cmd.ExecuteReader();
 
-            if (reader.Read()) {
-                return new BeehiveItem {
-                    beehive_id = reader.getSafeValue<int>(_m_COL_ID),
-                    beehive_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
-                    beehive_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
-                };
+                if (reader.Read()) {
+                    return new BeehiveItem {
+                        beehive_id = reader.getSafeValue<int>(_m_COL_ID),
+                        beehive_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                        beehive_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                    };
+                }
+                return null;
             }
-            return null;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return null;
-        }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return null;
+            }
+        });
     }
 
     /// <summary>
@@ -84,20 +85,23 @@ public class BeehiveModel : ABaseModel,
     /// <returns>The ID of the saved item. Returns <c>0</c> if the operation fails, the item is <see langword="null"/>, or the
     /// item name already exists in the database.</returns>
     public int saveItem(BeehiveItem item) {
-
         if (item == null) {
             return 0;
         }
 
-        string query = string.Empty;
         int item_id = item.beehive_id;
         string item_name = item.beehive_name.Trim();
-
-        if (item_id == 0) {
+        string query;
+        
+        // Determine if we're inserting or updating
+        bool isInsert = (item_id == 0);
+        
+        if (isInsert) {
+            // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
                 return 0;
             }
-
+            
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
                 $"VALUES (@name); " +
                 $"SELECT LAST_INSERT_ID();";
@@ -107,27 +111,42 @@ public class BeehiveModel : ABaseModel,
                 $"SET {_m_COL_NAME} = @name " +
                 $"WHERE {_m_COL_ID} = @id;";
         }
-
-        startTransaction();
+        
+        // Start transaction if needed
+        bool need_transaction = !isTransactionActive();
+        if (need_transaction) {
+            startTransaction();
+        }
+        
         try {
-            using MySqlCommand cmd = new(query, m_conn, m_transaction);
-            if (item_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item_id);
-            }
-            cmd.Parameters.AddWithValue("@name", item_name);
-
-            if (item_id == 0) {
-                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+            if (isInsert) {
+                // For INSERT operations, we need to return the new ID
+                item_id = ExecuteWithConnection(connection => {
+                    using MySqlCommand cmd = new(query, connection, m_transaction);
+                    cmd.Parameters.AddWithValue("@name", item_name);
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                });
             }
             else {
-                cmd.ExecuteNonQuery();
+                // For UPDATE operations, we just execute the command
+                ExecuteWithConnection(connection => {
+                    using MySqlCommand cmd = new(query, connection, m_transaction);
+                    cmd.Parameters.AddWithValue("@id", item_id);
+                    cmd.Parameters.AddWithValue("@name", item_name);
+                    cmd.ExecuteNonQuery();
+                });
             }
-
-            commitTransaction();
+            
+            if (need_transaction) {
+                commitTransaction();
+            }
+            
             return item_id;
         }
         catch (MySqlException ex) {
-            rollbackTransaction();
+            if (need_transaction) {
+                rollbackTransaction();
+            }
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

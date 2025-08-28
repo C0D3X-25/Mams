@@ -38,39 +38,40 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <returns>A <see cref="ReceiptItem"/> object representing the receipt item with the specified identifier,  or <see
     /// langword="null"/> if no matching item is found or if the identifier is invalid.</returns>
     public ReceiptItem? getItemByID(string id) {
-
         if (!SDataValidation.isIdValid(id)) {
             return null;
         }
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID}, " +
-                $"{_m_COL_RECEIPT_NUMBER}, " +
-                $"{_m_COL_RECEIPT_TOTAL_PRICE}, " +
-                $"{_m_COL_RECEIPT_DATE_CREATED} " +
-                $"FROM {_m_TBL_NAME} " +
-                $"WHERE {_m_COL_ID} = @id;",
-                m_conn
-            );
+        return ExecuteWithConnection<ReceiptItem?>(connection => {
+            try {
+                using MySqlCommand cmd = new(
+                    $"SELECT {_m_COL_ID}, " +
+                    $"{_m_COL_RECEIPT_NUMBER}, " +
+                    $"{_m_COL_RECEIPT_TOTAL_PRICE}, " +
+                    $"{_m_COL_RECEIPT_DATE_CREATED} " +
+                    $"FROM {_m_TBL_NAME} " +
+                    $"WHERE {_m_COL_ID} = @id;",
+                    connection
+                );
 
-            cmd.Parameters.AddWithValue("@id", id);
-            using MySqlDataReader reader = cmd.ExecuteReader();
+                cmd.Parameters.AddWithValue("@id", id);
+                using MySqlDataReader reader = cmd.ExecuteReader();
 
-            if (reader.Read()) {
-                return new ReceiptItem {
-                    receipt_id = reader.getSafeValue<int>(_m_COL_ID),
-                    receipt_number = reader.getSafeValue(_m_COL_RECEIPT_NUMBER, string.Empty),
-                    receipt_total_price = reader.getSafeValue<decimal>(_m_COL_RECEIPT_TOTAL_PRICE),
-                    receipt_date_created = reader.getSafeValue(_m_COL_RECEIPT_DATE_CREATED, DateOnly.MinValue).ToString(globals.SGlobals.g_EU_DATE_FORMAT)
-                };
+                if (reader.Read()) {
+                    return new ReceiptItem {
+                        receipt_id = reader.getSafeValue<int>(_m_COL_ID),
+                        receipt_number = reader.getSafeValue(_m_COL_RECEIPT_NUMBER, string.Empty),
+                        receipt_total_price = reader.getSafeValue<decimal>(_m_COL_RECEIPT_TOTAL_PRICE),
+                        receipt_date_created = reader.getSafeValue(_m_COL_RECEIPT_DATE_CREATED, DateOnly.MinValue).ToString(globals.SGlobals.g_EU_DATE_FORMAT)
+                    };
+                }
+                return null;
             }
-            return null;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return null;
-        }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return null;
+            }
+        });
     }
 
     /// <summary>
@@ -89,7 +90,6 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <returns>The ID of the saved receipt item. Returns 0 if the <paramref name="item"/> is <see langword="null"/> or if a
     /// database error occurs.</returns>
     public int saveItem(ReceiptItem item) {
-
         if (item == null) {
             return 0;
         }
@@ -97,46 +97,60 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         int item_id = item.receipt_id;
         string receipt_nbr = item.receipt_number;
 
+        // Check if receipt number already exists
         if (isReceiptNumberExisting(receipt_nbr)) {
-            // A new Fee cannot be created with an existing receipt number
+            // A new receipt cannot be created with an existing receipt number
             if (item_id == 0) {
                 return 0;
             }
             else {
                 int id_to_save = getIdWithReceiptNumber(receipt_nbr);
 
-                // The Fee to modify use a receipt number who already exist and is not the one already assigned
+                // The receipt to modify uses a receipt number that already exists and is not the one already assigned
                 if (id_to_save != item_id) {
                     return 0;
                 }
             }
         }
 
+        // Prepare query based on whether we're inserting or updating
         string query = item_id == 0
-            ? $"INSERT INTO {_m_TBL_NAME} ({_m_COL_RECEIPT_NUMBER}, {_m_COL_RECEIPT_TOTAL_PRICE}, {_m_COL_RECEIPT_DATE_CREATED}) VALUES (@receipt_number, @total_price, @date_created); " +
-            $"SELECT LAST_INSERT_ID();"
-            : $"UPDATE {_m_TBL_NAME} SET {_m_COL_RECEIPT_NUMBER} = @receipt_number, {_m_COL_RECEIPT_TOTAL_PRICE} = @total_price, {_m_COL_RECEIPT_DATE_CREATED} = @date_created WHERE {_m_COL_ID} = @id;";
+            ? $"INSERT INTO {_m_TBL_NAME} ({_m_COL_RECEIPT_NUMBER}, {_m_COL_RECEIPT_TOTAL_PRICE}, {_m_COL_RECEIPT_DATE_CREATED}) " +
+              $"VALUES (@receipt_number, @total_price, @date_created); " +
+              $"SELECT LAST_INSERT_ID();"
+            : $"UPDATE {_m_TBL_NAME} " +
+              $"SET {_m_COL_RECEIPT_NUMBER} = @receipt_number, " +
+              $"{_m_COL_RECEIPT_TOTAL_PRICE} = @total_price, " +
+              $"{_m_COL_RECEIPT_DATE_CREATED} = @date_created " +
+              $"WHERE {_m_COL_ID} = @id;";
 
-        bool transaction_needed = false;
-        if (!isTransactionActive()) {
+        // Start transaction if needed
+        bool transaction_needed = !isTransactionActive();
+        if (transaction_needed) {
             startTransaction();
-            transaction_needed = true;
         }
 
         try {
-            using MySqlCommand cmd = new(query, m_conn, m_transaction);
-            if (item_id != 0) {
-                cmd.Parameters.AddWithValue("@id", item_id);
-            }
-            cmd.Parameters.AddWithValue("@receipt_number", receipt_nbr);
-            cmd.Parameters.AddWithValue("@total_price", item.receipt_total_price);
-            cmd.Parameters.AddWithValue("@date_created", SFormatData.formatEUDateToMySQLDate(item.receipt_date_created));
-
             if (item_id == 0) {
-                item_id = Convert.ToInt32(cmd.ExecuteScalar());
+                // For INSERT operations
+                item_id = ExecuteWithConnection(connection => {
+                    using MySqlCommand cmd = new(query, connection, m_transaction);
+                    cmd.Parameters.AddWithValue("@receipt_number", receipt_nbr);
+                    cmd.Parameters.AddWithValue("@total_price", item.receipt_total_price);
+                    cmd.Parameters.AddWithValue("@date_created", SFormatData.formatEUDateToMySQLDate(item.receipt_date_created));
+                    return Convert.ToInt32(cmd.ExecuteScalar());
+                });
             }
             else {
-                cmd.ExecuteNonQuery();
+                // For UPDATE operations
+                ExecuteWithConnection(connection => {
+                    using MySqlCommand cmd = new(query, connection, m_transaction);
+                    cmd.Parameters.AddWithValue("@id", item_id);
+                    cmd.Parameters.AddWithValue("@receipt_number", receipt_nbr);
+                    cmd.Parameters.AddWithValue("@total_price", item.receipt_total_price);
+                    cmd.Parameters.AddWithValue("@date_created", SFormatData.formatEUDateToMySQLDate(item.receipt_date_created));
+                    cmd.ExecuteNonQuery();
+                });
             }
 
             if (transaction_needed) {
@@ -159,25 +173,27 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <returns>An <see cref="ObservableCollection{T}"/> containing the IDs of the rows in the specified database table. If an
     /// error occurs during the query execution, the collection may be empty or partially populated.</returns>
     public ObservableCollection<int> getRowsID() {
-        
-        ObservableCollection<int> items = new();
+        return ExecuteWithConnection(connection => {
+            ObservableCollection<int> items = new();
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME} ORDER BY {_m_COL_RECEIPT_DATE_CREATED} DESC;",
-                m_conn,
-                m_transaction
-            );
-            using MySqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read()) {
-                items.Add(reader.getSafeValue<int>(_m_COL_ID));
+            try {
+                using MySqlCommand cmd = new(
+                    $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME} ORDER BY {_m_COL_RECEIPT_DATE_CREATED} DESC;",
+                    connection,
+                    m_transaction
+                );
+                
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read()) {
+                    items.Add(reader.getSafeValue<int>(_m_COL_ID));
+                }
             }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            }
+            
             return items;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return items;
-        }
+        });
     }
 
     /// <summary>
@@ -186,28 +202,30 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <returns>An <see cref="ObservableCollection{T}"/> of strings containing the distinct years in descending order. The
     /// collection will be empty if no data is found or if an error occurs.</returns>
     public ObservableCollection<string> getExistingYear() {
-        
-        ObservableCollection<string> items = new();
+        return ExecuteWithConnection(connection => {
+            ObservableCollection<string> items = new();
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT DISTINCT YEAR({_m_COL_RECEIPT_DATE_CREATED}) " +
-                $"AS year " +
-                $"FROM {_m_TBL_NAME} " +
-                $"ORDER BY year DESC;",
-                m_conn,
-                m_transaction
-            );
-            using MySqlDataReader reader = cmd.ExecuteReader();
-            while (reader.Read()) {
-                items.Add(reader.getSafeValue<int>("year").ToString());
+            try {
+                using MySqlCommand cmd = new(
+                    $"SELECT DISTINCT YEAR({_m_COL_RECEIPT_DATE_CREATED}) " +
+                    $"AS year " +
+                    $"FROM {_m_TBL_NAME} " +
+                    $"ORDER BY year DESC;",
+                    connection,
+                    m_transaction
+                );
+                
+                using MySqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read()) {
+                    items.Add(reader.getSafeValue<int>("year").ToString());
+                }
             }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+            }
+            
             return items;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return items;
-        }
+        });
     }
 
     /// <summary>
@@ -217,24 +235,25 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <returns><see langword="true"/> if the specified receipt number exists in the database; otherwise, 
     /// <see langword="false"/>.</returns>
     public bool isReceiptNumberExisting(string receipt_number) {
-
         if (string.IsNullOrWhiteSpace(receipt_number)) {
             return false;
         }
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT COUNT(*) FROM {_m_TBL_NAME} WHERE {_m_COL_RECEIPT_NUMBER} = @receipt_number;",
-                m_conn,
-                m_transaction
-            );
-            cmd.Parameters.AddWithValue("@receipt_number", receipt_number);
-            return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
-        }
+        return ExecuteWithConnection(connection => {
+            try {
+                using MySqlCommand cmd = new(
+                    $"SELECT COUNT(*) FROM {_m_TBL_NAME} WHERE {_m_COL_RECEIPT_NUMBER} = @receipt_number;",
+                    connection,
+                    m_transaction
+                );
+                cmd.Parameters.AddWithValue("@receipt_number", receipt_number);
+                return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return false;
+            }
+        });
     }
 
     /// <summary>
@@ -243,23 +262,25 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <param name="receipt_number">The string attribued to the receipt</param>
     /// <returns>The ID of the corresponding receipt number. Else 0 if not found</returns>
     public int getIdWithReceiptNumber(string receipt_number) {
-
         if (string.IsNullOrWhiteSpace(receipt_number)) {
             return 0;
         }
 
-        try {
-            using MySqlCommand cmd = new(
-                $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME} WHERE {_m_COL_RECEIPT_NUMBER} = @receipt_number;",
-                m_conn,
-                m_transaction
-            );
-            cmd.Parameters.AddWithValue("@receipt_number", receipt_number);
-            return Convert.ToInt32(cmd.ExecuteScalar());
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
-        }
+        return ExecuteWithConnection(connection => {
+            try {
+                using MySqlCommand cmd = new(
+                    $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME} WHERE {_m_COL_RECEIPT_NUMBER} = @receipt_number;",
+                    connection,
+                    m_transaction
+                );
+                cmd.Parameters.AddWithValue("@receipt_number", receipt_number);
+                object? result = cmd.ExecuteScalar();
+                return result != null && result != DBNull.Value ? Convert.ToInt32(result) : 0;
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return 0;
+            }
+        });
     }
 }
