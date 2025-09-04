@@ -4,6 +4,7 @@ using Mams.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Reflection;
 using System.Windows;
 
 namespace Mams.src.databaseOperations;
@@ -15,7 +16,7 @@ namespace Mams.src.databaseOperations;
 /// </summary>
 public abstract class SDatabaseModel : ABaseModel {
 
-    private static string _m_DEFAULT_ARCHIVE_DATE = "1901-01-01";
+    private const string DEFAULT_ARCHIVE_DATE = "1901-01-01";
 
     /// <summary>
     /// Retrieves all records from a specified database table and converts them into a collection of typed objects.
@@ -81,6 +82,9 @@ public abstract class SDatabaseModel : ABaseModel {
         return deleteOperation(id, field_id, string.Empty, table, delete_type);
     }
 
+    // Cache for property info to avoid repeated reflection lookups
+    private static readonly Dictionary<Type, Dictionary<string, PropertyInfo>> s_property_cache = new();
+
     /// <summary>
     /// Converts data from a DataTable to a collection of typed objects by mapping column names to object properties.
     /// </summary>
@@ -95,16 +99,25 @@ public abstract class SDatabaseModel : ABaseModel {
         }
 
         try {
+            Type item_type = typeof(T);
+            
+            // Get or create property cache for this type
+            if (!s_property_cache.TryGetValue(item_type, out var property_map)) {
+                property_map = new Dictionary<string, PropertyInfo>(StringComparer.OrdinalIgnoreCase);
+                foreach (var prop in item_type.GetProperties()) {
+                    property_map[prop.Name] = prop;
+                }
+                s_property_cache[item_type] = property_map;
+            }
+            
             ObservableCollection<T> items = new();
             foreach (DataRow row in data_table.Rows) {
                 T item = new();
                 foreach (DataColumn col in data_table.Columns) {
                     var value = row[col.ColumnName];
-                    if (value != DBNull.Value) {
-                        var property = typeof(T).GetProperty(col.ColumnName);
-                        if (property != null) {
-                            property.SetValue(item, Convert.ChangeType(value, property.PropertyType));
-                        }
+                    if (value != DBNull.Value && 
+                        property_map.TryGetValue(col.ColumnName, out PropertyInfo? property)) {
+                        property.SetValue(item, Convert.ChangeType(value, property.PropertyType));
                     }
                 }
                 items.Add(item);
@@ -134,7 +147,7 @@ public abstract class SDatabaseModel : ABaseModel {
         EDeleteItemOperation delete_type
         ) {
         
-        string query = string.Empty;
+        string query;
 
         switch (delete_type) {
             // Archive the record
@@ -142,42 +155,39 @@ public abstract class SDatabaseModel : ABaseModel {
                 if (!isArchiveFieldProvided(field_archive)) {
                     return false;
                 }
-                query = $"UPDATE {table} " +
-                    $"SET {field_archive} = CURDATE() " +
-                    $"WHERE {field_id} = @id";
+                query = $"UPDATE {table} SET {field_archive} = CURDATE() WHERE {field_id} = @id";
                 break;
             // Complete delete of the record
             case EDeleteItemOperation.HARD_DELETE:
-                query = $"DELETE FROM {table} WHERE {field_id} = @id;";
+                query = $"DELETE FROM {table} WHERE {field_id} = @id";
                 break;
             // Check if the record is linked in another table, then SOFT_DELETE or HARD_DELETE
             case EDeleteItemOperation.SAFE_DELETE:
                 if (!isArchiveFieldProvided(field_archive)) {
                     return false;
                 }
-                query = $"DELETE FROM {table} WHERE {field_id} = @id;";
+                query = $"DELETE FROM {table} WHERE {field_id} = @id";
                 break;
             // Restore the record from the archive
             case EDeleteItemOperation.RESTORE:
                 if (!isArchiveFieldProvided(field_archive)) {
                     return false;
                 }
-                query = $"UPDATE {table} " +
-                    $"SET {field_archive} = NULL " +
-                    $"WHERE {field_id} = @id";
+                query = $"UPDATE {table} SET {field_archive} = NULL WHERE {field_id} = @id";
                 break;
+            default:
+                return false;
         }
 
-        bool need_transaction = false;
-        if (!isTransactionActive()) {
-            need_transaction = true;
+        bool need_transaction = !isTransactionActive();
+        if (need_transaction) {
             startTransaction();
         }
 
         try {
             // Use transaction connection directly since we already have a transaction started
             executeWithConnection(connection => {
-                using MySqlCommand cmd = new(query, connection, m_transaction);
+                using var cmd = new MySqlCommand(query, connection, m_transaction);
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.ExecuteNonQuery();
             });
@@ -257,92 +267,24 @@ public abstract class SDatabaseModel : ABaseModel {
             return null;
         }
 
-        string query = string.Empty;
-
-        if (asc_column == null) {
-            if (archive_field == null) {
-                query = $"SELECT * FROM {table};";
-            }
-            else {
-                query = $"SELECT * FROM {table} " +
-                    $"WHERE {archive_field} != '{_m_DEFAULT_ARCHIVE_DATE}' " +
-                    $"OR {archive_field} IS NULL;";
-            }
+        var query_builder = new System.Text.StringBuilder($"SELECT * FROM {table}");
+        
+        if (archive_field != null) {
+            query_builder.Append($" WHERE {archive_field} != '{DEFAULT_ARCHIVE_DATE}' OR {archive_field} IS NULL");
         }
-        else {
-            if (archive_field == null) {
-                query = $"SELECT * FROM {table} ORDER BY {asc_column} ASC;";
-            }
-            else {
-                query = $"SELECT * FROM {table} " +
-                    $"WHERE {archive_field} != '{_m_DEFAULT_ARCHIVE_DATE}' " +
-                    $"OR {archive_field} IS NULL " +
-                    $"ORDER BY {asc_column} ASC;";
-            }
+        
+        if (asc_column != null) {
+            query_builder.Append($" ORDER BY {asc_column} ASC");
         }
+        
+        string query = query_builder.ToString();
             
         // Use ExecuteWithConnection to get a connection from the pool
         return executeWithConnection<DataTable?>(connection => {
             try {
                 DataTable data_table = new();
-                using MySqlCommand cmd = new(query, connection);
-                using MySqlDataReader reader = cmd.ExecuteReader();
-                data_table.Load(reader);
-
-                return data_table;
-            }
-            catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
-            }
-        });
-    }
-
-    /// <summary>
-    /// Retrieves all records from a specified database table ordered by date.
-    /// </summary>
-    /// <param name="table">The name of the database table to query.</param>
-    /// <param name="asc_column">The column who need to be order by date.</param>
-    /// <param name="archive_field">The column where the archive is set (can be null).</param>
-    /// <returns>
-    /// A DataTable containing all records from the specified table.
-    /// Returns null if an error occurs during the database operation.
-    /// </returns>
-    private static DataTable? getDataTableOrderByDate(string table, string asc_column, string? archive_field) {
-        if (string.IsNullOrWhiteSpace(table)) {
-            return null;
-        }
-
-        string query = string.Empty;
-
-        if (asc_column == null) {
-            if (archive_field == null) {
-                query = $"SELECT * FROM {table};";
-            }
-            else {
-                query = $"SELECT * FROM {table} " +
-                    $"WHERE {archive_field} != '{_m_DEFAULT_ARCHIVE_DATE}' " +
-                    $"OR {archive_field} IS NULL;";
-            }
-        }
-        else {
-            if (archive_field == null) {
-                query = $"SELECT * FROM {table} ORDER BY {asc_column} ASC;";
-            }
-            else {
-                query = $"SELECT * FROM {table} " +
-                    $"WHERE {archive_field} != '{_m_DEFAULT_ARCHIVE_DATE}' " +
-                    $"OR {archive_field} IS NULL " +
-                    $"ORDER BY {asc_column} ASC;";
-            }
-        }
-        
-        // Use ExecuteWithConnection to get a connection from the pool
-        return executeWithConnection<DataTable?>(connection => {
-            try {
-                DataTable data_table = new();
-                using MySqlCommand cmd = new(query, connection);
-                using MySqlDataReader reader = cmd.ExecuteReader();
+                using var cmd = new MySqlCommand(query, connection);
+                using var reader = cmd.ExecuteReader();
                 data_table.Load(reader);
 
                 return data_table;

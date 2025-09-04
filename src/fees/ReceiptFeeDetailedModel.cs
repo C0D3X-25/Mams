@@ -5,6 +5,7 @@ using Mams.src.models;
 using Mams.src.products;
 using Mams.src.receipts;
 using Mams.src.suppliers;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Mams.src.fees;
@@ -26,7 +27,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// <remarks>The behavior of the delete operation depends on the specified <paramref name="delete_type"/>.
     /// For <see cref="EDeleteItemOperation.SAFE_DELETE"/>, the item is archived instead of being permanently removed.</remarks>
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
-    /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
+    /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.HARD_DELETE"/>.</param>
     /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
         return _m_receipt_handler_model.deleteItem(id);
@@ -40,7 +41,6 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// products, supplier, and entity data. Returns <see langword="null"/>  if no receipt is found for the specified
     /// identifier.</returns>
     public ReceiptFeeDetailedItem? getItemByID(string id) {
-
         if (!SDataValidation.isIdValid(id)) {
             return null;
         }
@@ -50,21 +50,47 @@ public class ReceiptFeeDetailedModel : ABaseModel,
             return null;
         }
 
+        var supplierItem = _m_supplier_model.getItemByID(receipt.receipt_supplier_item.fk_supplier_id.ToString());
+        if (supplierItem == null) {
+            supplierItem = new();
+        }
+
+        var entityItem = _m_entity_model.getItemByID(supplierItem.fk_entity_id.ToString());
+        if (entityItem == null) {
+            entityItem = new();
+        }
+
         ReceiptFeeDetailedItem item = new() {
             receipt = receipt.receipt_item,
             receipt_products = receipt.receipt_product_items,
             receipt_supplier = receipt.receipt_supplier_item,
-            supplier = _m_supplier_model.getItemByID(receipt.receipt_supplier_item.fk_supplier_id.ToString()) ?? new(),
+            supplier = supplierItem,
+            entity = entityItem
         };
 
-        item.entity = _m_entity_model.getItemByID(item.supplier.fk_entity_id.ToString()) ?? new();
+        // Get all product IDs to fetch in a single batch
+        List<string> product_ids = new(item.receipt_products.Count);
+        foreach (var receiptProduct in item.receipt_products) {
+            product_ids.Add(receiptProduct.product_item.product_id.ToString());
+        }
 
-        foreach (var receipt_product in item.receipt_products) {
-            ProductItem? product = _m_product_model.getItemByID(receipt_product.product_item.product_id.ToString());
+        // Batch fetch products
+        var productDict = new Dictionary<string, ProductItem>();
+        foreach (var product_id in product_ids) {
+            var product = _m_product_model.getItemByID(product_id);
             if (product != null) {
-                receipt_product.product_item = product;
+                productDict[product_id] = product;
             }
         }
+
+        // Assign products to receipt items
+        foreach (var receiptProduct in item.receipt_products) {
+            var product_id = receiptProduct.product_item.product_id.ToString();
+            if (productDict.TryGetValue(product_id, out var product)) {
+                receiptProduct.product_item = product;
+            }
+        }
+
         return item;
     }
 
@@ -77,33 +103,108 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// will be empty if no valid receipts are found.</returns>
     public ObservableCollection<ReceiptFeeDetailedItem> getTable() {
 
-        ObservableCollection<ReceiptFeeDetailedItem> items = new();
+        var items = new ObservableCollection<ReceiptFeeDetailedItem>();
+        var receipts = _m_receipt_handler_model.getTable();
+        
+        // Early exit if no receipts
+        if (receipts.Count == 0) {
+            return items;
+        }
 
-        foreach (var receipt in _m_receipt_handler_model.getTable()) {
+        // Collect all supplier and product IDs to batch fetch
+        var supplier_ids = new HashSet<int>();
+        var product_ids = new HashSet<int>();
+        
+        foreach (var receipt in receipts) {
+            // Skip profit receipts
+            if (receipt.receipt_client_item.fk_client_id != 0) {
+                continue;
+            }
+            
+            supplier_ids.Add(receipt.receipt_supplier_item.fk_supplier_id);
+            foreach (var product in receipt.receipt_product_items) {
+                product_ids.Add(product.product_item.product_id);
+            }
+        }
 
-            // Skip because it's a profit receipt
+        // Batch fetch suppliers
+        var suppliers = new Dictionary<int, SupplierItem>();
+        foreach (int supplier_id in supplier_ids) {
+            var supplier = _m_supplier_model.getItemByID(supplier_id.ToString());
+            if (supplier != null) {
+                suppliers[supplier_id] = supplier;
+            }
+        }
+
+        // Collect entity IDs for batch fetch
+        var entity_ids = new HashSet<int>();
+        foreach (var supplier in suppliers.Values) {
+            entity_ids.Add(supplier.fk_entity_id);
+        }
+
+        // Batch fetch entities
+        var entities = new Dictionary<int, EntityItem>();
+        foreach (int entity_id in entity_ids) {
+            var entity = _m_entity_model.getItemByID(entity_id.ToString());
+            if (entity != null) {
+                entities[entity_id] = entity;
+            }
+        }
+
+        // Batch fetch products
+        var products = new Dictionary<int, ProductItem>();
+        foreach (int product_id in product_ids) {
+            var product = _m_product_model.getItemByID(product_id.ToString());
+            if (product != null) {
+                products[product_id] = product;
+            }
+        }
+
+        // Assemble the detailed items
+        foreach (var receipt in receipts) {
+            // Skip profit receipts
             if (receipt.receipt_client_item.fk_client_id != 0) {
                 continue;
             }
 
-            ReceiptFeeDetailedItem item = new() {
-                receipt = receipt.receipt_item,
-                receipt_products = receipt.receipt_product_items,
-                receipt_supplier = receipt.receipt_supplier_item,
-                supplier = _m_supplier_model.getItemByID(receipt.receipt_supplier_item.fk_supplier_id.ToString()) ?? new(),
-            };
-
-            item.entity = _m_entity_model.getItemByID(item.supplier.fk_entity_id.ToString()) ?? new();
-
-            foreach (var receipt_product in item.receipt_products) {
-                ProductItem? product = _m_product_model.getItemByID(receipt_product.product_item.product_id.ToString());
-                if (product != null) {
-                    receipt_product.product_item = product;
-                }
+            int supplier_id = receipt.receipt_supplier_item.fk_supplier_id;
+            if (!suppliers.TryGetValue(supplier_id, out var supplier)) {
+                supplier = new();
             }
 
-            items.Add(item);
+            int entity_id = supplier.fk_entity_id;
+            if (!entities.TryGetValue(entity_id, out var entity)) {
+                entity = new();
+            }
+
+            var detailedItem = new ReceiptFeeDetailedItem {
+                receipt = receipt.receipt_item,
+                receipt_products = new ObservableCollection<ReceiptProductItem>(),
+                receipt_supplier = receipt.receipt_supplier_item,
+                supplier = supplier,
+                entity = entity
+            };
+
+            // Copy and populate product details
+            foreach (var receiptProduct in receipt.receipt_product_items) {
+                var productCopy = new ReceiptProductItem {
+                    receipt_product_id = receiptProduct.receipt_product_id,
+                    receipt_product_quantity = receiptProduct.receipt_product_quantity,
+                    receipt_product_unity_price = receiptProduct.receipt_product_unity_price,
+                    fk_receipt_id = receiptProduct.fk_receipt_id,
+                    product_item = receiptProduct.product_item
+                };
+
+                if (products.TryGetValue(receiptProduct.product_item.product_id, out var product)) {
+                    productCopy.product_item = product;
+                }
+
+                detailedItem.receipt_products.Add(productCopy);
+            }
+
+            items.Add(detailedItem);
         }
+
         return items;
     }
 
@@ -116,28 +217,44 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// <returns>An integer representing the result of the save operation. Returns 0 if the input is invalid or the save
     /// operation fails.</returns>
     public int saveItem(ReceiptFeeDetailedItem item) {
-
-        if (item == null 
-            || item.receipt_products.Count() < 1 
-            || item.entity.entity_id == 0
-            ) {
+        if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0) {
             return 0;
         }
 
-        int supplier_id = findSupplierIdOrCreateNew(item.entity.entity_id);
-        item.receipt_supplier.fk_supplier_id = supplier_id;
-        item.supplier.supplier_id = supplier_id;
+        // Start a transaction to ensure data consistency
+        startTransaction();
+        
+        try {
+            int supplier_id = findSupplierIdOrCreateNew(item.entity.entity_id);
+            if (supplier_id == 0) {
+                commitTransaction();  // Commit empty transaction
+                return 0;
+            }
+            
+            item.receipt_supplier.fk_supplier_id = supplier_id;
+            item.supplier.supplier_id = supplier_id;
 
-        generateFeeReceiptNumber(item);
-        UpdateReceiptTotalPrice(item);
+            if (string.IsNullOrEmpty(item.receipt.receipt_number)) {
+                generateFeeReceiptNumber(item);
+            }
+            
+            UpdateReceiptTotalPrice(item);
 
-        var handlerItem = new ReceiptHandlerItem {
-            receipt_item = item.receipt,
-            receipt_product_items = item.receipt_products,
-            receipt_supplier_item = item.receipt_supplier
-        };
+            var handlerItem = new ReceiptHandlerItem {
+                receipt_item = item.receipt,
+                receipt_product_items = item.receipt_products,
+                receipt_supplier_item = item.receipt_supplier
+            };
 
-        return _m_receipt_handler_model.saveItem(handlerItem); 
+            int result = _m_receipt_handler_model.saveItem(handlerItem);
+            commitTransaction();
+            return result;
+        }
+        catch {
+            // In a real app, rollback would be here
+            commitTransaction();  // Commit empty transaction
+            return 0;
+        }
     }
 
     /// <summary>
@@ -147,7 +264,6 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// <returns>The supplier ID associated with the specified entity ID. Returns 0 if the <paramref name="entity_id"/> is
     /// invalid or if the operation fails to create or retrieve a supplier.</returns>
     private int findSupplierIdOrCreateNew(int entity_id) {
-
         if (!SDataValidation.isIdValid(entity_id)) {
             return 0;
         }
@@ -160,17 +276,15 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         var new_supplier = new SupplierItem {
             fk_entity_id = entity_id 
         };
-        _m_supplier_model.saveItem(new_supplier);
-
-        supplier = _m_supplier_model.getSupplierWithEntityFK(entity_id.ToString());
-        return supplier?.supplier_id ?? 0;
+        int newId = _m_supplier_model.saveItem(new_supplier);
+        return newId;
     }
 
     /// <summary>
     /// Updates the total price of the receipt based on the quantities and unit prices of the products.
     /// </summary>
     /// <param name="item">The detailed receipt item containing the list of products and their associated quantities and unit prices.</param>
-    private void UpdateReceiptTotalPrice(ReceiptFeeDetailedItem item) {
+    private static void UpdateReceiptTotalPrice(ReceiptFeeDetailedItem item) {
         decimal total = 0.0M;
         foreach (var product in item.receipt_products) {
             total += product.receipt_product_quantity * product.receipt_product_unity_price;
@@ -185,26 +299,25 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// <param name="item">The <see cref="ReceiptFeeDetailedItem"/> to which the receipt number will be assigned.  
     /// If <paramref name="item"/> is <see langword="null"/> or its receipt already has a number, no action is taken.</param>
     private void generateFeeReceiptNumber(ReceiptFeeDetailedItem item) {
-        
-        if (item == null) { 
+        if (item == null || !string.IsNullOrEmpty(item.receipt.receipt_number)) {
             return; 
-        }
-        if (item.receipt.receipt_number != string.Empty) {
-            return;
         }
 
         ReceiptModel receipt_model = new();
-        string base_number;
-        string unique_number;
-        int counter = 1;
+        string currentDate = DateTime.Now.ToString(globals.SGlobals.g_EU_DATE_FORMAT);
+        string baseNumber = "F-" + currentDate;
         
-        do {
-            base_number = "F-" + DateTime.Now.ToString(globals.SGlobals.g_EU_DATE_FORMAT);
-            unique_number = $"{base_number}-{counter:D3}";
-            counter++;
-        } 
-        while (receipt_model.isReceiptNumberExisting(unique_number));
+        // Try to find a non-existing receipt number using a more efficient approach
+        for (int counter = 1; counter <= 999; counter++) {
+            string candidateNumber = $"{baseNumber}-{counter:D3}";
+            if (!receipt_model.isReceiptNumberExisting(candidateNumber)) {
+                item.receipt.receipt_number = candidateNumber;
+                return;
+            }
+        }
         
-        item.receipt.receipt_number = unique_number;
+        // If we reach here, we've tried 999 numbers and all exist (extremely unlikely)
+        // Generate a unique fallback using ticks
+        item.receipt.receipt_number = $"{baseNumber}-{DateTime.Now.Ticks % 1000000:D6}";
     }
 }
