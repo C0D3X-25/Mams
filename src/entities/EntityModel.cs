@@ -44,7 +44,7 @@ public class EntityModel : ABaseModel,
             return null;
         }
 
-        return ExecuteWithConnection<EntityItem?>(connection => {
+        return executeWithConnection<EntityItem?>(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}, {_m_COL_ARCHIVE} " +
@@ -137,7 +137,7 @@ public class EntityModel : ABaseModel,
         try {
             if (isInsert) {
                 // For INSERT operations, we need to return the new ID
-                item_id = ExecuteWithConnection(connection => {
+                item_id = executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item.entity_name.Trim());
                     cmd.Parameters.AddWithValue("@phone", item.entity_phone.Trim());
@@ -149,7 +149,7 @@ public class EntityModel : ABaseModel,
             }
             else {
                 // For UPDATE operations, we just execute the command
-                ExecuteWithConnection(connection => {
+                executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@name", item.entity_name.Trim());

@@ -18,7 +18,7 @@ public abstract class ABaseModel {
     /// <summary>
     /// Gets a connection from the pool or returns the active transaction connection if in a transaction
     /// </summary>
-    protected static MySqlConnection GetConnection() {
+    protected static MySqlConnection getConnection() {
         // If we're in a transaction, use the transaction connection
         if (_m_transaction_connection != null && _m_transaction != null) {
             return _m_transaction_connection;
@@ -31,16 +31,16 @@ public abstract class ABaseModel {
     /// <summary>
     /// For executing queries that don't return a value
     /// </summary>
-    protected static void ExecuteWithConnection(Action<MySqlConnection> action) {
-        var isTransactionConnection = (_m_transaction_connection != null);
-        var connection = GetConnection();
+    protected static void executeWithConnection(Action<MySqlConnection> action) {
+        var is_transaction_connected = (_m_transaction_connection != null);
+        var connection = getConnection();
         
         try {
             action(connection);
         }
         finally {
             // Only dispose the connection if it's not the transaction connection
-            if (!isTransactionConnection) {
+            if (!is_transaction_connected) {
                 connection.Dispose();
             }
         }
@@ -49,16 +49,16 @@ public abstract class ABaseModel {
     /// <summary>
     /// For executing queries that return a value
     /// </summary>
-    protected static T ExecuteWithConnection<T>(Func<MySqlConnection, T> func) {
-        var isTransactionConnection = (_m_transaction_connection != null);
-        var connection = GetConnection();
+    protected static T executeWithConnection<T>(Func<MySqlConnection, T> func) {
+        var is_transaction_connected = (_m_transaction_connection != null);
+        var connection = getConnection();
         
         try {
             return func(connection);
         }
         finally {
             // Only dispose the connection if it's not the transaction connection
-            if (!isTransactionConnection) {
+            if (!is_transaction_connected) {
                 connection.Dispose();
             }
         }
@@ -181,7 +181,7 @@ public abstract class ABaseModel {
             throw new ArgumentException("Table name, column to search, and item to find cannot be null or empty.");
         }
 
-        return ExecuteWithConnection(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT COUNT(*) FROM {table_name} WHERE {column_to_search} = @item_to_find",

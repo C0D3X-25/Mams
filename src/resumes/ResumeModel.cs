@@ -739,7 +739,7 @@ public class ResumeModel {
         // Entity
         Thread thread_entity = new(new ThreadStart(() => {
             _m_list_entity_all = _m_entity_model.getTable();
-            _m_list_entity_not_archived = new ObservableCollection<EntityItem>(
+            _m_list_entity_not_archived = new(
                 _m_list_entity_all.Where(item => item.entity_archive == string.Empty)
             );
         }));
@@ -747,7 +747,7 @@ public class ResumeModel {
         // Product 
         Thread thread_product = new(new ThreadStart(() => {
             _m_list_product_all = _m_product_model.getTable();
-            _m_list_product_not_archived = new ObservableCollection<ProductItem>(
+            _m_list_product_not_archived = new(
                 _m_list_product_all.Where(item => item.product_archive == string.Empty)
             );
         }));
@@ -755,7 +755,7 @@ public class ResumeModel {
         // Product Shape
         Thread thread_product_shape = new(new ThreadStart(() => {
             _m_list_product_shape_all = _m_product_shape_model.getTable();
-            _m_list_product_shape_not_archived = new ObservableCollection<ProductShapeItem>(
+            _m_list_product_shape_not_archived = new(
                 _m_list_product_shape_all.Where(item => item.product_shape_archive == string.Empty)
             );
         }));
@@ -763,7 +763,7 @@ public class ResumeModel {
         // Product Category
         Thread thread_product_category = new(new ThreadStart(() => {
             _m_list_product_category_all = _m_product_category_model.getTable();
-            _m_list_product_category_not_archived = new ObservableCollection<ProductCategoryItem>(
+            _m_list_product_category_not_archived = new(
                 _m_list_product_category_all.Where(item => item.product_category_archive == string.Empty)
             );
         }));
@@ -772,7 +772,7 @@ public class ResumeModel {
         // Product Type
         Thread thread_product_type = new(new ThreadStart(() => {
             _m_list_product_type_all = _m_product_type_model.getTable();
-            _m_list_product_type_not_archived = new ObservableCollection<ProductTypeItem>(
+            _m_list_product_type_not_archived = new(
                 _m_list_product_type_all.Where(item => item.product_type_archive == string.Empty)
             );
         }));
@@ -780,7 +780,7 @@ public class ResumeModel {
         // Product Lot
         Thread thread_product_lot = new(new ThreadStart(() => {
             _m_list_product_lot_all = _m_product_lot_model.getTable();
-            _m_list_product_lot_not_archived = new ObservableCollection<ProductLotItem>(
+            _m_list_product_lot_not_archived = new(
                 _m_list_product_lot_all.Where(item => item.product_lot_archive == string.Empty)
             );
         }));
@@ -788,7 +788,7 @@ public class ResumeModel {
         // Beehive
         Thread thread_beehive = new(new ThreadStart(() => {
             _m_list_beehive_all = _m_beehive_model.getTable();
-            _m_list_beehive_not_archived = new ObservableCollection<BeehiveItem>(
+            _m_list_beehive_not_archived = new(
                 _m_list_beehive_all.Where(item => item.beehive_archive == string.Empty)
             );
         }));

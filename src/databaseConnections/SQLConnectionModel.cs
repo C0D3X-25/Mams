@@ -10,7 +10,7 @@ public class SQLConnectionModel {
     private const string _m_USER = "root";
     private const string _m_PASSWORD = "root";
     private const string _m_DB = "mams_db";
-    private const string _connectionString = 
+    private const string _m_connection_string = 
         $"server={_m_SERVER};" +
         $"uid={_m_USER};" +
         $"pwd={_m_PASSWORD};" +
@@ -20,7 +20,7 @@ public class SQLConnectionModel {
         $"max pool size=50;";
 
     public MySqlConnection GetConnection() {
-        var connection = new MySqlConnection(_connectionString);
+        var connection = new MySqlConnection(_m_connection_string);
         try {
             connection.Open();
             return connection;

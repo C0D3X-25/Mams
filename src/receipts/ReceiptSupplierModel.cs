@@ -47,7 +47,7 @@ public class ReceiptSupplierModel : ABaseModel, ICrudOperation<ReceiptSupplierIt
             return null;
         }
 
-        return ExecuteWithConnection<ReceiptSupplierItem?>(connection => {
+        return executeWithConnection<ReceiptSupplierItem?>(connection => {
             try {
                 using var cmd = new MySqlCommand($"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @id;", connection);
                 cmd.Parameters.AddWithValue("@id", id);
@@ -69,7 +69,7 @@ public class ReceiptSupplierModel : ABaseModel, ICrudOperation<ReceiptSupplierIt
     /// supplier items retrieved from the database. Returns an empty collection if the connection is null or if an error
     /// occurs during execution.</returns>
     public ObservableCollection<ReceiptSupplierItem> getTable() {
-        return ExecuteWithConnection(connection => {
+        return executeWithConnection(connection => {
             var items = new ObservableCollection<ReceiptSupplierItem>();
 
             try {
@@ -113,7 +113,7 @@ public class ReceiptSupplierModel : ABaseModel, ICrudOperation<ReceiptSupplierIt
                 : $"INSERT INTO {m_TBL_NAME} ({_m_COL_FK_RECEIPT}, {_m_COL_FK_SUPPLIER}) VALUES (@fk_receipt, @fk_supplier); " +
                   $"SELECT LAST_INSERT_ID();";
 
-            item_id = ExecuteWithConnection(connection => {
+            item_id = executeWithConnection(connection => {
                 using var cmd = new MySqlCommand(query, connection, m_transaction);
                 cmd.Parameters.AddWithValue("@fk_receipt", item_id);
                 cmd.Parameters.AddWithValue("@fk_supplier", item.fk_supplier_id);
@@ -147,7 +147,7 @@ public class ReceiptSupplierModel : ABaseModel, ICrudOperation<ReceiptSupplierIt
             return new ObservableCollection<ReceiptSupplierItem>();
         }
 
-        return ExecuteWithConnection(connection => {
+        return executeWithConnection(connection => {
             var items = new ObservableCollection<ReceiptSupplierItem>();
 
             try {

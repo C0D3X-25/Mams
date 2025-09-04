@@ -55,7 +55,7 @@ public class ProductModel : ABaseModel,
             return null;
         }
 
-        return ExecuteWithConnection<ProductItem?>(connection => {
+        return executeWithConnection<ProductItem?>(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_WEIGHT}, " +
@@ -190,7 +190,7 @@ public class ProductModel : ABaseModel,
 
             if (isInsert) {
                 // For INSERT operations, we need to return the new ID
-                item_id = ExecuteWithConnection(connection => {
+                item_id = executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item_product_name);
                     cmd.Parameters.AddWithValue("@weight", item.product_weight);
@@ -202,7 +202,7 @@ public class ProductModel : ABaseModel,
             }
             else {
                 // For UPDATE operations, we just execute the command
-                ExecuteWithConnection(connection => {
+                executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@name", item_product_name);
@@ -281,7 +281,7 @@ public class ProductModel : ABaseModel,
             }
         }
         
-        return ExecuteWithConnection(connection => {
+        return executeWithConnection(connection => {
             try {
                 string query = $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_WEIGHT}, " +
                     $"{_m_COL_FK_PRODUCT_TYPE}, {_m_COL_FK_PRODUCT_CATEGORY}, " +

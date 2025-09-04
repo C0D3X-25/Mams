@@ -176,7 +176,7 @@ public abstract class SDatabaseModel : ABaseModel {
 
         try {
             // Use transaction connection directly since we already have a transaction started
-            ExecuteWithConnection(connection => {
+            executeWithConnection(connection => {
                 using MySqlCommand cmd = new(query, connection, m_transaction);
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.ExecuteNonQuery();
@@ -282,7 +282,7 @@ public abstract class SDatabaseModel : ABaseModel {
         }
             
         // Use ExecuteWithConnection to get a connection from the pool
-        return ExecuteWithConnection<DataTable?>(connection => {
+        return executeWithConnection<DataTable?>(connection => {
             try {
                 DataTable data_table = new();
                 using MySqlCommand cmd = new(query, connection);
@@ -338,7 +338,7 @@ public abstract class SDatabaseModel : ABaseModel {
         }
         
         // Use ExecuteWithConnection to get a connection from the pool
-        return ExecuteWithConnection<DataTable?>(connection => {
+        return executeWithConnection<DataTable?>(connection => {
             try {
                 DataTable data_table = new();
                 using MySqlCommand cmd = new(query, connection);

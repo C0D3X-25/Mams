@@ -25,8 +25,9 @@ CREATE TABLE IF NOT EXISTS `beehives` (
   `beehive_id` int NOT NULL AUTO_INCREMENT,
   `beehive_name` varchar(50) NOT NULL,
   `beehive_archive` date DEFAULT NULL,
-  PRIMARY KEY (`beehive_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`beehive_id`),
+  KEY `idx_beehive_name` (`beehive_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 
 -- Dumping data for table beehives
@@ -49,8 +50,9 @@ CREATE TABLE IF NOT EXISTS `entities` (
   `entity_city` varchar(50) DEFAULT NULL,
   `entity_address` varchar(255) DEFAULT NULL,
   `entity_archive` date DEFAULT NULL,
-  PRIMARY KEY (`entity_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`entity_id`),
+  KEY `idx_entity_name` (`entity_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 
 -- Dumping data for table entities
@@ -71,7 +73,7 @@ CREATE TABLE IF NOT EXISTS `clients` (
   PRIMARY KEY (`client_id`),
   KEY `fk_entity_id` (`fk_entity_id`),
   CONSTRAINT `clients_ibfk_1` FOREIGN KEY (`fk_entity_id`) REFERENCES `entities` (`entity_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 
 -- Dumping data for table clients
@@ -90,8 +92,9 @@ CREATE TABLE IF NOT EXISTS `products_categories` (
   `product_category_id` int NOT NULL AUTO_INCREMENT,
   `product_category_name` varchar(100) NOT NULL,
   `product_category_archive` date DEFAULT NULL,
-  PRIMARY KEY (`product_category_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`product_category_id`),
+  KEY `idx_product_category_name` (`product_category_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 
 -- Dumping data for table products_categories
@@ -114,8 +117,10 @@ CREATE TABLE IF NOT EXISTS `products_lots` (
   `fk_beehive_id` int DEFAULT NULL,
   PRIMARY KEY (`product_lot_id`),
   KEY `fk_beehive_id` (`fk_beehive_id`),
+  KEY `idx_product_lot_name` (`product_lot_name`),
+  KEY `idx_product_lot_year` (`product_lot_year`),
   CONSTRAINT `products_lots_ibfk_1` FOREIGN KEY (`fk_beehive_id`) REFERENCES `beehives` (`beehive_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 
 -- Dumping data for table products_lots
@@ -134,8 +139,9 @@ CREATE TABLE IF NOT EXISTS `products_shapes` (
   `product_shape_id` int NOT NULL AUTO_INCREMENT,
   `product_shape_name` varchar(100) NOT NULL,
   `product_shape_archive` date DEFAULT NULL,
-  PRIMARY KEY (`product_shape_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`product_shape_id`),
+  KEY `idx_product_shape_name` (`product_shape_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 
 -- Dumping data for table products_shapes
@@ -162,10 +168,12 @@ CREATE TABLE IF NOT EXISTS `products` (
   KEY `fk_product_type_id` (`fk_product_type_id`),
   KEY `fk_product_category_id` (`fk_product_category_id`),
   KEY `fk_product_shape_id` (`fk_product_shape_id`),
+  KEY `idx_product_name` (`product_name`),
+  KEY `idx_product_weight` (`product_weight`),
   CONSTRAINT `products_ibfk_1` FOREIGN KEY (`fk_product_type_id`) REFERENCES `products_types` (`product_type_id`),
   CONSTRAINT `products_ibfk_2` FOREIGN KEY (`fk_product_category_id`) REFERENCES `products_categories` (`product_category_id`),
   CONSTRAINT `products_ibfk_3` FOREIGN KEY (`fk_product_shape_id`) REFERENCES `products_shapes` (`product_shape_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 
 -- Dumping data for table products
@@ -184,8 +192,9 @@ CREATE TABLE IF NOT EXISTS `products_types` (
   `product_type_id` int NOT NULL AUTO_INCREMENT,
   `product_type_name` varchar(100) NOT NULL,
   `product_type_archive` date DEFAULT NULL,
-  PRIMARY KEY (`product_type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`product_type_id`),
+  KEY `idx_product_type_name` (`product_type_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 
 -- Dumping data for table products_types
@@ -205,8 +214,11 @@ CREATE TABLE IF NOT EXISTS `receipts` (
   `receipt_number` varchar(50) NOT NULL,
   `receipt_total_price` decimal(9,2) NOT NULL,
   `receipt_date_created` date NOT NULL,
-  PRIMARY KEY (`receipt_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`receipt_id`),
+  KEY `idx_receipt_number` (`receipt_number`),
+  KEY `idx_receipt_total_price` (`receipt_total_price`),
+  KEY `idx_receipt_date_created` (`receipt_date_created`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 
 -- Dumping data for table receipts
@@ -254,10 +266,12 @@ CREATE TABLE IF NOT EXISTS `receipts_products` (
   KEY `fk_product_id` (`fk_product_id`),
   KEY `fk_receipt_id` (`fk_receipt_id`),
   KEY `fk_product_lot_id` (`fk_product_lot_id`),
+  KEY `idx_receipt_product_quantity` (`receipt_product_quantity`),
+  KEY `idx_receipt_product_unity_price` (`receipt_product_unity_price`),
   CONSTRAINT `receipts_products_ibfk_1` FOREIGN KEY (`fk_product_id`) REFERENCES `products` (`product_id`),
   CONSTRAINT `receipts_products_ibfk_2` FOREIGN KEY (`fk_receipt_id`) REFERENCES `receipts` (`receipt_id`),
   CONSTRAINT `receipts_products_ibfk_3` FOREIGN KEY (`fk_product_lot_id`) REFERENCES `products_lots` (`product_lot_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=492 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 
 -- Dumping data for table receipts_products
@@ -278,7 +292,7 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
   PRIMARY KEY (`supplier_id`),
   KEY `fk_entity_id` (`fk_entity_id`),
   CONSTRAINT `suppliers_ibfk_1` FOREIGN KEY (`fk_entity_id`) REFERENCES `entities` (`entity_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- 
 -- Dumping data for table suppliers

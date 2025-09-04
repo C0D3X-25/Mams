@@ -42,7 +42,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             return null;
         }
 
-        return ExecuteWithConnection<ReceiptItem?>(connection => {
+        return executeWithConnection<ReceiptItem?>(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, " +
@@ -133,7 +133,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         try {
             if (item_id == 0) {
                 // For INSERT operations
-                item_id = ExecuteWithConnection(connection => {
+                item_id = executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@receipt_number", receipt_nbr);
                     cmd.Parameters.AddWithValue("@total_price", item.receipt_total_price);
@@ -143,7 +143,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             }
             else {
                 // For UPDATE operations
-                ExecuteWithConnection(connection => {
+                executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@receipt_number", receipt_nbr);
@@ -173,7 +173,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <returns>An <see cref="ObservableCollection{T}"/> containing the IDs of the rows in the specified database table. If an
     /// error occurs during the query execution, the collection may be empty or partially populated.</returns>
     public ObservableCollection<int> getRowsID() {
-        return ExecuteWithConnection(connection => {
+        return executeWithConnection(connection => {
             ObservableCollection<int> items = new();
 
             try {
@@ -202,7 +202,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <returns>An <see cref="ObservableCollection{T}"/> of strings containing the distinct years in descending order. The
     /// collection will be empty if no data is found or if an error occurs.</returns>
     public ObservableCollection<string> getExistingYear() {
-        return ExecuteWithConnection(connection => {
+        return executeWithConnection(connection => {
             ObservableCollection<string> items = new();
 
             try {
@@ -239,7 +239,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             return false;
         }
 
-        return ExecuteWithConnection(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT COUNT(*) FROM {_m_TBL_NAME} WHERE {_m_COL_RECEIPT_NUMBER} = @receipt_number;",
@@ -266,7 +266,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             return 0;
         }
 
-        return ExecuteWithConnection(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME} WHERE {_m_COL_RECEIPT_NUMBER} = @receipt_number;",

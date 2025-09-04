@@ -72,7 +72,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// Retrieves a collection of detailed receipt fee items, including associated supplier, entity, and product
     /// information.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ReceiptFeeDetailedItem"/> objects, where each item
+    /// <returns>An <see cref="ObservableCollection{ReceiptFeeDetailedItem}"/> of <see cref="ReceiptFeeDetailedItem"/> objects, where each item
     /// contains detailed information about a receipt, its associated products, supplier, and entity. The collection
     /// will be empty if no valid receipts are found.</returns>
     public ObservableCollection<ReceiptFeeDetailedItem> getTable() {

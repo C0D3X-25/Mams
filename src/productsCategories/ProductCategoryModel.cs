@@ -42,7 +42,7 @@ public class ProductCategoryModel :
             return null;
         }
 
-        return ExecuteWithConnection<ProductCategoryItem?>(connection => {
+        return executeWithConnection<ProductCategoryItem?>(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
@@ -123,7 +123,7 @@ public class ProductCategoryModel :
         try {
             if (isInsert) {
                 // For INSERT operations, we need to return the new ID
-                item_id = ExecuteWithConnection(connection => {
+                item_id = executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item_name);
                     return Convert.ToInt32(cmd.ExecuteScalar());
@@ -131,7 +131,7 @@ public class ProductCategoryModel :
             }
             else {
                 // For UPDATE operations, we just execute the command
-                ExecuteWithConnection(connection => {
+                executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@name", item_name);

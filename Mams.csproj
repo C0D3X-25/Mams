@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="schemas\MLD.simp.user" />
+    <None Include="doc\MLD.simp.user" />
   </ItemGroup>
 
   <ItemGroup>

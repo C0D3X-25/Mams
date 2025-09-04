@@ -52,7 +52,7 @@ public class ReceiptProductModel : ABaseModel,
             return null;
         }
 
-        return ExecuteWithConnection<ReceiptProductItem?>(connection => {
+        return executeWithConnection<ReceiptProductItem?>(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_QUANTITY}, {_m_COL_UNITY_PRICE}, " +
@@ -91,7 +91,7 @@ public class ReceiptProductModel : ABaseModel,
     /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ReceiptProductItem"/> objects representing the receipt
     /// product items retrieved from the database. If no items are found, the collection will be empty.</returns>
     public ObservableCollection<ReceiptProductItem> getTable() {
-        return ExecuteWithConnection(connection => {
+        return executeWithConnection(connection => {
             ObservableCollection<ReceiptProductItem> items = new();
 
             try {
@@ -148,7 +148,7 @@ public class ReceiptProductModel : ABaseModel,
                 item.product_lot_item.product_lot_id = _m_DEFAULT_FK_PRODUCT_LOT;
             }
 
-            int item_id = ExecuteWithConnection(connection => {
+            int item_id = executeWithConnection(connection => {
                 using MySqlCommand cmd = new(query, connection, m_transaction);
                 cmd.Parameters.AddWithValue("@quantity", item.receipt_product_quantity);
                 cmd.Parameters.AddWithValue("@unity_price", item.receipt_product_unity_price);
@@ -186,7 +186,7 @@ public class ReceiptProductModel : ABaseModel,
             return new ObservableCollection<ReceiptProductItem>();
         }
 
-        return ExecuteWithConnection(connection => {
+        return executeWithConnection(connection => {
             ObservableCollection<ReceiptProductItem> items = new();
 
             try {

@@ -49,3 +49,9 @@ The backups are saved in this path ~C:/MySqlBackup/~ (folder is created automati
 Destination path can be modified in the file `SDatabaseBackup.cs` which is in the path: ~/src/databaseOperations/~.
 
 Each backup file is named `backup_dd_MM_yyyy.sql`.
+
+## PDF Export
+The application can export data in PDF format, 
+the files are saved in this path ~C:/Users/Public/Documents/Pictures/Facture Miel/~ (folder is created automatically if it doesn't exist).
+The name of the folder can be modified in the file `SExportPDF.cs` which is in the path: ~/src/pdfOperations/~.
+Each PDF file is named `Facture #ID.pdf` where #ID is the receipt number, defined by the user.

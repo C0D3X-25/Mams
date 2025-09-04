@@ -74,7 +74,7 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// <summary>
     /// Retrieves a collection of detailed receipt profit items.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> containing detailed receipt profit items.  The collection will be empty
+    /// <returns>An <see cref="ObservableCollection{ReceiptProfitDetailedItem}"/> containing detailed receipt profit items.  The collection will be empty
     /// if no valid receipts are found.</returns>
     public ObservableCollection<ReceiptProfitDetailedItem> getTable() {
 

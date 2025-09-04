@@ -49,7 +49,7 @@ public class ProductLotModel : ABaseModel,
             return null;
         }
 
-        return ExecuteWithConnection<ProductLotItem?>(connection => {
+        return executeWithConnection<ProductLotItem?>(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE}, {_m_COL_ARCHIVE} " +
@@ -155,7 +155,7 @@ public class ProductLotModel : ABaseModel,
             
             if (isInsert) {
                 // For INSERT operations, we need to return the new ID
-                item_id = ExecuteWithConnection(connection => {
+                item_id = executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item_name);
                     cmd.Parameters.AddWithValue("@year", item.product_lot_year);
@@ -165,7 +165,7 @@ public class ProductLotModel : ABaseModel,
             }
             else {
                 // For UPDATE operations, we just execute the command
-                ExecuteWithConnection(connection => {
+                executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@name", item_name);
@@ -204,7 +204,7 @@ public class ProductLotModel : ABaseModel,
             return items;
         }
 
-        return ExecuteWithConnection(connection => {
+        return executeWithConnection(connection => {
             try {
                 // Create parameterized query
                 string parameters = string.Join(",", beehive_ids.Select((_, i) => $"@id{i}"));
