@@ -4,6 +4,7 @@ using Mams.src.databaseOperations;
 using Mams.src.fees;
 using Mams.src.navigations;
 using Mams.src.profits;
+using Mams.src.search;
 using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
@@ -24,23 +25,22 @@ public class ResumeController : ABaseController {
 
     private readonly ResumeModel _m_resume_model = new();
 
-    private ObservableCollection<DatabaseTablesNameItem>? _m_list_table;
+    // Bind directly to SSearchModel instead of local backing fields
     public ObservableCollection<DatabaseTablesNameItem>? m_list_table {
-        get => _m_list_table;
+        get => SSearchModel.m_list_table;
         set {
-            if (_m_list_table != value) {
-                _m_list_table = value;
+            if (SSearchModel.m_list_table != value) {
+                SSearchModel.m_list_table = value;
                 onPropertyChanged();
             }
         }
     }
 
-    private DatabaseTablesNameItem? _m_selected_table;
     public DatabaseTablesNameItem? m_selected_table {
-        get => _m_selected_table;
+        get => SSearchModel.m_selected_table;
         set {
-            if (_m_selected_table != value) {
-                _m_selected_table = value;
+            if (SSearchModel.m_selected_table != value) {
+                SSearchModel.m_selected_table = value;
                 updateListSearchItems();
                 updateDisplayedProfitsAndFeesLists();
                 onPropertyChanged();
@@ -48,46 +48,42 @@ public class ResumeController : ABaseController {
         }
     }
 
-    private ObservableCollection<SearchItem>? _m_list_search_item;
     public ObservableCollection<SearchItem>? m_list_search_item {
-        get => _m_list_search_item;
+        get => SSearchModel.m_list_search_item;
         set {
-            if (_m_list_search_item != value) {
-                _m_list_search_item = value;
+            if (SSearchModel.m_list_search_item != value) {
+                SSearchModel.m_list_search_item = value;
                 onPropertyChanged();
             }
         }
     }
 
-    private SearchItem? _m_selected_search_item;
     public SearchItem? m_selected_search_item {
-        get => _m_selected_search_item;
+        get => SSearchModel.m_selected_search_item;
         set {
-            if (_m_selected_search_item != value) {
-                _m_selected_search_item = value;
+            if (SSearchModel.m_selected_search_item != value) {
+                SSearchModel.m_selected_search_item = value;
                 updateDisplayedProfitsAndFeesLists();
                 onPropertyChanged();
             }
         }
     }
 
-    private ObservableCollection<SearchItem>? _m_list_year;
     public ObservableCollection<SearchItem>? m_list_year {
-        get => _m_list_year;
+        get => SSearchModel.m_list_year;
         set {
-            if (_m_list_year != value) {
-                _m_list_year = value;
+            if (SSearchModel.m_list_year != value) {
+                SSearchModel.m_list_year = value;
                 onPropertyChanged();
             }
         }
     }
 
-    private SearchItem? _m_selected_year;
     public SearchItem? m_selected_year {
-        get => _m_selected_year;
+        get => SSearchModel.m_selected_year;
         set {
-            if (_m_selected_year != value) {
-                _m_selected_year = value;
+            if (SSearchModel.m_selected_year != value) {
+                SSearchModel.m_selected_year = value;
                 updateDisplayedProfitsAndFeesLists();
                 onPropertyChanged();
             }
@@ -258,9 +254,8 @@ public class ResumeController : ABaseController {
         m_double_click_command_profit = new RelayCommand(navigateToProfitDetails, isProfitItemSelected);
         m_double_click_command_fee = new RelayCommand(navigateToFeeDetails, isFeeItemSelected);
 
-        populateListTable();
+        loadStaticSearchData();
         updateDisplayedProfitsAndFeesLists();
-        updateListSearchItems();
     }
 
     public void navigateToProfitDetails(object? obj) {
@@ -296,10 +291,34 @@ public class ResumeController : ABaseController {
 
     private bool isFeeItemSelected(object? arg) => m_selected_fee_item != null;
 
+    private void loadStaticSearchData() {
+        if (SSearchModel.m_list_table == null)
+        {
+            SSearchModel.m_list_table = _m_resume_model.m_search_tables;
+        }
+        
+        if (SSearchModel.m_list_search_item == null)
+        {
+            updateListSearchItems();
+        }
+        
+        if (SSearchModel.m_list_year == null)
+        {
+            SSearchModel.m_list_year = _m_resume_model.getListYears();
+        }
+        
+        onPropertyChanged(nameof(m_list_table));
+        onPropertyChanged(nameof(m_selected_table));
+        onPropertyChanged(nameof(m_list_search_item));
+        onPropertyChanged(nameof(m_selected_search_item));
+        onPropertyChanged(nameof(m_list_year));
+        onPropertyChanged(nameof(m_selected_year));
+    }
+
     private void updateDisplayedProfitsAndFeesLists() {
-        var search_item = _m_selected_search_item ?? new SearchItem();
-        var table_item = _m_selected_table ?? new DatabaseTablesNameItem();
-        var year_item = _m_selected_year ?? new SearchItem();
+        var search_item = m_selected_search_item ?? new SearchItem();
+        var table_item = m_selected_table ?? new DatabaseTablesNameItem();
+        var year_item = m_selected_year ?? new SearchItem();
 
         search_item.search_table = table_item.m_name_in_database;
         search_item.search_year = year_item.search_year;
@@ -328,23 +347,21 @@ public class ResumeController : ABaseController {
     private void updateDisplayedDetailTransactions() {
         var transaction_details = _m_resume_model.calculateDetailTransactions(
             m_list_profit_item, 
-            _m_selected_search_item,
+            m_selected_search_item,
             m_total_profit);
         
-        m_total_weight = transaction_details.total_weight;
+        m_total_weight = transaction_details.total_weight_kg;
         m_total_quantity = transaction_details.total_quantity;
         m_average_price_per_unit = transaction_details.average_price_per_unit;
         m_average_price_per_weight = transaction_details.average_price_per_weight;
     }
 
-    private void populateListTable() {
-        m_list_table = _m_resume_model.m_search_tables;
-    }
-
     private void updateListSearchItems() {
-        if (_m_selected_table != null) {
-            m_list_search_item = _m_resume_model.getListSearchItems(_m_selected_table);
-            m_list_year = _m_resume_model.getListYears();
+        if (m_selected_table != null) {
+            SSearchModel.m_list_search_item = _m_resume_model.getListSearchItems(m_selected_table);
+            SSearchModel.m_list_year = _m_resume_model.getListYears();
+            onPropertyChanged(nameof(m_list_search_item));
+            onPropertyChanged(nameof(m_list_year));
         }
     }
 }

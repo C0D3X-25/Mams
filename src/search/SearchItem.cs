@@ -1,6 +1,6 @@
 ﻿using Mams.src.databaseOperations;
 
-namespace Mams.src.resumes; 
+namespace Mams.src.search; 
 public class SearchItem {
     public int search_id { get; set; } = 0;
     public EDatabaseTableName search_table { get; set; } = EDatabaseTableName.NONE;

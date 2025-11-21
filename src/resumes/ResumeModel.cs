@@ -10,6 +10,7 @@ using Mams.src.productsShapes;
 using Mams.src.productsTypes;
 using Mams.src.profits;
 using Mams.src.receipts;
+using Mams.src.search;
 using System.Collections.ObjectModel;
 
 namespace Mams.src.resumes;
@@ -722,8 +723,8 @@ public class ResumeModel {
     /// <param name="profit_items">Collection of profit items to calculate from</param>
     /// <param name="search_item">Current search item for validation</param>
     /// <param name="total_profit">Total profit value for average calculation</param>
-    /// <returns>Tuple containing (total_weight, total_quantity, average_price_per_unit)</returns>
-    public (decimal total_weight, int total_quantity, decimal average_price_per_unit, decimal average_price_per_weight) calculateDetailTransactions(
+    /// <returns>Tuple containing (total_weight_g_kg, total_quantity, average_price_per_unit)</returns>
+    public (decimal total_weight_kg, int total_quantity, decimal average_price_per_unit, decimal average_price_per_weight) calculateDetailTransactions(
         ObservableCollection<ReceiptProfitDetailedItem>? profit_items,
         SearchItem? search_item,
         decimal total_profit)
@@ -734,24 +735,31 @@ public class ResumeModel {
             return (0.00M, 0, 0.00M, 0.00M);
         }
 
-        decimal total_weight = 0.00M;
+        decimal total_weight_g = 0.00M;
         int total_quantity = 0;
+        decimal counted_weight_g = 0.00M;
+        int counted_quantity = 0;
 
         if (profit_items != null)
         {
-            foreach (var profitItem in profit_items)
+            foreach (var profit_item in profit_items)
             {
-                foreach (var receiptProduct in profitItem.receipt_products)
+                foreach (var receipt_product in profit_item.receipt_products)
                 {
-                    int quantity = receiptProduct.receipt_product_quantity;
-                    total_quantity += quantity;
-                    total_weight += receiptProduct.product_item.product_weight * quantity;
+                    if (receipt_product.receipt_product_unity_price > 0)
+                    {
+                        counted_quantity += receipt_product.receipt_product_quantity;
+                        counted_weight_g += receipt_product.product_item.product_weight * receipt_product.receipt_product_quantity;
+                    }
+                    total_quantity += receipt_product.receipt_product_quantity;
+                    total_weight_g += receipt_product.product_item.product_weight * receipt_product.receipt_product_quantity;
                 }
             }
         }
 
-        decimal average_price_per_unit = total_quantity > 0 ? total_profit / total_quantity : 0.00M;
-        decimal average_price_per_weight = total_weight > 0 ? total_profit / (total_weight / 1000) : 0.00M;
-        return (total_weight / 1000, total_quantity, average_price_per_unit, average_price_per_weight);
+        decimal average_price_per_unit = counted_quantity > 0 ? total_profit / counted_quantity : 0.00M;
+        decimal average_price_per_weight = counted_weight_g > 0 ? total_profit / (counted_weight_g / 1000) : 0.00M;
+
+        return (total_weight_g / 1000, total_quantity, average_price_per_unit, average_price_per_weight);
     }
 }

@@ -89,8 +89,10 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <param name="item">The receipt item to save. Cannot be <see langword="null"/>.</param>
     /// <returns>The ID of the saved receipt item. Returns 0 if the <paramref name="item"/> is <see langword="null"/> or if a
     /// database error occurs.</returns>
-    public int saveItem(ReceiptItem item) {
-        if (item == null) {
+    public int saveItem(ReceiptItem item)
+    {
+        if (item == null)
+        {
             return 0;
         }
 
@@ -98,16 +100,19 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
         string receipt_nbr = item.receipt_number;
 
         // Check if receipt number already exists
-        if (isReceiptNumberExisting(receipt_nbr)) {
+        if (isReceiptNumberExisting(receipt_nbr))
+        {
             // A new receipt cannot be created with an existing receipt number
-            if (item_id == 0) {
+            if (item_id == 0)
+            {
                 return 0;
             }
-            else {
+            else
+            {
                 int id_to_save = getIdWithReceiptNumber(receipt_nbr);
-
                 // The receipt to modify uses a receipt number that already exists and is not the one already assigned
-                if (id_to_save != item_id) {
+                if (id_to_save != item_id)
+                {
                     return 0;
                 }
             }
@@ -234,13 +239,17 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <param name="receipt_number">The receipt number to check for existence. Cannot be null, empty, or consist only of white-space characters.</param>
     /// <returns><see langword="true"/> if the specified receipt number exists in the database; otherwise, 
     /// <see langword="false"/>.</returns>
-    public bool isReceiptNumberExisting(string receipt_number) {
-        if (string.IsNullOrWhiteSpace(receipt_number)) {
+    public bool isReceiptNumberExisting(string receipt_number)
+    {
+        if (string.IsNullOrWhiteSpace(receipt_number))
+        {
             return false;
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT COUNT(*) FROM {_m_TBL_NAME} WHERE {_m_COL_RECEIPT_NUMBER} = @receipt_number;",
                     connection,
@@ -249,7 +258,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 cmd.Parameters.AddWithValue("@receipt_number", receipt_number);
                 return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
                 return false;
             }

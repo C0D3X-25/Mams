@@ -254,10 +254,11 @@ public class ReceiptProfitDetailedModel : ABaseModel,
             return 0;
         }
 
-        // Start a transaction to ensure data consistency
         startTransaction();
-        
-        try {
+
+        // TODO: Error happening in the try block
+        try
+        {
             int client_id = findClientIdOrCreateNew(item.entity.entity_id);
             if (client_id == 0) {
                 commitTransaction();  // Commit empty transaction

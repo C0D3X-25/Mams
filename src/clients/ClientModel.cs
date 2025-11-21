@@ -165,7 +165,8 @@ public class ClientModel : ABaseModel,
                     $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
                     $"FROM {_m_TBL_NAME} " +
                     $"WHERE {_m_COL_FK_ENTITY} = @fk_entity;",
-                    connection
+                    connection,
+                    m_transaction
                 );
 
                 cmd.Parameters.AddWithValue("@fk_entity", fk_entity);
