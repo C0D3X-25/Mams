@@ -8,7 +8,7 @@
     xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
     xmlns:commands="clr-namespace:Mams.src.commands"
     mc:Ignorable="d" 
-    d:DesignHeight="800" d:DesignWidth="1224"
+    d:DesignHeight="1000" d:DesignWidth="1224"
     Title="ResumePage">
 
    <Grid Background="{Binding m_page_background_color}">
@@ -188,8 +188,9 @@
                    <Grid.RowDefinitions>
                        <RowDefinition/>
                        <RowDefinition/>
-                       <RowDefinition/>
-                   </Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
                    <Grid.ColumnDefinitions>
                        <ColumnDefinition/>
                        <ColumnDefinition/>
@@ -201,17 +202,21 @@
                    <Label Grid.Column="0" Grid.Row="0"
                        HorizontalContentAlignment="Right"
                        FontSize="16"
-                       Content="Poids Total :"/>
+                       Content="Poids Total (profit) :"/>
                    <Label Grid.Column="0" Grid.Row="1"
                        HorizontalContentAlignment="Right"
                        FontSize="16"
-                       Content="Quantité Total :"/>
+                       Content="Quantité Total (profit) :"/>
                    <Label Grid.Column="0" Grid.Row="2"
                        HorizontalContentAlignment="Right"
                        FontSize="16"
-                       Content="Prix Moyen :"/>
-
-                   <!--Details Value-->
+                       Content="Prix Moyen par Unité (profit) :"/>
+                    <Label Grid.Column="0" Grid.Row="3"
+                       HorizontalContentAlignment="Right"
+                       FontSize="16"
+                       Content="Prix Moyen par kg (profit) :"/>
+                   
+                    <!--Details Value-->
                    <Label Grid.Column="1" Grid.Row="0"
                        HorizontalContentAlignment="Left"
                        FontSize="16"
@@ -223,9 +228,13 @@
                    <Label Grid.Column="1" Grid.Row="2"
                        HorizontalContentAlignment="Left"
                        FontSize="16"
-                       Content="{Binding m_average_price_ui}"/>        
-                   
-                   <!--Total Label-->
+                       Content="{Binding m_average_price_per_unit_ui}"/>
+                    <Label Grid.Column="1" Grid.Row="3"
+                       HorizontalContentAlignment="Left"
+                       FontSize="16"
+                       Content="{Binding m_average_price_per_weight_ui}"/>
+
+                    <!--Total Label-->
                    <Label Grid.Column="2" Grid.Row="0"
                        HorizontalContentAlignment="Right"
                        FontSize="16"

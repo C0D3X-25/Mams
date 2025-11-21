@@ -181,18 +181,31 @@ public class ResumeController : ABaseController {
     }
     public string m_total_quantity_ui => $"{_m_total_quantity}";
 
-    private decimal _m_average_price;
-    public decimal m_average_price {
-        get => _m_average_price;
+    private decimal _m_average_price_per_unit;
+    public decimal m_average_price_per_unit {
+        get => _m_average_price_per_unit;
         set {
-            if (_m_average_price != value) {
-                _m_average_price = value;
+            if (_m_average_price_per_unit != value) {
+                _m_average_price_per_unit = value;
                 onPropertyChanged();
-                onPropertyChanged(nameof(m_average_price_ui));
+                onPropertyChanged(nameof(m_average_price_per_unit_ui));
             }
         }
     }
-    public string m_average_price_ui => $"{m_average_price:F2} CHF/u";
+    public string m_average_price_per_unit_ui => $"{m_average_price_per_unit:F2} CHF/u";
+
+    private decimal _m_average_price_per_weight;
+    public decimal m_average_price_per_weight {
+        get => _m_average_price_per_weight;
+        set {
+            if (_m_average_price_per_weight != value) {
+                _m_average_price_per_weight = value;
+                onPropertyChanged();
+                onPropertyChanged(nameof(m_average_price_per_weight_ui));
+            }
+        }
+    }
+    public string m_average_price_per_weight_ui => $"{m_average_price_per_weight:F2} CHF/kg";
 
     private SolidColorBrush _m_total_fee_color = Brushes.Black;
     public SolidColorBrush m_total_fee_color {
@@ -204,6 +217,8 @@ public class ResumeController : ABaseController {
             }
         }
     }
+
+
 
     private SolidColorBrush _m_total_color = Brushes.Black;
     public SolidColorBrush m_total_color {
@@ -299,56 +314,27 @@ public class ResumeController : ABaseController {
     }
 
     private void updateDisplayedTotalTransactions() {
-        decimal total_profit = 0.00M;
-        decimal total_fee = 0.00M;
-
-        if (m_list_profit_item != null) {
-            foreach (var item in m_list_profit_item) {
-                total_profit += item.receipt.receipt_total_price;
-            }
-        }
-
-        if (m_list_fee_item != null) {
-            foreach (var item in m_list_fee_item) {
-                total_fee -= item.receipt.receipt_total_price;
-            }
-        }
-
-        m_total_profit = total_profit;
-        m_total_fee = total_fee;
-        m_total_fee_color = total_fee < 0 ? Brushes.Red : Brushes.Black;
-
-        // Calculate total (profit + fee)
-        decimal total = total_profit + total_fee;
-        m_total = total;
-        m_total_color = total < 0 ? Brushes.Red : Brushes.Black;
+        var transaction_totals = _m_resume_model.calculateTotalTransactions(m_list_profit_item, m_list_fee_item);
+        
+        m_total_profit = transaction_totals.total_profit;
+        m_total_fee = transaction_totals.total_fee;
+        m_total = transaction_totals.total;
+        
+        // UI-specific logic stays in the controller
+        m_total_fee_color = transaction_totals.total_fee < 0 ? Brushes.Red : Brushes.Black;
+        m_total_color = transaction_totals.total < 0 ? Brushes.Red : Brushes.Black;
     }
 
     private void updateDisplayedDetailTransactions() {
-        // Reset values for invalid search criteria
-        if (_m_selected_search_item == null || _m_selected_search_item.search_id == 0) {
-            m_total_weight = 0.00M;
-            m_total_quantity = 0;
-            m_average_price = 0.00M;
-            return;
-        }
-
-        decimal total_weight = 0.00M;
-        int total_quantity = 0;
-
-        if (m_list_profit_item != null) {
-            foreach (var profit_item in m_list_profit_item) {
-                foreach (var receipt_product in profit_item.receipt_products) {
-                    int quantity = receipt_product.receipt_product_quantity;
-                    total_quantity += quantity;
-                    total_weight += receipt_product.product_item.product_weight * quantity;
-                }
-            }
-        }
-
-        m_total_weight = total_weight / 1000;
-        m_total_quantity = total_quantity;
-        m_average_price = total_quantity > 0 ? m_total_profit / total_quantity : 0.00M;
+        var transaction_details = _m_resume_model.calculateDetailTransactions(
+            m_list_profit_item, 
+            _m_selected_search_item,
+            m_total_profit);
+        
+        m_total_weight = transaction_details.total_weight;
+        m_total_quantity = transaction_details.total_quantity;
+        m_average_price_per_unit = transaction_details.average_price_per_unit;
+        m_average_price_per_weight = transaction_details.average_price_per_weight;
     }
 
     private void populateListTable() {

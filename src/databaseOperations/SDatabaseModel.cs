@@ -83,7 +83,7 @@ public abstract class SDatabaseModel : ABaseModel {
     }
 
     // Cache for property info to avoid repeated reflection lookups
-    private static readonly Dictionary<Type, Dictionary<string, PropertyInfo>> s_property_cache = new();
+    private static readonly Dictionary<Type, Dictionary<string, PropertyInfo>> s_property_cache = [];
 
     /// <summary>
     /// Converts data from a DataTable to a collection of typed objects by mapping column names to object properties.
@@ -95,7 +95,7 @@ public abstract class SDatabaseModel : ABaseModel {
     /// </returns>
     private static ObservableCollection<T> populateColumnName<T>(DataTable? data_table) where T : ABaseItem, new() {
         if (data_table == null) {
-            return new ObservableCollection<T>();
+            return [];
         }
 
         try {
