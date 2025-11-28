@@ -108,7 +108,6 @@ public class ClientModel : ABaseModel,
                 $"WHERE {_m_COL_ID} = @id;";
         }
 
-        // Start transaction if needed
         bool need_transaction = !isTransactionActive();
         if (need_transaction) {
             startTransaction();

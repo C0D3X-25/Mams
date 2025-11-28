@@ -254,14 +254,17 @@ public class ReceiptProfitDetailedModel : ABaseModel,
             return 0;
         }
 
-        startTransaction();
+        bool need_transaction = !isTransactionActive();
+        if (need_transaction)
+        {
+            startTransaction();
+        }
 
-        // TODO: Error happening in the try block
         try
         {
             int client_id = findClientIdOrCreateNew(item.entity.entity_id);
             if (client_id == 0) {
-                commitTransaction();  // Commit empty transaction
+                rollbackTransaction();
                 return 0;
             }
             
@@ -277,12 +280,15 @@ public class ReceiptProfitDetailedModel : ABaseModel,
             };
 
             int result = _m_receipt_handler_model.saveItem(handlerItem);
-            commitTransaction();
+            if (isTransactionActive())
+            {
+                commitTransaction();
+            }
             return result;
         }
-        catch {
-            // In a real app, rollback would be here
-            commitTransaction();  // Commit empty transaction
+        catch
+        {
+            rollbackTransaction();
             return 0;
         }
     }

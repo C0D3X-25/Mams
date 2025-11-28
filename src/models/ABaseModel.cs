@@ -12,16 +12,16 @@ public abstract class ABaseModel {
     private static SQLConnectionModel _m_sql_connection_model = new();
     
     // Connection used for the current transaction - only active during transactions
-    private static MySqlConnection? _m_transaction_connection = null;
-    private static MySqlTransaction? _m_transaction = null;
+    private static MySqlConnection? _m_sql_connection = null;
+    private static MySqlTransaction? _m_sql_transaction = null;
 
     /// <summary>
     /// Gets a connection from the pool or returns the active transaction connection if in a transaction
     /// </summary>
     protected static MySqlConnection getConnection() {
         // If we're in a transaction, use the transaction connection
-        if (_m_transaction_connection != null && _m_transaction != null) {
-            return _m_transaction_connection;
+        if (_m_sql_connection != null && _m_sql_transaction != null) {
+            return _m_sql_connection;
         }
         
         // Otherwise get a new connection from the pool
@@ -32,7 +32,7 @@ public abstract class ABaseModel {
     /// For executing queries that don't return a value
     /// </summary>
     protected static void executeWithConnection(Action<MySqlConnection> action) {
-        var is_transaction_connected = (_m_transaction_connection != null);
+        var is_transaction_connected = (_m_sql_connection != null);
         var connection = getConnection();
         
         try {
@@ -50,7 +50,7 @@ public abstract class ABaseModel {
     /// For executing queries that return a value
     /// </summary>
     protected static T executeWithConnection<T>(Func<MySqlConnection, T> func) {
-        var is_transaction_connected = (_m_transaction_connection != null);
+        var is_transaction_connected = (_m_sql_connection != null);
         var connection = getConnection();
         
         try {
@@ -68,7 +68,7 @@ public abstract class ABaseModel {
     /// Gets the current transaction
     /// </summary>
     protected static MySqlTransaction? m_transaction {
-        get { return _m_transaction; }
+        get { return _m_sql_transaction; }
     }
 
     /// <summary>
@@ -80,13 +80,13 @@ public abstract class ABaseModel {
     /// </remarks>
     public static void startTransaction() {
         // If there's already a transaction, throw an exception
-        if (_m_transaction != null || _m_transaction_connection != null) {
+        if (_m_sql_transaction != null || _m_sql_connection != null) {
             throw new InvalidOperationException("A transaction is already active.");
         }
         
         // Get a new connection for this transaction
-        _m_transaction_connection = _m_sql_connection_model.GetConnection();
-        _m_transaction = _m_transaction_connection.BeginTransaction();
+        _m_sql_connection = _m_sql_connection_model.GetConnection();
+        _m_sql_transaction = _m_sql_connection.BeginTransaction();
     }
 
     /// <summary>
@@ -94,21 +94,21 @@ public abstract class ABaseModel {
     /// </summary>
     /// <returns>True if a transaction is active and its connection is open; otherwise, false.</returns>
     public static bool isTransactionActive() {
-        return _m_transaction != null 
-            && _m_transaction_connection != null 
-            && _m_transaction_connection.State == System.Data.ConnectionState.Open;
+        return _m_sql_transaction != null 
+            && _m_sql_connection != null 
+            && _m_sql_connection.State == System.Data.ConnectionState.Open;
     }
 
     /// <summary>
     /// Commits the current transaction, finalizing all changes made during the transaction.
     /// </summary>
     public static void commitTransaction() {
-        if (_m_transaction == null || _m_transaction_connection == null) {
+        if (_m_sql_transaction == null || _m_sql_connection == null) {
             throw new InvalidOperationException("No transaction to commit.");
         }
 
         try {
-            _m_transaction.Commit();
+            _m_sql_transaction.Commit();
         }
         catch (MySqlException ex) {
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
@@ -116,10 +116,10 @@ public abstract class ABaseModel {
         }
         finally {
             // Cleanup after commit
-            _m_transaction.Dispose();
-            _m_transaction = null;
-            _m_transaction_connection.Dispose();
-            _m_transaction_connection = null;
+            _m_sql_transaction.Dispose();
+            _m_sql_transaction = null;
+            _m_sql_connection.Dispose();
+            _m_sql_connection = null;
         }
     }
 
@@ -127,19 +127,19 @@ public abstract class ABaseModel {
     /// Rolls back the current transaction, if one exists.
     /// </summary>
     public static void rollbackTransaction() {
-        if (_m_transaction == null || _m_transaction_connection == null) {
+        if (_m_sql_transaction == null || _m_sql_connection == null) {
             throw new InvalidOperationException("No transaction to roll back.");
         }
         
         try {
-            _m_transaction.Rollback();
+            _m_sql_transaction.Rollback();
         }
         finally {
             // Cleanup after rollback
-            _m_transaction.Dispose();
-            _m_transaction = null;
-            _m_transaction_connection.Dispose();
-            _m_transaction_connection = null;
+            _m_sql_transaction.Dispose();
+            _m_sql_transaction = null;
+            _m_sql_connection.Dispose();
+            _m_sql_connection = null;
         }
     }
 
@@ -147,24 +147,24 @@ public abstract class ABaseModel {
     /// Clears the current transaction, releasing any associated resources.
     /// </summary>
     public static void clearTransaction() {
-        if (_m_transaction == null) {
+        if (_m_sql_transaction == null) {
             return;
         }
         
         try {
-            _m_transaction.Dispose();
+            _m_sql_transaction.Dispose();
         }
         catch { /* Ignore errors when clearing */ }
         finally {
-            _m_transaction = null;
+            _m_sql_transaction = null;
             
-            if (_m_transaction_connection != null) {
+            if (_m_sql_connection != null) {
                 try {
-                    _m_transaction_connection.Dispose();
+                    _m_sql_connection.Dispose();
                 }
                 catch { /* Ignore errors when clearing */ }
                 finally {
-                    _m_transaction_connection = null;
+                    _m_sql_connection = null;
                 }
             }
         }
@@ -173,26 +173,31 @@ public abstract class ABaseModel {
     /// <summary>
     /// Checks if a specific item exists in a given table and column in the database.
     /// </summary>
-    protected bool isIdenticItemPresentInTable(string table_name, string column_to_search, string item_to_find) {
+    protected bool isIdenticItemPresentInTable(string table_name, string column_to_search, string item_to_find)
+    {
         if (string.IsNullOrEmpty(table_name) 
             || string.IsNullOrEmpty(column_to_search) 
             || string.IsNullOrEmpty(item_to_find)
-            ){
+            )
+        {
             throw new ArgumentException("Table name, column to search, and item to find cannot be null or empty.");
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try 
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT COUNT(*) FROM {table_name} WHERE {column_to_search} = @item_to_find",
-                    connection, _m_transaction
+                    connection, _m_sql_transaction
                 );
                 cmd.Parameters.AddWithValue("@item_to_find", item_to_find);
                 int count = Convert.ToInt32(cmd.ExecuteScalar());
 
                 return count > 0;
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
                 return false;
             }

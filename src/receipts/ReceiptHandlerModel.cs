@@ -92,52 +92,64 @@ public class ReceiptHandlerModel : ABaseModel,
     /// The <paramref name="item"/> cannot be <see langword="null"/>.</param>
     /// <returns>The ID of the saved receipt client or supplier, depending on the associated entity. Returns <c>0</c> if the
     /// operation fails.</returns>
-    public int saveItem(ReceiptHandlerItem item) {
-
-        if (item == null) {
+    public int saveItem(ReceiptHandlerItem item)
+    {
+        if (item == null)
+        {
             return 0;
         }
 
         int receipt_id = item.receipt_item.receipt_id;
 
-        startTransaction();
+        bool need_transaction = !isTransactionActive();
+        if (need_transaction)
+        {
+            startTransaction();
+        }
 
         // Insert new receipt
-        if (receipt_id == 0) {
+        if (receipt_id == 0)
+        {
             receipt_id = _m_receipt_model.saveItem(item.receipt_item);
-            if (receipt_id == 0) {
+            if (receipt_id == 0)
+            {
                 rollbackTransaction();
                 return 0;
             }
         }
         // Update existing receipt
-        else {
+        else 
+        {
             // TODO: Gonna need a better way to update a receipt
             if (_m_receipt_model.saveItem(item.receipt_item) == 0
                 || !_m_receipt_product_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE)
                 || !_m_receipt_client_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE)
                 || !_m_receipt_supplier_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE))
-                {
+            {
                 rollbackTransaction();
                 return 0;
             }
         }
 
         // Save the receipt products
-        foreach (var product in item.receipt_product_items) {
+        foreach (var product in item.receipt_product_items)
+        {
             product.fk_receipt_id = receipt_id;
-            if (_m_receipt_product_model.saveItem(product) <= 0) {
+            if (_m_receipt_product_model.saveItem(product) <= 0)
+            {
                 rollbackTransaction();
                 return 0;
             }
         }
 
         // Save the client
-        if (item.receipt_client_item.fk_client_id > 0) {
+        if (item.receipt_client_item.fk_client_id > 0) 
+        {
             item.receipt_client_item.fk_receipt_id = receipt_id;
 
             int receipt_client_id = _m_receipt_client_model.saveItem(item.receipt_client_item);
-            if (receipt_client_id > 0) {
+            if (receipt_client_id > 0)
+            {
                 commitTransaction();
                 return receipt_client_id;
             }
@@ -146,12 +158,15 @@ public class ReceiptHandlerModel : ABaseModel,
             return 0;
         }
         // Or save the supplier
-        else {
-            if (item.receipt_supplier_item.fk_supplier_id > 0) {
+        else 
+        {
+            if (item.receipt_supplier_item.fk_supplier_id > 0)
+            {
                 item.receipt_supplier_item.fk_receipt_id = receipt_id;
 
                 int receipt_supplier_id = _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
-                if (receipt_supplier_id > 0) {
+                if (receipt_supplier_id > 0) 
+                {
                     commitTransaction();
                     return receipt_supplier_id;
                 }
