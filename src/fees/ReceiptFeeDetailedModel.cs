@@ -341,19 +341,19 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// greater than zero.</param>
     /// <returns>An integer representing the result of the save operation. Returns 0 if the input is invalid or the save
     /// operation fails.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the supplier cannot be found or created, or when the save operation fails.</exception>
     public int saveItem(ReceiptFeeDetailedItem item) {
         if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0) {
             return 0;
         }
 
-        // Start a transaction to ensure data consistency
         startTransaction();
-        
-        try {
+
+        try
+        {
             int supplier_id = findSupplierIdOrCreateNew(item.entity.entity_id);
             if (supplier_id == 0) {
-                commitTransaction();  // Commit empty transaction
-                return 0;
+                throw new InvalidOperationException("Failed to find or create supplier for the given entity.");
             }
             
             item.receipt_supplier.fk_supplier_id = supplier_id;
@@ -372,13 +372,18 @@ public class ReceiptFeeDetailedModel : ABaseModel,
             };
 
             int result = _m_receipt_handler_model.saveItem(handlerItem);
+            if (result == 0)
+            {
+                throw new InvalidOperationException("Failed to save the receipt.");
+            }
+
             commitTransaction();
             return result;
         }
-        catch {
-            // In a real app, rollback would be here
-            commitTransaction();  // Commit empty transaction
-            return 0;
+        catch
+        {
+            rollbackTransaction();
+            throw;
         }
     }
 

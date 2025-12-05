@@ -25,6 +25,7 @@ public class ReceiptHandlerModel : ABaseModel,
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
     /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when any delete operation fails.</exception>
     public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
 
         if (!SDataValidation.isIdValid(id)) {
@@ -33,16 +34,33 @@ public class ReceiptHandlerModel : ABaseModel,
 
         startTransaction();
 
-        if (_m_receipt_product_model.deleteItem(id, delete_type)
-            && _m_receipt_client_model.deleteItem(id, delete_type)
-            && _m_receipt_supplier_model.deleteItem(id, delete_type)
-            && _m_receipt_model.deleteItem(id, delete_type)
-        ) {
+        try
+        {
+            if (!_m_receipt_product_model.deleteItem(id, delete_type))
+            {
+                throw new InvalidOperationException("Failed to delete receipt products.");
+            }
+            if (!_m_receipt_client_model.deleteItem(id, delete_type))
+            {
+                throw new InvalidOperationException("Failed to delete receipt client.");
+            }
+            if (!_m_receipt_supplier_model.deleteItem(id, delete_type))
+            {
+                throw new InvalidOperationException("Failed to delete receipt supplier.");
+            }
+            if (!_m_receipt_model.deleteItem(id, delete_type))
+            {
+                throw new InvalidOperationException("Failed to delete receipt.");
+            }
+
             commitTransaction();
             return true;
         }
-        rollbackTransaction();
-        return false;
+        catch
+        {
+            rollbackTransaction();
+            throw;
+        }
     }
 
     /// <summary>
@@ -101,81 +119,86 @@ public class ReceiptHandlerModel : ABaseModel,
 
         int receipt_id = item.receipt_item.receipt_id;
 
-        bool need_transaction = !isTransactionActive();
-        if (need_transaction)
-        {
-            startTransaction();
-        }
+        startTransaction();
 
-        // Insert new receipt
-        if (receipt_id == 0)
+        try
         {
-            receipt_id = _m_receipt_model.saveItem(item.receipt_item);
+            // Insert new receipt
             if (receipt_id == 0)
             {
-                rollbackTransaction();
-                return 0;
+                receipt_id = _m_receipt_model.saveItem(item.receipt_item);
+                if (receipt_id == 0)
+                {
+                    throw new InvalidOperationException("Failed to save receipt.");
+                }
             }
-        }
-        // Update existing receipt
-        else 
-        {
-            // TODO: Gonna need a better way to update a receipt
-            if (_m_receipt_model.saveItem(item.receipt_item) == 0
-                || !_m_receipt_product_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE)
-                || !_m_receipt_client_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE)
-                || !_m_receipt_supplier_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE))
+            // Update existing receipt
+            else 
             {
-                rollbackTransaction();
-                return 0;
+                // TODO: Gonna need a better way to update a receipt
+                if (_m_receipt_model.saveItem(item.receipt_item) == 0)
+                {
+                    throw new InvalidOperationException("Failed to update receipt.");
+                }
+                if (!_m_receipt_product_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE))
+                {
+                    throw new InvalidOperationException("Failed to delete existing receipt products.");
+                }
+                if (!_m_receipt_client_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE))
+                {
+                    throw new InvalidOperationException("Failed to delete existing receipt client.");
+                }
+                if (!_m_receipt_supplier_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE))
+                {
+                    throw new InvalidOperationException("Failed to delete existing receipt supplier.");
+                }
             }
-        }
 
-        // Save the receipt products
-        foreach (var product in item.receipt_product_items)
-        {
-            product.fk_receipt_id = receipt_id;
-            if (_m_receipt_product_model.saveItem(product) <= 0)
+            // Save the receipt products
+            foreach (var product in item.receipt_product_items)
             {
-                rollbackTransaction();
-                return 0;
+                product.fk_receipt_id = receipt_id;
+                if (_m_receipt_product_model.saveItem(product) <= 0)
+                {
+                    throw new InvalidOperationException("Failed to save receipt product.");
+                }
             }
-        }
 
-        // Save the client
-        if (item.receipt_client_item.fk_client_id > 0) 
-        {
-            item.receipt_client_item.fk_receipt_id = receipt_id;
-
-            int receipt_client_id = _m_receipt_client_model.saveItem(item.receipt_client_item);
-            if (receipt_client_id > 0)
+            // Save the client
+            if (item.receipt_client_item.fk_client_id > 0) 
             {
+                item.receipt_client_item.fk_receipt_id = receipt_id;
+
+                int receipt_client_id = _m_receipt_client_model.saveItem(item.receipt_client_item);
+                if (receipt_client_id <= 0)
+                {
+                    throw new InvalidOperationException("Failed to save receipt client.");
+                }
+                
                 commitTransaction();
                 return receipt_client_id;
             }
-
-            rollbackTransaction();
-            return 0;
-        }
-        // Or save the supplier
-        else 
-        {
-            if (item.receipt_supplier_item.fk_supplier_id > 0)
+            // Or save the supplier
+            else if (item.receipt_supplier_item.fk_supplier_id > 0)
             {
                 item.receipt_supplier_item.fk_receipt_id = receipt_id;
 
                 int receipt_supplier_id = _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
-                if (receipt_supplier_id > 0) 
+                if (receipt_supplier_id <= 0) 
                 {
-                    commitTransaction();
-                    return receipt_supplier_id;
+                    throw new InvalidOperationException("Failed to save receipt supplier.");
                 }
-
-                rollbackTransaction();
-                return 0;
+                
+                commitTransaction();
+                return receipt_supplier_id;
             }
+            
+            throw new InvalidOperationException("No client or supplier specified for the receipt.");
         }
-        rollbackTransaction();
-        return 0;
+        catch
+        {
+            rollbackTransaction();
+            throw;
+        }
     }
 }

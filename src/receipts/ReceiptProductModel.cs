@@ -136,11 +136,7 @@ public class ReceiptProductModel : ABaseModel,
                 $"VALUES (@quantity, @unity_price, @fk_receipt, @fk_product, @fk_product_lot); " +
                 $"SELECT LAST_INSERT_ID();";
 
-        // Start transaction if needed
-        bool transaction_needed = !isTransactionActive();
-        if (transaction_needed) {
-            startTransaction();
-        }
+        startTransaction();
 
         try {
             // Ensure product lot ID is valid
@@ -159,16 +155,11 @@ public class ReceiptProductModel : ABaseModel,
                 return Convert.ToInt32(cmd.ExecuteScalar());
             });
 
-            if (transaction_needed) {
-                commitTransaction();
-            }
-            
+            commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            if (transaction_needed) {
-                rollbackTransaction();
-            }
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

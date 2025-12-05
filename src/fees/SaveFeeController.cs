@@ -196,8 +196,9 @@ public class SaveFeeController : ABaseController, ICompareState {
     private bool canSaveFee(object? arg) {        
 
         return m_selected_entity != null
+            && m_selected_entity.entity_id > 0
             && SDataValidation.isDateValidFormatEU(m_fee_receipt_detail.receipt.receipt_date_created)
-            //&& m_fee_receipt_detail.receipt.receipt_number != string.Empty // A method check if this receipt number is existing in the DB when saving
+            && m_fee_receipt_detail.receipt.receipt_number != string.Empty // A method check if this receipt number is existing in the DB when saving
             && m_list_receipt_product.Count > 0
             && m_list_receipt_product.All(item =>
                 item.receipt_product_unity_price >= 0
@@ -232,11 +233,18 @@ public class SaveFeeController : ABaseController, ICompareState {
         // Update the receipt products collection
         m_fee_receipt_detail.receipt_products = m_list_receipt_product;
 
-        if (_m_receipt_fee_detailed_model.saveItem(m_fee_receipt_detail) > 0) {
-            SPageNavigationController.navigateBack();
+        try
+        {
+            if (_m_receipt_fee_detailed_model.saveItem(m_fee_receipt_detail) > 0) {
+                SPageNavigationController.navigateBack();
+            }
+            else {
+                MessageBox.Show("Error when saving the fee");
+            }
         }
-        else {
-            MessageBox.Show("Error when saving the fee");
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error when saving the fee: {ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

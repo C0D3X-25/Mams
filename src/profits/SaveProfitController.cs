@@ -199,6 +199,7 @@ public class SaveProfitController : ABaseController, ICompareState {
     private bool canSaveProfit(object? arg) {
 
         return m_selected_entity != null
+            && m_selected_entity.entity_id > 0
             && SDataValidation.isDateValidFormatEU(m_profit_receipt_detail.receipt.receipt_date_created)
             && m_profit_receipt_detail.receipt.receipt_number != string.Empty // A method check if this receipt number is existing in the DB when saving
             && m_list_receipt_product.Count > 0
@@ -235,12 +236,18 @@ public class SaveProfitController : ABaseController, ICompareState {
         // Update the receipt products collection
         m_profit_receipt_detail.receipt_products = m_list_receipt_product;
 
-        if (_m_receipt_profit_detailed_model.saveItem(m_profit_receipt_detail) > 0) {
-            SPageNavigationController.navigateBack();
+        try
+        {
+            if (_m_receipt_profit_detailed_model.saveItem(m_profit_receipt_detail) > 0) {
+                SPageNavigationController.navigateBack();
+            }
+            else {
+                MessageBox.Show("Error when saving the profit");
+            }
         }
-        else {
-            // TODO: Need to be refactored, any error from the save method will return this message.
-            MessageBox.Show($"Le numéro de facture donné ({m_profit_receipt_detail.receipt.receipt_number}) est déjà utilisé.", "Erreur de saisie", MessageBoxButton.OK, MessageBoxImage.Warning);
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error when saving the profit: {ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

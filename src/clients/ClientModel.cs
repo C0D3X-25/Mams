@@ -108,10 +108,7 @@ public class ClientModel : ABaseModel,
                 $"WHERE {_m_COL_ID} = @id;";
         }
 
-        bool need_transaction = !isTransactionActive();
-        if (need_transaction) {
-            startTransaction();
-        }
+        startTransaction();
 
         try {
             if (isInsert) {
@@ -132,16 +129,11 @@ public class ClientModel : ABaseModel,
                 });
             }
 
-            if (need_transaction) {
-                commitTransaction();
-            }
-            
+            commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            if (need_transaction) {
-                rollbackTransaction();
-            }
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

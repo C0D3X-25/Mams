@@ -101,11 +101,7 @@ public class ReceiptSupplierModel : ABaseModel, ICrudOperation<ReceiptSupplierIt
 
         int item_id = item.fk_receipt_id;
 
-        // Start transaction if needed
-        bool transaction_needed = !isTransactionActive();
-        if (transaction_needed) {
-            startTransaction();
-        }
+        startTransaction();
 
         try {
             string query = isIdenticItemPresentInTable(m_TBL_NAME, _m_COL_FK_RECEIPT, item_id.ToString())
@@ -121,16 +117,11 @@ public class ReceiptSupplierModel : ABaseModel, ICrudOperation<ReceiptSupplierIt
                 return Convert.ToInt32(cmd.ExecuteScalar());
             });
 
-            if (transaction_needed) {
-                commitTransaction();
-            }
-            
+            commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            if (transaction_needed) {
-                rollbackTransaction();
-            }
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

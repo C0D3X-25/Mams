@@ -14,6 +14,9 @@ public abstract class ABaseModel {
     // Connection used for the current transaction - only active during transactions
     private static MySqlConnection? _m_sql_connection = null;
     private static MySqlTransaction? _m_sql_transaction = null;
+    
+    // Track transaction nesting depth - only the outermost caller commits/rollbacks
+    private static int _m_transaction_depth = 0;
 
     /// <summary>
     /// Gets a connection from the pool or returns the active transaction connection if in a transaction
@@ -72,21 +75,20 @@ public abstract class ABaseModel {
     }
 
     /// <summary>
-    /// Starts a new database transaction.
+    /// Starts a new database transaction or increments the nesting depth if one is already active.
     /// </summary>
     /// <remarks>
-    /// Creates a dedicated connection for the transaction that will be used
-    /// for all database operations until the transaction is committed or rolled back.
+    /// Uses a nesting counter to support nested transaction calls. Only the first call
+    /// actually starts a database transaction. Subsequent calls increment the depth counter.
     /// </remarks>
     public static void startTransaction() {
-        // If there's already a transaction, throw an exception
-        if (_m_sql_transaction != null || _m_sql_connection != null) {
-            throw new InvalidOperationException("A transaction is already active.");
-        }
+        _m_transaction_depth++;
         
-        // Get a new connection for this transaction
-        _m_sql_connection = _m_sql_connection_model.GetConnection();
-        _m_sql_transaction = _m_sql_connection.BeginTransaction();
+        // Only start a real transaction if this is the first/outermost call
+        if (_m_transaction_depth == 1) {
+            _m_sql_connection = _m_sql_connection_model.GetConnection();
+            _m_sql_transaction = _m_sql_connection.BeginTransaction();
+        }
     }
 
     /// <summary>
@@ -94,52 +96,83 @@ public abstract class ABaseModel {
     /// </summary>
     /// <returns>True if a transaction is active and its connection is open; otherwise, false.</returns>
     public static bool isTransactionActive() {
-        return _m_sql_transaction != null 
+        return _m_transaction_depth > 0
+            && _m_sql_transaction != null 
             && _m_sql_connection != null 
             && _m_sql_connection.State == System.Data.ConnectionState.Open;
     }
 
     /// <summary>
-    /// Commits the current transaction, finalizing all changes made during the transaction.
+    /// Commits the current transaction if this is the outermost caller, otherwise decrements the nesting depth.
     /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when no transaction is active.</exception>
     public static void commitTransaction() {
-        if (_m_sql_transaction == null || _m_sql_connection == null) {
+        if (_m_transaction_depth <= 0 || _m_sql_transaction == null || _m_sql_connection == null) {
             throw new InvalidOperationException("No transaction to commit.");
         }
 
-        try {
-            _m_sql_transaction.Commit();
-        }
-        catch (MySqlException ex) {
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            throw;
-        }
-        finally {
-            // Cleanup after commit
-            _m_sql_transaction.Dispose();
-            _m_sql_transaction = null;
-            _m_sql_connection.Dispose();
-            _m_sql_connection = null;
+        _m_transaction_depth--;
+        
+        // Only commit if this is the outermost caller
+        if (_m_transaction_depth == 0) {
+            try {
+                _m_sql_transaction.Commit();
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                throw;
+            }
+            finally {
+                cleanupTransaction();
+            }
         }
     }
 
     /// <summary>
-    /// Rolls back the current transaction, if one exists.
+    /// Rolls back the current transaction regardless of nesting depth.
     /// </summary>
+    /// <remarks>
+    /// A rollback always affects the entire transaction, regardless of which nested level initiated it.
+    /// This resets the nesting depth to zero. This method is safe to call multiple times - 
+    /// subsequent calls after the first rollback will be no-ops.
+    /// </remarks>
     public static void rollbackTransaction() {
-        if (_m_sql_transaction == null || _m_sql_connection == null) {
-            throw new InvalidOperationException("No transaction to roll back.");
+        // If no transaction is active, just return (already rolled back or never started)
+        if (_m_transaction_depth <= 0 || _m_sql_transaction == null || _m_sql_connection == null) {
+            return;
         }
         
         try {
             _m_sql_transaction.Rollback();
         }
         finally {
-            // Cleanup after rollback
-            _m_sql_transaction.Dispose();
-            _m_sql_transaction = null;
-            _m_sql_connection.Dispose();
-            _m_sql_connection = null;
+            _m_transaction_depth = 0;
+            cleanupTransaction();
+        }
+    }
+
+    /// <summary>
+    /// Cleans up transaction resources.
+    /// </summary>
+    private static void cleanupTransaction() {
+        if (_m_sql_transaction != null) {
+            try {
+                _m_sql_transaction.Dispose();
+            }
+            catch { /* Ignore errors when cleaning up */ }
+            finally {
+                _m_sql_transaction = null;
+            }
+        }
+        
+        if (_m_sql_connection != null) {
+            try {
+                _m_sql_connection.Dispose();
+            }
+            catch { /* Ignore errors when cleaning up */ }
+            finally {
+                _m_sql_connection = null;
+            }
         }
     }
 
@@ -147,27 +180,8 @@ public abstract class ABaseModel {
     /// Clears the current transaction, releasing any associated resources.
     /// </summary>
     public static void clearTransaction() {
-        if (_m_sql_transaction == null) {
-            return;
-        }
-        
-        try {
-            _m_sql_transaction.Dispose();
-        }
-        catch { /* Ignore errors when clearing */ }
-        finally {
-            _m_sql_transaction = null;
-            
-            if (_m_sql_connection != null) {
-                try {
-                    _m_sql_connection.Dispose();
-                }
-                catch { /* Ignore errors when clearing */ }
-                finally {
-                    _m_sql_connection = null;
-                }
-            }
-        }
+        _m_transaction_depth = 0;
+        cleanupTransaction();
     }
 
     /// <summary>

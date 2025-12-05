@@ -374,23 +374,19 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// the associated entity must have a valid <c>entity_id</c>.</param>
     /// <returns>An integer representing the result of the save operation. Returns <c>0</c> if the input is invalid;  otherwise,
     /// returns the identifier of the saved receipt.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the client cannot be found or created, or when the save operation fails.</exception>
     public int saveItem(ReceiptProfitDetailedItem item) {
         if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0) {
             return 0;
         }
 
-        bool need_transaction = !isTransactionActive();
-        if (need_transaction)
-        {
-            startTransaction();
-        }
+        startTransaction();
 
         try
         {
             int client_id = findClientIdOrCreateNew(item.entity.entity_id);
             if (client_id == 0) {
-                rollbackTransaction();
-                return 0;
+                throw new InvalidOperationException("Failed to find or create client for the given entity.");
             }
             
             item.receipt_client.fk_client_id = client_id;
@@ -405,16 +401,18 @@ public class ReceiptProfitDetailedModel : ABaseModel,
             };
 
             int result = _m_receipt_handler_model.saveItem(handlerItem);
-            if (isTransactionActive())
+            if (result == 0)
             {
-                commitTransaction();
+                throw new InvalidOperationException("Failed to save the receipt.");
             }
+
+            commitTransaction();
             return result;
         }
         catch
         {
             rollbackTransaction();
-            return 0;
+            throw;
         }
     }
 
@@ -457,3 +455,4 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     }
 }
 
+    

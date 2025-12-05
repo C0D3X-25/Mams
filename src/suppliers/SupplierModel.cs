@@ -46,7 +46,8 @@ public class SupplierModel : ABaseModel,
                     $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
                     $"FROM {_m_TBL_NAME} " +
                     $"WHERE {_m_COL_ID} = @id;",
-                    connection
+                    connection,
+                    m_transaction
                 );
 
                 cmd.Parameters.AddWithValue("@id", id);
@@ -109,11 +110,7 @@ public class SupplierModel : ABaseModel,
                 $"WHERE {_m_COL_ID} = @id;";
         }
 
-        // Start transaction if needed
-        bool need_transaction = !isTransactionActive();
-        if (need_transaction) {
-            startTransaction();
-        }
+        startTransaction();
 
         try {
             if (isInsert) {
@@ -134,16 +131,11 @@ public class SupplierModel : ABaseModel,
                 });
             }
             
-            if (need_transaction) {
-                commitTransaction();
-            }
-            
+            commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            if (need_transaction) {
-                rollbackTransaction();
-            }
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
@@ -168,7 +160,8 @@ public class SupplierModel : ABaseModel,
                     $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
                     $"FROM {_m_TBL_NAME} " +
                     $"WHERE {_m_COL_FK_ENTITY} = @fk_entity;",
-                    connection
+                    connection,
+                    m_transaction
                 );
 
                 cmd.Parameters.AddWithValue("@fk_entity", fk_entity);

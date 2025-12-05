@@ -129,11 +129,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
               $"{_m_COL_RECEIPT_DATE_CREATED} = @date_created " +
               $"WHERE {_m_COL_ID} = @id;";
 
-        // Start transaction if needed
-        bool transaction_needed = !isTransactionActive();
-        if (transaction_needed) {
-            startTransaction();
-        }
+        startTransaction();
 
         try {
             if (item_id == 0) {
@@ -158,15 +154,11 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 });
             }
 
-            if (transaction_needed) {
-                commitTransaction();
-            }
+            commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            if (transaction_needed) {
-                rollbackTransaction();
-            }
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }
