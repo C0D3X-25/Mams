@@ -24,42 +24,48 @@ public class ReceiptHandlerModel : ABaseModel,
     /// For <see cref="EDeleteItemOperation.SAFE_DELETE"/>, the item is archived instead of being permanently removed.</remarks>
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
-    /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when any delete operation fails.</exception>
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
+    /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
 
         if (!SDataValidation.isIdValid(id)) {
-            return false;
+            return ResponseDeleteItem.Failure("Invalid ID provided.");
         }
 
         startTransaction();
 
         try
         {
-            if (!_m_receipt_product_model.deleteItem(id, delete_type))
+            var productResult = _m_receipt_product_model.deleteItem(id, delete_type);
+            if (!productResult.is_success)
             {
-                throw new InvalidOperationException("Failed to delete receipt products.");
+                throw new InvalidOperationException(productResult.error_message ?? "Failed to delete receipt products.");
             }
-            if (!_m_receipt_client_model.deleteItem(id, delete_type))
+            
+            var clientResult = _m_receipt_client_model.deleteItem(id, delete_type);
+            if (!clientResult.is_success)
             {
-                throw new InvalidOperationException("Failed to delete receipt client.");
+                throw new InvalidOperationException(clientResult.error_message ?? "Failed to delete receipt client.");
             }
-            if (!_m_receipt_supplier_model.deleteItem(id, delete_type))
+            
+            var supplierResult = _m_receipt_supplier_model.deleteItem(id, delete_type);
+            if (!supplierResult.is_success)
             {
-                throw new InvalidOperationException("Failed to delete receipt supplier.");
+                throw new InvalidOperationException(supplierResult.error_message ?? "Failed to delete receipt supplier.");
             }
-            if (!_m_receipt_model.deleteItem(id, delete_type))
+            
+            var receiptResult = _m_receipt_model.deleteItem(id, delete_type);
+            if (!receiptResult.is_success)
             {
-                throw new InvalidOperationException("Failed to delete receipt.");
+                throw new InvalidOperationException(receiptResult.error_message ?? "Failed to delete receipt.");
             }
 
             commitTransaction();
-            return true;
+            return ResponseDeleteItem.Success();
         }
-        catch
+        catch (Exception ex)
         {
             rollbackTransaction();
-            throw;
+            return ResponseDeleteItem.Failure(ex.Message);
         }
     }
 
@@ -142,17 +148,23 @@ public class ReceiptHandlerModel : ABaseModel,
                 {
                     throw new InvalidOperationException(updateResult.error_message ?? "Failed to update receipt.");
                 }
-                if (!_m_receipt_product_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE))
+                
+                var productDeleteResult = _m_receipt_product_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE);
+                if (!productDeleteResult.is_success)
                 {
-                    throw new InvalidOperationException("Failed to delete existing receipt products.");
+                    throw new InvalidOperationException(productDeleteResult.error_message ?? "Failed to delete existing receipt products.");
                 }
-                if (!_m_receipt_client_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE))
+                
+                var clientDeleteResult = _m_receipt_client_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE);
+                if (!clientDeleteResult.is_success)
                 {
-                    throw new InvalidOperationException("Failed to delete existing receipt client.");
+                    throw new InvalidOperationException(clientDeleteResult.error_message ?? "Failed to delete existing receipt client.");
                 }
-                if (!_m_receipt_supplier_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE))
+                
+                var supplierDeleteResult = _m_receipt_supplier_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE);
+                if (!supplierDeleteResult.is_success)
                 {
-                    throw new InvalidOperationException("Failed to delete existing receipt supplier.");
+                    throw new InvalidOperationException(supplierDeleteResult.error_message ?? "Failed to delete existing receipt supplier.");
                 }
             }
 

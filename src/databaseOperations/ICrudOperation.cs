@@ -41,6 +41,7 @@ public interface ICrudOperation<T> where T : ABaseItem {
     /// </summary>
     /// <param name="id">The unique identifier of the item to delete. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of deletion operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
-    /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
-    bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE);
+    /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.
+    /// The <see cref="ResponseDeleteItem.is_deleted"/> is <see langword="false"/> if the operation fails.</returns>
+    ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE);
 }

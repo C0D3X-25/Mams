@@ -24,8 +24,8 @@ public class SupplierModel : ABaseModel,
     /// For <see cref="EDeleteItemOperation.SAFE_DELETE"/>, the item is archived instead of being permanently removed.</remarks>
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
-    /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+    /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
     }
 
@@ -187,17 +187,16 @@ public class SupplierModel : ABaseModel,
     /// Deletes a supplier associated with the specified foreign key.
     /// </summary>
     /// <param name="fk_entity">The foreign key of the entity associated with the supplier to be deleted. Must not be null or empty.</param>
-    /// <returns><see langword="true"/> if the supplier was successfully deleted;  otherwise, <see langword="false"/> if the
-    /// foreign key is invalid,  no supplier is found, or the deletion fails.</returns>
-    public bool deleteSupplierWithEntityFK(string fk_entity) {
+    /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
+    public ResponseDeleteItem deleteSupplierWithEntityFK(string fk_entity) {
         if (string.IsNullOrEmpty(fk_entity)) {
-            return false;
+            return ResponseDeleteItem.Failure("Foreign key cannot be null or empty.");
         }
 
         SupplierItem? item = getSupplierWithEntityFK(fk_entity);
 
         if (item == null) {
-            return false;
+            return ResponseDeleteItem.Failure("Supplier not found.");
         }
 
         return deleteItem(item.supplier_id.ToString());

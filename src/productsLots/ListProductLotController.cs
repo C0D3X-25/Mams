@@ -4,6 +4,7 @@ using Mams.src.databaseOperations;
 using Mams.src.navigations;
 using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Mams.src.productsLots;
@@ -111,12 +112,19 @@ public class ListProductLotController : ABaseController {
 
     private void deleteOrRestoreItem(object? obj) {
         if (_m_selected_item != null) {
+            ResponseDeleteItem result;
             if (_m_is_show_archived_checked) {
-                _m_item_model.deleteItem(_m_selected_item.product_lot_id.ToString(), EDeleteItemOperation.RESTORE);
+                result = _m_item_model.deleteItem(_m_selected_item.product_lot_id.ToString(), EDeleteItemOperation.RESTORE);
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.product_lot_id.ToString());
+                result = _m_item_model.deleteItem(_m_selected_item.product_lot_id.ToString());
             }
+            
+            if (!result.is_success) {
+                MessageBox.Show(result.error_message ?? "Une erreur s'est produite lors de la suppression.", 
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            
             updateListItems();
         }
     }

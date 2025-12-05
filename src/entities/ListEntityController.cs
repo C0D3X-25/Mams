@@ -5,6 +5,7 @@ using Mams.src.databaseOperations;
 using Mams.src.navigations;
 using Mams.src.views.globalView;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
 
 namespace Mams.src.entities;
@@ -144,12 +145,19 @@ public class ListEntityController : ABaseController {
     /// <param name="obj">Command parameter (not used)</param>
     private void deleteOrRestoreItem(object? obj) {
         if (_m_selected_item != null) {
+            ResponseDeleteItem result;
             if (!_m_is_show_archived_checked) {
-                _m_item_model.deleteItem(_m_selected_item.entity_id.ToString());
+                result = _m_item_model.deleteItem(_m_selected_item.entity_id.ToString());
             }
             else {
-                _m_item_model.deleteItem(_m_selected_item.entity_id.ToString(), EDeleteItemOperation.RESTORE);
+                result = _m_item_model.deleteItem(_m_selected_item.entity_id.ToString(), EDeleteItemOperation.RESTORE);
             }
+            
+            if (!result.is_success) {
+                MessageBox.Show(result.error_message ?? "Une erreur s'est produite lors de la suppression.", 
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            
             updateListItems();
         }
     }

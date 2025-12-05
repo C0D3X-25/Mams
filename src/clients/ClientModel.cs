@@ -24,8 +24,8 @@ public class ClientModel : ABaseModel,
     /// For safe delete operations, additional checks may be performed to ensure data integrity.</remarks>
     /// <param name="id">The unique identifier of the item to delete. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
-    /// <returns><see langword="true"/> if the item was successfully deleted; otherwise, <see langword="false"/>.</returns>
-    public bool deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+    /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
     }
 
@@ -184,17 +184,16 @@ public class ClientModel : ABaseModel,
     /// Deletes a client associated with the specified foreign key.
     /// </summary>
     /// <param name="fk_entity">The foreign key of the entity associated with the client to be deleted. Must not be null or empty.</param>
-    /// <returns><see langword="true"/> if the client was successfully deleted;  otherwise, <see langword="false"/> if the
-    /// foreign key is invalid,  no client is found, or the deletion fails.</returns>
-    public bool deleteClientWithEntityFK(string fk_entity) {
+    /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
+    public ResponseDeleteItem deleteClientWithEntityFK(string fk_entity) {
         if (!SDataValidation.isIdValid(fk_entity)) {
-            return false;
+            return ResponseDeleteItem.Failure("Invalid foreign key provided.");
         }
 
         ClientItem? item = getClientWithEntityFK(fk_entity);
 
         if (item == null) {
-            return false;
+            return ResponseDeleteItem.Failure("Client not found.");
         }
 
         return deleteItem(item.client_id.ToString());

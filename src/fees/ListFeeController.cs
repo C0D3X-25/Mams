@@ -85,7 +85,11 @@ public class ListFeeController : ABaseController {
             if (result == MessageBoxResult.No) {
                 return;
             }
-            _m_item_model.deleteItem(_m_selected_item.receipt.receipt_id.ToString());
+            var deleteResult = _m_item_model.deleteItem(_m_selected_item.receipt.receipt_id.ToString());
+            if (!deleteResult.is_success) {
+                MessageBox.Show(deleteResult.error_message ?? "Une erreur s'est produite lors de la suppression.", 
+                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             updateListItems();
         }
     }

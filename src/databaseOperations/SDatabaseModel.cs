@@ -43,9 +43,9 @@ public abstract class SDatabaseModel : ABaseModel {
     /// <param name="table">The name of the database table to perform the operation on.</param>
     /// <param name="delete_type">The type of delete operation to perform.</param>
     /// <returns>
-    /// Returns true if the operation was successful; otherwise, false.
+    /// A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.
     /// </returns>
-    public static bool deleteRow(
+    public static ResponseDeleteItem deleteRow(
         string id, 
         string field_id, 
         string field_archive,
@@ -53,7 +53,7 @@ public abstract class SDatabaseModel : ABaseModel {
         EDeleteItemOperation delete_type
         ) {
         if (!areDeleteParametersProvided(id, field_id, table, delete_type)) {
-            return false;
+            return ResponseDeleteItem.Failure("Invalid parameters provided for delete operation.");
         }
 
         return deleteOperation(id, field_id, field_archive, table, delete_type);
@@ -67,16 +67,16 @@ public abstract class SDatabaseModel : ABaseModel {
     /// <param name="table">The name of the database table to perform the operation on.</param>
     /// <param name="delete_type">The type of delete operation to perform.</param>
     /// <returns>
-    /// Returns true if the operation was successful; otherwise, false.
+    /// A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.
     /// </returns>
-    public static bool deleteRow(
+    public static ResponseDeleteItem deleteRow(
         string id,
         string field_id,
         string table,
         EDeleteItemOperation delete_type
         ) {
         if (!areDeleteParametersProvided(id, field_id, table, delete_type)) {
-            return false;
+            return ResponseDeleteItem.Failure("Invalid parameters provided for delete operation.");
         }
 
         return deleteOperation(id, field_id, string.Empty, table, delete_type);
@@ -138,8 +138,8 @@ public abstract class SDatabaseModel : ABaseModel {
     /// <param name="field_archive">The name of the field used for archiving records.</param>
     /// <param name="table">The name of the database table containing the record.</param>
     /// <param name="delete_type">The type of delete operation to perform.</param>
-    /// <returns><see langword="true"/> if the operation is successful; otherwise, <see langword="false"/>.</returns>
-    private static bool deleteOperation(
+    /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
+    private static ResponseDeleteItem deleteOperation(
         string id,
         string field_id,
         string field_archive,
@@ -153,7 +153,7 @@ public abstract class SDatabaseModel : ABaseModel {
             // Archive the record
             case EDeleteItemOperation.SOFT_DELETE:
                 if (!isArchiveFieldProvided(field_archive)) {
-                    return false;
+                    return ResponseDeleteItem.Failure("Archive field name cannot be empty for soft delete operation.");
                 }
                 query = $"UPDATE {table} SET {field_archive} = CURDATE() WHERE {field_id} = @id";
                 break;
@@ -164,19 +164,19 @@ public abstract class SDatabaseModel : ABaseModel {
             // Check if the record is linked in another table, then SOFT_DELETE or HARD_DELETE
             case EDeleteItemOperation.SAFE_DELETE:
                 if (!isArchiveFieldProvided(field_archive)) {
-                    return false;
+                    return ResponseDeleteItem.Failure("Archive field name cannot be empty for safe delete operation.");
                 }
                 query = $"DELETE FROM {table} WHERE {field_id} = @id";
                 break;
             // Restore the record from the archive
             case EDeleteItemOperation.RESTORE:
                 if (!isArchiveFieldProvided(field_archive)) {
-                    return false;
+                    return ResponseDeleteItem.Failure("Archive field name cannot be empty for restore operation.");
                 }
                 query = $"UPDATE {table} SET {field_archive} = NULL WHERE {field_id} = @id";
                 break;
             default:
-                return false;
+                return ResponseDeleteItem.Failure("Invalid delete operation type.");
         }
 
         bool need_transaction = !isTransactionActive();
@@ -195,7 +195,7 @@ public abstract class SDatabaseModel : ABaseModel {
             if (need_transaction) {
                 commitTransaction();
             }
-            return true;
+            return ResponseDeleteItem.Success();
         }
         catch (MySqlException ex) {
             // In case of a foreign key constraint violation, try soft delete if archive field is provided
@@ -214,8 +214,7 @@ public abstract class SDatabaseModel : ABaseModel {
             if (need_transaction) {
                 rollbackTransaction();
             }
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return false;
+            return ResponseDeleteItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 
