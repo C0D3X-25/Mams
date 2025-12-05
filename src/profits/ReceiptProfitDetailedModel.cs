@@ -57,13 +57,17 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// <returns>A <see cref="ReceiptProfitDetailedItem"/> object containing detailed information about the receipt,  including
     /// associated products, client, and entity data, or <see langword="null"/> if the identifier is invalid  or no
     /// matching receipt is found.</returns>
-    public ReceiptProfitDetailedItem? getItemByID(string id) {
-        if (!SDataValidation.isIdValid(id)) {
+    public ReceiptProfitDetailedItem? getItemByID(string id)
+    {
+        if (!SDataValidation.isIdValid(id))
+        {
             return null;
         }
 
-        return executeWithConnection<ReceiptProfitDetailedItem?>(connection => {
-            try {
+        return executeWithConnection<ReceiptProfitDetailedItem?>(connection =>
+        {
+            try
+            {
                 // Single query to get all receipt data with products
                 string query = $@"
                     SELECT 
@@ -127,22 +131,27 @@ public class ReceiptProfitDetailedModel : ABaseModel,
 
                 while (reader.Read()) {
                     // First row: create the item with receipt, client, entity data
-                    item ??= new ReceiptProfitDetailedItem {
-                        receipt = new ReceiptItem {
+                    item ??= new ReceiptProfitDetailedItem 
+                    {
+                        receipt = new ReceiptItem 
+                        {
                             receipt_id = reader.getSafeValue<int>("receipt_id"),
                             receipt_number = reader.getSafeValue("receipt_number", string.Empty),
                             receipt_total_price = reader.getSafeValue<decimal>("receipt_total_price"),
                             receipt_date_created = reader.getSafeValue("receipt_date_created", DateOnly.MinValue).ToString(globals.SGlobals.g_EU_DATE_FORMAT)
                         },
-                        receipt_client = new ReceiptClientItem {
+                        receipt_client = new ReceiptClientItem
+                        {
                             fk_client_id = reader.getSafeValue<int>("fk_client_id"),
                             fk_receipt_id = reader.getSafeValue<int>("rc_fk_receipt_id")
                         },
-                        client = new ClientItem {
+                        client = new ClientItem 
+                        {
                             client_id = reader.getSafeValue<int>("client_id"),
                             fk_entity_id = reader.getSafeValue<int>("fk_entity_id")
                         },
-                        entity = new EntityItem {
+                        entity = new EntityItem 
+                        {
                             entity_id = reader.getSafeValue<int>("entity_id"),
                             entity_name = reader.getSafeValue("entity_name", string.Empty),
                             entity_phone = reader.getSafeValue("entity_phone", string.Empty),
@@ -155,13 +164,16 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                     };
 
                     // Add product if present (receipt_product_id is not null)
-                    if (!reader.IsDBNull(reader.GetOrdinal("receipt_product_id"))) {
-                        item.receipt_products.Add(new ReceiptProductItem {
+                    if (!reader.IsDBNull(reader.GetOrdinal("receipt_product_id")))
+                    {
+                        item.receipt_products.Add(new ReceiptProductItem
+                        {
                             receipt_product_id = reader.getSafeValue<int>("receipt_product_id"),
                             receipt_product_quantity = reader.getSafeValue<int>("receipt_product_quantity"),
                             receipt_product_unity_price = reader.getSafeValue<decimal>("receipt_product_unity_price"),
                             fk_receipt_id = reader.getSafeValue<int>("rp_fk_receipt_id"),
-                            product_item = new ProductItem {
+                            product_item = new ProductItem
+                            {
                                 product_id = reader.getSafeValue<int>("product_id"),
                                 product_name = reader.getSafeValue("product_name", string.Empty),
                                 product_weight = reader.getSafeValue<int>("product_weight"),
@@ -173,7 +185,8 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                                 product_category_name = reader.getSafeValue("product_category_name", string.Empty),
                                 product_shape_name = reader.getSafeValue("product_shape_name", string.Empty)
                             },
-                            product_lot_item = new ProductLotItem {
+                            product_lot_item = new ProductLotItem
+                            {
                                 product_lot_id = reader.getSafeValue<int>("product_lot_id"),
                                 product_lot_name = reader.getSafeValue("product_lot_name", string.Empty),
                                 product_lot_year = reader.getSafeValue<int>("product_lot_year"),
@@ -200,126 +213,157 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// <returns>An <see cref="ObservableCollection{ReceiptProfitDetailedItem}"/> containing detailed receipt profit items.  The collection will be empty
     /// if no valid receipts are found.</returns>
     public ObservableCollection<ReceiptProfitDetailedItem> getTable() {
-        var receipts = _m_receipt_handler_model.getTable();
-        var items = new ObservableCollection<ReceiptProfitDetailedItem>();
-        
-        // Early exit if no receipts
-        if (receipts.Count == 0) {
-            return items;
-        }
+        return executeWithConnection(connection =>
+        {
+            var items = new ObservableCollection<ReceiptProfitDetailedItem>();
 
-        // Collect all client and product IDs to batch fetch
-        var client_ids = new HashSet<int>();
-        var product_ids = new HashSet<int>();
-        var product_lot_ids = new HashSet<int>();
-        
-        foreach (var receipt in receipts) {
-            // Skip fee receipts
-            if (receipt.receipt_supplier_item.fk_supplier_id != 0) {
-                continue;
-            }
-            
-            client_ids.Add(receipt.receipt_client_item.fk_client_id);
-            
-            foreach (var product in receipt.receipt_product_items) {
-                product_ids.Add(product.product_item.product_id);
-                product_lot_ids.Add(product.product_lot_item.product_lot_id);
-            }
-        }
+            try
+            {
+                // Single query to get all receipt data with products (excluding supplier receipts)
+                string query = $@"
+                    SELECT 
+                        r.receipt_id,
+                        r.receipt_number,
+                        r.receipt_total_price,
+                        r.receipt_date_created,
+                        rc.fk_client_id,
+                        rc.fk_receipt_id AS rc_fk_receipt_id,
+                        c.client_id,
+                        c.fk_entity_id,
+                        e.entity_id,
+                        e.entity_name,
+                        e.entity_phone,
+                        e.entity_email,
+                        e.entity_city,
+                        e.entity_address,
+                        e.entity_archive,
+                        rp.receipt_product_id,
+                        rp.receipt_product_quantity,
+                        rp.receipt_product_unity_price,
+                        rp.fk_receipt_id AS rp_fk_receipt_id,
+                        p.product_id,
+                        p.product_name,
+                        p.product_weight,
+                        p.product_archive,
+                        p.fk_product_type_id,
+                        p.fk_product_category_id,
+                        p.fk_product_shape_id,
+                        pt.product_type_name,
+                        pc.product_category_name,
+                        ps.product_shape_name,
+                        pl.product_lot_id,
+                        pl.product_lot_name,
+                        pl.product_lot_year,
+                        pl.fk_beehive_id,
+                        pl.product_lot_archive,
+                        b.beehive_name
+                    FROM {_m_TBL_RECEIPTS} r
+                    INNER JOIN {_m_TBL_RECEIPTS_CLIENTS} rc ON r.receipt_id = rc.fk_receipt_id
+                    INNER JOIN {_m_TBL_CLIENTS} c ON rc.fk_client_id = c.client_id
+                    INNER JOIN {_m_TBL_ENTITIES} e ON c.fk_entity_id = e.entity_id
+                    LEFT JOIN {_m_TBL_RECEIPTS_SUPPLIERS} rs ON r.receipt_id = rs.fk_receipt_id
+                    LEFT JOIN {_m_TBL_RECEIPTS_PRODUCTS} rp ON r.receipt_id = rp.fk_receipt_id
+                    LEFT JOIN {_m_TBL_PRODUCTS} p ON rp.fk_product_id = p.product_id
+                    LEFT JOIN {_m_TBL_PRODUCTS_TYPES} pt ON p.fk_product_type_id = pt.product_type_id
+                    LEFT JOIN {_m_TBL_PRODUCTS_CATEGORIES} pc ON p.fk_product_category_id = pc.product_category_id
+                    LEFT JOIN {_m_TBL_PRODUCTS_SHAPES} ps ON p.fk_product_shape_id = ps.product_shape_id
+                    LEFT JOIN {_m_TBL_PRODUCTS_LOTS} pl ON rp.fk_product_lot_id = pl.product_lot_id
+                    LEFT JOIN {_m_TBL_BEEHIVES} b ON pl.fk_beehive_id = b.beehive_id
+                    WHERE rs.fk_supplier_id IS NULL
+                    ORDER BY r.receipt_id, rp.receipt_product_id;";
 
-        // Batch fetch clients
-        var clients = new Dictionary<int, ClientItem>();
-        foreach (int client_id in client_ids) {
-            var client = _m_client_model.getItemByID(client_id.ToString());
-            if (client != null) {
-                clients[client_id] = client;
-            }
-        }
+                using MySqlCommand cmd = new(query, connection);
+                using MySqlDataReader reader = cmd.ExecuteReader();
 
-        // Collect entity IDs for batch fetch
-        var entityIds = new HashSet<int>();
-        foreach (var client in clients.Values) {
-            entityIds.Add(client.fk_entity_id);
-        }
+                // Dictionary to track receipts by ID for grouping products
+                var receiptDict = new Dictionary<int, ReceiptProfitDetailedItem>();
 
-        // Batch fetch entities
-        var entities = new Dictionary<int, EntityItem>();
-        foreach (int entityId in entityIds) {
-            var entity = _m_entity_model.getItemByID(entityId.ToString());
-            if (entity != null) {
-                entities[entityId] = entity;
-            }
-        }
+                while (reader.Read())
+                {
+                    int receiptId = reader.getSafeValue<int>("receipt_id");
 
-        // Batch fetch products
-        var products = new Dictionary<int, ProductItem>();
-        foreach (int product_id in product_ids) {
-            var product = _m_product_model.getItemByID(product_id.ToString());
-            if (product != null) {
-                products[product_id] = product;
-            }
-        }
+                    // Create new receipt item if not already tracked
+                    if (!receiptDict.TryGetValue(receiptId, out var item))
+                    {
+                        item = new ReceiptProfitDetailedItem
+                        {
+                            receipt = new ReceiptItem
+                            {
+                                receipt_id = receiptId,
+                                receipt_number = reader.getSafeValue("receipt_number", string.Empty),
+                                receipt_total_price = reader.getSafeValue<decimal>("receipt_total_price"),
+                                receipt_date_created = reader.getSafeValue("receipt_date_created", DateOnly.MinValue).ToString(globals.SGlobals.g_EU_DATE_FORMAT)
+                            },
+                            receipt_client = new ReceiptClientItem
+                            {
+                                fk_client_id = reader.getSafeValue<int>("fk_client_id"),
+                                fk_receipt_id = reader.getSafeValue<int>("rc_fk_receipt_id")
+                            },
+                            client = new ClientItem
+                            {
+                                client_id = reader.getSafeValue<int>("client_id"),
+                                fk_entity_id = reader.getSafeValue<int>("fk_entity_id")
+                            },
+                            entity = new EntityItem
+                            {
+                                entity_id = reader.getSafeValue<int>("entity_id"),
+                                entity_name = reader.getSafeValue("entity_name", string.Empty),
+                                entity_phone = reader.getSafeValue("entity_phone", string.Empty),
+                                entity_email = reader.getSafeValue("entity_email", string.Empty),
+                                entity_city = reader.getSafeValue("entity_city", string.Empty),
+                                entity_address = reader.getSafeValue("entity_address", string.Empty),
+                                entity_archive = reader.getSafeValue("entity_archive", DateOnly.MinValue).ToString()
+                            },
+                            receipt_products = []
+                        };
 
-        // Batch fetch product lots
-        var productLots = new Dictionary<int, ProductLotItem>();
-        foreach (int lot_id in product_lot_ids) {
-            var lot = _m_product_lot_model.getItemByID(lot_id.ToString());
-            if (lot != null) {
-                productLots[lot_id] = lot;
-            }
-        }
+                        receiptDict[receiptId] = item;
+                        items.Add(item);
+                    }
 
-        // Assemble the detailed items
-        foreach (var receipt in receipts) {
-            // Skip fee receipts
-            if (receipt.receipt_supplier_item.fk_supplier_id != 0) {
-                continue;
-            }
-
-            int client_id = receipt.receipt_client_item.fk_client_id;
-            if (!clients.TryGetValue(client_id, out var client)) {
-                client = new();
-            }
-
-            int entityId = client.fk_entity_id;
-            if (!entities.TryGetValue(entityId, out var entity)) {
-                entity = new();
-            }
-
-            var detailedItem = new ReceiptProfitDetailedItem {
-                receipt = receipt.receipt_item,
-                receipt_products = new ObservableCollection<ReceiptProductItem>(),
-                receipt_client = receipt.receipt_client_item,
-                client = client,
-                entity = entity
-            };
-
-            // Copy and populate product details
-            foreach (var receipt_product in receipt.receipt_product_items) {
-                var productCopy = new ReceiptProductItem {
-                    receipt_product_id = receipt_product.receipt_product_id,
-                    receipt_product_quantity = receipt_product.receipt_product_quantity,
-                    receipt_product_unity_price = receipt_product.receipt_product_unity_price,
-                    fk_receipt_id = receipt_product.fk_receipt_id,
-                    product_item = receipt_product.product_item,
-                    product_lot_item = receipt_product.product_lot_item
-                };
-
-                if (products.TryGetValue(receipt_product.product_item.product_id, out var product)) {
-                    productCopy.product_item = product;
+                    // Add product if present (receipt_product_id is not null)
+                    if (!reader.IsDBNull(reader.GetOrdinal("receipt_product_id")))
+                    {
+                        item.receipt_products.Add(new ReceiptProductItem
+                        {
+                            receipt_product_id = reader.getSafeValue<int>("receipt_product_id"),
+                            receipt_product_quantity = reader.getSafeValue<int>("receipt_product_quantity"),
+                            receipt_product_unity_price = reader.getSafeValue<decimal>("receipt_product_unity_price"),
+                            fk_receipt_id = reader.getSafeValue<int>("rp_fk_receipt_id"),
+                            product_item = new ProductItem
+                            {
+                                product_id = reader.getSafeValue<int>("product_id"),
+                                product_name = reader.getSafeValue("product_name", string.Empty),
+                                product_weight = reader.getSafeValue<int>("product_weight"),
+                                product_archive = reader.getSafeValue("product_archive", DateOnly.MinValue).ToString(),
+                                fk_product_type_id = reader.getSafeValue<int>("fk_product_type_id"),
+                                fk_product_category_id = reader.getSafeValue<int>("fk_product_category_id"),
+                                fk_product_shape_id = reader.getSafeValue<int>("fk_product_shape_id"),
+                                product_type_name = reader.getSafeValue("product_type_name", string.Empty),
+                                product_category_name = reader.getSafeValue("product_category_name", string.Empty),
+                                product_shape_name = reader.getSafeValue("product_shape_name", string.Empty)
+                            },
+                            product_lot_item = new ProductLotItem
+                            {
+                                product_lot_id = reader.getSafeValue<int>("product_lot_id"),
+                                product_lot_name = reader.getSafeValue("product_lot_name", string.Empty),
+                                product_lot_year = reader.getSafeValue<int>("product_lot_year"),
+                                fk_beehive_id = reader.getSafeValue<int>("fk_beehive_id"),
+                                beehive_name = reader.getSafeValue("beehive_name", string.Empty),
+                                product_lot_archive = reader.getSafeValue("product_lot_archive", DateOnly.MinValue).ToString()
+                            }
+                        });
+                    }
                 }
 
-                if (productLots.TryGetValue(receipt_product.product_lot_item.product_lot_id, out var lot)) {
-                    productCopy.product_lot_item = lot;
-                }
-
-                detailedItem.receipt_products.Add(productCopy);
+                return items;
             }
-
-            items.Add(detailedItem);
-        }
-
-        return items;
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return items;
+            }
+        });
     }
 
     /// <summary>
