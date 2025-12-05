@@ -114,12 +114,12 @@ public class BeehiveModel : ABaseModel,
         
         // Start transaction if needed
         bool need_transaction = !isTransactionActive();
-        if (need_transaction) {
-            startTransaction();
-        }
+
+        startTransaction();
         
         try {
-            if (isInsert) {
+            if (isInsert) 
+            {
                 // For INSERT operations, we need to return the new ID
                 item_id = executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
@@ -127,7 +127,8 @@ public class BeehiveModel : ABaseModel,
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 });
             }
-            else {
+            else 
+            {
                 // For UPDATE operations, we just execute the command
                 executeWithConnection(connection => {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
@@ -137,16 +138,11 @@ public class BeehiveModel : ABaseModel,
                 });
             }
             
-            if (need_transaction) {
-                commitTransaction();
-            }
-            
+            commitTransaction();
             return item_id;
         }
         catch (MySqlException ex) {
-            if (need_transaction) {
-                rollbackTransaction();
-            }
+            rollbackTransaction();
             MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             return 0;
         }

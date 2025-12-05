@@ -34,7 +34,6 @@ public class SaveBeehiveController : ABaseController, ICompareState {
         }
     }
 
-    
     public SaveBeehiveController(int id_to_load = 0) {
 
         if (id_to_load != 0) {
