@@ -87,10 +87,13 @@ public class SaveEntityController : ABaseController, ICompareState {
     /// If a client with the same name exists, shows an error message.
     /// </remarks>
     private void saveClient(object? obj) {
-        if (_m_entity_model.saveItem(m_entity) > 0) {
+        var result = _m_entity_model.saveItem(m_entity);
+        if (result.is_success) {
             SPageNavigationController.navigateBack();
         }
-        else { MessageBox.Show($"Un contact avec le même nom ({_m_entity.entity_name}) est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); }
+        else { 
+            MessageBox.Show(result.error_message ?? $"Un contact avec le même nom ({_m_entity.entity_name}) est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); 
+        }
     }
 
 

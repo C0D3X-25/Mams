@@ -108,13 +108,13 @@ public class ReceiptHandlerModel : ABaseModel,
     /// </summary>
     /// <param name="item">The <see cref="ReceiptHandlerItem"/> containing the receipt details, products, client, and supplier information.
     /// The <paramref name="item"/> cannot be <see langword="null"/>.</param>
-    /// <returns>The ID of the saved receipt client or supplier, depending on the associated entity. Returns <c>0</c> if the
-    /// operation fails.</returns>
-    public int saveItem(ReceiptHandlerItem item)
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved receipt client or supplier, and any error message.
+    /// Returns a response with ID 0 if the operation fails.</returns>
+    public ResponseSaveItem saveItem(ReceiptHandlerItem item)
     {
         if (item == null)
         {
-            return 0;
+            return ResponseSaveItem.Failure("Item cannot be null.");
         }
 
         int receipt_id = item.receipt_item.receipt_id;
@@ -126,19 +126,21 @@ public class ReceiptHandlerModel : ABaseModel,
             // Insert new receipt
             if (receipt_id == 0)
             {
-                receipt_id = _m_receipt_model.saveItem(item.receipt_item);
-                if (receipt_id == 0)
+                var receiptResult = _m_receipt_model.saveItem(item.receipt_item);
+                if (!receiptResult.is_success)
                 {
-                    throw new InvalidOperationException("Failed to save receipt.");
+                    throw new InvalidOperationException(receiptResult.error_message ?? "Failed to save receipt.");
                 }
+                receipt_id = receiptResult.returned_id;
             }
             // Update existing receipt
             else 
             {
                 // TODO: Gonna need a better way to update a receipt
-                if (_m_receipt_model.saveItem(item.receipt_item) == 0)
+                var updateResult = _m_receipt_model.saveItem(item.receipt_item);
+                if (!updateResult.is_success)
                 {
-                    throw new InvalidOperationException("Failed to update receipt.");
+                    throw new InvalidOperationException(updateResult.error_message ?? "Failed to update receipt.");
                 }
                 if (!_m_receipt_product_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE))
                 {
@@ -158,9 +160,10 @@ public class ReceiptHandlerModel : ABaseModel,
             foreach (var product in item.receipt_product_items)
             {
                 product.fk_receipt_id = receipt_id;
-                if (_m_receipt_product_model.saveItem(product) <= 0)
+                var productResult = _m_receipt_product_model.saveItem(product);
+                if (!productResult.is_success)
                 {
-                    throw new InvalidOperationException("Failed to save receipt product.");
+                    throw new InvalidOperationException(productResult.error_message ?? "Failed to save receipt product.");
                 }
             }
 
@@ -169,36 +172,36 @@ public class ReceiptHandlerModel : ABaseModel,
             {
                 item.receipt_client_item.fk_receipt_id = receipt_id;
 
-                int receipt_client_id = _m_receipt_client_model.saveItem(item.receipt_client_item);
-                if (receipt_client_id <= 0)
+                var clientResult = _m_receipt_client_model.saveItem(item.receipt_client_item);
+                if (!clientResult.is_success)
                 {
-                    throw new InvalidOperationException("Failed to save receipt client.");
+                    throw new InvalidOperationException(clientResult.error_message ?? "Failed to save receipt client.");
                 }
                 
                 commitTransaction();
-                return receipt_client_id;
+                return ResponseSaveItem.Success(clientResult.returned_id);
             }
             // Or save the supplier
             else if (item.receipt_supplier_item.fk_supplier_id > 0)
             {
                 item.receipt_supplier_item.fk_receipt_id = receipt_id;
 
-                int receipt_supplier_id = _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
-                if (receipt_supplier_id <= 0) 
+                var supplierResult = _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
+                if (!supplierResult.is_success) 
                 {
-                    throw new InvalidOperationException("Failed to save receipt supplier.");
+                    throw new InvalidOperationException(supplierResult.error_message ?? "Failed to save receipt supplier.");
                 }
                 
                 commitTransaction();
-                return receipt_supplier_id;
+                return ResponseSaveItem.Success(supplierResult.returned_id);
             }
             
             throw new InvalidOperationException("No client or supplier specified for the receipt.");
         }
-        catch
+        catch (Exception ex)
         {
             rollbackTransaction();
-            throw;
+            return ResponseSaveItem.Failure(ex.Message);
         }
     }
 }

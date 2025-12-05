@@ -81,11 +81,12 @@ public class SupplierModel : ABaseModel,
     /// Saves the specified supplier item to the database.
     /// </summary>
     /// <param name="item">The <see cref="SupplierItem"/> object to save. Must not be null.</param>
-    /// <returns>The ID of the saved supplier item. Returns 0 if the operation fails, the item is null, or an identical item is
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved supplier item and any error message.
+    /// Returns a response with ID 0 if the operation fails, the item is null, or an identical item is
     /// already present in the database.</returns>
-    public int saveItem(SupplierItem item) {
+    public ResponseSaveItem saveItem(SupplierItem item) {
         if (item == null) {
-            return 0;
+            return ResponseSaveItem.Failure("Item cannot be null.");
         }
 
         int item_id = item.supplier_id;
@@ -97,7 +98,7 @@ public class SupplierModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
-                return 0;
+                return ResponseSaveItem.Failure("A supplier with the same entity already exists.");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_FK_ENTITY}) " +
@@ -132,12 +133,11 @@ public class SupplierModel : ABaseModel,
             }
             
             commitTransaction();
-            return item_id;
+            return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex) {
             rollbackTransaction();
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 

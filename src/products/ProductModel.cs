@@ -142,10 +142,11 @@ public class ProductModel : ABaseModel,
     /// Saves the specified <see cref="ProductItem"/> to the database.
     /// </summary>
     /// <param name="item">The <see cref="ProductItem"/> to save. Must not be <c>null</c>.</param>
-    /// <returns>The <c>product_id</c> of the saved item. Returns <c>0</c> if the operation fails or the item is invalid.</returns>
-    public int saveItem(ProductItem item) {
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the <c>product_id</c> of the saved item and any error message.
+    /// Returns a response with ID 0 if the operation fails or the item is invalid.</returns>
+    public ResponseSaveItem saveItem(ProductItem item) {
         if (item == null) {
-            return 0;
+            return ResponseSaveItem.Failure("Item cannot be null.");
         }
 
         int item_id = item.product_id;
@@ -158,7 +159,7 @@ public class ProductModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_product_name)) {
-                return 0;
+                return ResponseSaveItem.Failure("A product with the same name already exists.");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_WEIGHT}, " +
@@ -218,14 +219,13 @@ public class ProductModel : ABaseModel,
                 commitTransaction();
             }
             
-            return item_id;
+            return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex) {
             if (need_transaction) {
                 rollbackTransaction();
             }
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 

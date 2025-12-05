@@ -238,11 +238,12 @@ public class SaveProfitController : ABaseController, ICompareState {
 
         try
         {
-            if (_m_receipt_profit_detailed_model.saveItem(m_profit_receipt_detail) > 0) {
+            var result = _m_receipt_profit_detailed_model.saveItem(m_profit_receipt_detail);
+            if (result.is_success) {
                 SPageNavigationController.navigateBack();
             }
             else {
-                MessageBox.Show("Error when saving the profit");
+                MessageBox.Show(result.error_message ?? "Error when saving the profit", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)

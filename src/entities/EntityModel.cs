@@ -98,11 +98,12 @@ public class EntityModel : ABaseModel,
     /// Saves the specified <see cref="EntityItem"/> to the database.
     /// </summary>
     /// <param name="item">The <see cref="EntityItem"/> to save. Cannot be <c>null</c>.</param>
-    /// <returns>The ID of the saved item. Returns <c>0</c> if the operation fails, the item is <c>null</c>, or a duplicate item
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved item and any error message.
+    /// Returns a response with ID 0 if the operation fails, the item is <c>null</c>, or a duplicate item
     /// is detected.</returns>
-    public int saveItem(EntityItem item) {
+    public ResponseSaveItem saveItem(EntityItem item) {
         if (item == null) {
-            return 0;
+            return ResponseSaveItem.Failure("Item cannot be null.");
         }
 
         int item_id = item.entity_id;
@@ -114,7 +115,7 @@ public class EntityModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.entity_name)) {
-                return 0;
+                return ResponseSaveItem.Failure("An entity with the same name already exists.");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}) " +
@@ -165,14 +166,13 @@ public class EntityModel : ABaseModel,
                 commitTransaction();
             }
             
-            return item_id;
+            return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex) {
             if (need_transaction) {
                 rollbackTransaction();
             }
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 }

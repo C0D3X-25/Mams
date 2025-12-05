@@ -235,11 +235,12 @@ public class SaveFeeController : ABaseController, ICompareState {
 
         try
         {
-            if (_m_receipt_fee_detailed_model.saveItem(m_fee_receipt_detail) > 0) {
+            var result = _m_receipt_fee_detailed_model.saveItem(m_fee_receipt_detail);
+            if (result.is_success) {
                 SPageNavigationController.navigateBack();
             }
             else {
-                MessageBox.Show("Error when saving the fee");
+                MessageBox.Show(result.error_message ?? "Error when saving the fee", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)

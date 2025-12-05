@@ -87,13 +87,14 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// Saves the specified receipt item to the database.
     /// </summary>
     /// <param name="item">The receipt item to save. Cannot be <see langword="null"/>.</param>
-    /// <returns>The ID of the saved receipt item. Returns 0 if the <paramref name="item"/> is <see langword="null"/> or if a
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved receipt item and any error message.
+    /// Returns a response with ID 0 if the <paramref name="item"/> is <see langword="null"/> or if a
     /// database error occurs.</returns>
-    public int saveItem(ReceiptItem item)
+    public ResponseSaveItem saveItem(ReceiptItem item)
     {
         if (item == null)
         {
-            return 0;
+            return ResponseSaveItem.Failure("Item cannot be null.");
         }
 
         int item_id = item.receipt_id;
@@ -105,7 +106,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             // A new receipt cannot be created with an existing receipt number
             if (item_id == 0)
             {
-                return 0;
+                return ResponseSaveItem.Failure("A receipt with this number already exists.");
             }
             else
             {
@@ -113,7 +114,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 // The receipt to modify uses a receipt number that already exists and is not the one already assigned
                 if (id_to_save != item_id)
                 {
-                    return 0;
+                    return ResponseSaveItem.Failure("A receipt with this number already exists.");
                 }
             }
         }
@@ -155,12 +156,11 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             }
 
             commitTransaction();
-            return item_id;
+            return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex) {
             rollbackTransaction();
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 

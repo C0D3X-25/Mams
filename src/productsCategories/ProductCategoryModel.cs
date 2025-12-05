@@ -85,10 +85,11 @@ public class ProductCategoryModel :
     /// </summary>
     /// <param name="item">The <see cref="ProductCategoryItem"/> to be saved.  The <see cref="ProductCategoryItem.product_category_id"/>
     /// property determines whether the item is inserted (if 0) or updated (if non-zero).</param>
-    /// <returns>The ID of the saved product category item.  Returns 0 if the operation fails or if the item is null.</returns>
-    public int saveItem(ProductCategoryItem item) {
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved product category item and any error message.
+    /// Returns a response with ID 0 if the operation fails or if the item is null.</returns>
+    public ResponseSaveItem saveItem(ProductCategoryItem item) {
         if (item == null) {
-            return 0;
+            return ResponseSaveItem.Failure("Item cannot be null.");
         }
 
         int item_id = item.product_category_id;
@@ -101,7 +102,7 @@ public class ProductCategoryModel :
         if (isInsert) {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
-                return 0;
+                return ResponseSaveItem.Failure("A product category with the same name already exists.");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
@@ -143,14 +144,13 @@ public class ProductCategoryModel :
                 commitTransaction();
             }
             
-            return item_id;
+            return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex) {
             if (need_transaction) {
                 rollbackTransaction();
             }
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 }

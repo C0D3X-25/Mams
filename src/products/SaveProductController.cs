@@ -160,10 +160,13 @@ public class SaveProductController : ABaseController, ICompareState {
             m_product.fk_product_shape_id = _m_selected_product_shape.product_shape_id;
         }
 
-        if (_m_product_model.saveItem(m_product) > 0) {
+        var result = _m_product_model.saveItem(m_product);
+        if (result.is_success) {
             SPageNavigationController.navigateBack();
         }
-        else { MessageBox.Show("Un produit avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); }
+        else { 
+            MessageBox.Show(result.error_message ?? "Un produit avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); 
+        }
     }
 
 

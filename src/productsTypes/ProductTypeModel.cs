@@ -84,11 +84,11 @@ public class ProductTypeModel :
     /// Saves the specified product type item to the database.
     /// </summary>
     /// <param name="item">The <see cref="ProductTypeItem"/> to save. Cannot be <see langword="null"/>.</param>
-    /// <returns>The ID of the saved product type item. Returns <c>0</c> if the operation fails or if the item is <see
-    /// langword="null"/>.</returns>
-    public int saveItem(ProductTypeItem item) {
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved product type item and any error message.
+    /// Returns a response with ID 0 if the operation fails or if the item is <see langword="null"/>.</returns>
+    public ResponseSaveItem saveItem(ProductTypeItem item) {
         if (item == null) {
-            return 0;
+            return ResponseSaveItem.Failure("Item cannot be null.");
         }
 
         int item_id = item.product_type_id;
@@ -101,7 +101,7 @@ public class ProductTypeModel :
         if (isInsert) {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
-                return 0;
+                return ResponseSaveItem.Failure("A product type with the same name already exists.");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
@@ -143,14 +143,13 @@ public class ProductTypeModel :
                 commitTransaction();
             }
             
-            return item_id;
+            return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex) {
             if (need_transaction) {
                 rollbackTransaction();
             }
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 }

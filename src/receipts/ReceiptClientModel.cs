@@ -93,10 +93,11 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// </summary>
     /// <param name="item">The <see cref="ReceiptClientItem"/> to save. The item must not be <see langword="null"/>, and its
     /// <c>fk_receipt_id</c> and <c>fk_client_id</c> properties must be non-zero.</param>
-    /// <returns>The ID of the saved item. Returns <c>0</c> if the input is invalid or if an error occurs during the operation.</returns>
-    public int saveItem(ReceiptClientItem item) {
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved item and any error message.
+    /// Returns a response with ID 0 if the input is invalid or if an error occurs during the operation.</returns>
+    public ResponseSaveItem saveItem(ReceiptClientItem item) {
         if (item == null || item.fk_receipt_id == 0 || item.fk_client_id == 0) {
-            return 0;
+            return ResponseSaveItem.Failure("Invalid receipt client data.");
         }
 
         int item_id = item.fk_receipt_id;
@@ -118,12 +119,11 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
             });
 
             commitTransaction();
-            return item_id;
+            return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex) {
             rollbackTransaction();
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 

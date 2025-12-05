@@ -102,11 +102,12 @@ public class SaveProductLotController : ABaseController, ICompareState {
             m_product_lot.beehive_name = m_selected_beehive.beehive_name;
         }
 
-        if (_m_product_lot_model.saveItem(m_product_lot) > 0) {
+        var result = _m_product_lot_model.saveItem(m_product_lot);
+        if (result.is_success) {
             SPageNavigationController.navigateBack();
         }
         else {
-            MessageBox.Show("Un lot avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(result.error_message ?? "Un lot avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

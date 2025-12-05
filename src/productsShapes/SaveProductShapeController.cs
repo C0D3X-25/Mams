@@ -62,11 +62,12 @@ public class SaveProductShapeController : ABaseController, ICompareState {
 
 
     private void saveProduct(object? obj) {
-        if (_m_product_shape_model.saveItem(m_product_shape) > 0) {
+        var result = _m_product_shape_model.saveItem(m_product_shape);
+        if (result.is_success) {
             SPageNavigationController.navigateBack();
         }
         else {
-            MessageBox.Show("Une forme avec le même nom est déjà présente", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(result.error_message ?? "Une forme avec le même nom est déjà présente", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

@@ -339,12 +339,11 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// <param name="item">The <see cref="ReceiptFeeDetailedItem"/> object containing the receipt, products, supplier, and entity details.
     /// The object must not be <see langword="null"/>, must contain at least one product, and the entity ID must be
     /// greater than zero.</param>
-    /// <returns>An integer representing the result of the save operation. Returns 0 if the input is invalid or the save
-    /// operation fails.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the supplier cannot be found or created, or when the save operation fails.</exception>
-    public int saveItem(ReceiptFeeDetailedItem item) {
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the result of the save operation and any error message.
+    /// Returns a response with ID 0 if the input is invalid or the save operation fails.</returns>
+    public ResponseSaveItem saveItem(ReceiptFeeDetailedItem item) {
         if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0) {
-            return 0;
+            return ResponseSaveItem.Failure("Invalid fee receipt data.");
         }
 
         startTransaction();
@@ -371,19 +370,19 @@ public class ReceiptFeeDetailedModel : ABaseModel,
                 receipt_supplier_item = item.receipt_supplier
             };
 
-            int result = _m_receipt_handler_model.saveItem(handlerItem);
-            if (result == 0)
+            var result = _m_receipt_handler_model.saveItem(handlerItem);
+            if (!result.is_success)
             {
-                throw new InvalidOperationException("Failed to save the receipt.");
+                throw new InvalidOperationException(result.error_message ?? "Failed to save the receipt.");
             }
 
             commitTransaction();
             return result;
         }
-        catch
+        catch (Exception ex)
         {
             rollbackTransaction();
-            throw;
+            return ResponseSaveItem.Failure(ex.Message);
         }
     }
 
@@ -406,8 +405,8 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         var new_supplier = new SupplierItem {
             fk_entity_id = entity_id 
         };
-        int newId = _m_supplier_model.saveItem(new_supplier);
-        return newId;
+        var result = _m_supplier_model.saveItem(new_supplier);
+        return result.returned_id;
     }
 
     /// <summary>

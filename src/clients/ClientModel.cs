@@ -80,10 +80,11 @@ public class ClientModel : ABaseModel,
     /// otherwise updates the existing record.
     /// </summary>
     /// <param name="item">The ClientItem to save</param>
-    /// <returns>The ID of the saved receipt; 0 if the operation failed</returns>
-    public int saveItem(ClientItem item) {
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved receipt and any error message.
+    /// Returns a response with ID 0 if the operation failed.</returns>
+    public ResponseSaveItem saveItem(ClientItem item) {
         if (item == null) {
-            return 0;
+            return ResponseSaveItem.Failure("Item cannot be null.");
         }
 
         int item_id = item.client_id;
@@ -95,7 +96,7 @@ public class ClientModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
-                return 0;
+                return ResponseSaveItem.Failure("A client with the same entity already exists.");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_FK_ENTITY}) " +
@@ -130,12 +131,11 @@ public class ClientModel : ABaseModel,
             }
 
             commitTransaction();
-            return item_id;
+            return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex) {
             rollbackTransaction();
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 

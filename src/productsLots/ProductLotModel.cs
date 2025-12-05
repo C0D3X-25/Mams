@@ -112,10 +112,11 @@ public class ProductLotModel : ABaseModel,
     /// Saves the specified <see cref="ProductLotItem"/> to the database.
     /// </summary>
     /// <param name="item">The <see cref="ProductLotItem"/> to save. Must not be null.</param>
-    /// <returns>The ID of the saved <see cref="ProductLotItem"/>. Returns 0 if the operation fails or if the item is null.</returns>
-    public int saveItem(ProductLotItem item) {
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved <see cref="ProductLotItem"/> and any error message.
+    /// Returns a response with ID 0 if the operation fails or if the item is null.</returns>
+    public ResponseSaveItem saveItem(ProductLotItem item) {
         if (item == null) {
-            return 0;
+            return ResponseSaveItem.Failure("Item cannot be null.");
         }
 
         int item_id = item.product_lot_id;
@@ -128,7 +129,7 @@ public class ProductLotModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
-                return 0;
+                return ResponseSaveItem.Failure("A product lot with the same name already exists.");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE}) " +
@@ -179,14 +180,13 @@ public class ProductLotModel : ABaseModel,
                 commitTransaction();
             }
             
-            return item_id;
+            return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex) {
             if (need_transaction) {
                 rollbackTransaction();
             }
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 

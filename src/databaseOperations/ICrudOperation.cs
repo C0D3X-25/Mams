@@ -28,12 +28,13 @@ public interface ICrudOperation<T> where T : ABaseItem {
     T? getItemByID(string id);
 
     /// <summary>
-    /// Saves the specified item to the data store and returns its unique identifier.
+    /// Saves the specified item to the data store and returns a response containing the result.
     /// Save can be used for both creating new items and updating existing ones.
     /// </summary>
     /// <param name="item">The item to be saved.</param>
-    /// <returns>The unique identifier of the saved item as an integer. Returns 0 if the operation fails.</returns>
-    int saveItem(T item);
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the unique identifier of the saved item and any error message.
+    /// The <see cref="ResponseSaveItem.returned_id"/> is 0 if the operation fails.</returns>
+    ResponseSaveItem saveItem(T item);
 
     /// <summary>
     /// Deletes an item identified by the specified ID, using the specified deletion operation.

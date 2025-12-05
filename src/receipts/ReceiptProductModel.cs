@@ -121,13 +121,14 @@ public class ReceiptProductModel : ABaseModel,
     }
 
     /// <summary>
-    /// Saves a receipt product item to the database and returns the unique identifier of the saved item.
+    /// Saves a receipt product item to the database and returns a response containing the result.
     /// </summary>
     /// <param name="item">The <see cref="ReceiptProductItem"/> instance containing the details of the receipt product to be saved.</param>
-    /// <returns>The unique identifier of the saved item if the operation is successful; otherwise, <see langword="0"/>.</returns>
-    public int saveItem(ReceiptProductItem item) {
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the unique identifier of the saved item and any error message.
+    /// Returns a response with ID 0 if the operation fails.</returns>
+    public ResponseSaveItem saveItem(ReceiptProductItem item) {
         if (!ValidateReceiptProduct(item)) { 
-            return 0;
+            return ResponseSaveItem.Failure("Invalid receipt product data.");
         }
         
         // Check if the item already exists in the database, if not insert the item into the database
@@ -156,12 +157,11 @@ public class ReceiptProductModel : ABaseModel,
             });
 
             commitTransaction();
-            return item_id;
+            return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex) {
             rollbackTransaction();
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 

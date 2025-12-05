@@ -82,11 +82,12 @@ public class BeehiveModel : ABaseModel,
     /// Saves the specified <see cref="BeehiveItem"/> to the database.
     /// </summary>
     /// <param name="item">The <see cref="BeehiveItem"/> to save. Cannot be <see langword="null"/>.</param>
-    /// <returns>The ID of the saved item. Returns <c>0</c> if the operation fails, the item is <see langword="null"/>, or the
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved item and any error message.
+    /// Returns a response with ID 0 if the operation fails, the item is <see langword="null"/>, or the
     /// item name already exists in the database.</returns>
-    public int saveItem(BeehiveItem item) {
+    public ResponseSaveItem saveItem(BeehiveItem item) {
         if (item == null) {
-            return 0;
+            return ResponseSaveItem.Failure("Item cannot be null.");
         }
 
         int item_id = item.beehive_id;
@@ -99,7 +100,7 @@ public class BeehiveModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
-                return 0;
+                return ResponseSaveItem.Failure("A beehive with the same name already exists.");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
@@ -139,12 +140,11 @@ public class BeehiveModel : ABaseModel,
             }
             
             commitTransaction();
-            return item_id;
+            return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex) {
             rollbackTransaction();
-            MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-            return 0;
+            return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
 }

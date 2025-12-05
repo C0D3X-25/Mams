@@ -372,12 +372,11 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// <param name="item">The <see cref="ReceiptProfitDetailedItem"/> object containing receipt details, products, client information, 
     /// and associated entities. The object must not be <see langword="null"/>, must contain at least one product,  and
     /// the associated entity must have a valid <c>entity_id</c>.</param>
-    /// <returns>An integer representing the result of the save operation. Returns <c>0</c> if the input is invalid;  otherwise,
-    /// returns the identifier of the saved receipt.</returns>
-    /// <exception cref="InvalidOperationException">Thrown when the client cannot be found or created, or when the save operation fails.</exception>
-    public int saveItem(ReceiptProfitDetailedItem item) {
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the result of the save operation and any error message.
+    /// Returns a response with ID 0 if the input is invalid or the operation fails.</returns>
+    public ResponseSaveItem saveItem(ReceiptProfitDetailedItem item) {
         if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0) {
-            return 0;
+            return ResponseSaveItem.Failure("Invalid profit receipt data.");
         }
 
         startTransaction();
@@ -400,19 +399,19 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                 receipt_client_item = item.receipt_client
             };
 
-            int result = _m_receipt_handler_model.saveItem(handlerItem);
-            if (result == 0)
+            var result = _m_receipt_handler_model.saveItem(handlerItem);
+            if (!result.is_success)
             {
-                throw new InvalidOperationException("Failed to save the receipt.");
+                throw new InvalidOperationException(result.error_message ?? "Failed to save the receipt.");
             }
 
             commitTransaction();
             return result;
         }
-        catch
+        catch (Exception ex)
         {
             rollbackTransaction();
-            throw;
+            return ResponseSaveItem.Failure(ex.Message);
         }
     }
 
@@ -435,7 +434,8 @@ public class ReceiptProfitDetailedModel : ABaseModel,
         var new_client = new ClientItem {
             fk_entity_id = entity_id
         };
-        return _m_client_model.saveItem(new_client);
+        var result = _m_client_model.saveItem(new_client);
+        return result.returned_id;
     }
 
     /// <summary>
@@ -455,4 +455,4 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     }
 }
 
-    
+        

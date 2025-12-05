@@ -60,11 +60,12 @@ public class SaveProductCategoryController : ABaseController, ICompareState {
 
 
     private void saveProduct(object? obj) {
-        if (_m_product_category_model.saveItem(m_product_category) > 0) {
+        var result = _m_product_category_model.saveItem(m_product_category);
+        if (result.is_success) {
             SPageNavigationController.navigateBack();
         }
         else {
-            MessageBox.Show("Une catégorie de produit avec le même nom est déjà présente", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(result.error_message ?? "Une catégorie de produit avec le même nom est déjà présente", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 
