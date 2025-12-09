@@ -446,4 +446,174 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         // Generate a unique fallback using ticks
         item.receipt.receipt_number = $"{baseNumber}-{DateTime.Now.Ticks % 1000000:D6}";
     }
+
+    /// <summary>
+    /// Retrieves filtered and sorted fee items directly from the database.
+    /// </summary>
+    /// <param name="filterTable">The type of filter to apply (entity, product, etc.)</param>
+    /// <param name="filterId">The ID to filter by (0 for no filter)</param>
+    /// <param name="yearFilter">The year to filter by (empty for no filter)</param>
+    /// <returns>A collection of filtered fee items sorted by date descending.</returns>
+    public ResponseGetAllItems<ReceiptFeeDetailedItem> getFilteredItems(
+        EDatabaseTableName filterTable, 
+        int filterId, 
+        string yearFilter) {
+        
+        return executeWithConnection(connection => {
+            var items = new ObservableCollection<ReceiptFeeDetailedItem>();
+
+            try {
+                var queryBuilder = new System.Text.StringBuilder($@"
+                    SELECT 
+                        r.receipt_id,
+                        r.receipt_number,
+                        r.receipt_date_created,
+                        rs.fk_supplier_id,
+                        rs.fk_receipt_id AS rs_fk_receipt_id,
+                        s.supplier_id,
+                        s.fk_entity_id,
+                        e.entity_id,
+                        e.entity_name,
+                        e.entity_phone,
+                        e.entity_email,
+                        e.entity_city,
+                        e.entity_address,
+                        e.entity_archive,
+                        rp.receipt_product_id,
+                        rp.receipt_product_quantity,
+                        rp.receipt_product_unity_price,
+                        rp.fk_receipt_id AS rp_fk_receipt_id,
+                        p.product_id,
+                        p.product_name,
+                        p.product_weight,
+                        p.product_archive,
+                        p.fk_product_type_id,
+                        p.fk_product_category_id,
+                        p.fk_product_shape_id,
+                        pt.product_type_name,
+                        pc.product_category_name,
+                        ps.product_shape_name
+                    FROM {_m_TBL_RECEIPTS} r
+                    INNER JOIN {_m_TBL_RECEIPTS_SUPPLIERS} rs ON r.receipt_id = rs.fk_receipt_id
+                    INNER JOIN {_m_TBL_SUPPLIERS} s ON rs.fk_supplier_id = s.supplier_id
+                    INNER JOIN {_m_TBL_ENTITIES} e ON s.fk_entity_id = e.entity_id
+                    LEFT JOIN {_m_TBL_RECEIPTS_CLIENTS} rc ON r.receipt_id = rc.fk_receipt_id
+                    LEFT JOIN {_m_TBL_RECEIPTS_PRODUCTS} rp ON r.receipt_id = rp.fk_receipt_id
+                    LEFT JOIN {_m_TBL_PRODUCTS} p ON rp.fk_product_id = p.product_id
+                    LEFT JOIN {_m_TBL_PRODUCTS_TYPES} pt ON p.fk_product_type_id = pt.product_type_id
+                    LEFT JOIN {_m_TBL_PRODUCTS_CATEGORIES} pc ON p.fk_product_category_id = pc.product_category_id
+                    LEFT JOIN {_m_TBL_PRODUCTS_SHAPES} ps ON p.fk_product_shape_id = ps.product_shape_id
+                    WHERE rc.fk_client_id IS NULL");
+
+                // Add year filter
+                if (!string.IsNullOrEmpty(yearFilter)) {
+                    queryBuilder.Append(" AND YEAR(r.receipt_date_created) = @year");
+                }
+
+                // Add specific filters based on filter type
+                if (filterId > 0) {
+                    switch (filterTable) {
+                        case EDatabaseTableName.ENTITY:
+                            queryBuilder.Append(" AND e.entity_id = @filterId");
+                            break;
+                        case EDatabaseTableName.PRODUCT:
+                            queryBuilder.Append(" AND p.product_id = @filterId");
+                            break;
+                        case EDatabaseTableName.PRODUCT_TYPE:
+                            queryBuilder.Append(" AND p.fk_product_type_id = @filterId");
+                            break;
+                        case EDatabaseTableName.PRODUCT_CATEGORY:
+                            queryBuilder.Append(" AND p.fk_product_category_id = @filterId");
+                            break;
+                        case EDatabaseTableName.PRODUCT_SHAPE:
+                            queryBuilder.Append(" AND p.fk_product_shape_id = @filterId");
+                            break;
+                        // Note: PRODUCT_LOT and BEEHIVE are not applicable for fees as they don't have lot data
+                    }
+                }
+
+                // Order by date descending
+                queryBuilder.Append(" ORDER BY r.receipt_date_created DESC, r.receipt_id, rp.receipt_product_id");
+
+                using MySqlCommand cmd = new(queryBuilder.ToString(), connection);
+                
+                if (!string.IsNullOrEmpty(yearFilter)) {
+                    cmd.Parameters.AddWithValue("@year", yearFilter);
+                }
+                if (filterId > 0) {
+                    cmd.Parameters.AddWithValue("@filterId", filterId);
+                }
+
+                using MySqlDataReader reader = cmd.ExecuteReader();
+
+                var receiptDict = new Dictionary<int, ReceiptFeeDetailedItem>();
+
+                while (reader.Read()) {
+                    int receiptId = reader.getSafeValue<int>("receipt_id");
+
+                    if (!receiptDict.TryGetValue(receiptId, out var item)) {
+                        item = new ReceiptFeeDetailedItem {
+                            receipt = new ReceiptItem {
+                                receipt_id = receiptId,
+                                receipt_number = reader.getSafeValue("receipt_number", string.Empty),
+                                receipt_total_price = 0, // Will be calculated from filtered products
+                                receipt_date_created = reader.getSafeValue("receipt_date_created", DateOnly.MinValue).ToString(globals.SGlobals.g_EU_DATE_FORMAT)
+                            },
+                            receipt_supplier = new ReceiptSupplierItem {
+                                fk_supplier_id = reader.getSafeValue<int>("fk_supplier_id"),
+                                fk_receipt_id = reader.getSafeValue<int>("rs_fk_receipt_id")
+                            },
+                            supplier = new SupplierItem {
+                                supplier_id = reader.getSafeValue<int>("supplier_id"),
+                                fk_entity_id = reader.getSafeValue<int>("fk_entity_id")
+                            },
+                            entity = new EntityItem {
+                                entity_id = reader.getSafeValue<int>("entity_id"),
+                                entity_name = reader.getSafeValue("entity_name", string.Empty),
+                                entity_phone = reader.getSafeValue("entity_phone", string.Empty),
+                                entity_email = reader.getSafeValue("entity_email", string.Empty),
+                                entity_city = reader.getSafeValue("entity_city", string.Empty),
+                                entity_address = reader.getSafeValue("entity_address", string.Empty),
+                                entity_archive = reader.getSafeValue("entity_archive", DateOnly.MinValue).ToString()
+                            },
+                            receipt_products = []
+                        };
+
+                        receiptDict[receiptId] = item;
+                        items.Add(item);
+                    }
+
+                    // Add product if present
+                    if (!reader.IsDBNull(reader.GetOrdinal("receipt_product_id"))) {
+                        var productItem = new ReceiptProductItem {
+                            receipt_product_id = reader.getSafeValue<int>("receipt_product_id"),
+                            receipt_product_quantity = reader.getSafeValue<int>("receipt_product_quantity"),
+                            receipt_product_unity_price = reader.getSafeValue<decimal>("receipt_product_unity_price"),
+                            fk_receipt_id = reader.getSafeValue<int>("rp_fk_receipt_id"),
+                            product_item = new ProductItem {
+                                product_id = reader.getSafeValue<int>("product_id"),
+                                product_name = reader.getSafeValue("product_name", string.Empty),
+                                product_weight = reader.getSafeValue<int>("product_weight"),
+                                product_archive = reader.getSafeValue("product_archive", DateOnly.MinValue).ToString(),
+                                fk_product_type_id = reader.getSafeValue<int>("fk_product_type_id"),
+                                fk_product_category_id = reader.getSafeValue<int>("fk_product_category_id"),
+                                fk_product_shape_id = reader.getSafeValue<int>("fk_product_shape_id"),
+                                product_type_name = reader.getSafeValue("product_type_name", string.Empty),
+                                product_category_name = reader.getSafeValue("product_category_name", string.Empty),
+                                product_shape_name = reader.getSafeValue("product_shape_name", string.Empty)
+                            }
+                        };
+
+                        item.receipt_products.Add(productItem);
+                        item.receipt.receipt_total_price += productItem.receipt_product_quantity * productItem.receipt_product_unity_price;
+                    }
+                }
+
+                return ResponseGetAllItems<ReceiptFeeDetailedItem>.Success(items);
+            }
+            catch (MySqlException ex) {
+                return ResponseGetAllItems<ReceiptFeeDetailedItem>.MySqlFailure(ex.ErrorCode, ex.Message);
+            }
+        });
+    }
 }
