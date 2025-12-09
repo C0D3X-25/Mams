@@ -3,7 +3,8 @@ using System.IO;
 
 namespace Mams.src.databaseOperations;
 
-public static class SDatabaseBackup {
+public static class SDatabaseBackup 
+{
 
     private static string destination_path = "C:\\MySqlBackup\\";
 
@@ -14,18 +15,22 @@ public static class SDatabaseBackup {
     /// The file name is the backup_dd_MM_yyyy.sql</remarks>
     /// <param name="connection">An open connection of type <see cref="MySqlConnection"/></param>
     /// <exception cref="InvalidOperationException"></exception>
-    public static void createBackup(MySqlConnection connection) {
-
-        if (connection == null || connection.State != System.Data.ConnectionState.Open) {
+    public static void createBackup(MySqlConnection connection)
+    {
+        if (connection == null || connection.State != System.Data.ConnectionState.Open)
+        {
             throw new InvalidOperationException("Database connection is not established or is closed.");
         }
 
-        if (isBackupDoneToday()) {
+        if (isBackupDoneToday())
+        {
             return;
         }
 
-        using (MySqlCommand cmd = new MySqlCommand()) {
-            using (MySqlBackup mb = new MySqlBackup(cmd)) {
+        using (MySqlCommand cmd = new MySqlCommand())
+        {
+            using (MySqlBackup mb = new MySqlBackup(cmd))
+            {
                 cmd.Connection = connection;
                 mb.ExportToFile(getTodayDateBackupPath());
             }
@@ -37,14 +42,17 @@ public static class SDatabaseBackup {
     /// </summary>
     /// <param name="connection"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    public static void restoreBackup(MySqlConnection connection) {
-
-        if (connection == null || connection.State != System.Data.ConnectionState.Open) {
+    public static void restoreBackup(MySqlConnection connection)
+    {
+        if (connection == null || connection.State != System.Data.ConnectionState.Open)
+        {
             throw new InvalidOperationException("Database connection is not established or is closed.");
         }
 
-        using (MySqlCommand cmd = new MySqlCommand()) {
-            using (MySqlBackup mb = new MySqlBackup(cmd)) {
+        using (MySqlCommand cmd = new MySqlCommand()) 
+        {
+            using (MySqlBackup mb = new MySqlBackup(cmd))
+            {
                 cmd.Connection = connection;
                 // TODO: get the correct file
                 //mb.ImportFromFile(getTodayDateBackupString()); 
@@ -56,8 +64,8 @@ public static class SDatabaseBackup {
     /// Builds the path for the backup file based on today's date.
     /// </summary>
     /// <returns></returns>
-    private static string getTodayDateBackupPath() {
-
+    private static string getTodayDateBackupPath()
+    {
         string today_year = DateTime.Now.Year.ToString();
         string today_month = DateTime.Now.Month.ToString();
         string today_day = DateTime.Now.Day.ToString();
@@ -70,7 +78,8 @@ public static class SDatabaseBackup {
     /// Checks if a backup has already been done today.
     /// </summary>
     /// <returns></returns>
-    private static bool isBackupDoneToday() {
+    private static bool isBackupDoneToday() 
+    {
         return File.Exists(getTodayDateBackupPath());
     }
 }

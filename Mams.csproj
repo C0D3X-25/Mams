@@ -42,6 +42,8 @@
 
   <ItemGroup>
     <Folder Include="src\localizations\" />
+    <Folder Include="src\errors\" />
+    <Folder Include="src\configurations\" />
   </ItemGroup>
 
   <ItemGroup>

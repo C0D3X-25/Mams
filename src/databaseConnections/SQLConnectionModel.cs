@@ -53,7 +53,8 @@ public class SQLConnectionModel {
     /// <param name="cmd">Specifies the action to take if the connection is not open.  The default value is <see
     /// cref="EDatabaseConnection.EXIT"/>.</param>
     /// <returns><see langword="true"/> if the connection is open; otherwise, <see langword="false"/>.</returns>
-    public bool isConnectionOpen(MySqlConnection? connection, EDatabaseConnection cmd = EDatabaseConnection.EXIT) {
+    public bool isConnectionOpen(MySqlConnection? connection, EDatabaseConnection cmd = EDatabaseConnection.EXIT)
+    {
         if (connection != null 
             && connection.State == System.Data.ConnectionState.Open
             ) {
@@ -62,7 +63,8 @@ public class SQLConnectionModel {
 
         MessageBox.Show("Failed to connect to the database.");
 
-        switch (cmd) {
+        switch (cmd)
+        {
             case EDatabaseConnection.EXIT:
                 connection?.Close();
                 Environment.Exit(1);
@@ -81,17 +83,12 @@ public class SQLConnectionModel {
         return false;
     }
 
-
-    public void startMysqlService() {
+    public void startMysqlService()
+    {
     }
 
-
-    public void stopMysqlService() {
-    }
-
-
-    private bool installMySQLService() {
-        return false;
+    public void stopMysqlService()
+    {
     }
 }
 
