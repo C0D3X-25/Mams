@@ -33,14 +33,13 @@ public class ClientModel : ABaseModel,
     /// Retrieves a <see cref="ClientItem"/> object by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the item to retrieve. Cannot be null or empty.</param>
-    /// <returns>A <see cref="ClientItem"/> object representing the item with the specified identifier,  or <see
-    /// langword="null"/> if no matching item is found.</returns>
-    public ClientItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{ClientItem}"/> containing the item with the specified identifier and any error message.</returns>
+    public ResponseGetItem<ClientItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return null;
+            return ResponseGetItem<ClientItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<ClientItem?>(connection => { 
+        return executeWithConnection(connection => { 
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
@@ -53,26 +52,26 @@ public class ClientModel : ABaseModel,
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.Read()) {
-                    return new ClientItem {
+                    return ResponseGetItem<ClientItem>.Success(new ClientItem {
                         client_id = reader.getSafeValue<int>(_m_COL_ID),
                         fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY, 0)
-                    };
+                    });
                 }
-                return null;
+                return ResponseGetItem<ClientItem>.NotFound();
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<ClientItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves all receipt items from the database.
+    /// Retrieves all client items from the database.
     /// </summary>
-    /// <returns>An ObservableCollection of ReceiptItem objects</returns>
-    public ObservableCollection<ClientItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<ClientItem>(_m_TBL_NAME);
+    /// <returns>A <see cref="ResponseGetAllItems{ClientItem}"/> containing all client items and any error message.</returns>
+    public ResponseGetAllItems<ClientItem> getAllItems() {
+        var items = SDatabaseModel.getAllRowsInTable<ClientItem>(_m_TBL_NAME);
+        return ResponseGetAllItems<ClientItem>.Success(items);
     }
 
     /// <summary>

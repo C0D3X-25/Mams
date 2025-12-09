@@ -45,8 +45,8 @@ public class SaveEntityController : ABaseController, ICompareState {
     public SaveEntityController(int id_to_load = 0) {
         
         if (id_to_load != 0) {
-            _m_entity = _m_entity_model.getItemByID(id_to_load.ToString()) ?? new EntityItem();
-            _m_original_entity = _m_entity_model.getItemByID(id_to_load.ToString()) ?? new EntityItem();
+            _m_entity = _m_entity_model.getItemByID(id_to_load.ToString()).returned_item ?? new EntityItem();
+            _m_original_entity = _m_entity_model.getItemByID(id_to_load.ToString()).returned_item ?? new EntityItem();
         }
 
         m_save_command = new RelayCommand(saveClient, canSaveClient);

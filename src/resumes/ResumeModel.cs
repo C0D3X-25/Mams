@@ -608,57 +608,57 @@ public class ResumeModel {
     private void populateListOfItems() {
 
         // Entity
-        _m_list_entity_all = _m_entity_model.getTable();
+        _m_list_entity_all = _m_entity_model.getAllItems().returned_items;
         if (_m_list_entity_all != null) {
             _m_list_entity_not_archived = new(_m_list_entity_all.Where(item => item.entity_archive == string.Empty));
         }
 
         // Product 
-        _m_list_product_all = _m_product_model.getTable();
+        _m_list_product_all = _m_product_model.getAllItems().returned_items;
         if (_m_list_product_all != null) {
             _m_list_product_not_archived = new(_m_list_product_all.Where(item => item.product_archive == string.Empty));
         }
 
         // Product Shape
-        _m_list_product_shape_all = _m_product_shape_model.getTable();
+        _m_list_product_shape_all = _m_product_shape_model.getAllItems().returned_items;
         if (_m_list_product_shape_all != null) {
             _m_list_product_shape_not_archived = new(_m_list_product_shape_all.Where(item =>
                 item.product_shape_archive == string.Empty));
         }
 
         // Product Category
-        _m_list_product_category_all = _m_product_category_model.getTable();
+        _m_list_product_category_all = _m_product_category_model.getAllItems().returned_items;
         if (_m_list_product_category_all != null) {
             _m_list_product_category_not_archived = new(_m_list_product_category_all.Where(item =>
                 item.product_category_archive == string.Empty));
         }
 
         // Product Type
-        _m_list_product_type_all = _m_product_type_model.getTable();
+        _m_list_product_type_all = _m_product_type_model.getAllItems().returned_items;
         if (_m_list_product_type_all != null) {
             _m_list_product_type_not_archived = new(_m_list_product_type_all.Where(item =>
                 item.product_type_archive == string.Empty));
         }
 
         // Product Lot
-        _m_list_product_lot_all = _m_product_lot_model.getTable();
+        _m_list_product_lot_all = _m_product_lot_model.getAllItems().returned_items;
         if (_m_list_product_lot_all != null) {
             _m_list_product_lot_not_archived = new(_m_list_product_lot_all.Where(item =>
                 item.product_lot_archive == string.Empty));
         }
 
         // Beehive
-        _m_list_beehive_all = _m_beehive_model.getTable();
+        _m_list_beehive_all = _m_beehive_model.getAllItems().returned_items;
         if (_m_list_beehive_all != null) {
             _m_list_beehive_not_archived = new(_m_list_beehive_all.Where(item =>
                 item.beehive_archive == string.Empty));
         }
 
         // Profit
-        _m_list_profit_items = _m_profit_model.getTable();
+        _m_list_profit_items = _m_profit_model.getAllItems().returned_items;
 
         // Fee
-        _m_list_fee_items = _m_fee_model.getTable();
+        _m_list_fee_items = _m_fee_model.getAllItems().returned_items;
     }
 
     /// <summary>

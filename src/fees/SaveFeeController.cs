@@ -116,8 +116,8 @@ public class SaveFeeController : ABaseController, ICompareState {
 
     public SaveFeeController(int id_to_load = 0) {
 
-        _m_list_product = _m_product_model.getTable();
-        _m_list_product_lot = _m_product_lot_model.getTable();
+        _m_list_product = _m_product_model.getAllItems().returned_items;
+        _m_list_product_lot = _m_product_lot_model.getAllItems().returned_items;
         _m_list_entity = _m_entity_model.getNonArchivedEntities();
 
         initializeFee(id_to_load);
@@ -168,8 +168,8 @@ public class SaveFeeController : ABaseController, ICompareState {
 
         if (id_to_load > 0) {
 
-            _m_fee_receipt_detail = _m_receipt_fee_detailed_model.getItemByID(id_to_load.ToString()) ?? new();
-            _m_original_fee_receipt_detail = _m_receipt_fee_detailed_model.getItemByID(id_to_load.ToString()) ?? new();
+            _m_fee_receipt_detail = _m_receipt_fee_detailed_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
+            _m_original_fee_receipt_detail = _m_receipt_fee_detailed_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
 
             _m_list_receipt_product = m_fee_receipt_detail.receipt_products;
 

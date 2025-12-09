@@ -38,13 +38,13 @@ public class EntityModel : ABaseModel,
     /// Retrieves an entity item from the database by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the entity item to retrieve. This value must not be null or empty.</param>
-    /// <returns>An <see cref="EntityItem"/> object representing the entity item if found; otherwise, <see langword="null"/>.</returns>
-    public EntityItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{EntityItem}"/> containing the entity item and any error message.</returns>
+    public ResponseGetItem<EntityItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return null;
+            return ResponseGetItem<EntityItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<EntityItem?>(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}, {_m_COL_ARCHIVE} " +
@@ -57,7 +57,7 @@ public class EntityModel : ABaseModel,
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.Read()) {
-                    return new EntityItem {
+                    return ResponseGetItem<EntityItem>.Success(new EntityItem {
                         entity_id = reader.getSafeValue<int>(_m_COL_ID),
                         entity_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         entity_phone = reader.getSafeValue(_m_COL_PHONE, string.Empty),
@@ -65,24 +65,23 @@ public class EntityModel : ABaseModel,
                         entity_city = reader.getSafeValue(_m_COL_CITY, string.Empty),
                         entity_address = reader.getSafeValue(_m_COL_ADDRESS, string.Empty),
                         entity_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
-                    };
+                    });
                 }
-                return null;
+                return ResponseGetItem<EntityItem>.NotFound();
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<EntityItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves all rows from the specified table as an observable collection of <see cref="EntityItem"/>.
+    /// Retrieves all entity items from the database.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows in the table represented as <see
-    /// cref="EntityItem"/> objects. If the table is empty, the collection will be empty.</returns>
-    public ObservableCollection<EntityItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<EntityItem>(_m_TBL_NAME, _m_COL_NAME);
+    /// <returns>A <see cref="ResponseGetAllItems{EntityItem}"/> containing all entity items and any error message.</returns>
+    public ResponseGetAllItems<EntityItem> getAllItems() {
+        var items = SDatabaseModel.getAllRowsInTable<EntityItem>(_m_TBL_NAME, _m_COL_NAME);
+        return ResponseGetAllItems<EntityItem>.Success(items);
     }
 
     /// <summary>

@@ -14,18 +14,19 @@ namespace Mams.src.databaseOperations;
 public interface ICrudOperation<T> where T : ABaseItem {
 
     /// <summary>
-    /// Retrieves an observable collection containing the current table data.
+    /// Retrieves all items from the data store.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> containing the table data.  The collection is observable, allowing
-    /// subscribers to monitor changes to its contents.</returns>
-    ObservableCollection<T> getTable();
+    /// <returns>A <see cref="ResponseGetAllItems{T}"/> containing the collection of items and any error message.
+    /// The <see cref="ResponseGetAllItems{T}.returned_items"/> is an empty collection if no items are found or if the operation fails.</returns>
+    ResponseGetAllItems<T> getAllItems();
 
     /// <summary>
     /// Retrieves an item by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the item to retrieve.</param>
-    /// <returns>The item associated with the specified identifier, or <see langword="null"/> if no item is found.</returns>
-    T? getItemByID(string id);
+    /// <returns>A <see cref="ResponseGetItem{T}"/> containing the item associated with the specified identifier and any error message.
+    /// The <see cref="ResponseGetItem{T}.returned_item"/> is <see langword="null"/> if no item is found or if the operation fails.</returns>
+    ResponseGetItem<T> getItemByID(string id);
 
     /// <summary>
     /// Saves the specified item to the data store and returns a response containing the result.

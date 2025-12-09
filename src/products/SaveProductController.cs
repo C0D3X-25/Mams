@@ -106,14 +106,14 @@ public class SaveProductController : ABaseController, ICompareState {
 
     public SaveProductController(int id_to_load = 0) {
 
-        _m_list_product_category = _m_product_category_model.getTable();
-        _m_list_product_type = _m_product_type_model.getTable();
-        _m_list_product_shape = _m_product_shape_model.getTable();
+        _m_list_product_category = _m_product_category_model.getAllItems().returned_items;
+        _m_list_product_type = _m_product_type_model.getAllItems().returned_items;
+        _m_list_product_shape = _m_product_shape_model.getAllItems().returned_items;
 
         if (id_to_load != 0) {
 
-            _m_product = _m_product_model.getItemByID(id_to_load.ToString()) ?? new();
-            _m_original_product = _m_product_model.getItemByID(id_to_load.ToString()) ?? new();
+            _m_product = _m_product_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
+            _m_original_product = _m_product_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
 
             // Find the matching product in the list and set it as selected or create a new one
             _m_selected_product_category = _m_list_product_category.FirstOrDefault(b => 

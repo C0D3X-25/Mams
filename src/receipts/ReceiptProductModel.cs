@@ -45,14 +45,13 @@ public class ReceiptProductModel : ABaseModel,
     /// Retrieves a <see cref="ReceiptProductItem"/> object by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the receipt product item to retrieve. Cannot be null or empty.</param>
-    /// <returns>A <see cref="ReceiptProductItem"/> object representing the receipt product item with the specified identifier, 
-    /// or <see langword="null"/> if no matching item is found.</returns>
-    public ReceiptProductItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{ReceiptProductItem}"/> containing the receipt product item and any error message.</returns>
+    public ResponseGetItem<ReceiptProductItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return null;
+            return ResponseGetItem<ReceiptProductItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<ReceiptProductItem?>(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_QUANTITY}, {_m_COL_UNITY_PRICE}, " +
@@ -73,24 +72,22 @@ public class ReceiptProductModel : ABaseModel,
                 if (item != null) {
                     // Complete the item with the product and product lot data
                     completeData(item);
-                    return item;
+                    return ResponseGetItem<ReceiptProductItem>.Success(item);
                 }
                 
-                return null;
+                return ResponseGetItem<ReceiptProductItem>.NotFound();
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<ReceiptProductItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves a collection of receipt product items from the database.
+    /// Retrieves all receipt product items from the database.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ReceiptProductItem"/> objects representing the receipt
-    /// product items retrieved from the database. If no items are found, the collection will be empty.</returns>
-    public ObservableCollection<ReceiptProductItem> getTable() {
+    /// <returns>A <see cref="ResponseGetAllItems{ReceiptProductItem}"/> containing all receipt product items and any error message.</returns>
+    public ResponseGetAllItems<ReceiptProductItem> getAllItems() {
         return executeWithConnection(connection => {
             ObservableCollection<ReceiptProductItem> items = new();
 
@@ -111,12 +108,11 @@ public class ReceiptProductModel : ABaseModel,
                 foreach (var item in items) {
                     completeData(item);
                 }
+                return ResponseGetAllItems<ReceiptProductItem>.Success(items);
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return ResponseGetAllItems<ReceiptProductItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
-
-            return items;
         });
     }
 
@@ -252,8 +248,8 @@ public class ReceiptProductModel : ABaseModel,
         ProductModel product_model = new();
         ProductLotModel product_lot_model = new();
 
-        item.product_item = product_model.getItemByID(item.product_item.product_id.ToString()) ?? new ProductItem();
-        item.product_lot_item = product_lot_model.getItemByID(item.product_lot_item.product_lot_id.ToString()) ?? new ProductLotItem();
+        item.product_item = product_model.getItemByID(item.product_item.product_id.ToString()).returned_item ?? new ProductItem();
+        item.product_lot_item = product_lot_model.getItemByID(item.product_lot_item.product_lot_id.ToString()).returned_item ?? new ProductLotItem();
 
         return item;
     }

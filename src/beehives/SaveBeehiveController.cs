@@ -37,8 +37,8 @@ public class SaveBeehiveController : ABaseController, ICompareState {
     public SaveBeehiveController(int id_to_load = 0) {
 
         if (id_to_load != 0) {
-            _m_beehive = _m_beehive_model.getItemByID(id_to_load.ToString()) ?? new();
-            _m_original_beehive = _m_beehive_model.getItemByID(id_to_load.ToString()) ?? new();
+            _m_beehive = _m_beehive_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
+            _m_original_beehive = _m_beehive_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
         }
 
         m_save_command = new RelayCommand(saveBeehive, canSaveBeehive);

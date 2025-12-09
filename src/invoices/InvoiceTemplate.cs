@@ -100,8 +100,8 @@ public class InvoiceTemplate : IDocument {
 
             column.Item().Row(row => {
 
-                var client_item = _m_client_model.getItemByID(_m_receipt_item.receipt_client_item.fk_client_id.ToString());
-                if (client_item == null)
+                var client_result = _m_client_model.getItemByID(_m_receipt_item.receipt_client_item.fk_client_id.ToString());
+                if (!client_result.is_found)
                 {
                     return;
                 }
@@ -109,8 +109,8 @@ public class InvoiceTemplate : IDocument {
                 EntityItem? entity_me_item = new();
                 EntityItem? entity_client_item = new();
 
-                entity_me_item = _m_entity_model.getItemByID(((int)EEntityPredefine.ME).ToString());
-                entity_client_item = _m_entity_model.getItemByID(client_item.fk_entity_id.ToString());
+                entity_me_item = _m_entity_model.getItemByID(((int)EEntityPredefine.ME).ToString()).returned_item;
+                entity_client_item = _m_entity_model.getItemByID(client_result.returned_item!.fk_entity_id.ToString()).returned_item;
 
                 row.RelativeItem().Component(new InvoiceAddress("De", entity_me_item ?? new EntityItem()));
                 row.ConstantItem(50);

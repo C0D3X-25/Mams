@@ -62,11 +62,11 @@ public class SaveProductLotController : ABaseController, ICompareState {
 
     public SaveProductLotController(int id_to_load = 0) {
         
-        _m_list_beehive = _m_beehive_model.getTable();
+        _m_list_beehive = _m_beehive_model.getAllItems().returned_items;
 
         if (id_to_load != 0) {
-            _m_original_product_lot = _m_product_lot_model.getItemByID(id_to_load.ToString()) ?? new();
-            _m_product_lot = _m_product_lot_model.getItemByID(id_to_load.ToString()) ?? new();
+            _m_original_product_lot = _m_product_lot_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
+            _m_product_lot = _m_product_lot_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
 
             // Find the matching beehive in the list and set it as selected
             _m_selected_beehive = _m_list_beehive.FirstOrDefault(b =>

@@ -92,7 +92,7 @@ public class ListEntityController : ABaseController {
     /// Updates the list of clients based on the archive status filter
     /// </summary>
     private void updateListItems() {
-        var all_items = _m_item_model.getTable();
+        var all_items = _m_item_model.getAllItems().returned_items;
 
         if (!_m_is_show_archived_checked) {
             m_list_items = new ObservableCollection<EntityItem>(

@@ -41,13 +41,14 @@ public class ServicePDF {
         }
 
         ReceiptHandlerModel receipt_handler_model = new();
-        ReceiptHandlerItem? item = receipt_handler_model.getItemByID(receipt_id);
+        var result = receipt_handler_model.getItemByID(receipt_id);
 
-        if (item is null) {
+        if (!result.is_found || result.returned_item is null) {
             MessageBox.Show("Receipt not found.");
             return;
         }
 
+        var item = result.returned_item;
         _m_invoice_filename = $"Facture {item.receipt_item.receipt_number}.pdf";
         
         // Ensure the directory exists before generating the PDF

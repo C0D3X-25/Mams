@@ -35,14 +35,13 @@ public class ProductCategoryModel :
     /// Retrieves a <see cref="ProductCategoryItem"/> by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the product category item to retrieve. Must be a valid identifier.</param>
-    /// <returns>A <see cref="ProductCategoryItem"/> representing the product category with the specified identifier,  or <see
-    /// langword="null"/> if the identifier is invalid or no matching item is found.</returns>
-    public ProductCategoryItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{ProductCategoryItem}"/> containing the product category and any error message.</returns>
+    public ResponseGetItem<ProductCategoryItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return null;
+            return ResponseGetItem<ProductCategoryItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<ProductCategoryItem?>(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
@@ -55,28 +54,27 @@ public class ProductCategoryModel :
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.Read()) {
-                    return new ProductCategoryItem {
+                    return ResponseGetItem<ProductCategoryItem>.Success(new ProductCategoryItem {
                         product_category_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_category_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_category_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
-                    };
+                    });
                 }
-                return null;
+                return ResponseGetItem<ProductCategoryItem>.NotFound();
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<ProductCategoryItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves all rows from the product category table as an observable collection.
+    /// Retrieves all product category items from the database.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows in the product category table. If the table is
-    /// empty, the collection will be empty.</returns>
-    public ObservableCollection<ProductCategoryItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<ProductCategoryItem>(_m_TBL_NAME, _m_COL_NAME);
+    /// <returns>A <see cref="ResponseGetAllItems{ProductCategoryItem}"/> containing all product category items and any error message.</returns>
+    public ResponseGetAllItems<ProductCategoryItem> getAllItems() {
+        var items = SDatabaseModel.getAllRowsInTable<ProductCategoryItem>(_m_TBL_NAME, _m_COL_NAME);
+        return ResponseGetAllItems<ProductCategoryItem>.Success(items);
     }
 
     /// <summary>

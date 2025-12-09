@@ -35,14 +35,13 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// Retrieves a <see cref="ReceiptItem"/> object by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the receipt item to retrieve. Must be a valid identifier.</param>
-    /// <returns>A <see cref="ReceiptItem"/> object representing the receipt item with the specified identifier,  or <see
-    /// langword="null"/> if no matching item is found or if the identifier is invalid.</returns>
-    public ReceiptItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{ReceiptItem}"/> containing the receipt item and any error message.</returns>
+    public ResponseGetItem<ReceiptItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return null;
+            return ResponseGetItem<ReceiptItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<ReceiptItem?>(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, " +
@@ -58,29 +57,28 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.Read()) {
-                    return new ReceiptItem {
+                    return ResponseGetItem<ReceiptItem>.Success(new ReceiptItem {
                         receipt_id = reader.getSafeValue<int>(_m_COL_ID),
                         receipt_number = reader.getSafeValue(_m_COL_RECEIPT_NUMBER, string.Empty),
                         receipt_total_price = reader.getSafeValue<decimal>(_m_COL_RECEIPT_TOTAL_PRICE),
                         receipt_date_created = reader.getSafeValue(_m_COL_RECEIPT_DATE_CREATED, DateOnly.MinValue).ToString(globals.SGlobals.g_EU_DATE_FORMAT)
-                    };
+                    });
                 }
-                return null;
+                return ResponseGetItem<ReceiptItem>.NotFound();
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<ReceiptItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves all rows from the table associated with <see cref="ReceiptItem"/>.
+    /// Retrieves all receipt items from the database.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows in the table. If the table is empty, the collection
-    /// will be empty.</returns>
-    public ObservableCollection<ReceiptItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<ReceiptItem>(_m_TBL_NAME, _m_COL_RECEIPT_DATE_CREATED);
+    /// <returns>A <see cref="ResponseGetAllItems{ReceiptItem}"/> containing all receipt items and any error message.</returns>
+    public ResponseGetAllItems<ReceiptItem> getAllItems() {
+        var items = SDatabaseModel.getAllRowsInTable<ReceiptItem>(_m_TBL_NAME, _m_COL_RECEIPT_DATE_CREATED);
+        return ResponseGetAllItems<ReceiptItem>.Success(items);
     }
 
     /// <summary>

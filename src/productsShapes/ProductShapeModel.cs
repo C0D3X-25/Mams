@@ -35,14 +35,13 @@ public class ProductShapeModel :
     /// Retrieves a <see cref="ProductShapeItem"/> object by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the product shape item to retrieve. Cannot be null or empty.</param>
-    /// <returns>A <see cref="ProductShapeItem"/> object if an item with the specified identifier exists;  otherwise, <see
-    /// langword="null"/>.</returns>
-    public ProductShapeItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{ProductShapeItem}"/> containing the product shape and any error message.</returns>
+    public ResponseGetItem<ProductShapeItem> getItemByID(string id) {
         if (string.IsNullOrEmpty(id)) {
-            return null;
+            return ResponseGetItem<ProductShapeItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<ProductShapeItem?>(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
@@ -55,28 +54,27 @@ public class ProductShapeModel :
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.Read()) {
-                    return new ProductShapeItem {
+                    return ResponseGetItem<ProductShapeItem>.Success(new ProductShapeItem {
                         product_shape_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_shape_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_shape_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
-                    };
+                    });
                 }
-                return null;
+                return ResponseGetItem<ProductShapeItem>.NotFound();
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<ProductShapeItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves all rows from the table as an observable collection of <see cref="ProductShapeItem"/>.
+    /// Retrieves all product shape items from the database.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows in the table as <see cref="ProductShapeItem"/>
-    /// objects. The collection will be empty if no rows are found.</returns>
-    public ObservableCollection<ProductShapeItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<ProductShapeItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
+    /// <returns>A <see cref="ResponseGetAllItems{ProductShapeItem}"/> containing all product shape items and any error message.</returns>
+    public ResponseGetAllItems<ProductShapeItem> getAllItems() {
+        var items = SDatabaseModel.getAllRowsInTable<ProductShapeItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
+        return ResponseGetAllItems<ProductShapeItem>.Success(items);
     }
 
     /// <summary>

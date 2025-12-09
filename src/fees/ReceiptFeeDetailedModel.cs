@@ -50,17 +50,15 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// Retrieves a detailed receipt fee item by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the receipt to retrieve.</param>
-    /// <returns>A <see cref="ReceiptFeeDetailedItem"/> containing detailed information about the receipt,  including associated
-    /// products, supplier, and entity data. Returns <see langword="null"/>  if no receipt is found for the specified
-    /// identifier.</returns>
-    public ReceiptFeeDetailedItem? getItemByID(string id)
+    /// <returns>A <see cref="ResponseGetItem{ReceiptFeeDetailedItem}"/> containing detailed information about the receipt and any error message.</returns>
+    public ResponseGetItem<ReceiptFeeDetailedItem> getItemByID(string id)
     {
         if (!SDataValidation.isIdValid(id))
         {
-            return null;
+            return ResponseGetItem<ReceiptFeeDetailedItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<ReceiptFeeDetailedItem?>(connection =>
+        return executeWithConnection(connection =>
         {
             try
             {
@@ -178,24 +176,24 @@ public class ReceiptFeeDetailedModel : ABaseModel,
                     }
                 }
 
-                return item;
+                if (item != null)
+                {
+                    return ResponseGetItem<ReceiptFeeDetailedItem>.Success(item);
+                }
+                return ResponseGetItem<ReceiptFeeDetailedItem>.NotFound();
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<ReceiptFeeDetailedItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves a collection of detailed receipt fee items, including associated supplier, entity, and product
-    /// information.
+    /// Retrieves all detailed receipt fee items from the database.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{ReceiptFeeDetailedItem}"/> of <see cref="ReceiptFeeDetailedItem"/> objects, where each item
-    /// contains detailed information about a receipt, its associated products, supplier, and entity. The collection
-    /// will be empty if no valid receipts are found.</returns>
-    public ObservableCollection<ReceiptFeeDetailedItem> getTable()
+    /// <returns>A <see cref="ResponseGetAllItems{ReceiptFeeDetailedItem}"/> containing all receipt fee items and any error message.</returns>
+    public ResponseGetAllItems<ReceiptFeeDetailedItem> getAllItems()
     {
         return executeWithConnection(connection =>
         {
@@ -323,12 +321,11 @@ public class ReceiptFeeDetailedModel : ABaseModel,
                     }
                 }
 
-                return items;
+                return ResponseGetAllItems<ReceiptFeeDetailedItem>.Success(items);
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return items;
+                return ResponseGetAllItems<ReceiptFeeDetailedItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }

@@ -54,17 +54,15 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// Retrieves a detailed receipt item by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the receipt item. Must be a valid identifier.</param>
-    /// <returns>A <see cref="ReceiptProfitDetailedItem"/> object containing detailed information about the receipt,  including
-    /// associated products, client, and entity data, or <see langword="null"/> if the identifier is invalid  or no
-    /// matching receipt is found.</returns>
-    public ReceiptProfitDetailedItem? getItemByID(string id)
+    /// <returns>A <see cref="ResponseGetItem{ReceiptProfitDetailedItem}"/> containing detailed information about the receipt and any error message.</returns>
+    public ResponseGetItem<ReceiptProfitDetailedItem> getItemByID(string id)
     {
         if (!SDataValidation.isIdValid(id))
         {
-            return null;
+            return ResponseGetItem<ReceiptProfitDetailedItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<ReceiptProfitDetailedItem?>(connection =>
+        return executeWithConnection(connection =>
         {
             try
             {
@@ -198,21 +196,23 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                     }
                 }
 
-                return item;
+                if (item != null)
+                {
+                    return ResponseGetItem<ReceiptProfitDetailedItem>.Success(item);
+                }
+                return ResponseGetItem<ReceiptProfitDetailedItem>.NotFound();
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<ReceiptProfitDetailedItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves a collection of detailed receipt profit items.
+    /// Retrieves all detailed receipt profit items from the database.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{ReceiptProfitDetailedItem}"/> containing detailed receipt profit items.  The collection will be empty
-    /// if no valid receipts are found.</returns>
-    public ObservableCollection<ReceiptProfitDetailedItem> getTable() {
+    /// <returns>A <see cref="ResponseGetAllItems{ReceiptProfitDetailedItem}"/> containing all receipt profit items and any error message.</returns>
+    public ResponseGetAllItems<ReceiptProfitDetailedItem> getAllItems() {
         return executeWithConnection(connection =>
         {
             var items = new ObservableCollection<ReceiptProfitDetailedItem>();
@@ -356,12 +356,11 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                     }
                 }
 
-                return items;
+                return ResponseGetAllItems<ReceiptProfitDetailedItem>.Success(items);
             }
             catch (MySqlException ex)
             {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return items;
+                return ResponseGetAllItems<ReceiptProfitDetailedItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }

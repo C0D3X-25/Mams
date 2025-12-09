@@ -40,35 +40,34 @@ public class ReceiptSupplierModel : ABaseModel, ICrudOperation<ReceiptSupplierIt
     /// Retrieves a <see cref="ReceiptSupplierItem"/> object by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the item to retrieve. Must be a valid identifier.</param>
-    /// <returns>A <see cref="ReceiptSupplierItem"/> object if an item with the specified identifier exists; otherwise, <see
-    /// langword="null"/>.</returns>
-    public ReceiptSupplierItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{ReceiptSupplierItem}"/> containing the receipt supplier item and any error message.</returns>
+    public ResponseGetItem<ReceiptSupplierItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return null;
+            return ResponseGetItem<ReceiptSupplierItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<ReceiptSupplierItem?>(connection => {
+        return executeWithConnection(connection => {
             try {
                 using var cmd = new MySqlCommand($"{BASE_SELECT_QUERY} WHERE {_m_COL_FK_RECEIPT} = @id;", connection);
                 cmd.Parameters.AddWithValue("@id", id);
 
                 using var reader = cmd.ExecuteReader();
-                return reader.Read() ? CreateItemFromReader(reader) : null;
+                if (reader.Read()) {
+                    return ResponseGetItem<ReceiptSupplierItem>.Success(CreateItemFromReader(reader));
+                }
+                return ResponseGetItem<ReceiptSupplierItem>.NotFound();
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<ReceiptSupplierItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves a collection of receipt supplier items from the database.
+    /// Retrieves all receipt supplier items from the database.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ReceiptSupplierItem"/> objects representing the receipt
-    /// supplier items retrieved from the database. Returns an empty collection if the connection is null or if an error
-    /// occurs during execution.</returns>
-    public ObservableCollection<ReceiptSupplierItem> getTable() {
+    /// <returns>A <see cref="ResponseGetAllItems{ReceiptSupplierItem}"/> containing all receipt supplier items and any error message.</returns>
+    public ResponseGetAllItems<ReceiptSupplierItem> getAllItems() {
         return executeWithConnection(connection => {
             var items = new ObservableCollection<ReceiptSupplierItem>();
 
@@ -79,12 +78,11 @@ public class ReceiptSupplierModel : ABaseModel, ICrudOperation<ReceiptSupplierIt
                 while (reader.Read()) {
                     items.Add(CreateItemFromReader(reader));
                 }
+                return ResponseGetAllItems<ReceiptSupplierItem>.Success(items);
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return ResponseGetAllItems<ReceiptSupplierItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
-            
-            return items;
         });
     }
 

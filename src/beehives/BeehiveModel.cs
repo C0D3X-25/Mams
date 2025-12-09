@@ -34,14 +34,13 @@ public class BeehiveModel : ABaseModel,
     /// Retrieves a <see cref="BeehiveItem"/> object by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the item to retrieve. Must be a valid ID string.</param>
-    /// <returns>A <see cref="BeehiveItem"/> object representing the item with the specified ID,  or <see langword="null"/> if no
-    /// matching item is found or if the ID is invalid.</returns>
-    public BeehiveItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{BeehiveItem}"/> containing the item with the specified ID and any error message.</returns>
+    public ResponseGetItem<BeehiveItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return null;
+            return ResponseGetItem<BeehiveItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<BeehiveItem?>(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
@@ -54,28 +53,27 @@ public class BeehiveModel : ABaseModel,
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.Read()) {
-                    return new BeehiveItem {
+                    return ResponseGetItem<BeehiveItem>.Success(new BeehiveItem {
                         beehive_id = reader.getSafeValue<int>(_m_COL_ID),
                         beehive_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         beehive_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
-                    };
+                    });
                 }
-                return null;
+                return ResponseGetItem<BeehiveItem>.NotFound();
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<BeehiveItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves all rows from the beehive table as an observable collection.
+    /// Retrieves all rows from the beehive table.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> containing all rows in the beehive table. If the table is empty, the
-    /// collection will be empty.</returns>
-    public ObservableCollection<BeehiveItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<BeehiveItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
+    /// <returns>A <see cref="ResponseGetAllItems{BeehiveItem}"/> containing all beehive items and any error message.</returns>
+    public ResponseGetAllItems<BeehiveItem> getAllItems() {
+        var items = SDatabaseModel.getAllRowsInTable<BeehiveItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
+        return ResponseGetAllItems<BeehiveItem>.Success(items);
     }
 
     /// <summary>

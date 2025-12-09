@@ -37,8 +37,8 @@ public class SaveProductTypeController : ABaseController, ICompareState {
     public SaveProductTypeController(int id_to_load = 0) {
 
         if (id_to_load != 0) {
-            _m_original_product_type = _m_product_type_model.getItemByID(id_to_load.ToString()) ?? new ProductTypeItem();
-            _m_product_type = _m_product_type_model.getItemByID(id_to_load.ToString()) ?? new ProductTypeItem();
+            _m_original_product_type = _m_product_type_model.getItemByID(id_to_load.ToString()).returned_item ?? new ProductTypeItem();
+            _m_product_type = _m_product_type_model.getItemByID(id_to_load.ToString()).returned_item ?? new ProductTypeItem();
         }
 
         m_save_command = new RelayCommand(saveProduct, canSaveProduct);

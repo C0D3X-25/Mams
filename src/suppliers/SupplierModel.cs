@@ -33,14 +33,13 @@ public class SupplierModel : ABaseModel,
     /// Retrieves a <see cref="SupplierItem"/> object by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the supplier item. Cannot be null or empty.</param>
-    /// <returns>A <see cref="SupplierItem"/> object if an item with the specified identifier exists;  otherwise, <see
-    /// langword="null"/>.</returns>
-    public SupplierItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{SupplierItem}"/> containing the supplier item and any error message.</returns>
+    public ResponseGetItem<SupplierItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return null;
+            return ResponseGetItem<SupplierItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<SupplierItem?>(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
@@ -54,27 +53,26 @@ public class SupplierModel : ABaseModel,
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
                 if (reader.Read()) {
-                    return new SupplierItem {
+                    return ResponseGetItem<SupplierItem>.Success(new SupplierItem {
                         supplier_id = reader.getSafeValue<int>(_m_COL_ID),
                         fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY, 0)
-                    };
+                    });
                 }
-                return null;
+                return ResponseGetItem<SupplierItem>.NotFound();
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<SupplierItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves all rows from the supplier table as an observable collection.
+    /// Retrieves all supplier items from the database.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="SupplierItem"/> objects representing all rows in the
-    /// supplier table. The collection will be empty if the table contains no rows.</returns>
-    public ObservableCollection<SupplierItem> getTable() {
-        return SDatabaseModel.getAllRowsInTable<SupplierItem>(_m_TBL_NAME);
+    /// <returns>A <see cref="ResponseGetAllItems{SupplierItem}"/> containing all supplier items and any error message.</returns>
+    public ResponseGetAllItems<SupplierItem> getAllItems() {
+        var items = SDatabaseModel.getAllRowsInTable<SupplierItem>(_m_TBL_NAME);
+        return ResponseGetAllItems<SupplierItem>.Success(items);
     }
 
     /// <summary>

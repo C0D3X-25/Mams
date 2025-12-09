@@ -70,43 +70,41 @@ public class ReceiptHandlerModel : ABaseModel,
     }
 
     /// <summary>
-    /// Retrieves a collection of receipt handler items based on the current receipt model's row IDs.
+    /// Retrieves all receipt handler items based on the current receipt model's row IDs.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> containing <see cref="ReceiptHandlerItem"/> objects corresponding to
-    /// the row IDs in the receipt model. The collection will be empty if no valid receipts are found.</returns>
-    public ObservableCollection<ReceiptHandlerItem> getTable() {
+    /// <returns>A <see cref="ResponseGetAllItems{ReceiptHandlerItem}"/> containing all receipt handler items and any error message.</returns>
+    public ResponseGetAllItems<ReceiptHandlerItem> getAllItems() {
 
         ObservableCollection<ReceiptHandlerItem> items = new();
 
         foreach (var id in _m_receipt_model.getRowsID()) {
-            var receipt = getItemByID(id.ToString());
-            if (receipt != null) { 
-                items.Add(receipt);
+            var result = getItemByID(id.ToString());
+            if (result.is_found) { 
+                items.Add(result.returned_item!);
             }
         }
-        return items;
+        return ResponseGetAllItems<ReceiptHandlerItem>.Success(items);
     }
 
     /// <summary>
     /// Retrieves a receipt and its associated details by the specified receipt ID.
     /// </summary>
     /// <param name="id">The unique identifier of the receipt. Must be a valid ID.</param>
-    /// <returns>A <see cref="ReceiptHandlerItem"/> containing the receipt and its associated details,  or <see langword="null"/>
-    /// if the provided ID is invalid or no receipt is found.</returns>
-    public ReceiptHandlerItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{ReceiptHandlerItem}"/> containing the receipt and its associated details and any error message.</returns>
+    public ResponseGetItem<ReceiptHandlerItem> getItemByID(string id) {
 
         if (!SDataValidation.isIdValid(id)) {
-            return null;
+            return ResponseGetItem<ReceiptHandlerItem>.Failure("Invalid ID provided.");
         }
 
         ReceiptHandlerItem item = new();
 
-        item.receipt_item = _m_receipt_model.getItemByID(id) ?? new();
-        item.receipt_client_item = _m_receipt_client_model.getItemByID(id) ?? new();
-        item.receipt_supplier_item = _m_receipt_supplier_model.getItemByID(id) ?? new();
+        item.receipt_item = _m_receipt_model.getItemByID(id).returned_item ?? new();
+        item.receipt_client_item = _m_receipt_client_model.getItemByID(id).returned_item ?? new();
+        item.receipt_supplier_item = _m_receipt_supplier_model.getItemByID(id).returned_item ?? new();
         item.receipt_product_items = _m_receipt_product_model.getListItemWithReceiptID(id) ?? new();
 
-        return item;
+        return ResponseGetItem<ReceiptHandlerItem>.Success(item);
     }
 
     /// <summary>

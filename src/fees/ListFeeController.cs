@@ -47,7 +47,6 @@ public class ListFeeController : ABaseController {
 
 
     public ListFeeController() {
-
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
         m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
@@ -57,7 +56,7 @@ public class ListFeeController : ABaseController {
 
 
     private void updateListItems() {
-        m_list_items = _m_item_model.getTable();
+        m_list_items = _m_item_model.getAllItems().returned_items;
     }
 
 

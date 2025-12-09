@@ -42,14 +42,13 @@ public class ProductLotModel : ABaseModel,
     /// Retrieves a <see cref="ProductLotItem"/> object by its unique identifier.
     /// </summary>
     /// <param name="id">The unique identifier of the product lot item to retrieve. Must be a valid identifier.</param>
-    /// <returns>A <see cref="ProductLotItem"/> object containing the details of the product lot item if found; otherwise, <see
-    /// langword="null"/>.</returns>
-    public ProductLotItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{ProductLotItem}"/> containing the product lot item and any error message.</returns>
+    public ResponseGetItem<ProductLotItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return null;
+            return ResponseGetItem<ProductLotItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<ProductLotItem?>(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE}, {_m_COL_ARCHIVE} " +
@@ -75,37 +74,34 @@ public class ProductLotModel : ABaseModel,
                     product_lot.product_lot_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString();
                 }
                 else {
-                    return null;
+                    return ResponseGetItem<ProductLotItem>.NotFound();
                 }
 
-                product_lot.beehive_name = beehive_model.getItemByID(beehive_id.ToString())?.beehive_name ?? string.Empty;
+                product_lot.beehive_name = beehive_model.getItemByID(beehive_id.ToString()).returned_item?.beehive_name ?? string.Empty;
 
-                return product_lot;
+                return ResponseGetItem<ProductLotItem>.Success(product_lot);
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<ProductLotItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves a collection of <see cref="ProductLotItem"/> objects from the database table,  with additional beehive
-    /// name information populated for each item.
+    /// Retrieves all product lot items from the database, with additional beehive name information populated for each item.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> containing all <see cref="ProductLotItem"/> objects  from the database
-    /// table, with beehive name information populated.</returns>
-    public ObservableCollection<ProductLotItem> getTable() {
+    /// <returns>A <see cref="ResponseGetAllItems{ProductLotItem}"/> containing all product lot items and any error message.</returns>
+    public ResponseGetAllItems<ProductLotItem> getAllItems() {
         ObservableCollection<ProductLotItem> table = SDatabaseModel.getAllRowsInTable<ProductLotItem>(_m_TBL_NAME, _m_COL_ARCHIVE);
 
         BeehiveModel beehive_model = new();
 
         foreach (ProductLotItem item in table) {
             item.beehive_name = item.fk_beehive_id > 0 
-                ? beehive_model.getItemByID(item.fk_beehive_id.ToString())?.beehive_name ?? string.Empty 
+                ? beehive_model.getItemByID(item.fk_beehive_id.ToString()).returned_item?.beehive_name ?? string.Empty 
                 : string.Empty;
         }
-        return table;
+        return ResponseGetAllItems<ProductLotItem>.Success(table);
     }
 
     /// <summary>

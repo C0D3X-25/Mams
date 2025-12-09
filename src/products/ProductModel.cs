@@ -45,17 +45,15 @@ public class ProductModel : ABaseModel,
     /// Retrieves a <see cref="ProductItem"/> by its unique identifier.
     /// </summary>
     /// <remarks>This method queries the database to retrieve a product's details based on its unique
-    /// identifier.  If the product is found, its associated type, category, and shape names are also resolved. If an
-    /// error occurs during the database operation, the method returns <see langword="null"/> and displays an error
-    /// message.</remarks>
+    /// identifier.  If the product is found, its associated type, category, and shape names are also resolved.</remarks>
     /// <param name="id">The unique identifier of the product to retrieve. This value cannot be null or empty.</param>
-    /// <returns>A <see cref="ProductItem"/> object containing the product details if found; otherwise, <see langword="null"/>.</returns>
-    public ProductItem? getItemByID(string id) {
+    /// <returns>A <see cref="ResponseGetItem{ProductItem}"/> containing the product details and any error message.</returns>
+    public ResponseGetItem<ProductItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return null;
+            return ResponseGetItem<ProductItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection<ProductItem?>(connection => {
+        return executeWithConnection(connection => {
             try {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_WEIGHT}, " +
@@ -94,30 +92,27 @@ public class ProductModel : ABaseModel,
                     product.product_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString();
                 }
                 else {
-                    return null;
+                    return ResponseGetItem<ProductItem>.NotFound();
                 }
 
                 // Get associated names from other models
-                product.product_type_name = product_type_model.getItemByID(product_type_id.ToString())?.product_type_name ?? string.Empty;
-                product.product_category_name = product_category_model.getItemByID(product_category_id.ToString())?.product_category_name ?? string.Empty;
-                product.product_shape_name = product_shape_model.getItemByID(product_shape_id.ToString())?.product_shape_name ?? string.Empty;
+                product.product_type_name = product_type_model.getItemByID(product_type_id.ToString()).returned_item?.product_type_name ?? string.Empty;
+                product.product_category_name = product_category_model.getItemByID(product_category_id.ToString()).returned_item?.product_category_name ?? string.Empty;
+                product.product_shape_name = product_shape_model.getItemByID(product_shape_id.ToString()).returned_item?.product_shape_name ?? string.Empty;
                     
-                return product;
+                return ResponseGetItem<ProductItem>.Success(product);
             }
             catch (MySqlException ex) {
-                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
-                return null;
+                return ResponseGetItem<ProductItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
     }
 
     /// <summary>
-    /// Retrieves a collection of product items from the database, with additional details populated for related
-    /// entities.
+    /// Retrieves all product items from the database, with additional details populated for related entities.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ProductItem"/> objects, where each item includes
-    /// additional details for related entities such as product type, category, and shape.</returns>
-    public ObservableCollection<ProductItem> getTable() {
+    /// <returns>A <see cref="ResponseGetAllItems{ProductItem}"/> containing all product items and any error message.</returns>
+    public ResponseGetAllItems<ProductItem> getAllItems() {
         ObservableCollection<ProductItem> table = SDatabaseModel.getAllRowsInTable<ProductItem>(_m_TBL_NAME, _m_COL_NAME);
 
         ProductTypeModel product_type_model = new();
@@ -126,16 +121,16 @@ public class ProductModel : ABaseModel,
 
         foreach (ProductItem item in table) {
             item.product_type_name = item.fk_product_type_id > 0 
-                ? product_type_model.getItemByID(item.fk_product_type_id.ToString())?.product_type_name ?? string.Empty 
+                ? product_type_model.getItemByID(item.fk_product_type_id.ToString()).returned_item?.product_type_name ?? string.Empty 
                 : string.Empty;
             item.product_category_name = item.fk_product_category_id > 0 
-                ? product_category_model.getItemByID(item.fk_product_category_id.ToString())?.product_category_name ?? string.Empty 
+                ? product_category_model.getItemByID(item.fk_product_category_id.ToString()).returned_item?.product_category_name ?? string.Empty 
                 : string.Empty;
             item.product_shape_name = item.fk_product_shape_id > 0 
-                ? product_shape_model.getItemByID(item.fk_product_shape_id.ToString())?.product_shape_name ?? string.Empty 
+                ? product_shape_model.getItemByID(item.fk_product_shape_id.ToString()).returned_item?.product_shape_name ?? string.Empty 
                 : string.Empty;
         }
-        return table;
+        return ResponseGetAllItems<ProductItem>.Success(table);
     }
 
     /// <summary>
