@@ -1,10 +1,6 @@
 ﻿using Mams.src.databaseOperations;
 using Mams.src.helpers;
 using Mams.src.models;
-using Mams.src.productsCategories;
-using Mams.src.productsLots;
-using Mams.src.productsShapes;
-using Mams.src.productsTypes;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -55,52 +51,44 @@ public class ProductModel : ABaseModel,
 
         return executeWithConnection(connection => {
             try {
-                using MySqlCommand cmd = new(
-                    $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_WEIGHT}, " +
-                    $"{_m_COL_FK_PRODUCT_TYPE}, {_m_COL_FK_PRODUCT_CATEGORY}, " +
-                    $"{_m_COL_FK_PRODUCT_SHAPE}, " +
-                    $"{_m_COL_ARCHIVE} " +
-                    $"FROM {_m_TBL_NAME} " +
-                    $"WHERE {_m_COL_ID} = @id;",
-                    connection
-                );
+                string query = $@"
+                    SELECT 
+                        p.{_m_COL_ID}, 
+                        p.{_m_COL_NAME}, 
+                        p.{_m_COL_WEIGHT}, 
+                        p.{_m_COL_FK_PRODUCT_TYPE}, 
+                        p.{_m_COL_FK_PRODUCT_CATEGORY}, 
+                        p.{_m_COL_FK_PRODUCT_SHAPE}, 
+                        p.{_m_COL_ARCHIVE},
+                        pt.product_type_name,
+                        pc.product_category_name,
+                        ps.product_shape_name
+                    FROM {_m_TBL_NAME} p
+                    LEFT JOIN products_types pt ON p.{_m_COL_FK_PRODUCT_TYPE} = pt.product_type_id
+                    LEFT JOIN products_categories pc ON p.{_m_COL_FK_PRODUCT_CATEGORY} = pc.product_category_id
+                    LEFT JOIN products_shapes ps ON p.{_m_COL_FK_PRODUCT_SHAPE} = ps.product_shape_id
+                    WHERE p.{_m_COL_ID} = @id;";
 
+                using MySqlCommand cmd = new(query, connection);
                 cmd.Parameters.AddWithValue("@id", id);
 
-                ProductTypeModel product_type_model = new();
-                ProductCategoryModel product_category_model = new();
-                ProductShapeModel product_shape_model = new();
-                ProductItem product = new();
-
-                int product_type_id = 0;
-                int product_category_id = 0;
-                int product_shape_id = 0;
-
-                // Using a block to ensure the reader is disposed of properly
                 using MySqlDataReader reader = cmd.ExecuteReader();
                 if (reader.Read()) {
-                    product_type_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_TYPE, 0);
-                    product_category_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY, 0);
-                    product_shape_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0);
-
-                    product.product_id = reader.getSafeValue<int>(_m_COL_ID);
-                    product.product_name = reader.getSafeValue(_m_COL_NAME, string.Empty);
-                    product.product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0);
-                    product.fk_product_type_id = product_type_id;
-                    product.fk_product_category_id = product_category_id;
-                    product.fk_product_shape_id = product_shape_id;
-                    product.product_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString();
+                    var archiveDate = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue);
+                    return ResponseGetItem<ProductItem>.Success(new ProductItem {
+                        product_id = reader.getSafeValue<int>(_m_COL_ID),
+                        product_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                        product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0),
+                        fk_product_type_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_TYPE, 0),
+                        fk_product_category_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY, 0),
+                        fk_product_shape_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0),
+                        product_archive = archiveDate == DateOnly.MinValue ? string.Empty : archiveDate.ToString(),
+                        product_type_name = reader.getSafeValue("product_type_name", string.Empty),
+                        product_category_name = reader.getSafeValue("product_category_name", string.Empty),
+                        product_shape_name = reader.getSafeValue("product_shape_name", string.Empty)
+                    });
                 }
-                else {
-                    return ResponseGetItem<ProductItem>.NotFound();
-                }
-
-                // Get associated names from other models
-                product.product_type_name = product_type_model.getItemByID(product_type_id.ToString()).returned_item?.product_type_name ?? string.Empty;
-                product.product_category_name = product_category_model.getItemByID(product_category_id.ToString()).returned_item?.product_category_name ?? string.Empty;
-                product.product_shape_name = product_shape_model.getItemByID(product_shape_id.ToString()).returned_item?.product_shape_name ?? string.Empty;
-                    
-                return ResponseGetItem<ProductItem>.Success(product);
+                return ResponseGetItem<ProductItem>.NotFound();
             }
             catch (MySqlException ex) {
                 return ResponseGetItem<ProductItem>.MySqlFailure(ex.ErrorCode, ex.Message);
@@ -113,24 +101,53 @@ public class ProductModel : ABaseModel,
     /// </summary>
     /// <returns>A <see cref="ResponseGetAllItems{ProductItem}"/> containing all product items and any error message.</returns>
     public ResponseGetAllItems<ProductItem> getAllItems() {
-        ObservableCollection<ProductItem> table = SDatabaseModel.getAllRowsInTable<ProductItem>(_m_TBL_NAME, _m_COL_NAME);
+        return executeWithConnection(connection => {
+            try {
+                string query = $@"
+                    SELECT 
+                        p.{_m_COL_ID}, 
+                        p.{_m_COL_NAME}, 
+                        p.{_m_COL_WEIGHT}, 
+                        p.{_m_COL_FK_PRODUCT_TYPE}, 
+                        p.{_m_COL_FK_PRODUCT_CATEGORY}, 
+                        p.{_m_COL_FK_PRODUCT_SHAPE}, 
+                        p.{_m_COL_ARCHIVE},
+                        pt.product_type_name,
+                        pc.product_category_name,
+                        ps.product_shape_name
+                    FROM {_m_TBL_NAME} p
+                    LEFT JOIN products_types pt ON p.{_m_COL_FK_PRODUCT_TYPE} = pt.product_type_id
+                    LEFT JOIN products_categories pc ON p.{_m_COL_FK_PRODUCT_CATEGORY} = pc.product_category_id
+                    LEFT JOIN products_shapes ps ON p.{_m_COL_FK_PRODUCT_SHAPE} = ps.product_shape_id
+                    ORDER BY p.{_m_COL_NAME} ASC;";
 
-        ProductTypeModel product_type_model = new();
-        ProductCategoryModel product_category_model = new();
-        ProductShapeModel product_shape_model = new();
+                using MySqlCommand cmd = new(query, connection);
+                using MySqlDataReader reader = cmd.ExecuteReader();
 
-        foreach (ProductItem item in table) {
-            item.product_type_name = item.fk_product_type_id > 0 
-                ? product_type_model.getItemByID(item.fk_product_type_id.ToString()).returned_item?.product_type_name ?? string.Empty 
-                : string.Empty;
-            item.product_category_name = item.fk_product_category_id > 0 
-                ? product_category_model.getItemByID(item.fk_product_category_id.ToString()).returned_item?.product_category_name ?? string.Empty 
-                : string.Empty;
-            item.product_shape_name = item.fk_product_shape_id > 0 
-                ? product_shape_model.getItemByID(item.fk_product_shape_id.ToString()).returned_item?.product_shape_name ?? string.Empty 
-                : string.Empty;
-        }
-        return ResponseGetAllItems<ProductItem>.Success(table);
+                ObservableCollection<ProductItem> items = [];
+
+                while (reader.Read()) {
+                    var archiveDate = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue);
+                    items.Add(new ProductItem {
+                        product_id = reader.getSafeValue<int>(_m_COL_ID),
+                        product_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                        product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0),
+                        fk_product_type_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_TYPE, 0),
+                        fk_product_category_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY, 0),
+                        fk_product_shape_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0),
+                        product_archive = archiveDate == DateOnly.MinValue ? string.Empty : archiveDate.ToString(),
+                        product_type_name = reader.getSafeValue("product_type_name", string.Empty),
+                        product_category_name = reader.getSafeValue("product_category_name", string.Empty),
+                        product_shape_name = reader.getSafeValue("product_shape_name", string.Empty)
+                    });
+                }
+
+                return ResponseGetAllItems<ProductItem>.Success(items);
+            }
+            catch (MySqlException ex) {
+                return ResponseGetAllItems<ProductItem>.MySqlFailure(ex.ErrorCode, ex.Message);
+            }
+        });
     }
 
     /// <summary>
@@ -269,7 +286,6 @@ public class ProductModel : ABaseModel,
             return product_items;
         }
         
-        // Check ID validity
         foreach (int id in ids) {
             if (!SDataValidation.isIdValid(id)) {
                 return product_items;
