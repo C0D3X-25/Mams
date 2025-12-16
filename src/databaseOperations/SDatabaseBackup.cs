@@ -5,7 +5,6 @@ namespace Mams.src.databaseOperations;
 
 public static class SDatabaseBackup 
 {
-
     private static string destination_path = "C:\\MySqlBackup\\";
 
     /// <summary>

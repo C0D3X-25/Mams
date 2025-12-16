@@ -50,8 +50,8 @@ public abstract class SDatabaseModel : ABaseModel {
         string field_id, 
         string field_archive,
         string table, 
-        EDeleteItemOperation delete_type
-        ) {
+        EDeleteItemOperation delete_type) 
+    {
         if (!areDeleteParametersProvided(id, field_id, table, delete_type)) {
             return ResponseDeleteItem.Failure("Invalid parameters provided for delete operation.");
         }
@@ -73,9 +73,10 @@ public abstract class SDatabaseModel : ABaseModel {
         string id,
         string field_id,
         string table,
-        EDeleteItemOperation delete_type
-        ) {
-        if (!areDeleteParametersProvided(id, field_id, table, delete_type)) {
+        EDeleteItemOperation delete_type) 
+    {
+        if (!areDeleteParametersProvided(id, field_id, table, delete_type))
+        {
             return ResponseDeleteItem.Failure("Invalid parameters provided for delete operation.");
         }
 
@@ -144,9 +145,8 @@ public abstract class SDatabaseModel : ABaseModel {
         string field_id,
         string field_archive,
         string table,
-        EDeleteItemOperation delete_type
-        ) {
-        
+        EDeleteItemOperation delete_type) 
+    {
         string query;
 
         switch (delete_type) {
@@ -180,7 +180,8 @@ public abstract class SDatabaseModel : ABaseModel {
         }
 
         bool need_transaction = !isTransactionActive();
-        if (need_transaction) {
+        if (need_transaction) 
+        {
             startTransaction();
         }
 

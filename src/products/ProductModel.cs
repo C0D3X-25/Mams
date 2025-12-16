@@ -44,13 +44,17 @@ public class ProductModel : ABaseModel,
     /// identifier.  If the product is found, its associated type, category, and shape names are also resolved.</remarks>
     /// <param name="id">The unique identifier of the product to retrieve. This value cannot be null or empty.</param>
     /// <returns>A <see cref="ResponseGetItem{ProductItem}"/> containing the product details and any error message.</returns>
-    public ResponseGetItem<ProductItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValid(id)) {
+    public ResponseGetItem<ProductItem> getItemByID(string id)
+    {
+        if (!SDataValidation.isIdValid(id))
+        {
             return ResponseGetItem<ProductItem>.Failure("Invalid ID provided.");
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 string query = $@"
                     SELECT 
                         p.{_m_COL_ID}, 
@@ -156,8 +160,10 @@ public class ProductModel : ABaseModel,
     /// <param name="item">The <see cref="ProductItem"/> to save. Must not be <c>null</c>.</param>
     /// <returns>A <see cref="ResponseSaveItem"/> containing the <c>product_id</c> of the saved item and any error message.
     /// Returns a response with ID 0 if the operation fails or the item is invalid.</returns>
-    public ResponseSaveItem saveItem(ProductItem item) {
-        if (item == null) {
+    public ResponseSaveItem saveItem(ProductItem item)
+    {
+        if (item == null)
+        {
             return ResponseSaveItem.Failure("Item cannot be null.");
         }
 
@@ -166,9 +172,10 @@ public class ProductModel : ABaseModel,
         string query;
         
         // Determine if we're inserting or updating
-        bool isInsert = (item_id == 0);
+        bool is_insert = (item_id == 0);
         
-        if (isInsert) {
+        if (is_insert)
+        {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_product_name)) {
                 return ResponseSaveItem.Failure("A product with the same name already exists.");
@@ -189,21 +196,19 @@ public class ProductModel : ABaseModel,
                 $"WHERE {_m_COL_ID} = @id;";
         }
 
-        // Start transaction if needed
-        bool need_transaction = !isTransactionActive();
-        if (need_transaction) {
-            startTransaction();
-        }
+        startTransaction();
 
-        try {
-            // Ensure shape ID is valid
-            if (item.fk_product_shape_id == 0) {
+        try
+        {
+            if (item.fk_product_shape_id == 0)
+            {
                 item.fk_product_shape_id = _m_DEFAUL_FK_PRODUCT_SHAPE;
             }
 
-            if (isInsert) {
-                // For INSERT operations, we need to return the new ID
-                item_id = executeWithConnection(connection => {
+            if (is_insert)
+            {
+                item_id = executeWithConnection(connection => 
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item_product_name);
                     cmd.Parameters.AddWithValue("@weight", item.product_weight);
@@ -214,8 +219,8 @@ public class ProductModel : ABaseModel,
                 });
             }
             else {
-                // For UPDATE operations, we just execute the command
-                executeWithConnection(connection => {
+                executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@name", item_product_name);
@@ -227,16 +232,13 @@ public class ProductModel : ABaseModel,
                 });
             }
 
-            if (need_transaction) {
-                commitTransaction();
-            }
+            commitTransaction();
             
             return ResponseSaveItem.Success(item_id);
         }
-        catch (MySqlException ex) {
-            if (need_transaction) {
-                rollbackTransaction();
-            }
+        catch (MySqlException ex)
+        {
+            rollbackTransaction();
             return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
@@ -247,7 +249,8 @@ public class ProductModel : ABaseModel,
     /// <param name="product_type_id">A list of product type IDs to filter the products. Each ID represents a specific product type.</param>
     /// <returns>An observable collection of <see cref="ProductItem"/> objects that match the specified product type IDs. If no
     /// products match, the collection will be empty.</returns>
-    public ObservableCollection<ProductItem> getProductWithProductTypeId(List<int> product_type_id) {
+    public ObservableCollection<ProductItem> getProductWithProductTypeId(List<int> product_type_id)
+    {
         return getProductWith(_m_COL_FK_PRODUCT_TYPE, product_type_id);
     }
 
@@ -257,7 +260,8 @@ public class ProductModel : ABaseModel,
     /// <param name="product_category_id">A list of product category IDs used to filter the products. Each ID must correspond to a valid product category.</param>
     /// <returns>An observable collection of <see cref="ProductItem"/> objects that match the specified product category IDs. If
     /// no products are found, the collection will be empty.</returns>
-    public ObservableCollection<ProductItem> getProductWithProductCategoryId(List<int> product_category_id) {
+    public ObservableCollection<ProductItem> getProductWithProductCategoryId(List<int> product_category_id)
+    {
         return getProductWith(_m_COL_FK_PRODUCT_CATEGORY, product_category_id);
     }
 
@@ -268,7 +272,8 @@ public class ProductModel : ABaseModel,
     /// shape.</param>
     /// <returns>An <see cref="ObservableCollection{ProductItem}"/> containing the products that match the specified product
     /// shape IDs. If no products match, the collection will be empty.</returns>
-    public ObservableCollection<ProductItem> getProductWithProductShapeId(List<int> product_shape_id) {
+    public ObservableCollection<ProductItem> getProductWithProductShapeId(List<int> product_shape_id)
+    {
         return getProductWith(_m_COL_FK_PRODUCT_SHAPE, product_shape_id);
     }
 
@@ -279,21 +284,26 @@ public class ProductModel : ABaseModel,
     /// <param name="ids">A list of integer IDs used to filter the query results. Each ID is matched against the specified column.</param>
     /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ProductItem"/> objects representing the products that
     /// match the specified criteria. If no matching products are found, the collection will be empty.</returns>
-    private ObservableCollection<ProductItem> getProductWith(string column_name, List<int> ids) {
+    private ObservableCollection<ProductItem> getProductWith(string column_name, List<int> ids) 
+    {
         ObservableCollection<ProductItem> product_items = new();
 
-        if (string.IsNullOrEmpty(column_name) || ids.Count == 0) {
+        if (string.IsNullOrEmpty(column_name) || ids.Count == 0)
+        {
             return product_items;
         }
         
         foreach (int id in ids) {
-            if (!SDataValidation.isIdValid(id)) {
+            if (!SDataValidation.isIdValid(id))
+            {
                 return product_items;
             }
         }
         
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try 
+            {
                 string query = $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_WEIGHT}, " +
                     $"{_m_COL_FK_PRODUCT_TYPE}, {_m_COL_FK_PRODUCT_CATEGORY}, " +
                     $"{_m_COL_FK_PRODUCT_SHAPE} " +
@@ -303,12 +313,14 @@ public class ProductModel : ABaseModel,
                 using MySqlCommand cmd = new(query, connection);
 
                 // Add parameters for each ID
-                for (int i = 0; i < ids.Count; i++) {
+                for (int i = 0; i < ids.Count; i++) 
+                {
                     cmd.Parameters.AddWithValue($"@id{i}", ids[i]);
                 }
 
                 using MySqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) {
+                while (reader.Read())
+                {
                     product_items.Add(new ProductItem {
                         product_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
@@ -321,7 +333,8 @@ public class ProductModel : ABaseModel,
                 
                 return product_items;
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
                 return product_items;
             }
