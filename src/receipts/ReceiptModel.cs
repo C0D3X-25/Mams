@@ -1,4 +1,5 @@
 ﻿using Mams.src.databaseOperations;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
@@ -38,7 +39,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <returns>A <see cref="ResponseGetItem{ReceiptItem}"/> containing the receipt item and any error message.</returns>
     public ResponseGetItem<ReceiptItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ReceiptItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<ReceiptItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection => {
@@ -92,7 +93,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     {
         if (item == null)
         {
-            return ResponseSaveItem.Failure("Item cannot be null.");
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
         }
 
         int item_id = item.receipt_id;
@@ -104,7 +105,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             // A new receipt cannot be created with an existing receipt number
             if (item_id == 0)
             {
-                return ResponseSaveItem.Failure("A receipt with this number already exists.");
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
             }
             else
             {
@@ -112,7 +113,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 // The receipt to modify uses a receipt number that already exists and is not the one already assigned
                 if (id_to_save != item_id)
                 {
-                    return ResponseSaveItem.Failure("A receipt with this number already exists.");
+                    return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
                 }
             }
         }

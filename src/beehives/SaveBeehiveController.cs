@@ -68,7 +68,7 @@ public class SaveBeehiveController : ABaseController, ICompareState {
             SPageNavigationController.navigateBack();
         }
         else {
-            MessageBox.Show(result.error_message ?? "Un rucher avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Un rucher avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

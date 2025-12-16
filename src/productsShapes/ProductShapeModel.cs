@@ -1,4 +1,5 @@
 ﻿using Mams.src.databaseOperations;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
@@ -37,8 +38,8 @@ public class ProductShapeModel :
     /// <param name="id">The unique identifier of the product shape item to retrieve. Cannot be null or empty.</param>
     /// <returns>A <see cref="ResponseGetItem{ProductShapeItem}"/> containing the product shape and any error message.</returns>
     public ResponseGetItem<ProductShapeItem> getItemByID(string id) {
-        if (string.IsNullOrEmpty(id)) {
-            return ResponseGetItem<ProductShapeItem>.Failure("Invalid ID provided.");
+        if (!SDataValidation.isIdValid(id)) {
+            return ResponseGetItem<ProductShapeItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection => {
@@ -85,7 +86,7 @@ public class ProductShapeModel :
     /// Returns a response with ID 0 if the operation fails or if the item is <c>null</c>.</returns>
     public ResponseSaveItem saveItem(ProductShapeItem item) {
         if (item == null) {
-            return ResponseSaveItem.Failure("Item cannot be null.");
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
         }
 
         int item_id = item.product_shape_id;
@@ -97,8 +98,8 @@ public class ProductShapeModel :
         
         if (isInsert) {
             // Check for duplicate name before inserting
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
-                return ResponseSaveItem.Failure("A product shape with the same name already exists.");
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_shape_name.Trim())) {
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +

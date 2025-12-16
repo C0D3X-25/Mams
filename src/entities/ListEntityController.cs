@@ -154,7 +154,7 @@ public class ListEntityController : ABaseController {
             }
             
             if (!result.is_success) {
-                MessageBox.Show(result.error_message ?? "Une erreur s'est produite lors de la suppression.", 
+                MessageBox.Show("Une erreur s'est produite lors de la suppression.", 
                     "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             

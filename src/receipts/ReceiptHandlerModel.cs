@@ -1,5 +1,6 @@
 ﻿using Mams.src.beehives;
 using Mams.src.databaseOperations;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using System.Collections.ObjectModel;
@@ -24,11 +25,11 @@ public class ReceiptHandlerModel : ABaseModel,
     /// For <see cref="EDeleteItemOperation.SAFE_DELETE"/>, the item is archived instead of being permanently removed.</remarks>
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
-    /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
+    /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation.</returns>
     public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
 
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseDeleteItem.Failure("Invalid ID provided.");
+            return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT);
         }
 
         startTransaction();
@@ -38,34 +39,34 @@ public class ReceiptHandlerModel : ABaseModel,
             var productResult = _m_receipt_product_model.deleteItem(id, delete_type);
             if (!productResult.is_success)
             {
-                throw new InvalidOperationException(productResult.error_message ?? "Failed to delete receipt products.");
+                throw new InvalidOperationException($"Failed to delete receipt products. Error: {productResult.error}");
             }
             
             var clientResult = _m_receipt_client_model.deleteItem(id, delete_type);
             if (!clientResult.is_success)
             {
-                throw new InvalidOperationException(clientResult.error_message ?? "Failed to delete receipt client.");
+                throw new InvalidOperationException($"Failed to delete receipt client. Error: {clientResult.error}");
             }
             
             var supplierResult = _m_receipt_supplier_model.deleteItem(id, delete_type);
             if (!supplierResult.is_success)
             {
-                throw new InvalidOperationException(supplierResult.error_message ?? "Failed to delete receipt supplier.");
+                throw new InvalidOperationException($"Failed to delete receipt supplier. Error: {supplierResult.error}");
             }
             
             var receiptResult = _m_receipt_model.deleteItem(id, delete_type);
             if (!receiptResult.is_success)
             {
-                throw new InvalidOperationException(receiptResult.error_message ?? "Failed to delete receipt.");
+                throw new InvalidOperationException($"Failed to delete receipt. Error: {receiptResult.error}");
             }
 
             commitTransaction();
             return ResponseDeleteItem.Success();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             rollbackTransaction();
-            return ResponseDeleteItem.Failure(ex.Message);
+            return ResponseDeleteItem.Failure(EErrors.DATABASE_QUERY);
         }
     }
 
@@ -94,7 +95,7 @@ public class ReceiptHandlerModel : ABaseModel,
     public ResponseGetItem<ReceiptHandlerItem> getItemByID(string id) {
 
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ReceiptHandlerItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<ReceiptHandlerItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         ReceiptHandlerItem item = new();
@@ -112,13 +113,13 @@ public class ReceiptHandlerModel : ABaseModel,
     /// </summary>
     /// <param name="item">The <see cref="ReceiptHandlerItem"/> containing the receipt details, products, client, and supplier information.
     /// The <paramref name="item"/> cannot be <see langword="null"/>.</param>
-    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved receipt client or supplier, and any error message.
+    /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved receipt client or supplier.
     /// Returns a response with ID 0 if the operation fails.</returns>
     public ResponseSaveItem saveItem(ReceiptHandlerItem item)
     {
         if (item == null)
         {
-            return ResponseSaveItem.Failure("Item cannot be null.");
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
         }
 
         int receipt_id = item.receipt_item.receipt_id;
@@ -133,7 +134,7 @@ public class ReceiptHandlerModel : ABaseModel,
                 var receiptResult = _m_receipt_model.saveItem(item.receipt_item);
                 if (!receiptResult.is_success)
                 {
-                    throw new InvalidOperationException(receiptResult.error_message ?? "Failed to save receipt.");
+                    throw new InvalidOperationException($"Failed to save receipt. Error: {receiptResult.error}");
                 }
                 receipt_id = receiptResult.returned_id;
             }
@@ -144,25 +145,25 @@ public class ReceiptHandlerModel : ABaseModel,
                 var updateResult = _m_receipt_model.saveItem(item.receipt_item);
                 if (!updateResult.is_success)
                 {
-                    throw new InvalidOperationException(updateResult.error_message ?? "Failed to update receipt.");
+                    throw new InvalidOperationException($"Failed to update receipt. Error: {updateResult.error}");
                 }
                 
                 var productDeleteResult = _m_receipt_product_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE);
                 if (!productDeleteResult.is_success)
                 {
-                    throw new InvalidOperationException(productDeleteResult.error_message ?? "Failed to delete existing receipt products.");
+                    throw new InvalidOperationException($"Failed to delete existing receipt products. Error: {productDeleteResult.error}");
                 }
                 
                 var clientDeleteResult = _m_receipt_client_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE);
                 if (!clientDeleteResult.is_success)
                 {
-                    throw new InvalidOperationException(clientDeleteResult.error_message ?? "Failed to delete existing receipt client.");
+                    throw new InvalidOperationException($"Failed to delete existing receipt client. Error: {clientDeleteResult.error}");
                 }
                 
                 var supplierDeleteResult = _m_receipt_supplier_model.deleteItem(receipt_id.ToString(), EDeleteItemOperation.HARD_DELETE);
                 if (!supplierDeleteResult.is_success)
                 {
-                    throw new InvalidOperationException(supplierDeleteResult.error_message ?? "Failed to delete existing receipt supplier.");
+                    throw new InvalidOperationException($"Failed to delete existing receipt supplier. Error: {supplierDeleteResult.error}");
                 }
             }
 
@@ -173,7 +174,7 @@ public class ReceiptHandlerModel : ABaseModel,
                 var productResult = _m_receipt_product_model.saveItem(product);
                 if (!productResult.is_success)
                 {
-                    throw new InvalidOperationException(productResult.error_message ?? "Failed to save receipt product.");
+                    throw new InvalidOperationException($"Failed to save receipt product. Error: {productResult.error}");
                 }
             }
 
@@ -185,7 +186,7 @@ public class ReceiptHandlerModel : ABaseModel,
                 var clientResult = _m_receipt_client_model.saveItem(item.receipt_client_item);
                 if (!clientResult.is_success)
                 {
-                    throw new InvalidOperationException(clientResult.error_message ?? "Failed to save receipt client.");
+                    throw new InvalidOperationException($"Failed to save receipt client. Error: {clientResult.error}");
                 }
                 
                 commitTransaction();
@@ -199,7 +200,7 @@ public class ReceiptHandlerModel : ABaseModel,
                 var supplierResult = _m_receipt_supplier_model.saveItem(item.receipt_supplier_item);
                 if (!supplierResult.is_success) 
                 {
-                    throw new InvalidOperationException(supplierResult.error_message ?? "Failed to save receipt supplier.");
+                    throw new InvalidOperationException($"Failed to save receipt supplier. Error: {supplierResult.error}");
                 }
                 
                 commitTransaction();
@@ -208,10 +209,10 @@ public class ReceiptHandlerModel : ABaseModel,
             
             throw new InvalidOperationException("No client or supplier specified for the receipt.");
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             rollbackTransaction();
-            return ResponseSaveItem.Failure(ex.Message);
+            return ResponseSaveItem.Failure(EErrors.DATABASE_QUERY);
         }
     }
 }

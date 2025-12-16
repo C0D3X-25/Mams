@@ -1,4 +1,5 @@
-﻿using Mams.src.helpers;
+﻿using Mams.src.errors;
+using Mams.src.helpers;
 using Mams.src.items;
 using Mams.src.models;
 using MySqlConnector;
@@ -53,7 +54,7 @@ public abstract class SDatabaseModel : ABaseModel {
         EDeleteItemOperation delete_type) 
     {
         if (!areDeleteParametersProvided(id, field_id, table, delete_type)) {
-            return ResponseDeleteItem.Failure("Invalid parameters provided for delete operation.");
+            return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT);
         }
 
         return deleteOperation(id, field_id, field_archive, table, delete_type);
@@ -77,7 +78,7 @@ public abstract class SDatabaseModel : ABaseModel {
     {
         if (!areDeleteParametersProvided(id, field_id, table, delete_type))
         {
-            return ResponseDeleteItem.Failure("Invalid parameters provided for delete operation.");
+            return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT);
         }
 
         return deleteOperation(id, field_id, string.Empty, table, delete_type);
@@ -153,7 +154,7 @@ public abstract class SDatabaseModel : ABaseModel {
             // Archive the record
             case EDeleteItemOperation.SOFT_DELETE:
                 if (!isArchiveFieldProvided(field_archive)) {
-                    return ResponseDeleteItem.Failure("Archive field name cannot be empty for soft delete operation.");
+                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD);
                 }
                 query = $"UPDATE {table} SET {field_archive} = CURDATE() WHERE {field_id} = @id";
                 break;
@@ -164,19 +165,19 @@ public abstract class SDatabaseModel : ABaseModel {
             // Check if the record is linked in another table, then SOFT_DELETE or HARD_DELETE
             case EDeleteItemOperation.SAFE_DELETE:
                 if (!isArchiveFieldProvided(field_archive)) {
-                    return ResponseDeleteItem.Failure("Archive field name cannot be empty for safe delete operation.");
+                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD);
                 }
                 query = $"DELETE FROM {table} WHERE {field_id} = @id";
                 break;
             // Restore the record from the archive
             case EDeleteItemOperation.RESTORE:
                 if (!isArchiveFieldProvided(field_archive)) {
-                    return ResponseDeleteItem.Failure("Archive field name cannot be empty for restore operation.");
+                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD);
                 }
                 query = $"UPDATE {table} SET {field_archive} = NULL WHERE {field_id} = @id";
                 break;
             default:
-                return ResponseDeleteItem.Failure("Invalid delete operation type.");
+                return ResponseDeleteItem.Failure(EErrors.INVALID_OPERATION);
         }
 
         bool need_transaction = !isTransactionActive();

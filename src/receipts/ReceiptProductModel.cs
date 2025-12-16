@@ -1,4 +1,5 @@
 ﻿using Mams.src.databaseOperations;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using Mams.src.products;
@@ -48,7 +49,7 @@ public class ReceiptProductModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetItem{ReceiptProductItem}"/> containing the receipt product item and any error message.</returns>
     public ResponseGetItem<ReceiptProductItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ReceiptProductItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<ReceiptProductItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection => {
@@ -124,7 +125,7 @@ public class ReceiptProductModel : ABaseModel,
     /// Returns a response with ID 0 if the operation fails.</returns>
     public ResponseSaveItem saveItem(ReceiptProductItem item) {
         if (!ValidateReceiptProduct(item)) { 
-            return ResponseSaveItem.Failure("Invalid receipt product data.");
+            return ResponseSaveItem.Failure(EErrors.INVALID_INPUT);
         }
         
         // Check if the item already exists in the database, if not insert the item into the database

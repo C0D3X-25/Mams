@@ -1,9 +1,10 @@
+using Mams.src.errors;
 using MySqlConnector;
 
 namespace Mams.src.databaseOperations;
 
 /// <summary>
-/// Represents the response from a delete operation, containing success status and any error message.
+/// Represents the response from a delete operation, containing success status and any error.
 /// </summary>
 /// <remarks>
 /// This class provides a structured way to handle the result of delete operations,
@@ -21,22 +22,22 @@ public class ResponseDeleteItem {
     public bool is_deleted { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the MySQL error message if the operation failed.
+    /// Gets or sets the error type if the operation failed.
     /// </summary>
     /// <remarks>
-    /// This property is <see langword="null"/> or empty when the operation succeeds.
-    /// When an error occurs, it contains the formatted error message including the MySQL error code.
+    /// This property is <see cref="EErrors.NONE"/> when the operation succeeds.
+    /// When an error occurs, it contains the appropriate error type.
     /// </remarks>
-    public string? error_message { get; set; } = null;
+    public EErrors error { get; set; } = EErrors.NONE;
 
     /// <summary>
     /// Gets a value indicating whether the delete operation was successful.
     /// </summary>
     /// <remarks>
     /// Returns <see langword="true"/> if <see cref="is_deleted"/> is <see langword="true"/> 
-    /// and <see cref="error_message"/> is null or empty; otherwise, <see langword="false"/>.
+    /// and <see cref="error"/> is <see cref="EErrors.NONE"/>; otherwise, <see langword="false"/>.
     /// </remarks>
-    public bool is_success => is_deleted && string.IsNullOrEmpty(error_message);
+    public bool is_success => is_deleted && error == EErrors.NONE;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ResponseDeleteItem"/> class with default values.
@@ -52,13 +53,13 @@ public class ResponseDeleteItem {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ResponseDeleteItem"/> class with the specified success status and error message.
+    /// Initializes a new instance of the <see cref="ResponseDeleteItem"/> class with the specified success status and error.
     /// </summary>
     /// <param name="deleted">A value indicating whether the delete operation was successful.</param>
-    /// <param name="errorMessage">The error message from the delete operation.</param>
-    public ResponseDeleteItem(bool deleted, string? errorMessage) {
+    /// <param name="error">The error type from the delete operation.</param>
+    public ResponseDeleteItem(bool deleted, EErrors error) {
         is_deleted = deleted;
-        error_message = errorMessage;
+        this.error = error;
     }
 
     /// <summary>
@@ -68,11 +69,11 @@ public class ResponseDeleteItem {
     public static ResponseDeleteItem Success() => new(true);
 
     /// <summary>
-    /// Creates a failed response with the specified error message.
+    /// Creates a failed response with the specified error type.
     /// </summary>
-    /// <param name="errorMessage">The error message describing the failure.</param>
+    /// <param name="error">The error type describing the failure.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> indicating failure.</returns>
-    public static ResponseDeleteItem Failure(string errorMessage) => new(false, errorMessage);
+    public static ResponseDeleteItem Failure(EErrors error) => new(false, error);
 
     /// <summary>
     /// Creates a failed response with the specified MySQL error code and message.
@@ -81,5 +82,5 @@ public class ResponseDeleteItem {
     /// <param name="message">The error message.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> indicating failure with formatted MySQL error details.</returns>
     public static ResponseDeleteItem MySqlFailure(MySqlErrorCode errorCode, string message) 
-        => new(false, $"MySQL error code: {errorCode} - {message}");
+        => new(false, EErrors.DATABASE_QUERY);
 }

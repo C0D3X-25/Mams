@@ -1,4 +1,5 @@
 ﻿using Mams.src.databaseOperations;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
@@ -37,7 +38,7 @@ public class BeehiveModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetItem{BeehiveItem}"/> containing the item with the specified ID and any error message.</returns>
     public ResponseGetItem<BeehiveItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<BeehiveItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<BeehiveItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection => {
@@ -85,7 +86,7 @@ public class BeehiveModel : ABaseModel,
     /// item name already exists in the database.</returns>
     public ResponseSaveItem saveItem(BeehiveItem item) {
         if (item == null) {
-            return ResponseSaveItem.Failure("Item cannot be null.");
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
         }
 
         int item_id = item.beehive_id;
@@ -97,8 +98,8 @@ public class BeehiveModel : ABaseModel,
         
         if (isInsert) {
             // Check for duplicate name before inserting
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
-                return ResponseSaveItem.Failure("A beehive with the same name already exists.");
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.beehive_name.Trim())) {
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +

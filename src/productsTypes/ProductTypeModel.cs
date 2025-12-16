@@ -1,4 +1,5 @@
 ﻿using Mams.src.databaseOperations;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
@@ -39,7 +40,7 @@ public class ProductTypeModel :
     /// <returns>A <see cref="ResponseGetItem{ProductTypeItem}"/> containing the product type item and any error message.</returns>
     public ResponseGetItem<ProductTypeItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ProductTypeItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<ProductTypeItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection => {
@@ -86,7 +87,7 @@ public class ProductTypeModel :
     /// Returns a response with ID 0 if the operation fails or if the item is <see langword="null"/>.</returns>
     public ResponseSaveItem saveItem(ProductTypeItem item) {
         if (item == null) {
-            return ResponseSaveItem.Failure("Item cannot be null.");
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
         }
 
         int item_id = item.product_type_id;
@@ -98,8 +99,8 @@ public class ProductTypeModel :
         
         if (isInsert) {
             // Check for duplicate name before inserting
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
-                return ResponseSaveItem.Failure("A product type with the same name already exists.");
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_type_name.Trim())) {
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +

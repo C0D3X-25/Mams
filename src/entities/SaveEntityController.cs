@@ -92,7 +92,7 @@ public class SaveEntityController : ABaseController, ICompareState {
             SPageNavigationController.navigateBack();
         }
         else { 
-            MessageBox.Show(result.error_message ?? $"Un contact avec le même nom ({_m_entity.entity_name}) est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); 
+            MessageBox.Show($"Un contact avec le même nom ({_m_entity.entity_name}) est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); 
         }
     }
 

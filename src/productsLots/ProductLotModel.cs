@@ -1,5 +1,6 @@
 ﻿using Mams.src.beehives;
 using Mams.src.databaseOperations;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
@@ -45,7 +46,7 @@ public class ProductLotModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetItem{ProductLotItem}"/> containing the product lot item and any error message.</returns>
     public ResponseGetItem<ProductLotItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ProductLotItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<ProductLotItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection => {
@@ -112,7 +113,7 @@ public class ProductLotModel : ABaseModel,
     /// Returns a response with ID 0 if the operation fails or if the item is null.</returns>
     public ResponseSaveItem saveItem(ProductLotItem item) {
         if (item == null) {
-            return ResponseSaveItem.Failure("Item cannot be null.");
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
         }
 
         int item_id = item.product_lot_id;
@@ -124,8 +125,8 @@ public class ProductLotModel : ABaseModel,
         
         if (isInsert) {
             // Check for duplicate name before inserting
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_name)) {
-                return ResponseSaveItem.Failure("A product lot with the same name already exists.");
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_lot_name.Trim())) {
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE}) " +

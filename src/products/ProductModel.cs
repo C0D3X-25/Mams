@@ -1,4 +1,5 @@
 ﻿using Mams.src.databaseOperations;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
@@ -48,7 +49,7 @@ public class ProductModel : ABaseModel,
     {
         if (!SDataValidation.isIdValid(id))
         {
-            return ResponseGetItem<ProductItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<ProductItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection =>
@@ -164,7 +165,7 @@ public class ProductModel : ABaseModel,
     {
         if (item == null)
         {
-            return ResponseSaveItem.Failure("Item cannot be null.");
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
         }
 
         int item_id = item.product_id;
@@ -178,7 +179,7 @@ public class ProductModel : ABaseModel,
         {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_product_name)) {
-                return ResponseSaveItem.Failure("A product with the same name already exists.");
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_WEIGHT}, " +

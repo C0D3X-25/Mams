@@ -1,4 +1,5 @@
 ﻿using Mams.src.databaseOperations;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
@@ -36,7 +37,7 @@ public class SupplierModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetItem{SupplierItem}"/> containing the supplier item and any error message.</returns>
     public ResponseGetItem<SupplierItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<SupplierItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<SupplierItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection => {
@@ -84,7 +85,7 @@ public class SupplierModel : ABaseModel,
     /// already present in the database.</returns>
     public ResponseSaveItem saveItem(SupplierItem item) {
         if (item == null) {
-            return ResponseSaveItem.Failure("Item cannot be null.");
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
         }
 
         int item_id = item.supplier_id;
@@ -96,7 +97,7 @@ public class SupplierModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
-                return ResponseSaveItem.Failure("A supplier with the same entity already exists.");
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_FK_ENTITY}) " +
@@ -187,14 +188,14 @@ public class SupplierModel : ABaseModel,
     /// <param name="fk_entity">The foreign key of the entity associated with the supplier to be deleted. Must not be null or empty.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
     public ResponseDeleteItem deleteSupplierWithEntityFK(string fk_entity) {
-        if (string.IsNullOrEmpty(fk_entity)) {
-            return ResponseDeleteItem.Failure("Foreign key cannot be null or empty.");
+        if (!SDataValidation.isIdValid(fk_entity)) {
+            return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT);
         }
 
         SupplierItem? item = getSupplierWithEntityFK(fk_entity);
 
         if (item == null) {
-            return ResponseDeleteItem.Failure("Supplier not found.");
+            return ResponseDeleteItem.Failure(EErrors.NOT_FOUND);
         }
 
         return deleteItem(item.supplier_id.ToString());

@@ -1,5 +1,6 @@
 ﻿using Mams.src.databaseOperations;
 using Mams.src.entities;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using Mams.src.products;
@@ -22,7 +23,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     private readonly SupplierModel _m_supplier_model = new();
     private readonly ProductModel _m_product_model = new();
 
-    // Table names
+
     private const string _m_TBL_RECEIPTS = "receipts";
     private const string _m_TBL_RECEIPTS_CLIENTS = "receipts_clients";
     private const string _m_TBL_RECEIPTS_SUPPLIERS = "receipts_suppliers";
@@ -55,7 +56,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     {
         if (!SDataValidation.isIdValid(id))
         {
-            return ResponseGetItem<ReceiptFeeDetailedItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<ReceiptFeeDetailedItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection =>
@@ -340,7 +341,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// Returns a response with ID 0 if the input is invalid or the save operation fails.</returns>
     public ResponseSaveItem saveItem(ReceiptFeeDetailedItem item) {
         if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0) {
-            return ResponseSaveItem.Failure("Invalid fee receipt data.");
+            return ResponseSaveItem.Failure(EErrors.INVALID_INPUT);
         }
 
         startTransaction();
@@ -370,16 +371,16 @@ public class ReceiptFeeDetailedModel : ABaseModel,
             var result = _m_receipt_handler_model.saveItem(handlerItem);
             if (!result.is_success)
             {
-                throw new InvalidOperationException(result.error_message ?? "Failed to save the receipt.");
+                throw new InvalidOperationException("Failed to save the receipt.");
             }
 
             commitTransaction();
             return result;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             rollbackTransaction();
-            return ResponseSaveItem.Failure(ex.Message);
+            return ResponseSaveItem.Failure(EErrors.DATABASE_QUERY);
         }
     }
 

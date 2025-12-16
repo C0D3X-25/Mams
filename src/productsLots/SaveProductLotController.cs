@@ -107,7 +107,7 @@ public class SaveProductLotController : ABaseController, ICompareState {
             SPageNavigationController.navigateBack();
         }
         else {
-            MessageBox.Show(result.error_message ?? "Un lot avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Un lot avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using Mams.src.clients;
 using Mams.src.databaseOperations;
 using Mams.src.entities;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using Mams.src.products;
@@ -59,7 +60,7 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     {
         if (!SDataValidation.isIdValid(id))
         {
-            return ResponseGetItem<ReceiptProfitDetailedItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<ReceiptProfitDetailedItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection =>
@@ -375,7 +376,7 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// Returns a response with ID 0 if the input is invalid or the operation fails.</returns>
     public ResponseSaveItem saveItem(ReceiptProfitDetailedItem item) {
         if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0) {
-            return ResponseSaveItem.Failure("Invalid profit receipt data.");
+            return ResponseSaveItem.Failure(EErrors.INVALID_INPUT);
         }
 
         startTransaction();
@@ -401,16 +402,16 @@ public class ReceiptProfitDetailedModel : ABaseModel,
             var result = _m_receipt_handler_model.saveItem(handlerItem);
             if (!result.is_success)
             {
-                throw new InvalidOperationException(result.error_message ?? "Failed to save the receipt.");
+                throw new InvalidOperationException($"Failed to save the receipt. Error: {result.error}");
             }
 
             commitTransaction();
             return result;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             rollbackTransaction();
-            return ResponseSaveItem.Failure(ex.Message);
+            return ResponseSaveItem.Failure(EErrors.DATABASE_QUERY);
         }
     }
 

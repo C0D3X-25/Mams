@@ -240,7 +240,7 @@ public class SaveFeeController : ABaseController, ICompareState {
                 SPageNavigationController.navigateBack();
             }
             else {
-                MessageBox.Show(result.error_message ?? "Error when saving the fee", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error when saving the fee", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
         catch (Exception ex)

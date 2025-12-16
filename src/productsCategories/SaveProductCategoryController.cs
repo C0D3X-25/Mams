@@ -65,7 +65,7 @@ public class SaveProductCategoryController : ABaseController, ICompareState {
             SPageNavigationController.navigateBack();
         }
         else {
-            MessageBox.Show(result.error_message ?? "Une catégorie de produit avec le même nom est déjà présente", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show("Une catégorie de produit avec le même nom est déjà présente", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

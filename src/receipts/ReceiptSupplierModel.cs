@@ -1,4 +1,5 @@
 ﻿using Mams.src.databaseOperations;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
@@ -43,7 +44,7 @@ public class ReceiptSupplierModel : ABaseModel, ICrudOperation<ReceiptSupplierIt
     /// <returns>A <see cref="ResponseGetItem{ReceiptSupplierItem}"/> containing the receipt supplier item and any error message.</returns>
     public ResponseGetItem<ReceiptSupplierItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ReceiptSupplierItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<ReceiptSupplierItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection => {
@@ -95,7 +96,7 @@ public class ReceiptSupplierModel : ABaseModel, ICrudOperation<ReceiptSupplierIt
     /// Returns a response with ID 0 if the input is invalid or if an error occurs during the operation.</returns>
     public ResponseSaveItem saveItem(ReceiptSupplierItem item) {
         if (item == null || item.fk_receipt_id == 0 || item.fk_supplier_id == 0) {
-            return ResponseSaveItem.Failure("Invalid receipt supplier data.");
+            return ResponseSaveItem.Failure(EErrors.INVALID_INPUT);
         }
 
         int item_id = item.fk_receipt_id;

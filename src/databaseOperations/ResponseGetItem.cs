@@ -1,10 +1,11 @@
+using Mams.src.errors;
 using Mams.src.items;
 using MySqlConnector;
 
 namespace Mams.src.databaseOperations;
 
 /// <summary>
-/// Represents the response from a get operation, containing the retrieved item and any error message.
+/// Represents the response from a get operation, containing the retrieved item and any error.
 /// </summary>
 /// <remarks>
 /// This class provides a structured way to handle the result of get operations,
@@ -22,22 +23,22 @@ public class ResponseGetItem<T> where T : ABaseItem {
     public T? returned_item { get; set; } = default;
 
     /// <summary>
-    /// Gets or sets the MySQL error message if the operation failed.
+    /// Gets or sets the error type if the operation failed.
     /// </summary>
     /// <remarks>
-    /// This property is <see langword="null"/> or empty when the operation succeeds.
-    /// When an error occurs, it contains the formatted error message including the MySQL error code.
+    /// This property is <see cref="EErrors.NONE"/> when the operation succeeds.
+    /// When an error occurs, it contains the appropriate error type.
     /// </remarks>
-    public string? error_message { get; set; } = null;
+    public EErrors error { get; set; } = EErrors.NONE;
 
     /// <summary>
     /// Gets a value indicating whether the get operation was successful.
     /// </summary>
     /// <remarks>
     /// Returns <see langword="true"/> if <see cref="returned_item"/> is not <see langword="null"/> 
-    /// and <see cref="error_message"/> is null or empty; otherwise, <see langword="false"/>.
+    /// and <see cref="error"/> is <see cref="EErrors.NONE"/>; otherwise, <see langword="false"/>.
     /// </remarks>
-    public bool is_success => returned_item != null && string.IsNullOrEmpty(error_message);
+    public bool is_success => returned_item != null && error == EErrors.NONE;
 
     /// <summary>
     /// Gets a value indicating whether the item was found.
@@ -62,13 +63,13 @@ public class ResponseGetItem<T> where T : ABaseItem {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ResponseGetItem{T}"/> class with the specified item and error message.
+    /// Initializes a new instance of the <see cref="ResponseGetItem{T}"/> class with the specified item and error.
     /// </summary>
     /// <param name="item">The item retrieved from the get operation.</param>
-    /// <param name="errorMessage">The error message from the get operation.</param>
-    public ResponseGetItem(T? item, string? errorMessage) {
+    /// <param name="error">The error type from the get operation.</param>
+    public ResponseGetItem(T? item, EErrors error) {
         returned_item = item;
-        error_message = errorMessage;
+        this.error = error;
     }
 
     /// <summary>
@@ -85,11 +86,11 @@ public class ResponseGetItem<T> where T : ABaseItem {
     public static ResponseGetItem<T> NotFound() => new(default);
 
     /// <summary>
-    /// Creates a failed response with the specified error message.
+    /// Creates a failed response with the specified error type.
     /// </summary>
-    /// <param name="errorMessage">The error message describing the failure.</param>
+    /// <param name="error">The error type describing the failure.</param>
     /// <returns>A <see cref="ResponseGetItem{T}"/> indicating failure.</returns>
-    public static ResponseGetItem<T> Failure(string errorMessage) => new(default, errorMessage);
+    public static ResponseGetItem<T> Failure(EErrors error) => new(default, error);
 
     /// <summary>
     /// Creates a failed response with the specified MySQL error code and message.
@@ -98,5 +99,5 @@ public class ResponseGetItem<T> where T : ABaseItem {
     /// <param name="message">The error message.</param>
     /// <returns>A <see cref="ResponseGetItem{T}"/> indicating failure with formatted MySQL error details.</returns>
     public static ResponseGetItem<T> MySqlFailure(MySqlErrorCode errorCode, string message) 
-        => new(default, $"MySQL error code: {errorCode} - {message}");
+        => new(default, EErrors.DATABASE_QUERY);
 }

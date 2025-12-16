@@ -1,4 +1,5 @@
 ﻿using Mams.src.databaseOperations;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.models;
 using MySqlConnector;
@@ -36,7 +37,7 @@ public class ClientModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetItem{ClientItem}"/> containing the item with the specified identifier and any error message.</returns>
     public ResponseGetItem<ClientItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ClientItem>.Failure("Invalid ID provided.");
+            return ResponseGetItem<ClientItem>.Failure(EErrors.INVALID_INPUT);
         }
 
         return executeWithConnection(connection => { 
@@ -83,7 +84,7 @@ public class ClientModel : ABaseModel,
     /// Returns a response with ID 0 if the operation failed.</returns>
     public ResponseSaveItem saveItem(ClientItem item) {
         if (item == null) {
-            return ResponseSaveItem.Failure("Item cannot be null.");
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
         }
 
         int item_id = item.client_id;
@@ -95,7 +96,7 @@ public class ClientModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
-                return ResponseSaveItem.Failure("A client with the same entity already exists.");
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_FK_ENTITY}) " +
@@ -186,13 +187,13 @@ public class ClientModel : ABaseModel,
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
     public ResponseDeleteItem deleteClientWithEntityFK(string fk_entity) {
         if (!SDataValidation.isIdValid(fk_entity)) {
-            return ResponseDeleteItem.Failure("Invalid foreign key provided.");
+            return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT);
         }
 
         ClientItem? item = getClientWithEntityFK(fk_entity);
 
         if (item == null) {
-            return ResponseDeleteItem.Failure("Client not found.");
+            return ResponseDeleteItem.Failure(EErrors.NOT_FOUND);
         }
 
         return deleteItem(item.client_id.ToString());
