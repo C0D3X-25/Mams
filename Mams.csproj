@@ -43,14 +43,13 @@
   <ItemGroup>
     <Folder Include="src\localizations\" />
     <Folder Include="src\errors\" />
-    <Folder Include="src\configurations\" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="ressources\invoice_pdf_logo.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\appconfig.json">
+    <None Update="ressources\app_config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text.Json;
 
-namespace Mams.src.resources;
+namespace Mams.src.configurations;
 
 /// <summary>
 /// Static service class for managing application configuration.
@@ -12,7 +12,7 @@ public static class SAppConfigService
         AppDomain.CurrentDomain.BaseDirectory, "ressources");
     
     private static readonly string _configFilePath = Path.Combine(
-        _configFolderPath, "appconfig.json");
+        _configFolderPath, "app_config.json");
 
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
