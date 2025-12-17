@@ -463,6 +463,11 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         int filterId, 
         string yearFilter) {
         
+        // Return empty collection for filter types that are not applicable to fees
+        if (filterId > 0 && (filterTable == EDatabaseTableName.PRODUCT_LOT || filterTable == EDatabaseTableName.BEEHIVE)) {
+            return ResponseGetAllItems<ReceiptFeeDetailedItem>.Success([]);
+        }
+
         return executeWithConnection(connection => {
             var items = new ObservableCollection<ReceiptFeeDetailedItem>();
 
