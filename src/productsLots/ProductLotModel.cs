@@ -107,6 +107,45 @@ public class ProductLotModel : ABaseModel,
     }
 
     /// <summary>
+    /// Retrieves all active (non-archived) product lot items from the database.
+    /// </summary>
+    /// <returns>An <see cref="ObservableCollection{ProductLotItem}"/> containing all non-archived product lots, ordered by name.</returns>
+    public ObservableCollection<ProductLotItem> getActiveProductLots() {
+        return executeWithConnection(connection => {
+            try {
+                string query = $@"
+                    SELECT pl.{_m_COL_ID}, pl.{_m_COL_NAME}, pl.{_m_COL_YEAR}, pl.{_m_COL_FK_BEEHIVE}, pl.{_m_COL_ARCHIVE}, b.beehive_name
+                    FROM {_m_TBL_NAME} pl
+                    LEFT JOIN beehives b ON pl.{_m_COL_FK_BEEHIVE} = b.beehive_id
+                    WHERE pl.{_m_COL_ARCHIVE} = '{_m_DEFAULT_ARCHIVE}' OR pl.{_m_COL_ARCHIVE} IS NULL
+                    ORDER BY pl.{_m_COL_NAME} ASC;";
+
+                using MySqlCommand cmd = new(query, connection);
+                using MySqlDataReader reader = cmd.ExecuteReader();
+
+                ObservableCollection<ProductLotItem> items = new();
+
+                while (reader.Read()) {
+                    items.Add(new ProductLotItem {
+                        product_lot_id = reader.getSafeValue<int>(_m_COL_ID),
+                        product_lot_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                        product_lot_year = reader.getSafeValue<int>(_m_COL_YEAR),
+                        fk_beehive_id = reader.getSafeValue<int>(_m_COL_FK_BEEHIVE),
+                        product_lot_archive = string.Empty,
+                        beehive_name = reader.getSafeValue("beehive_name", string.Empty)
+                    });
+                }
+
+                return items;
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return new ObservableCollection<ProductLotItem>();
+            }
+        });
+    }
+
+    /// <summary>
     /// Saves the specified <see cref="ProductLotItem"/> to the database.
     /// </summary>
     /// <param name="item">The <see cref="ProductLotItem"/> to save. Must not be null.</param>

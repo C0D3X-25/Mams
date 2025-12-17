@@ -248,6 +248,61 @@ public class ProductModel : ABaseModel,
     }
 
     /// <summary>
+    /// Retrieves all active (non-archived) product items from the database.
+    /// </summary>
+    /// <returns>An <see cref="ObservableCollection{ProductItem}"/> containing all non-archived products, ordered by name.</returns>
+    public ObservableCollection<ProductItem> getActiveProducts() {
+        return executeWithConnection(connection => {
+            try {
+                string query = $@"
+                    SELECT 
+                        p.{_m_COL_ID}, 
+                        p.{_m_COL_NAME}, 
+                        p.{_m_COL_WEIGHT}, 
+                        p.{_m_COL_FK_PRODUCT_TYPE}, 
+                        p.{_m_COL_FK_PRODUCT_CATEGORY}, 
+                        p.{_m_COL_FK_PRODUCT_SHAPE}, 
+                        p.{_m_COL_ARCHIVE},
+                        pt.product_type_name,
+                        pc.product_category_name,
+                        ps.product_shape_name
+                    FROM {_m_TBL_NAME} p
+                    LEFT JOIN products_types pt ON p.{_m_COL_FK_PRODUCT_TYPE} = pt.product_type_id
+                    LEFT JOIN products_categories pc ON p.{_m_COL_FK_PRODUCT_CATEGORY} = pc.product_category_id
+                    LEFT JOIN products_shapes ps ON p.{_m_COL_FK_PRODUCT_SHAPE} = ps.product_shape_id
+                    WHERE p.{_m_COL_ARCHIVE} = '{_m_DEFAULT_ARCHIVE}' OR p.{_m_COL_ARCHIVE} IS NULL
+                    ORDER BY p.{_m_COL_NAME} ASC;";
+
+                using MySqlCommand cmd = new(query, connection);
+                using MySqlDataReader reader = cmd.ExecuteReader();
+
+                ObservableCollection<ProductItem> items = [];
+
+                while (reader.Read()) {
+                    items.Add(new ProductItem {
+                        product_id = reader.getSafeValue<int>(_m_COL_ID),
+                        product_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                        product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0),
+                        fk_product_type_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_TYPE, 0),
+                        fk_product_category_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY, 0),
+                        fk_product_shape_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0),
+                        product_archive = string.Empty,
+                        product_type_name = reader.getSafeValue("product_type_name", string.Empty),
+                        product_category_name = reader.getSafeValue("product_category_name", string.Empty),
+                        product_shape_name = reader.getSafeValue("product_shape_name", string.Empty)
+                    });
+                }
+
+                return items;
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return [];
+            }
+        });
+    }
+
+    /// <summary>
     /// Retrieves a collection of products filtered by the specified product type IDs.
     /// </summary>
     /// <param name="product_type_id">A list of product type IDs to filter the products. Each ID represents a specific product type.</param>

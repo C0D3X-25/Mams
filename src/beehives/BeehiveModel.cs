@@ -19,6 +19,8 @@ public class BeehiveModel : ABaseModel,
     private const string _m_COL_NAME = "beehive_name";
     private const string _m_COL_ARCHIVE = "beehive_archive";
 
+    private const string _m_DEFAULT_ARCHIVE = "1901-01-01";
+
     /// <summary>
     /// Deletes an item from the database based on the specified identifier and delete operation type.
     /// </summary>
@@ -76,6 +78,41 @@ public class BeehiveModel : ABaseModel,
     public ResponseGetAllItems<BeehiveItem> getAllItems() {
         var items = SDatabaseModel.getAllRowsInTable<BeehiveItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
         return ResponseGetAllItems<BeehiveItem>.Success(items);
+    }
+
+    /// <summary>
+    /// Retrieves all active (non-archived) beehive items from the database.
+    /// </summary>
+    /// <returns>An <see cref="ObservableCollection{BeehiveItem}"/> containing all non-archived beehives, ordered by name.</returns>
+    public ObservableCollection<BeehiveItem> getActiveBeehives() {
+        return executeWithConnection(connection => {
+            try {
+                string query = $@"
+                    SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE}
+                    FROM {_m_TBL_NAME}
+                    WHERE {_m_COL_ARCHIVE} = '{_m_DEFAULT_ARCHIVE}' OR {_m_COL_ARCHIVE} IS NULL
+                    ORDER BY {_m_COL_NAME} ASC;";
+
+                using MySqlCommand cmd = new(query, connection);
+                using MySqlDataReader reader = cmd.ExecuteReader();
+
+                ObservableCollection<BeehiveItem> items = [];
+
+                while (reader.Read()) {
+                    items.Add(new BeehiveItem {
+                        beehive_id = reader.getSafeValue<int>(_m_COL_ID),
+                        beehive_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                        beehive_archive = string.Empty
+                    });
+                }
+
+                return items;
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return [];
+            }
+        });
     }
 
     /// <summary>

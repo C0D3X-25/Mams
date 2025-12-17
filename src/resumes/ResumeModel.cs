@@ -32,14 +32,50 @@ public class ResumeModel {
     private readonly ProductLotModel _m_product_lot_model = new();
     private readonly BeehiveModel _m_beehive_model = new();
 
-    // Lazy-loaded dropdown data
-    private ObservableCollection<EntityItem>? _m_list_entity_not_archived;
-    private ObservableCollection<ProductItem>? _m_list_product_not_archived;
-    private ObservableCollection<ProductShapeItem>? _m_list_product_shape_not_archived;
-    private ObservableCollection<ProductCategoryItem>? _m_list_product_category_not_archived;
-    private ObservableCollection<ProductTypeItem>? _m_list_product_type_not_archived;
-    private ObservableCollection<ProductLotItem>? _m_list_product_lot_not_archived;
-    private ObservableCollection<BeehiveItem>? _m_list_beehive_not_archived;
+    // Thread-safe lazy-loaded dropdown data using Lazy<T>
+    // Each lazy loader calls the model's getActive* method which filters at database level
+    private readonly Lazy<ObservableCollection<EntityItem>> _m_lazy_entity_not_archived;
+    private readonly Lazy<ObservableCollection<ProductItem>> _m_lazy_product_not_archived;
+    private readonly Lazy<ObservableCollection<ProductShapeItem>> _m_lazy_product_shape_not_archived;
+    private readonly Lazy<ObservableCollection<ProductCategoryItem>> _m_lazy_product_category_not_archived;
+    private readonly Lazy<ObservableCollection<ProductTypeItem>> _m_lazy_product_type_not_archived;
+    private readonly Lazy<ObservableCollection<ProductLotItem>> _m_lazy_product_lot_not_archived;
+    private readonly Lazy<ObservableCollection<BeehiveItem>> _m_lazy_beehive_not_archived;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ResumeModel"/> class with thread-safe lazy loading for dropdown data.
+    /// </summary>
+    public ResumeModel() {
+        // Initialize lazy loaders with thread-safe mode
+        // Each loader fetches non-archived items from the database on first access using optimized queries
+        _m_lazy_entity_not_archived = new Lazy<ObservableCollection<EntityItem>>(
+            () => _m_entity_model.getNonArchivedEntities(),
+            LazyThreadSafetyMode.ExecutionAndPublication);
+
+        _m_lazy_product_not_archived = new Lazy<ObservableCollection<ProductItem>>(
+            () => _m_product_model.getActiveProducts(),
+            LazyThreadSafetyMode.ExecutionAndPublication);
+
+        _m_lazy_product_shape_not_archived = new Lazy<ObservableCollection<ProductShapeItem>>(
+            () => _m_product_shape_model.getActiveProductShapes(),
+            LazyThreadSafetyMode.ExecutionAndPublication);
+
+        _m_lazy_product_category_not_archived = new Lazy<ObservableCollection<ProductCategoryItem>>(
+            () => _m_product_category_model.getActiveProductCategories(),
+            LazyThreadSafetyMode.ExecutionAndPublication);
+
+        _m_lazy_product_type_not_archived = new Lazy<ObservableCollection<ProductTypeItem>>(
+            () => _m_product_type_model.getActiveProductTypes(),
+            LazyThreadSafetyMode.ExecutionAndPublication);
+
+        _m_lazy_product_lot_not_archived = new Lazy<ObservableCollection<ProductLotItem>>(
+            () => _m_product_lot_model.getActiveProductLots(),
+            LazyThreadSafetyMode.ExecutionAndPublication);
+
+        _m_lazy_beehive_not_archived = new Lazy<ObservableCollection<BeehiveItem>>(
+            () => _m_beehive_model.getActiveBeehives(),
+            LazyThreadSafetyMode.ExecutionAndPublication);
+    }
 
     /// <summary>
     /// Represents a predefined collection of database table names and their corresponding display names.
@@ -112,80 +148,59 @@ public class ResumeModel {
 
         switch (selected_table.m_name_in_database) {
             case EDatabaseTableName.ENTITY:
-                ensureEntityDataLoaded();
-                if (_m_list_entity_not_archived != null) {
-                    foreach (var item in _m_list_entity_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            search_id = item.entity_id,
-                            search_item_to_display = item.entity_name
-                        });
-                    }
+                foreach (var item in _m_lazy_entity_not_archived.Value) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.entity_id,
+                        search_item_to_display = item.entity_name
+                    });
                 }
                 break;
             case EDatabaseTableName.BEEHIVE:
-                ensureBeehiveDataLoaded();
-                if (_m_list_beehive_not_archived != null) {
-                    foreach (var item in _m_list_beehive_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            search_id = item.beehive_id,
-                            search_item_to_display = item.beehive_name
-                        });
-                    }
+                foreach (var item in _m_lazy_beehive_not_archived.Value) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.beehive_id,
+                        search_item_to_display = item.beehive_name
+                    });
                 }
                 break;
             case EDatabaseTableName.PRODUCT:
-                ensureProductDataLoaded();
-                if (_m_list_product_not_archived != null) {
-                    foreach (var item in _m_list_product_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            search_id = item.product_id,
-                            search_item_to_display = item.product_name
-                        });
-                    }
+                foreach (var item in _m_lazy_product_not_archived.Value) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.product_id,
+                        search_item_to_display = item.product_name
+                    });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_SHAPE:
-                ensureProductShapeDataLoaded();
-                if (_m_list_product_shape_not_archived != null) {
-                    foreach (var item in _m_list_product_shape_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            search_id = item.product_shape_id,
-                            search_item_to_display = item.product_shape_name
-                        });
-                    }
+                foreach (var item in _m_lazy_product_shape_not_archived.Value) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.product_shape_id,
+                        search_item_to_display = item.product_shape_name
+                    });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_CATEGORY:
-                ensureProductCategoryDataLoaded();
-                if (_m_list_product_category_not_archived != null) {
-                    foreach (var item in _m_list_product_category_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            search_id = item.product_category_id,
-                            search_item_to_display = item.product_category_name
-                        });
-                    }
+                foreach (var item in _m_lazy_product_category_not_archived.Value) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.product_category_id,
+                        search_item_to_display = item.product_category_name
+                    });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_TYPE:
-                ensureProductTypeDataLoaded();
-                if (_m_list_product_type_not_archived != null) {
-                    foreach (var item in _m_list_product_type_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            search_id = item.product_type_id,
-                            search_item_to_display = item.product_type_name
-                        });
-                    }
+                foreach (var item in _m_lazy_product_type_not_archived.Value) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.product_type_id,
+                        search_item_to_display = item.product_type_name
+                    });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_LOT:
-                ensureProductLotDataLoaded();
-                if (_m_list_product_lot_not_archived != null) {
-                    foreach (var item in _m_list_product_lot_not_archived) {
-                        list_search_item.Add(new SearchItem {
-                            search_id = item.product_lot_id,
-                            search_item_to_display = item.product_lot_name
-                        });
-                    }
+                foreach (var item in _m_lazy_product_lot_not_archived.Value) {
+                    list_search_item.Add(new SearchItem {
+                        search_id = item.product_lot_id,
+                        search_item_to_display = item.product_lot_name
+                    });
                 }
                 break;
         }
@@ -298,69 +313,5 @@ public class ResumeModel {
         decimal average_price_per_weight = counted_weight_g > 0 ? total_profit / (counted_weight_g / 1000) : 0.00M;
 
         return (total_weight_g / 1000, total_quantity, average_price_per_unit, average_price_per_weight);
-    }
-
-    // Lazy loading methods for dropdown data
-    private void ensureEntityDataLoaded() {
-        if (_m_list_entity_not_archived == null) {
-            var allItems = _m_entity_model.getAllItems().returned_items;
-            if (allItems != null) {
-                _m_list_entity_not_archived = new(allItems.Where(item => item.entity_archive == string.Empty));
-            }
-        }
-    }
-
-    private void ensureProductDataLoaded() {
-        if (_m_list_product_not_archived == null) {
-            var allItems = _m_product_model.getAllItems().returned_items;
-            if (allItems != null) {
-                _m_list_product_not_archived = new(allItems.Where(item => item.product_archive == string.Empty));
-            }
-        }
-    }
-
-    private void ensureProductShapeDataLoaded() {
-        if (_m_list_product_shape_not_archived == null) {
-            var allItems = _m_product_shape_model.getAllItems().returned_items;
-            if (allItems != null) {
-                _m_list_product_shape_not_archived = new(allItems.Where(item => item.product_shape_archive == string.Empty));
-            }
-        }
-    }
-
-    private void ensureProductCategoryDataLoaded() {
-        if (_m_list_product_category_not_archived == null) {
-            var allItems = _m_product_category_model.getAllItems().returned_items;
-            if (allItems != null) {
-                _m_list_product_category_not_archived = new(allItems.Where(item => item.product_category_archive == string.Empty));
-            }
-        }
-    }
-
-    private void ensureProductTypeDataLoaded() {
-        if (_m_list_product_type_not_archived == null) {
-            var allItems = _m_product_type_model.getAllItems().returned_items;
-            if (allItems != null) {
-                _m_list_product_type_not_archived = new(allItems.Where(item => item.product_type_archive == string.Empty));
-            }
-        }
-    }
-
-    private void ensureProductLotDataLoaded() {
-        if (_m_list_product_lot_not_archived == null) {
-            var allItems = _m_product_lot_model.getAllItems().returned_items;
-            if (allItems != null) {
-                _m_list_product_lot_not_archived = new(allItems.Where(item => item.product_lot_archive == string.Empty));
-            }
-        }
-    }
-
-    private void ensureBeehiveDataLoaded() {
-        if (_m_list_beehive_not_archived == null) {
-            var allItems = _m_beehive_model.getAllItems().returned_items;
-            if (allItems != null) {
-                _m_list_beehive_not_archived = new(allItems.Where(item => item.beehive_archive == string.Empty));
-            }
-        }
     }
 }

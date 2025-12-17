@@ -20,6 +20,8 @@ public class ProductCategoryModel :
     private const string _m_COL_NAME = "product_category_name";
     private const string _m_COL_ARCHIVE = "product_category_archive";
 
+    private const string _m_DEFAULT_ARCHIVE = "1901-01-01";
+
     /// <summary>
     /// Deletes an item from the database based on the specified identifier and delete operation type.
     /// </summary>
@@ -77,6 +79,41 @@ public class ProductCategoryModel :
     public ResponseGetAllItems<ProductCategoryItem> getAllItems() {
         var items = SDatabaseModel.getAllRowsInTable<ProductCategoryItem>(_m_TBL_NAME, _m_COL_NAME);
         return ResponseGetAllItems<ProductCategoryItem>.Success(items);
+    }
+
+    /// <summary>
+    /// Retrieves all active (non-archived) product category items from the database.
+    /// </summary>
+    /// <returns>An <see cref="ObservableCollection{ProductCategoryItem}"/> containing all non-archived product categories, ordered by name.</returns>
+    public ObservableCollection<ProductCategoryItem> getActiveProductCategories() {
+        return executeWithConnection(connection => {
+            try {
+                string query = $@"
+                    SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE}
+                    FROM {_m_TBL_NAME}
+                    WHERE {_m_COL_ARCHIVE} = '{_m_DEFAULT_ARCHIVE}' OR {_m_COL_ARCHIVE} IS NULL
+                    ORDER BY {_m_COL_NAME} ASC;";
+
+                using MySqlCommand cmd = new(query, connection);
+                using MySqlDataReader reader = cmd.ExecuteReader();
+
+                ObservableCollection<ProductCategoryItem> items = [];
+
+                while (reader.Read()) {
+                    items.Add(new ProductCategoryItem {
+                        product_category_id = reader.getSafeValue<int>(_m_COL_ID),
+                        product_category_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                        product_category_archive = string.Empty
+                    });
+                }
+
+                return items;
+            }
+            catch (MySqlException ex) {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return [];
+            }
+        });
     }
 
     /// <summary>
