@@ -49,7 +49,8 @@ public class ProductModel : ABaseModel,
     {
         if (!SDataValidation.isIdValid(id))
         {
-            return ResponseGetItem<ProductItem>.Failure(EErrors.INVALID_INPUT);
+            return ResponseGetItem<ProductItem>.Failure(EErrors.INVALID_INPUT,
+                $"ProductModel.getItemByID: Invalid ID provided '{id}'");
         }
 
         return executeWithConnection(connection =>
@@ -165,7 +166,8 @@ public class ProductModel : ABaseModel,
     {
         if (item == null)
         {
-            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE,
+                "ProductModel.saveItem: Item cannot be null");
         }
 
         int item_id = item.product_id;
@@ -179,7 +181,8 @@ public class ProductModel : ABaseModel,
         {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_product_name)) {
-                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
+                    $"ProductModel.saveItem: Product with name '{item_product_name}' already exists");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_WEIGHT}, " +

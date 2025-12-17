@@ -1,5 +1,6 @@
 ﻿using Mams.src.commands;
 using Mams.src.controllers;
+using Mams.src.errors;
 using Mams.src.navigations;
 using Mams.src.views.globalView;
 using System.Windows;
@@ -68,7 +69,9 @@ public class SaveBeehiveController : ABaseController, ICompareState {
             SPageNavigationController.navigateBack();
         }
         else {
-            MessageBox.Show("Un rucher avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error, m_beehive.beehive_name);
+            string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
+            MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

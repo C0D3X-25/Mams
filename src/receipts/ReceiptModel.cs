@@ -39,7 +39,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <returns>A <see cref="ResponseGetItem{ReceiptItem}"/> containing the receipt item and any error message.</returns>
     public ResponseGetItem<ReceiptItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ReceiptItem>.Failure(EErrors.INVALID_INPUT);
+            return ResponseGetItem<ReceiptItem>.Failure(EErrors.INVALID_INPUT,
+                $"ReceiptModel.getItemByID: Invalid ID provided '{id}'");
         }
 
         return executeWithConnection(connection => {
@@ -93,7 +94,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     {
         if (item == null)
         {
-            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE,
+                "ReceiptModel.saveItem: Item cannot be null");
         }
 
         int item_id = item.receipt_id;
@@ -105,7 +107,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             // A new receipt cannot be created with an existing receipt number
             if (item_id == 0)
             {
-                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
+                    $"ReceiptModel.saveItem: Receipt number '{receipt_nbr}' already exists");
             }
             else
             {
@@ -113,7 +116,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 // The receipt to modify uses a receipt number that already exists and is not the one already assigned
                 if (id_to_save != item_id)
                 {
-                    return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
+                    return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
+                        $"ReceiptModel.saveItem: Receipt number '{receipt_nbr}' is already assigned to another receipt (ID: {id_to_save})");
                 }
             }
         }

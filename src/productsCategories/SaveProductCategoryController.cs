@@ -1,5 +1,6 @@
 ﻿using Mams.src.commands;
 using Mams.src.controllers;
+using Mams.src.errors;
 using Mams.src.navigations;
 using Mams.src.views.globalView;
 using System.Windows;
@@ -65,7 +66,9 @@ public class SaveProductCategoryController : ABaseController, ICompareState {
             SPageNavigationController.navigateBack();
         }
         else {
-            MessageBox.Show("Une catégorie de produit avec le même nom est déjà présente", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error, m_product_category.product_category_name);
+            string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
+            MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

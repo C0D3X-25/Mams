@@ -44,7 +44,8 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// <returns>A <see cref="ResponseGetItem{ReceiptClientItem}"/> containing the receipt client item and any error message.</returns>
     public ResponseGetItem<ReceiptClientItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ReceiptClientItem>.Failure(EErrors.INVALID_INPUT);
+            return ResponseGetItem<ReceiptClientItem>.Failure(EErrors.INVALID_INPUT,
+                $"ReceiptClientModel.getItemByID: Invalid ID provided '{id}'");
         }
 
         return executeWithConnection(connection => {
@@ -96,7 +97,8 @@ public class ReceiptClientModel : ABaseModel, ICrudOperation<ReceiptClientItem> 
     /// Returns a response with ID 0 if the input is invalid or if an error occurs during the operation.</returns>
     public ResponseSaveItem saveItem(ReceiptClientItem item) {
         if (item == null || item.fk_receipt_id == 0 || item.fk_client_id == 0) {
-            return ResponseSaveItem.Failure(EErrors.INVALID_INPUT);
+            return ResponseSaveItem.Failure(EErrors.INVALID_INPUT,
+                $"ReceiptClientModel.saveItem: Invalid input - item is null or fk_receipt_id ({item?.fk_receipt_id}) or fk_client_id ({item?.fk_client_id}) is 0");
         }
 
         int item_id = item.fk_receipt_id;

@@ -46,7 +46,8 @@ public class ProductLotModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetItem{ProductLotItem}"/> containing the product lot item and any error message.</returns>
     public ResponseGetItem<ProductLotItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ProductLotItem>.Failure(EErrors.INVALID_INPUT);
+            return ResponseGetItem<ProductLotItem>.Failure(EErrors.INVALID_INPUT,
+                $"ProductLotModel.getItemByID: Invalid ID provided '{id}'");
         }
 
         return executeWithConnection(connection => {
@@ -113,7 +114,8 @@ public class ProductLotModel : ABaseModel,
     /// Returns a response with ID 0 if the operation fails or if the item is null.</returns>
     public ResponseSaveItem saveItem(ProductLotItem item) {
         if (item == null) {
-            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE,
+                "ProductLotModel.saveItem: Item cannot be null");
         }
 
         int item_id = item.product_lot_id;
@@ -126,7 +128,8 @@ public class ProductLotModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_lot_name.Trim())) {
-                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
+                    $"ProductLotModel.saveItem: Product lot with name '{item.product_lot_name}' already exists");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE}) " +

@@ -32,6 +32,16 @@ public class ResponseGetItem<T> where T : ABaseItem {
     public EErrors error { get; set; } = EErrors.NONE;
 
     /// <summary>
+    /// Gets or sets the detailed error message for developers or advanced users.
+    /// </summary>
+    /// <remarks>
+    /// This property contains technical information about the error, such as MySQL error codes,
+    /// exception details, or the class/method where the error occurred.
+    /// This message is intended for debugging purposes and should be in English.
+    /// </remarks>
+    public string? error_message_detail { get; set; } = null;
+
+    /// <summary>
     /// Gets a value indicating whether the get operation was successful.
     /// </summary>
     /// <remarks>
@@ -73,6 +83,18 @@ public class ResponseGetItem<T> where T : ABaseItem {
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="ResponseGetItem{T}"/> class with the specified item, error, and detail message.
+    /// </summary>
+    /// <param name="item">The item retrieved from the get operation.</param>
+    /// <param name="error">The error type from the get operation.</param>
+    /// <param name="errorMessageDetail">The detailed error message for developers.</param>
+    public ResponseGetItem(T? item, EErrors error, string errorMessageDetail) {
+        returned_item = item;
+        this.error = error;
+        error_message_detail = errorMessageDetail;
+    }
+
+    /// <summary>
     /// Creates a successful response with the specified item.
     /// </summary>
     /// <param name="item">The item retrieved from the get operation.</param>
@@ -93,11 +115,20 @@ public class ResponseGetItem<T> where T : ABaseItem {
     public static ResponseGetItem<T> Failure(EErrors error) => new(default, error);
 
     /// <summary>
+    /// Creates a failed response with the specified error type and detail message.
+    /// </summary>
+    /// <param name="error">The error type describing the failure.</param>
+    /// <param name="errorMessageDetail">The detailed error message for developers.</param>
+    /// <returns>A <see cref="ResponseGetItem{T}"/> indicating failure.</returns>
+    public static ResponseGetItem<T> Failure(EErrors error, string errorMessageDetail) 
+        => new(default, error, errorMessageDetail);
+
+    /// <summary>
     /// Creates a failed response with the specified MySQL error code and message.
     /// </summary>
     /// <param name="errorCode">The MySQL error code.</param>
     /// <param name="message">The error message.</param>
     /// <returns>A <see cref="ResponseGetItem{T}"/> indicating failure with formatted MySQL error details.</returns>
     public static ResponseGetItem<T> MySqlFailure(MySqlErrorCode errorCode, string message) 
-        => new(default, EErrors.DATABASE_QUERY);
+        => new(default, EErrors.DATABASE_QUERY, $"MySQL Error [{errorCode}]: {message}");
 }

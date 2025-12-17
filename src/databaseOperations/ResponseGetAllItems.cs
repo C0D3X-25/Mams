@@ -33,6 +33,16 @@ public class ResponseGetAllItems<T> where T : ABaseItem {
     public EErrors error { get; set; } = EErrors.NONE;
 
     /// <summary>
+    /// Gets or sets the detailed error message for developers or advanced users.
+    /// </summary>
+    /// <remarks>
+    /// This property contains technical information about the error, such as MySQL error codes,
+    /// exception details, or the class/method where the error occurred.
+    /// This message is intended for debugging purposes and should be in English.
+    /// </remarks>
+    public string? error_message_detail { get; set; } = null;
+
+    /// <summary>
     /// Gets a value indicating whether the get all operation was successful.
     /// </summary>
     /// <remarks>
@@ -78,6 +88,18 @@ public class ResponseGetAllItems<T> where T : ABaseItem {
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="ResponseGetAllItems{T}"/> class with the specified collection, error, and detail message.
+    /// </summary>
+    /// <param name="items">The collection of items retrieved from the get all operation.</param>
+    /// <param name="error">The error type from the get all operation.</param>
+    /// <param name="errorMessageDetail">The detailed error message for developers.</param>
+    public ResponseGetAllItems(ObservableCollection<T> items, EErrors error, string errorMessageDetail) {
+        returned_items = items;
+        this.error = error;
+        error_message_detail = errorMessageDetail;
+    }
+
+    /// <summary>
     /// Creates a successful response with the specified collection.
     /// </summary>
     /// <param name="items">The collection of items retrieved from the get all operation.</param>
@@ -98,11 +120,20 @@ public class ResponseGetAllItems<T> where T : ABaseItem {
     public static ResponseGetAllItems<T> Failure(EErrors error) => new([], error);
 
     /// <summary>
+    /// Creates a failed response with the specified error type and detail message.
+    /// </summary>
+    /// <param name="error">The error type describing the failure.</param>
+    /// <param name="errorMessageDetail">The detailed error message for developers.</param>
+    /// <returns>A <see cref="ResponseGetAllItems{T}"/> indicating failure.</returns>
+    public static ResponseGetAllItems<T> Failure(EErrors error, string errorMessageDetail) 
+        => new([], error, errorMessageDetail);
+
+    /// <summary>
     /// Creates a failed response with the specified MySQL error code and message.
     /// </summary>
     /// <param name="errorCode">The MySQL error code.</param>
     /// <param name="message">The error message.</param>
     /// <returns>A <see cref="ResponseGetAllItems{T}"/> indicating failure with formatted MySQL error details.</returns>
     public static ResponseGetAllItems<T> MySqlFailure(MySqlErrorCode errorCode, string message) 
-        => new([], EErrors.DATABASE_QUERY);
+        => new([], EErrors.DATABASE_QUERY, $"MySQL Error [{errorCode}]: {message}");
 }

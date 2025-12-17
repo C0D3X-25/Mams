@@ -39,7 +39,8 @@ public class ProductCategoryModel :
     /// <returns>A <see cref="ResponseGetItem{ProductCategoryItem}"/> containing the product category and any error message.</returns>
     public ResponseGetItem<ProductCategoryItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ProductCategoryItem>.Failure(EErrors.INVALID_INPUT);
+            return ResponseGetItem<ProductCategoryItem>.Failure(EErrors.INVALID_INPUT,
+                $"ProductCategoryModel.getItemByID: Invalid ID provided '{id}'");
         }
 
         return executeWithConnection(connection => {
@@ -88,7 +89,8 @@ public class ProductCategoryModel :
     /// Returns a response with ID 0 if the operation fails or if the item is null.</returns>
     public ResponseSaveItem saveItem(ProductCategoryItem item) {
         if (item == null) {
-            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE,
+                "ProductCategoryModel.saveItem: Item cannot be null");
         }
 
         int item_id = item.product_category_id;
@@ -101,7 +103,8 @@ public class ProductCategoryModel :
         if (isInsert) {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_category_name.Trim())) {
-                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
+                    $"ProductCategoryModel.saveItem: Product category with name '{item.product_category_name}' already exists");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +

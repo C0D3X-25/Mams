@@ -1,5 +1,6 @@
 ﻿using Mams.src.commands;
 using Mams.src.controllers;
+using Mams.src.errors;
 using Mams.src.navigations;
 using Mams.src.views.globalView;
 using System.Windows;
@@ -91,8 +92,10 @@ public class SaveEntityController : ABaseController, ICompareState {
         if (result.is_success) {
             SPageNavigationController.navigateBack();
         }
-        else { 
-            MessageBox.Show($"Un contact avec le même nom ({_m_entity.entity_name}) est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); 
+        else {
+            string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error, m_entity.entity_name);
+            string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
+            MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

@@ -37,7 +37,8 @@ public class SupplierModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetItem{SupplierItem}"/> containing the supplier item and any error message.</returns>
     public ResponseGetItem<SupplierItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<SupplierItem>.Failure(EErrors.INVALID_INPUT);
+            return ResponseGetItem<SupplierItem>.Failure(EErrors.INVALID_INPUT,
+                $"SupplierModel.getItemByID: Invalid ID provided '{id}'");
         }
 
         return executeWithConnection(connection => {
@@ -85,7 +86,8 @@ public class SupplierModel : ABaseModel,
     /// already present in the database.</returns>
     public ResponseSaveItem saveItem(SupplierItem item) {
         if (item == null) {
-            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE,
+                "SupplierModel.saveItem: Item cannot be null");
         }
 
         int item_id = item.supplier_id;
@@ -97,7 +99,8 @@ public class SupplierModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_FK_ENTITY, item.fk_entity_id.ToString())) {
-                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
+                    $"SupplierModel.saveItem: Supplier with entity FK '{item.fk_entity_id}' already exists");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_FK_ENTITY}) " +
@@ -189,13 +192,15 @@ public class SupplierModel : ABaseModel,
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
     public ResponseDeleteItem deleteSupplierWithEntityFK(string fk_entity) {
         if (!SDataValidation.isIdValid(fk_entity)) {
-            return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT);
+            return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT,
+                $"SupplierModel.deleteSupplierWithEntityFK: Invalid FK entity ID provided '{fk_entity}'");
         }
 
         SupplierItem? item = getSupplierWithEntityFK(fk_entity);
 
         if (item == null) {
-            return ResponseDeleteItem.Failure(EErrors.NOT_FOUND);
+            return ResponseDeleteItem.Failure(EErrors.NOT_FOUND,
+                $"SupplierModel.deleteSupplierWithEntityFK: No supplier found with entity FK '{fk_entity}'");
         }
 
         return deleteItem(item.supplier_id.ToString());

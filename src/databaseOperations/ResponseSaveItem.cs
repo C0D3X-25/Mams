@@ -32,6 +32,16 @@ public class ResponseSaveItem {
     public EErrors error { get; set; } = EErrors.NONE;
 
     /// <summary>
+    /// Gets or sets the detailed error message for developers or advanced users.
+    /// </summary>
+    /// <remarks>
+    /// This property contains technical information about the error, such as MySQL error codes,
+    /// exception details, or the class/method where the error occurred.
+    /// This message is intended for debugging purposes and should be in English.
+    /// </remarks>
+    public string? error_message_detail { get; set; } = null;
+
+    /// <summary>
     /// Gets a value indicating whether the save operation was successful.
     /// </summary>
     /// <remarks>
@@ -64,6 +74,18 @@ public class ResponseSaveItem {
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="ResponseSaveItem"/> class with the specified ID, error, and detail message.
+    /// </summary>
+    /// <param name="id">The returned ID from the save operation.</param>
+    /// <param name="error">The error type from the save operation.</param>
+    /// <param name="errorMessageDetail">The detailed error message for developers.</param>
+    public ResponseSaveItem(int id, EErrors error, string errorMessageDetail) {
+        returned_id = id;
+        this.error = error;
+        error_message_detail = errorMessageDetail;
+    }
+
+    /// <summary>
     /// Creates a successful response with the specified ID.
     /// </summary>
     /// <param name="id">The returned ID from the save operation.</param>
@@ -78,11 +100,20 @@ public class ResponseSaveItem {
     public static ResponseSaveItem Failure(EErrors error) => new(0, error);
 
     /// <summary>
+    /// Creates a failed response with the specified error type and detail message.
+    /// </summary>
+    /// <param name="error">The error type describing the failure.</param>
+    /// <param name="errorMessageDetail">The detailed error message for developers.</param>
+    /// <returns>A <see cref="ResponseSaveItem"/> indicating failure.</returns>
+    public static ResponseSaveItem Failure(EErrors error, string errorMessageDetail) 
+        => new(0, error, errorMessageDetail);
+
+    /// <summary>
     /// Creates a failed response with the specified MySQL error code and message.
     /// </summary>
     /// <param name="errorCode">The MySQL error code.</param>
     /// <param name="message">The error message.</param>
     /// <returns>A <see cref="ResponseSaveItem"/> indicating failure with formatted MySQL error details.</returns>
     public static ResponseSaveItem MySqlFailure(MySqlErrorCode errorCode, string message) 
-        => new(0, EErrors.DATABASE_QUERY);
+        => new(0, EErrors.DATABASE_QUERY, $"MySQL Error [{errorCode}]: {message}");
 }

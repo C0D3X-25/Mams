@@ -1,5 +1,6 @@
 ﻿using Mams.src.commands;
 using Mams.src.controllers;
+using Mams.src.errors;
 using Mams.src.navigations;
 using Mams.src.productsCategories;
 using Mams.src.productsShapes;
@@ -164,8 +165,10 @@ public class SaveProductController : ABaseController, ICompareState {
         if (result.is_success) {
             SPageNavigationController.navigateBack();
         }
-        else { 
-            MessageBox.Show("Un produit avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error); 
+        else {
+            string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error, m_product.product_name);
+            string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
+            MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

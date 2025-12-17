@@ -1,6 +1,7 @@
 ﻿using Mams.src.beehives;
 using Mams.src.commands;
 using Mams.src.controllers;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.navigations;
 using Mams.src.products;
@@ -107,7 +108,9 @@ public class SaveProductLotController : ABaseController, ICompareState {
             SPageNavigationController.navigateBack();
         }
         else {
-            MessageBox.Show("Un lot avec le même nom est déjà présent", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error, m_product_lot.product_lot_name);
+            string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
+            MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

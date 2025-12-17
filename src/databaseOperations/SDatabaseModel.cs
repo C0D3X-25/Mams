@@ -54,7 +54,8 @@ public abstract class SDatabaseModel : ABaseModel {
         EDeleteItemOperation delete_type) 
     {
         if (!areDeleteParametersProvided(id, field_id, table, delete_type)) {
-            return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT);
+            return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT,
+                $"SDatabaseModel.deleteRow: Invalid parameters - id: '{id}', field_id: '{field_id}', table: '{table}', delete_type: {delete_type}");
         }
 
         return deleteOperation(id, field_id, field_archive, table, delete_type);
@@ -78,7 +79,8 @@ public abstract class SDatabaseModel : ABaseModel {
     {
         if (!areDeleteParametersProvided(id, field_id, table, delete_type))
         {
-            return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT);
+            return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT,
+                $"SDatabaseModel.deleteRow: Invalid parameters - id: '{id}', field_id: '{field_id}', table: '{table}', delete_type: {delete_type}");
         }
 
         return deleteOperation(id, field_id, string.Empty, table, delete_type);
@@ -154,7 +156,8 @@ public abstract class SDatabaseModel : ABaseModel {
             // Archive the record
             case EDeleteItemOperation.SOFT_DELETE:
                 if (!isArchiveFieldProvided(field_archive)) {
-                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD);
+                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD,
+                        $"SDatabaseModel.deleteOperation: Archive field is required for SOFT_DELETE on table '{table}'");
                 }
                 query = $"UPDATE {table} SET {field_archive} = CURDATE() WHERE {field_id} = @id";
                 break;
@@ -165,19 +168,22 @@ public abstract class SDatabaseModel : ABaseModel {
             // Check if the record is linked in another table, then SOFT_DELETE or HARD_DELETE
             case EDeleteItemOperation.SAFE_DELETE:
                 if (!isArchiveFieldProvided(field_archive)) {
-                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD);
+                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD,
+                        $"SDatabaseModel.deleteOperation: Archive field is required for SAFE_DELETE on table '{table}'");
                 }
                 query = $"DELETE FROM {table} WHERE {field_id} = @id";
                 break;
             // Restore the record from the archive
             case EDeleteItemOperation.RESTORE:
                 if (!isArchiveFieldProvided(field_archive)) {
-                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD);
+                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD,
+                        $"SDatabaseModel.deleteOperation: Archive field is required for RESTORE on table '{table}'");
                 }
                 query = $"UPDATE {table} SET {field_archive} = NULL WHERE {field_id} = @id";
                 break;
             default:
-                return ResponseDeleteItem.Failure(EErrors.INVALID_OPERATION);
+                return ResponseDeleteItem.Failure(EErrors.INVALID_OPERATION,
+                    $"SDatabaseModel.deleteOperation: Invalid delete operation type '{delete_type}' on table '{table}'");
         }
 
         bool need_transaction = !isTransactionActive();

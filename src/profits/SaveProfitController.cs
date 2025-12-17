@@ -2,6 +2,7 @@
 using Mams.src.commands;
 using Mams.src.controllers;
 using Mams.src.entities;
+using Mams.src.errors;
 using Mams.src.helpers;
 using Mams.src.navigations;
 using Mams.src.products;
@@ -236,19 +237,14 @@ public class SaveProfitController : ABaseController, ICompareState {
         // Update the receipt products collection
         m_profit_receipt_detail.receipt_products = m_list_receipt_product;
 
-        try
-        {
-            var result = _m_receipt_profit_detailed_model.saveItem(m_profit_receipt_detail);
-            if (result.is_success) {
-                SPageNavigationController.navigateBack();
-            }
-            else {
-                MessageBox.Show("Error when saving the profit", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+        var result = _m_receipt_profit_detailed_model.saveItem(m_profit_receipt_detail);
+        if (result.is_success) {
+            SPageNavigationController.navigateBack();
         }
-        catch (Exception ex)
-        {
-            MessageBox.Show($"Error when saving the profit: {ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        else {
+            string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error);
+            string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
+            MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

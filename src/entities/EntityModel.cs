@@ -42,7 +42,8 @@ public class EntityModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetItem{EntityItem}"/> containing the entity item and any error message.</returns>
     public ResponseGetItem<EntityItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<EntityItem>.Failure(EErrors.INVALID_INPUT);
+            return ResponseGetItem<EntityItem>.Failure(EErrors.INVALID_INPUT, 
+                $"EntityModel.getItemByID: Invalid ID provided '{id}'");
         }
 
         return executeWithConnection(connection => {
@@ -103,7 +104,8 @@ public class EntityModel : ABaseModel,
     /// is detected.</returns>
     public ResponseSaveItem saveItem(EntityItem item) {
         if (item == null) {
-            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE, 
+                "EntityModel.saveItem: Item cannot be null");
         }
 
         int item_id = item.entity_id;
@@ -115,7 +117,8 @@ public class EntityModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.entity_name)) {
-                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS, 
+                    $"EntityModel.saveItem: Entity with name '{item.entity_name}' already exists");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}) " +

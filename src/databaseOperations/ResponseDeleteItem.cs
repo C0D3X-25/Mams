@@ -31,6 +31,16 @@ public class ResponseDeleteItem {
     public EErrors error { get; set; } = EErrors.NONE;
 
     /// <summary>
+    /// Gets or sets the detailed error message for developers or advanced users.
+    /// </summary>
+    /// <remarks>
+    /// This property contains technical information about the error, such as MySQL error codes,
+    /// exception details, or the class/method where the error occurred.
+    /// This message is intended for debugging purposes and should be in English.
+    /// </remarks>
+    public string? error_message_detail { get; set; } = null;
+
+    /// <summary>
     /// Gets a value indicating whether the delete operation was successful.
     /// </summary>
     /// <remarks>
@@ -63,6 +73,18 @@ public class ResponseDeleteItem {
     }
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="ResponseDeleteItem"/> class with the specified success status, error, and detail message.
+    /// </summary>
+    /// <param name="deleted">A value indicating whether the delete operation was successful.</param>
+    /// <param name="error">The error type from the delete operation.</param>
+    /// <param name="errorMessageDetail">The detailed error message for developers.</param>
+    public ResponseDeleteItem(bool deleted, EErrors error, string errorMessageDetail) {
+        is_deleted = deleted;
+        this.error = error;
+        error_message_detail = errorMessageDetail;
+    }
+
+    /// <summary>
     /// Creates a successful response indicating the item was deleted.
     /// </summary>
     /// <returns>A <see cref="ResponseDeleteItem"/> indicating success.</returns>
@@ -76,11 +98,20 @@ public class ResponseDeleteItem {
     public static ResponseDeleteItem Failure(EErrors error) => new(false, error);
 
     /// <summary>
+    /// Creates a failed response with the specified error type and detail message.
+    /// </summary>
+    /// <param name="error">The error type describing the failure.</param>
+    /// <param name="errorMessageDetail">The detailed error message for developers.</param>
+    /// <returns>A <see cref="ResponseDeleteItem"/> indicating failure.</returns>
+    public static ResponseDeleteItem Failure(EErrors error, string errorMessageDetail) 
+        => new(false, error, errorMessageDetail);
+
+    /// <summary>
     /// Creates a failed response with the specified MySQL error code and message.
     /// </summary>
     /// <param name="errorCode">The MySQL error code.</param>
     /// <param name="message">The error message.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> indicating failure with formatted MySQL error details.</returns>
     public static ResponseDeleteItem MySqlFailure(MySqlErrorCode errorCode, string message) 
-        => new(false, EErrors.DATABASE_QUERY);
+        => new(false, EErrors.DATABASE_QUERY, $"MySQL Error [{errorCode}]: {message}");
 }

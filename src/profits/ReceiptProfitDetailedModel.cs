@@ -60,7 +60,8 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     {
         if (!SDataValidation.isIdValid(id))
         {
-            return ResponseGetItem<ReceiptProfitDetailedItem>.Failure(EErrors.INVALID_INPUT);
+            return ResponseGetItem<ReceiptProfitDetailedItem>.Failure(EErrors.INVALID_INPUT,
+                $"ReceiptProfitDetailedModel.getItemByID: Invalid ID provided '{id}'");
         }
 
         return executeWithConnection(connection =>
@@ -376,7 +377,8 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// Returns a response with ID 0 if the input is invalid or the operation fails.</returns>
     public ResponseSaveItem saveItem(ReceiptProfitDetailedItem item) {
         if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0) {
-            return ResponseSaveItem.Failure(EErrors.INVALID_INPUT);
+            return ResponseSaveItem.Failure(EErrors.INVALID_INPUT,
+                $"ReceiptProfitDetailedModel.saveItem: Invalid input - item is null ({item == null}), products count ({item?.receipt_products.Count}), or entity_id ({item?.entity.entity_id}) is invalid");
         }
 
         startTransaction();
@@ -385,7 +387,7 @@ public class ReceiptProfitDetailedModel : ABaseModel,
         {
             int client_id = findClientIdOrCreateNew(item.entity.entity_id);
             if (client_id == 0) {
-                throw new InvalidOperationException("Failed to find or create client for the given entity.");
+                throw new InvalidOperationException($"Failed to find or create client for entity ID: {item.entity.entity_id}");
             }
             
             item.receipt_client.fk_client_id = client_id;
@@ -402,16 +404,17 @@ public class ReceiptProfitDetailedModel : ABaseModel,
             var result = _m_receipt_handler_model.saveItem(handlerItem);
             if (!result.is_success)
             {
-                throw new InvalidOperationException($"Failed to save the receipt. Error: {result.error}");
+                throw new InvalidOperationException($"Failed to save receipt. Error: {result.error}. Detail: {result.error_message_detail}");
             }
 
             commitTransaction();
             return result;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             rollbackTransaction();
-            return ResponseSaveItem.Failure(EErrors.DATABASE_QUERY);
+            return ResponseSaveItem.Failure(EErrors.DATABASE_QUERY,
+                $"ReceiptProfitDetailedModel.saveItem: {ex.Message}");
         }
     }
 

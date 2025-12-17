@@ -38,7 +38,8 @@ public class BeehiveModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetItem{BeehiveItem}"/> containing the item with the specified ID and any error message.</returns>
     public ResponseGetItem<BeehiveItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<BeehiveItem>.Failure(EErrors.INVALID_INPUT);
+            return ResponseGetItem<BeehiveItem>.Failure(EErrors.INVALID_INPUT,
+                $"BeehiveModel.getItemByID: Invalid ID provided '{id}'");
         }
 
         return executeWithConnection(connection => {
@@ -86,7 +87,8 @@ public class BeehiveModel : ABaseModel,
     /// item name already exists in the database.</returns>
     public ResponseSaveItem saveItem(BeehiveItem item) {
         if (item == null) {
-            return ResponseSaveItem.Failure(EErrors.NULL_VALUE);
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE,
+                "BeehiveModel.saveItem: Item cannot be null");
         }
 
         int item_id = item.beehive_id;
@@ -99,7 +101,8 @@ public class BeehiveModel : ABaseModel,
         if (isInsert) {
             // Check for duplicate name before inserting
             if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.beehive_name.Trim())) {
-                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS);
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
+                    $"BeehiveModel.saveItem: Beehive with name '{item.beehive_name}' already exists");
             }
             
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +

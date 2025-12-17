@@ -49,7 +49,8 @@ public class ReceiptProductModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetItem{ReceiptProductItem}"/> containing the receipt product item and any error message.</returns>
     public ResponseGetItem<ReceiptProductItem> getItemByID(string id) {
         if (!SDataValidation.isIdValid(id)) {
-            return ResponseGetItem<ReceiptProductItem>.Failure(EErrors.INVALID_INPUT);
+            return ResponseGetItem<ReceiptProductItem>.Failure(EErrors.INVALID_INPUT,
+                $"ReceiptProductModel.getItemByID: Invalid ID provided '{id}'");
         }
 
         return executeWithConnection(connection => {
@@ -125,7 +126,8 @@ public class ReceiptProductModel : ABaseModel,
     /// Returns a response with ID 0 if the operation fails.</returns>
     public ResponseSaveItem saveItem(ReceiptProductItem item) {
         if (!ValidateReceiptProduct(item)) { 
-            return ResponseSaveItem.Failure(EErrors.INVALID_INPUT);
+            return ResponseSaveItem.Failure(EErrors.INVALID_INPUT,
+                $"ReceiptProductModel.saveItem: Invalid input - item is null or has invalid values (quantity: {item?.receipt_product_quantity}, price: {item?.receipt_product_unity_price}, receipt_id: {item?.fk_receipt_id}, product_id: {item?.product_item?.product_id})");
         }
         
         // Check if the item already exists in the database, if not insert the item into the database
