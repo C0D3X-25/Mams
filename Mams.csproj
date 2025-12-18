@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include=".github\workflows\release_on_push.yml" />
     <None Include="doc\MLD.simp.user" />
   </ItemGroup>
 
