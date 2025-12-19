@@ -38,7 +38,7 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <param name="id">The unique identifier of the receipt item to retrieve. Must be a valid identifier.</param>
     /// <returns>A <see cref="ResponseGetItem{ReceiptItem}"/> containing the receipt item and any error message.</returns>
     public ResponseGetItem<ReceiptItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValid(id)) {
+        if (!SDataValidation.isIdValidForRetrieval(id)) {
             return ResponseGetItem<ReceiptItem>.Failure(EErrors.INVALID_INPUT,
                 $"ReceiptModel.getItemByID: Invalid ID provided '{id}'");
         }

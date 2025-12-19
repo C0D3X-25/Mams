@@ -40,7 +40,7 @@ public class ProductCategoryModel :
     /// <param name="id">The unique identifier of the product category item to retrieve. Must be a valid identifier.</param>
     /// <returns>A <see cref="ResponseGetItem{ProductCategoryItem}"/> containing the product category and any error message.</returns>
     public ResponseGetItem<ProductCategoryItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValid(id)) {
+        if (!SDataValidation.isIdValidForRetrieval(id)) {
             return ResponseGetItem<ProductCategoryItem>.Failure(EErrors.INVALID_INPUT,
                 $"ProductCategoryModel.getItemByID: Invalid ID provided '{id}'");
         }

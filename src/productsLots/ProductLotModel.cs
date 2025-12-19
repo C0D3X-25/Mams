@@ -45,7 +45,7 @@ public class ProductLotModel : ABaseModel,
     /// <param name="id">The unique identifier of the product lot item to retrieve. Must be a valid identifier.</param>
     /// <returns>A <see cref="ResponseGetItem{ProductLotItem}"/> containing the product lot item and any error message.</returns>
     public ResponseGetItem<ProductLotItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValid(id)) {
+        if (!SDataValidation.isIdValidForRetrieval(id)) {
             return ResponseGetItem<ProductLotItem>.Failure(EErrors.INVALID_INPUT,
                 $"ProductLotModel.getItemByID: Invalid ID provided '{id}'");
         }

@@ -41,7 +41,7 @@ public class EntityModel : ABaseModel,
     /// <param name="id">The unique identifier of the entity item to retrieve. This value must not be null or empty.</param>
     /// <returns>A <see cref="ResponseGetItem{EntityItem}"/> containing the entity item and any error message.</returns>
     public ResponseGetItem<EntityItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValid(id)) {
+        if (!SDataValidation.isIdValidForRetrieval(id)) {
             return ResponseGetItem<EntityItem>.Failure(EErrors.INVALID_INPUT, 
                 $"EntityModel.getItemByID: Invalid ID provided '{id}'");
         }

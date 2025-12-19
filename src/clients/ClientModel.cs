@@ -36,7 +36,7 @@ public class ClientModel : ABaseModel,
     /// <param name="id">The unique identifier of the item to retrieve. Cannot be null or empty.</param>
     /// <returns>A <see cref="ResponseGetItem{ClientItem}"/> containing the item with the specified identifier and any error message.</returns>
     public ResponseGetItem<ClientItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValid(id)) {
+        if (!SDataValidation.isIdValidForRetrieval(id)) {
             return ResponseGetItem<ClientItem>.Failure(EErrors.INVALID_INPUT,
                 $"ClientModel.getItemByID: Invalid ID provided '{id}'");
         }

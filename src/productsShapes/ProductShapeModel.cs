@@ -40,7 +40,7 @@ public class ProductShapeModel :
     /// <param name="id">The unique identifier of the product shape item to retrieve. Cannot be null or empty.</param>
     /// <returns>A <see cref="ResponseGetItem{ProductShapeItem}"/> containing the product shape and any error message.</returns>
     public ResponseGetItem<ProductShapeItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValid(id)) {
+        if (!SDataValidation.isIdValidForRetrieval(id)) {
             return ResponseGetItem<ProductShapeItem>.Failure(EErrors.INVALID_INPUT,
                 $"ProductShapeModel.getItemByID: Invalid ID provided '{id}'");
         }

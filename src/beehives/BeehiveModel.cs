@@ -39,7 +39,7 @@ public class BeehiveModel : ABaseModel,
     /// <param name="id">The unique identifier of the item to retrieve. Must be a valid ID string.</param>
     /// <returns>A <see cref="ResponseGetItem{BeehiveItem}"/> containing the item with the specified ID and any error message.</returns>
     public ResponseGetItem<BeehiveItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValid(id)) {
+        if (!SDataValidation.isIdValidForRetrieval(id)) {
             return ResponseGetItem<BeehiveItem>.Failure(EErrors.INVALID_INPUT,
                 $"BeehiveModel.getItemByID: Invalid ID provided '{id}'");
         }

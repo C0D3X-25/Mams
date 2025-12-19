@@ -12,13 +12,14 @@ namespace Mams.src.helpers;
 public static class SDataValidation {
 
     /// <summary>
-    /// Determines whether the specified string represents a valid non-negative integer identifier.
+    /// Determines whether the specified string represents a valid identifier for insert or update operations.
     /// </summary>
     /// <remarks>A valid identifier is a non-null, non-empty string that represents a non-negative integer.
-    /// This method returns <see langword="false"/> if the string is null, empty, not an integer,  or represents a
+    /// Zero is allowed to indicate a new record insertion.
+    /// This method returns <see langword="false"/> if the string is null, empty, not an integer, or represents a
     /// negative value.</remarks>
     /// <param name="id">The string to evaluate as an identifier.</param>
-    /// <returns><see langword="true"/> if the string is a valid non-negative integer identifier;  otherwise, <see
+    /// <returns><see langword="true"/> if the string is a valid non-negative integer identifier; otherwise, <see
     /// langword="false"/>. </returns>
     public static bool isIdValid(string id) {
 
@@ -35,13 +36,35 @@ public static class SDataValidation {
     }
 
     /// <summary>
-    /// Determines whether the specified string represents a valid non-negative integer identifier.
+    /// Determines whether the specified string represents a valid positive identifier for retrieval operations.
     /// </summary>
-    /// <remarks>A valid identifier is a non-null, non-empty string that represents a non-negative integer.
-    /// This method returns <see langword="false"/> if the string is null, empty, not an integer,  or represents a
-    /// negative value.</remarks>
+    /// <remarks>A valid identifier for retrieval must be a positive integer (greater than zero).
+    /// This method returns <see langword="false"/> if the string is null, empty, not an integer, zero, or negative.</remarks>
     /// <param name="id">The string to evaluate as an identifier.</param>
-    /// <returns><see langword="true"/> if the string is a valid non-negative integer identifier;  otherwise, <see
+    /// <returns><see langword="true"/> if the string is a valid positive integer identifier; otherwise, <see
+    /// langword="false"/>. </returns>
+    public static bool isIdValidForRetrieval(string id) {
+
+        if (string.IsNullOrEmpty(id)) {
+            return false;
+        }
+        if (!isInteger(id)) {
+            return false;
+        }
+        if (Convert.ToInt64(id) <= 0) {
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Determines whether the specified integer represents a valid identifier for insert or update operations.
+    /// </summary>
+    /// <remarks>A valid identifier is a non-null, non-negative integer.
+    /// Zero is allowed to indicate a new record insertion.
+    /// This method returns <see langword="false"/> if the integer is null or negative.</remarks>
+    /// <param name="id">The integer to evaluate as an identifier.</param>
+    /// <returns><see langword="true"/> if the integer is a valid non-negative identifier; otherwise, <see
     /// langword="false"/>. </returns>
     public static bool isIdValid(int? id) {
 
@@ -49,6 +72,25 @@ public static class SDataValidation {
             return false;
         }
         if (id < 0) {
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// Determines whether the specified integer represents a valid positive identifier for retrieval operations.
+    /// </summary>
+    /// <remarks>A valid identifier for retrieval must be a positive integer (greater than zero).
+    /// This method returns <see langword="false"/> if the integer is null, zero, or negative.</remarks>
+    /// <param name="id">The integer to evaluate as an identifier.</param>
+    /// <returns><see langword="true"/> if the integer is a valid positive identifier; otherwise, <see
+    /// langword="false"/>. </returns>
+    public static bool isIdValidForRetrieval(int? id) {
+
+        if (id == null) {
+            return false;
+        }
+        if (id <= 0) {
             return false;
         }
         return true;

@@ -36,7 +36,7 @@ public class SupplierModel : ABaseModel,
     /// <param name="id">The unique identifier of the supplier item. Cannot be null or empty.</param>
     /// <returns>A <see cref="ResponseGetItem{SupplierItem}"/> containing the supplier item and any error message.</returns>
     public ResponseGetItem<SupplierItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValid(id)) {
+        if (!SDataValidation.isIdValidForRetrieval(id)) {
             return ResponseGetItem<SupplierItem>.Failure(EErrors.INVALID_INPUT,
                 $"SupplierModel.getItemByID: Invalid ID provided '{id}'");
         }

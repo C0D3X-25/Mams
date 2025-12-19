@@ -58,7 +58,7 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetItem{ReceiptProfitDetailedItem}"/> containing detailed information about the receipt and any error message.</returns>
     public ResponseGetItem<ReceiptProfitDetailedItem> getItemByID(string id)
     {
-        if (!SDataValidation.isIdValid(id))
+        if (!SDataValidation.isIdValidForRetrieval(id))
         {
             return ResponseGetItem<ReceiptProfitDetailedItem>.Failure(EErrors.INVALID_INPUT,
                 $"ReceiptProfitDetailedModel.getItemByID: Invalid ID provided '{id}'");
