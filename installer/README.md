@@ -43,7 +43,7 @@ To build the installer locally:
 
 2. Publish the application:
    ```bash
-   dotnet publish Mams_App/Mams_App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish
+   dotnet publish Mams_App/Mams_App.csproj -c Release -r win-x64 --self-contained true -p:UseAppHost=true -p:PublishDir=./publish
    ```
 
 3. Build the installer:

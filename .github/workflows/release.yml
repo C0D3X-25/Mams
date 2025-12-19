@@ -40,15 +40,16 @@ jobs:
       run: dotnet restore Mams_App/Mams_App.csproj
 
     - name: Publish application (self-contained)
+      shell: pwsh
       run: |
         dotnet publish Mams_App/Mams_App.csproj `
           -c Release `
           -r win-x64 `
           --self-contained true `
-          -p:PublishSingleFile=true `
-          -p:IncludeNativeLibrariesForSelfExtract=true `
+          -p:PublishSingleFile=false `
+          -p:UseAppHost=true `
           -p:Version=${{ steps.version.outputs.VERSION }} `
-          -o ./publish
+          -p:PublishDir=${{ github.workspace }}/publish
 
     - name: Download Inno Setup
       shell: pwsh
