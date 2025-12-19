@@ -4,16 +4,15 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  xmlns:uap18="http://schemas.microsoft.com/appx/manifest/uap/windows10/18"
-  IgnorableNamespaces="uap rescap uap18">
+  IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="8a657f9d-e0c6-44b7-a3fe-c1de3e37fef3"
+    Name="3198447d-3da5-4f1f-9d9a-d8896059e82d"
     Publisher="CN=ThJo"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>Mams_Installerr</DisplayName>
+    <DisplayName>Mams_Installer</DisplayName>
     <PublisherDisplayName>ThJo</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
@@ -30,10 +29,10 @@
   <Applications>
     <Application Id="App"
       Executable="$targetnametoken$.exe"
-      EntryPoint="$targetentrypoint$" uap18:RuntimeBehavior="windowsApp" uap18:TrustLevel="appContainer">
+      EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="Mams"
-        Description="Mams is an app to manage beehives, products, contacts, receipts"
+        DisplayName="Mams_Installer"
+        Description="Mams_Installer"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png">
@@ -46,6 +45,5 @@
   <Capabilities>
     <Capability Name="internetClient" />
     <rescap:Capability Name="runFullTrust" />
-    <Capability Name="internetClientServer"/>
   </Capabilities>
 </Package>
