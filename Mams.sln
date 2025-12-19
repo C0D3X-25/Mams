@@ -1,15 +1,12 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11222.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mams", "Mams.csproj", "{C0F3D8FA-FD72-46DC-9341-929DC76E0325}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mams_App", "Mams_App\Mams_App.csproj", "{C0F3D8FA-FD72-46DC-9341-929DC76E0325}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project", "Project", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Mams_Installer", "Mams_Installer\Mams_Installer.vdproj", "{E3640B1C-002F-452D-BC92-325678B41974}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Mams_Installer", "..\Mams_Installer\Mams_Installer.vdproj", "{E3640B1C-002F-452D-BC92-325678B41974}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MamsTest", "..\Mams_Test\MamsTest.csproj", "{40A55D47-0C35-4585-87DF-3027C1932DB0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mams_Test", "Mams_Test\Mams_Test.csproj", "{40A55D47-0C35-4585-87DF-3027C1932DB0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,9 +95,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{C0F3D8FA-FD72-46DC-9341-929DC76E0325} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {42EF404D-098A-4FA3-B28F-E65E8A18F62B}

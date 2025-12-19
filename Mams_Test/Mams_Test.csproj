@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mams_App\Mams.csproj" />
+    <ProjectReference Include="..\Mams_App\Mams_App.csproj" />
   </ItemGroup>
 
   <ItemGroup>
