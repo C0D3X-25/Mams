@@ -1,6 +1,7 @@
 ﻿using Mams.src.navigations;
 using Mams.src.configurations;
 using Mams.src.search;
+using Mams.src.services;
 using System.Windows;
 
 namespace Mams.src.views;
@@ -18,6 +19,16 @@ public partial class MainWindow : Window {
         loadWindowSettings();
         
         Closing += MainWindow_Closing;
+        Loaded += MainWindow_Loaded;
+    }
+
+    /// <summary>
+    /// Checks for updates when the window is loaded.
+    /// </summary>
+    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+    {
+        // Check for updates silently (no message if already up to date)
+        await SUpdateCheckerService.checkForUpdatesAsync(showNoUpdateMessage: false);
     }
 
     /// <summary>
