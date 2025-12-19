@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mams_Test", "Mams_Test\Mams
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "Mams_Installer", "Mams_Installer\Mams_Installer.wapproj", "{2FF51643-60D1-4EC3-8D3E-E45BECA12FF0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mams_App_Release", "Mams_App_Release", "{7FA2A2E0-B4DA-46CE-A007-8D7A046A9614}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
