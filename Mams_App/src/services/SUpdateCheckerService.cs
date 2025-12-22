@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Windows;
+using System.Windows.Controls;
 using Mams.src.configurations;
 
 namespace Mams.src.services;
@@ -151,38 +152,100 @@ public static class SUpdateCheckerService
             var zipPath = Path.Combine(tempDir, "update.zip");
             var extractPath = Path.Combine(tempDir, "extracted");
 
-            // Show download progress
+            // Create progress window with progress bar
             var progressWindow = new Window
             {
                 Title = "Downloading Update...",
-                Width = 400,
-                Height = 100,
+                Width = 450,
+                Height = 150,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 ResizeMode = ResizeMode.NoResize,
                 WindowStyle = WindowStyle.ToolWindow
             };
 
-            var progressText = new System.Windows.Controls.TextBlock
+            var stackPanel = new StackPanel
             {
-                Text = "Downloading update, please wait...",
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                FontSize = 14
+                Margin = new Thickness(20),
+                VerticalAlignment = VerticalAlignment.Center
             };
 
-            progressWindow.Content = progressText;
+            var statusText = new TextBlock
+            {
+                Text = "Connecting to server...",
+                FontSize = 14,
+                Margin = new Thickness(0, 0, 0, 10)
+            };
+
+            var progressBar = new ProgressBar
+            {
+                Height = 25,
+                Minimum = 0,
+                Maximum = 100,
+                Value = 0
+            };
+
+            var progressText = new TextBlock
+            {
+                Text = "0%",
+                FontSize = 12,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 5, 0, 0),
+                Foreground = System.Windows.Media.Brushes.Gray
+            };
+
+            stackPanel.Children.Add(statusText);
+            stackPanel.Children.Add(progressBar);
+            stackPanel.Children.Add(progressText);
+            progressWindow.Content = stackPanel;
             progressWindow.Show();
 
             try
             {
-                // Download the ZIP file
+                // Download the ZIP file with progress
                 Debug.WriteLine($"[UpdateChecker] Downloading from: {zipAsset.DownloadUrl}");
+                statusText.Text = $"Downloading {zipAsset.Name}...";
+                
                 using var response = await s_httpClient.GetAsync(zipAsset.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();
 
-                await using var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None);
-                await response.Content.CopyToAsync(fileStream);
-                Debug.WriteLine($"[UpdateChecker] Download complete: {new FileInfo(zipPath).Length} bytes");
+                var totalBytes = response.Content.Headers.ContentLength ?? -1;
+                var canReportProgress = totalBytes > 0;
+                
+                await using var contentStream = await response.Content.ReadAsStreamAsync();
+                await using var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
+                
+                var buffer = new byte[8192];
+                long downloadedBytes = 0;
+                int bytesRead;
+                
+                while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
+                {
+                    await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+                    downloadedBytes += bytesRead;
+                    
+                    if (canReportProgress)
+                    {
+                        var percentage = (double)downloadedBytes / totalBytes * 100;
+                        progressBar.Value = percentage;
+                        progressText.Text = $"{percentage:F1}% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
+                    }
+                    else
+                    {
+                        progressText.Text = $"Downloaded: {formatBytes(downloadedBytes)}";
+                        progressBar.IsIndeterminate = true;
+                    }
+                    
+                    // Allow UI to update
+                    await Task.Delay(1);
+                }
+                
+                Debug.WriteLine($"[UpdateChecker] Download complete: {downloadedBytes} bytes");
+                
+                // Extract phase
+                statusText.Text = "Extracting update...";
+                progressBar.IsIndeterminate = true;
+                progressText.Text = "Please wait...";
+                await Task.Delay(100); // Allow UI to update
             }
             finally
             {
@@ -229,6 +292,24 @@ public static class SUpdateCheckerService
                 MessageBoxImage.Error);
             openReleasePage();
         }
+    }
+
+    /// <summary>
+    /// Formats bytes into a human-readable string.
+    /// </summary>
+    private static string formatBytes(long bytes)
+    {
+        string[] sizes = ["B", "KB", "MB", "GB"];
+        int order = 0;
+        double size = bytes;
+        
+        while (size >= 1024 && order < sizes.Length - 1)
+        {
+            order++;
+            size /= 1024;
+        }
+        
+        return $"{size:F2} {sizes[order]}";
     }
 
     /// <summary>
@@ -285,7 +366,7 @@ foreach ($file in $files) {{
 # Update version in config file
 Write-Host 'Updating version in config...'
 if (Test-Path $configPath) {{
-    $config = Get-Content $configPath -Raw | ConvertFrom-Json
+    $config = Get-Content $configPath -Raw | ConvertFrom-JSON
     $config.version = $newVersion
     $config | ConvertTo-Json -Depth 10 | Set-Content $configPath -Encoding UTF8
 }} else {{
