@@ -1,26 +1,18 @@
-﻿using MySqlConnector;
+﻿using Mams.src.services;
+using MySqlConnector;
 using System.Windows;
 
 namespace Mams.src.databaseConnections;
 
 public class SQLConnectionModel {
 
-    // Very safe credentials !!
-    private const string _m_SERVER = "localhost";
-    private const string _m_USER = "root";
-    private const string _m_PASSWORD = "root";
-    private const string _m_DB = "mams_db";
-    private const string _m_connection_string = 
-        $"server={_m_SERVER};" +
-        $"uid={_m_USER};" +
-        $"pwd={_m_PASSWORD};" +
-        $"database={_m_DB};" +
-        $"pooling=true;" +
-        $"min pool size=5;" +
-        $"max pool size=50;";
+    /// <summary>
+    /// Gets the connection string from the portable MariaDB service.
+    /// </summary>
+    private static string ConnectionString => SMariaDbPortableService.ConnectionString;
 
     public MySqlConnection GetConnection() {
-        var connection = new MySqlConnection(_m_connection_string);
+        var connection = new MySqlConnection(ConnectionString);
         try {
             connection.Open();
             return connection;
@@ -47,7 +39,7 @@ public class SQLConnectionModel {
     /// cref="EDatabaseConnection.EXIT"/>: Closes the connection (if not <see langword="null"/>) and exits the
     /// application.</description></item> <item><description><see cref="EDatabaseConnection.CONTINUE"/>: No action is
     /// taken.</description></item> <item><description><see cref="EDatabaseConnection.RECONNECT"/>: Attempts to restart
-    /// the MySQL service (Not implemented).</description></item> <item><description>Any other value: Exits the
+    /// the MariaDB server.</description></item> <item><description>Any other value: Exits the
     /// application.</description></item> </list></remarks>
     /// <param name="connection">The <see cref="MySqlConnection"/> instance to check. Can be <see langword="null"/>.</param>
     /// <param name="cmd">Specifies the action to take if the connection is not open.  The default value is <see
@@ -73,22 +65,14 @@ public class SQLConnectionModel {
                 // Do nothing
                 break;
             case EDatabaseConnection.RECONNECT:
-                stopMysqlService();
-                startMysqlService();
+                SMariaDbPortableService.stopMariaDb();
+                SMariaDbPortableService.startMariaDb();
                 break;
             default:
                 Environment.Exit(1);
                 break;
         }
         return false;
-    }
-
-    public void startMysqlService()
-    {
-    }
-
-    public void stopMysqlService()
-    {
     }
 }
 

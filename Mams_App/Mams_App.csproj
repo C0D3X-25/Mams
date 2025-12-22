@@ -65,4 +65,12 @@
     </None>
   </ItemGroup>
 
+  <!-- Copy init.sql to ressources folder in output -->
+  <ItemGroup>
+    <None Update="database\init.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>ressources\init.sql</Link>
+    </None>
+  </ItemGroup>
+
 </Project>
