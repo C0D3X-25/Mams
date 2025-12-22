@@ -14,7 +14,17 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
+        
+        <!-- Version display on the right -->
+        <TextBlock Grid.Column="1" 
+                   Text="{Binding m_version}" 
+                   VerticalAlignment="Center" 
+                   HorizontalAlignment="Right"
+                   Margin="0,0,15,0"
+                   Foreground="#888888"
+                   FontSize="12"/>
     </Grid>
 </UserControl>

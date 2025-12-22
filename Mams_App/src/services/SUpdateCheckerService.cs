@@ -38,13 +38,21 @@ public static class SUpdateCheckerService
     {
         try
         {
+            Debug.WriteLine($"[UpdateChecker] Checking for updates at: {GITHUB_API_URL}");
+            Debug.WriteLine($"[UpdateChecker] Current version: {getCurrentVersion()}");
+            
             var latestRelease = await getLatestReleaseAsync();
             if (latestRelease == null)
             {
+                Debug.WriteLine("[UpdateChecker] No release found or API request failed (private repo?)");
                 if (showNoUpdateMessage)
                 {
                     MessageBox.Show(
-                        "Unable to check for updates. Please try again later.",
+                        "Unable to check for updates.\n\n" +
+                        "This may be because:\n" +
+                        "• No internet connection\n" +
+                        "• No releases published yet\n" +
+                        "• Repository is private (requires authentication)",
                         "Update Check",
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
@@ -52,11 +60,16 @@ public static class SUpdateCheckerService
                 return;
             }
 
+            Debug.WriteLine($"[UpdateChecker] Latest release found: {latestRelease.TagName}");
+            
             var currentVersion = getCurrentVersion();
             var latestVersion = parseVersion(latestRelease.TagName);
 
+            Debug.WriteLine($"[UpdateChecker] Comparing: current={currentVersion} vs latest={latestVersion}");
+
             if (latestVersion > currentVersion)
             {
+                Debug.WriteLine("[UpdateChecker] Update available!");
                 var result = MessageBox.Show(
                     $"A new version ({latestRelease.TagName}) is available!\n\n" +
                     $"Current version: v{currentVersion}\n\n" +
@@ -71,18 +84,23 @@ public static class SUpdateCheckerService
                     await downloadAndInstallUpdateAsync(latestRelease);
                 }
             }
-            else if (showNoUpdateMessage)
+            else
             {
-                MessageBox.Show(
-                    $"You are using the latest version (v{currentVersion}).",
-                    "No Update Available",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                Debug.WriteLine("[UpdateChecker] Already up to date");
+                if (showNoUpdateMessage)
+                {
+                    MessageBox.Show(
+                        $"You are using the latest version (v{currentVersion}).",
+                        "No Update Available",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
             }
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Update check failed: {ex.Message}");
+            Debug.WriteLine($"[UpdateChecker] Update check failed: {ex.Message}");
+            Debug.WriteLine($"[UpdateChecker] Stack trace: {ex.StackTrace}");
             if (showNoUpdateMessage)
             {
                 MessageBox.Show(
@@ -102,12 +120,15 @@ public static class SUpdateCheckerService
         try
         {
             // Find the portable ZIP asset
+            Debug.WriteLine($"[UpdateChecker] Looking for Portable ZIP in {release.Assets?.Count ?? 0} assets");
+            
             var zipAsset = release.Assets?.FirstOrDefault(a => 
                 a.Name?.Contains("Portable", StringComparison.OrdinalIgnoreCase) == true &&
                 a.Name?.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) == true);
 
             if (zipAsset?.DownloadUrl == null)
             {
+                Debug.WriteLine("[UpdateChecker] No Portable ZIP found in release assets");
                 MessageBox.Show(
                     "Could not find the update package. Please download manually from GitHub.",
                     "Update Error",
@@ -116,6 +137,8 @@ public static class SUpdateCheckerService
                 openReleasePage();
                 return;
             }
+
+            Debug.WriteLine($"[UpdateChecker] Found asset: {zipAsset.Name} at {zipAsset.DownloadUrl}");
 
             // Create temp directory for update
             var tempDir = Path.Combine(Path.GetTempPath(), UPDATE_FOLDER_NAME);
@@ -153,11 +176,13 @@ public static class SUpdateCheckerService
             try
             {
                 // Download the ZIP file
+                Debug.WriteLine($"[UpdateChecker] Downloading from: {zipAsset.DownloadUrl}");
                 using var response = await s_httpClient.GetAsync(zipAsset.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();
 
                 await using var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None);
                 await response.Content.CopyToAsync(fileStream);
+                Debug.WriteLine($"[UpdateChecker] Download complete: {new FileInfo(zipPath).Length} bytes");
             }
             finally
             {
@@ -165,6 +190,7 @@ public static class SUpdateCheckerService
             }
 
             // Extract the ZIP
+            Debug.WriteLine($"[UpdateChecker] Extracting to: {extractPath}");
             ZipFile.ExtractToDirectory(zipPath, extractPath, true);
 
             // Get the new version from the release tag
@@ -175,6 +201,8 @@ public static class SUpdateCheckerService
             var scriptPath = Path.Combine(tempDir, UPDATER_SCRIPT_NAME);
             var scriptContent = generateUpdaterScript(extractPath, appDir, newVersion);
             await File.WriteAllTextAsync(scriptPath, scriptContent);
+
+            Debug.WriteLine($"[UpdateChecker] Launching updater script: {scriptPath}");
 
             // Launch the updater script
             var startInfo = new ProcessStartInfo
@@ -193,7 +221,7 @@ public static class SUpdateCheckerService
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Update download failed: {ex.Message}");
+            Debug.WriteLine($"[UpdateChecker] Update download failed: {ex.Message}");
             MessageBox.Show(
                 $"Failed to download update: {ex.Message}\n\nPlease download manually from GitHub.",
                 "Update Error",
@@ -212,8 +240,10 @@ public static class SUpdateCheckerService
 # Mams Auto-Updater Script
 $ErrorActionPreference = 'Stop'
 
-$sourcePath = '{sourcePath.Replace("'", "''")}
-$targetPath = '{targetPath.Replace("'", "''")}
+$sourcePath = '{sourcePath.Replace("'", "''")}'
+
+$targetPath = '{targetPath.Replace("'", "''")}'
+
 $newVersion = '{newVersion}'
 $appExe = Join-Path $targetPath 'Mams_App.exe'
 $configPath = Join-Path $targetPath 'ressources\app_config.json'
@@ -305,15 +335,21 @@ Write-Host 'Update complete!'
         try
         {
             var response = await s_httpClient.GetAsync(GITHUB_API_URL);
+            
+            Debug.WriteLine($"[UpdateChecker] GitHub API response: {response.StatusCode}");
+            
             if (!response.IsSuccessStatusCode)
             {
+                var content = await response.Content.ReadAsStringAsync();
+                Debug.WriteLine($"[UpdateChecker] GitHub API error: {content}");
                 return null;
             }
 
             return await response.Content.ReadFromJsonAsync<GitHubRelease>();
         }
-        catch
+        catch (Exception ex)
         {
+            Debug.WriteLine($"[UpdateChecker] API request failed: {ex.Message}");
             return null;
         }
     }
@@ -363,7 +399,7 @@ Write-Host 'Update complete!'
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Failed to open release page: {ex.Message}");
+            Debug.WriteLine($"[UpdateChecker] Failed to open release page: {ex.Message}");
         }
     }
 
