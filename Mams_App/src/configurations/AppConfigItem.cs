@@ -8,6 +8,12 @@ namespace Mams.src.configurations;
 public class AppConfigItem
 {
     /// <summary>
+    /// Gets or sets the application version.
+    /// </summary>
+    [JsonPropertyName("version")]
+    public string m_version { get; set; } = "1.0.0";
+
+    /// <summary>
     /// Gets or sets the window configuration settings.
     /// </summary>
     [JsonPropertyName("window")]

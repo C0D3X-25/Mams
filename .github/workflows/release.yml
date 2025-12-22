@@ -46,30 +46,14 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore Mams_App/Mams_App.csproj
 
-    - name: Build and publish application
+    - name: Update version in app_config.json
       shell: pwsh
       run: |
-        $version = "${{ steps.version.outputs.VERSION }}"
-        
-        # Build the application
-        dotnet publish Mams_App/Mams_App.csproj `
-          -c Release `
-          -r win-x64 `
-          --self-contained true `
-          -p:PublishSingleFile=false `
-          -p:UseAppHost=true `
-          -p:Version=$version `
-          -p:PublishDir="${{ github.workspace }}/publish/"
-
-    - name: Create release directory
-      shell: pwsh
-      run: |
-        New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/release"
-
-    - name: Create ClickOnce ZIP archive
-      shell: pwsh
-      run: |
-        Compress-Archive -Path "${{ github.workspace }}/publish/*" -DestinationPath "${{ github.workspace }}/release/Mams_v${{ steps.version.outputs.VERSION }}_ClickOnce.zip"
+        $configPath = "Mams_App/ressources/app_config.json"
+        $config = Get-Content $configPath -Raw | ConvertFrom-Json
+        $config.version = "${{ steps.version.outputs.VERSION }}"
+        $config | ConvertTo-Json -Depth 10 | Set-Content $configPath -Encoding UTF8
+        Write-Host "Updated app_config.json version to ${{ steps.version.outputs.VERSION }}"
 
     - name: Publish portable application
       shell: pwsh
@@ -82,6 +66,11 @@ jobs:
           -p:UseAppHost=true `
           -p:Version=${{ steps.version.outputs.VERSION }} `
           -p:PublishDir=${{ github.workspace }}/portable
+
+    - name: Create release directory
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/release"
 
     - name: Create portable ZIP archive
       shell: pwsh
@@ -106,19 +95,17 @@ jobs:
         body: |
           ## Mams v${{ steps.version.outputs.VERSION }}
           
-          ### Installation Options
+          ### Installation
           
-          **Application ZIP (Recommended):**
-          - Download `Mams_v${{ steps.version.outputs.VERSION }}_ClickOnce.zip`
-          - Extract to any folder
-          - Run `Mams_App.exe`
-          
-          **Portable Version:**
+          **Download and Install:**
           - Download `Mams_v${{ steps.version.outputs.VERSION }}_Portable.zip`
           - Extract to any folder
           - Run `Mams_App.exe`
           
           > ?? **First-time run:** Windows SmartScreen may show a warning. Click "More info" ? "Run anyway"
+          
+          ### Auto-Update
+          The application will automatically check for updates on startup and offer to download and install new versions.
           
           ### Requirements
           - Windows 10 or later (64-bit)
