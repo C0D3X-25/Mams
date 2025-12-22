@@ -7,6 +7,30 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>ressources\app_icon.ico</ApplicationIcon>
+    
+    <!-- ClickOnce Application Settings -->
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.*</ApplicationVersion>
+    <Product>Mams</Product>
+    <PublisherName>ThJo</PublisherName>
+  </PropertyGroup>
+
+  <!-- ClickOnce Publish Settings (only apply during publish) -->
+  <PropertyGroup Condition="'$(PublishProtocol)' == 'ClickOnce'">
+    <PublishDir>publish\</PublishDir>
+    <InstallMode>SelfContained</InstallMode>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <Install>true</Install>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
   </PropertyGroup>
 
   <ItemGroup>
