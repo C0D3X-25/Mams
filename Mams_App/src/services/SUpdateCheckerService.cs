@@ -345,6 +345,35 @@ while ($waited -lt $maxWait) {{
     $waited++
 }}
 
+# Also wait for any mysqld process from our installation to stop
+Write-Host 'Waiting for MariaDB to stop...'
+$mariaDbPath = Join-Path $targetPath 'mariadb\bin\mysqld.exe'
+$maxWait = 15
+$waited = 0
+while ($waited -lt $maxWait) {{
+    $mysqldProcesses = Get-Process -Name 'mysqld' -ErrorAction SilentlyContinue
+    $ourProcess = $false
+    foreach ($proc in $mysqldProcesses) {{
+        try {{
+            if ($proc.Path -eq $mariaDbPath) {{
+                $ourProcess = $true
+                break
+            }}
+        }} catch {{ }}
+    }}
+    if (-not $ourProcess) {{
+        break
+    }}
+    Start-Sleep -Seconds 1
+    $waited++
+}}
+
+# Files and folders to skip during update (preserve user data)
+$skipPatterns = @(
+    'ressources\app_config.json',
+    'mariadb\*'
+)
+
 # Copy all files from source to target (overwrite)
 Write-Host 'Copying update files...'
 $files = Get-ChildItem -Path $sourcePath -Recurse -File
@@ -353,14 +382,25 @@ foreach ($file in $files) {{
     $destPath = Join-Path $targetPath $relativePath
     $destDir = Split-Path $destPath -Parent
     
+    # Check if this file should be skipped
+    $skip = $false
+    foreach ($pattern in $skipPatterns) {{
+        if ($relativePath -like $pattern) {{
+            $skip = $true
+            Write-Host ""Skipping: $relativePath""
+            break
+        }}
+    }}
+    
+    if ($skip) {{
+        continue
+    }}
+    
     if (-not (Test-Path $destDir)) {{
         New-Item -ItemType Directory -Path $destDir -Force | Out-Null
     }}
     
-    # Skip the config file to preserve user settings
-    if ($relativePath -ne 'ressources\app_config.json') {{
-        Copy-Item -Path $file.FullName -Destination $destPath -Force
-    }}
+    Copy-Item -Path $file.FullName -Destination $destPath -Force
 }}
 
 # Update version in config file

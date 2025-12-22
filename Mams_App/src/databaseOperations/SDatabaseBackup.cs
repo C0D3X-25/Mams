@@ -1,17 +1,20 @@
 ﻿using MySqlConnector;
+using System.Diagnostics;
 using System.IO;
 
 namespace Mams.src.databaseOperations;
 
 public static class SDatabaseBackup 
 {
-    private static string destination_path = "C:\\MySqlBackup\\";
+    private static readonly string destination_path = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "Mams", "Backups");
 
     /// <summary>
     /// Create a backup (a dump) of the current database.
     /// </summary>
-    /// <remarks>Create a backup only if the same file name is not present in the folder.
-    /// The file name is the backup_dd_MM_yyyy.sql</remarks>
+    /// <remarks>Create a backup with timestamp including hours and minutes.
+    /// The file name is backup_dd_MM_yyyy_HH_mm.sql</remarks>
     /// <param name="connection">An open connection of type <see cref="MySqlConnection"/></param>
     /// <exception cref="InvalidOperationException"></exception>
     public static void createBackup(MySqlConnection connection)
@@ -21,18 +24,28 @@ public static class SDatabaseBackup
             throw new InvalidOperationException("Database connection is not established or is closed.");
         }
 
-        if (isBackupDoneToday())
+        try
         {
-            return;
-        }
+            // Ensure the backup directory exists
+            ensureBackupDirectoryExists();
 
-        using (MySqlCommand cmd = new MySqlCommand())
-        {
-            using (MySqlBackup mb = new MySqlBackup(cmd))
+            var backupPath = getTimestampedBackupPath();
+
+            using (MySqlCommand cmd = new MySqlCommand())
             {
-                cmd.Connection = connection;
-                mb.ExportToFile(getTodayDateBackupPath());
+                using (MySqlBackup mb = new MySqlBackup(cmd))
+                {
+                    cmd.Connection = connection;
+                    mb.ExportToFile(backupPath);
+                }
             }
+
+            Debug.WriteLine($"[SDatabaseBackup] Backup created successfully: {backupPath}");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[SDatabaseBackup] Failed to create backup: {ex.Message}");
+            // Don't throw - backup failure shouldn't prevent app from starting/closing
         }
     }
 
@@ -60,25 +73,31 @@ public static class SDatabaseBackup
     }
 
     /// <summary>
-    /// Builds the path for the backup file based on today's date.
+    /// Ensures the backup directory exists, creating it if necessary.
     /// </summary>
-    /// <returns></returns>
-    private static string getTodayDateBackupPath()
+    private static void ensureBackupDirectoryExists()
     {
-        string today_year = DateTime.Now.Year.ToString();
-        string today_month = DateTime.Now.Month.ToString();
-        string today_day = DateTime.Now.Day.ToString();
-        string destination_file = "backup_" + today_day + "_" + today_month + "_" + today_year + ".sql";
-
-        return destination_path + destination_file;
+        if (!Directory.Exists(destination_path))
+        {
+            Directory.CreateDirectory(destination_path);
+            Debug.WriteLine($"[SDatabaseBackup] Created backup directory: {destination_path}");
+        }
     }
 
     /// <summary>
-    /// Checks if a backup has already been done today.
+    /// Builds the path for the backup file with full timestamp (date + time).
     /// </summary>
-    /// <returns></returns>
-    private static bool isBackupDoneToday() 
+    /// <returns>Full path to the backup file with format backup_dd_MM_yyyy_HH_mm.sql</returns>
+    private static string getTimestampedBackupPath()
     {
-        return File.Exists(getTodayDateBackupPath());
+        string timestamp = DateTime.Now.ToString("dd_MM_yyyy_HH_mm");
+        string destination_file = $"backup_{timestamp}.sql";
+
+        return Path.Combine(destination_path, destination_file);
     }
+
+    /// <summary>
+    /// Gets the backup directory path.
+    /// </summary>
+    public static string BackupDirectoryPath => destination_path;
 }

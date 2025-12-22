@@ -226,7 +226,7 @@ public static class SMariaDbPortableService
     /// </summary>
     private static async Task<bool> downloadAndExtractMariaDbAsync()
     {
-        var tempZipPath = Path.Combine(Path.GetTempPath(), "mariadb-portable.zip");
+        var tempZipPath = Path.Combine(Path.GetTempPath(), $"mariadb-portable-{Guid.NewGuid()}.zip");
 
         // Create progress window
         var progressWindow = new Window
@@ -281,52 +281,52 @@ public static class SMariaDbPortableService
             Debug.WriteLine($"[MariaDbPortable] Downloading from: {MARIADB_DOWNLOAD_URL}");
             statusText.Text = "Downloading MariaDB...";
 
-            using var response = await s_httpClient.GetAsync(MARIADB_DOWNLOAD_URL, HttpCompletionOption.ResponseHeadersRead);
-            response.EnsureSuccessStatusCode();
-
-            var totalBytes = response.Content.Headers.ContentLength ?? -1;
-            var canReportProgress = totalBytes > 0;
-
-            await using var contentStream = await response.Content.ReadAsStreamAsync();
-            await using var fileStream = new FileStream(tempZipPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
-
-            var buffer = new byte[8192];
-            long downloadedBytes = 0;
-            int bytesRead;
-
-            while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
+            using (var response = await s_httpClient.GetAsync(MARIADB_DOWNLOAD_URL, HttpCompletionOption.ResponseHeadersRead))
             {
-                await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
-                downloadedBytes += bytesRead;
+                response.EnsureSuccessStatusCode();
 
-                if (canReportProgress)
+                var totalBytes = response.Content.Headers.ContentLength ?? -1;
+                var canReportProgress = totalBytes > 0;
+
+                using (var contentStream = await response.Content.ReadAsStreamAsync())
+                using (var fileStream = new FileStream(tempZipPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
                 {
-                    var percentage = (double)downloadedBytes / totalBytes * 100;
-                    progressBar.Value = percentage;
-                    progressText.Text = $"{percentage:F1}% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
-                }
-                else
-                {
-                    progressText.Text = $"Downloaded: {formatBytes(downloadedBytes)}";
-                    progressBar.IsIndeterminate = true;
+                    var buffer = new byte[8192];
+                    long downloadedBytes = 0;
+                    int bytesRead;
+
+                    while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
+                    {
+                        await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+                        downloadedBytes += bytesRead;
+
+                        if (canReportProgress)
+                        {
+                            var percentage = (double)downloadedBytes / totalBytes * 100;
+                            progressBar.Value = percentage;
+                            progressText.Text = $"{percentage:F1}% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
+                        }
+                        else
+                        {
+                            progressText.Text = $"Downloaded: {formatBytes(downloadedBytes)}";
+                            progressBar.IsIndeterminate = true;
+                        }
+
+                        await Task.Delay(1); // Allow UI to update
+                    }
                 }
 
-                await Task.Delay(1); // Allow UI to update
+                Debug.WriteLine($"[MariaDbPortable] Download complete");
             }
 
-            Debug.WriteLine($"[MariaDbPortable] Download complete: {downloadedBytes} bytes");
-
-            // Extract phase
+            // Extract phase - file stream is now closed
             statusText.Text = "Extracting MariaDB...";
             progressBar.IsIndeterminate = true;
             progressText.Text = "Please wait...";
             await Task.Delay(100);
 
-            // Close the file stream before extracting
-            await fileStream.DisposeAsync();
-
             // Extract to temp location first
-            var tempExtractPath = Path.Combine(Path.GetTempPath(), "mariadb-extract");
+            var tempExtractPath = Path.Combine(Path.GetTempPath(), $"mariadb-extract-{Guid.NewGuid()}");
             if (Directory.Exists(tempExtractPath))
             {
                 Directory.Delete(tempExtractPath, true);
@@ -354,8 +354,15 @@ public static class SMariaDbPortableService
             Directory.Move(sourcePath, MariaDbPath);
 
             // Cleanup
-            File.Delete(tempZipPath);
-            Directory.Delete(tempExtractPath, true);
+            try
+            {
+                File.Delete(tempZipPath);
+                Directory.Delete(tempExtractPath, true);
+            }
+            catch (Exception cleanupEx)
+            {
+                Debug.WriteLine($"[MariaDbPortable] Cleanup warning: {cleanupEx.Message}");
+            }
 
             Debug.WriteLine("[MariaDbPortable] Installation complete");
             return true;
@@ -363,6 +370,15 @@ public static class SMariaDbPortableService
         catch (Exception ex)
         {
             Debug.WriteLine($"[MariaDbPortable] Download/extract failed: {ex.Message}");
+            
+            // Try to cleanup on failure
+            try
+            {
+                if (File.Exists(tempZipPath))
+                    File.Delete(tempZipPath);
+            }
+            catch { }
+            
             return false;
         }
         finally
@@ -434,9 +450,19 @@ public static class SMariaDbPortableService
     {
         try
         {
+            // Check if we already have a tracked process running
             if (s_mariaDbProcess != null && !s_mariaDbProcess.HasExited)
             {
-                Debug.WriteLine("[MariaDbPortable] MariaDB process is already running");
+                Debug.WriteLine("[MariaDbPortable] MariaDB process is already running (tracked)");
+                return true;
+            }
+
+            // Check if MariaDB is already running (from previous app instance or update)
+            if (isRunning())
+            {
+                Debug.WriteLine("[MariaDbPortable] MariaDB is already running on our port (external/previous instance)");
+                // Try to find and track the existing process
+                tryAttachToExistingProcess();
                 return true;
             }
 
@@ -479,17 +505,53 @@ public static class SMariaDbPortableService
     }
 
     /// <summary>
+    /// Tries to find and attach to an existing mysqld process running from our installation.
+    /// </summary>
+    private static void tryAttachToExistingProcess()
+    {
+        try
+        {
+            var mysqldPath = Path.Combine(MariaDbBinPath, "mysqld.exe");
+            var processes = Process.GetProcessesByName("mysqld");
+            
+            foreach (var proc in processes)
+            {
+                try
+                {
+                    // Check if this process is from our MariaDB installation
+                    if (proc.MainModule?.FileName?.Equals(mysqldPath, StringComparison.OrdinalIgnoreCase) == true)
+                    {
+                        s_mariaDbProcess = proc;
+                        Debug.WriteLine($"[MariaDbPortable] Attached to existing mysqld process PID: {proc.Id}");
+                        return;
+                    }
+                }
+                catch
+                {
+                    // Can't access MainModule for some processes, skip them
+                }
+            }
+            
+            Debug.WriteLine("[MariaDbPortable] Could not find matching mysqld process to attach");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[MariaDbPortable] Error finding existing process: {ex.Message}");
+        }
+    }
+
+    /// <summary>
     /// Stops the MariaDB server process.
     /// </summary>
     public static void stopMariaDb()
     {
         try
         {
-            if (s_mariaDbProcess != null && !s_mariaDbProcess.HasExited)
+            // First, try to stop using mysqladmin (works even if we don't have process reference)
+            if (isRunning())
             {
-                Debug.WriteLine("[MariaDbPortable] Stopping MariaDB...");
-
-                // Try graceful shutdown first using mysqladmin
+                Debug.WriteLine("[MariaDbPortable] Stopping MariaDB via mysqladmin...");
+                
                 var mysqladmin = Path.Combine(MariaDbBinPath, "mysqladmin.exe");
                 if (File.Exists(mysqladmin))
                 {
@@ -503,20 +565,29 @@ public static class SMariaDbPortableService
 
                     using var shutdownProcess = Process.Start(shutdownInfo);
                     shutdownProcess?.WaitForExit(10000);
+                    
+                    // Wait a bit for shutdown to complete
+                    System.Threading.Thread.Sleep(2000);
                 }
+            }
 
-                // Wait for process to exit
-                if (!s_mariaDbProcess.WaitForExit(5000))
+            // If we have a tracked process, ensure it's stopped
+            if (s_mariaDbProcess != null)
+            {
+                if (!s_mariaDbProcess.HasExited)
                 {
-                    Debug.WriteLine("[MariaDbPortable] Forcing MariaDB shutdown...");
-                    s_mariaDbProcess.Kill();
+                    Debug.WriteLine("[MariaDbPortable] Forcing tracked process to stop...");
+                    if (!s_mariaDbProcess.WaitForExit(3000))
+                    {
+                        s_mariaDbProcess.Kill();
+                    }
                 }
 
                 s_mariaDbProcess.Dispose();
                 s_mariaDbProcess = null;
-
-                Debug.WriteLine("[MariaDbPortable] MariaDB stopped");
             }
+
+            Debug.WriteLine("[MariaDbPortable] MariaDB stopped");
         }
         catch (Exception ex)
         {
