@@ -1,23 +1,22 @@
 # Mams Installer
 
-This folder contains legacy Inno Setup files. The application now uses **ClickOnce deployment** with auto-updates via GitHub Releases.
+This folder contains legacy Inno Setup files. The application is now distributed as a **self-contained ZIP** via GitHub Releases.
 
-## ClickOnce Deployment
+## Distribution Method
 
-ClickOnce provides automatic updates - when users launch the app, it checks GitHub Releases for new versions and updates automatically.
+The application is published as a **self-contained .NET application** - no .NET runtime installation required on the user's machine.
 
 ### How It Works
 
 ```
-???????????????????     1. Check for updates    ????????????????????
-?   Mams App      ? ?????????????????????????????  GitHub Releases ?
-?   (on launch)   ?                             ?                  ?
-?                 ????????????????????????????? ?  Latest version  ?
-???????????????????     2. Download if newer    ????????????????????
+???????????????????     Download ZIP      ????????????????????
+?   User          ? ???????????????????????  GitHub Releases ?
+?                 ?                       ?                  ?
+???????????????????                       ????????????????????
          ?
          ?
-   3. Install update
-      & restart
+   Extract & Run
+   Mams_App.exe
 ```
 
 ## Creating a Release
@@ -33,10 +32,9 @@ git push origin v1.0.0
 ```
 
 This will automatically:
-1. Build the ClickOnce application
-2. Create the installer files
-3. Create a portable ZIP file
-4. Publish a GitHub release with all files
+1. Build the application (self-contained, win-x64)
+2. Create ZIP archives
+3. Publish a GitHub release with the files
 
 ### Option 2: Manual Workflow Dispatch
 
@@ -49,74 +47,39 @@ This will automatically:
 
 ## Local Build
 
-To build the ClickOnce installer locally:
-
-### Using Visual Studio
-
-1. Right-click on `Mams_App` project
-2. Select **Publish**
-3. Create a new ClickOnce profile or use existing
-4. Click **Publish**
-
-### Using Command Line
+To build the application locally:
 
 ```powershell
 dotnet publish Mams_App/Mams_App.csproj `
   -c Release `
-  -p:PublishProfile=ClickOnceProfile `
-  -p:ApplicationVersion=1.0.0.0
+  -r win-x64 `
+  --self-contained true `
+  -p:PublishSingleFile=false `
+  -p:UseAppHost=true `
+  -p:Version=1.0.0
 ```
 
-The ClickOnce files will be created in `Mams_App/publish/`.
+The files will be created in `Mams_App/bin/Release/net10.0-windows/win-x64/publish/`.
 
-## What Gets Installed
+## What Gets Distributed
 
 - Main application executable (self-contained, no .NET required)
 - All required resources and dependencies
-- Start Menu shortcut
-- Desktop shortcut
-- Automatic update capability
-- Clean uninstall via Control Panel
+- Ready to run after extraction
 
 ## Installation Instructions for End Users
 
-### First-time Installation
-
-1. Download `Mams_App.application` from the latest GitHub Release
-2. Double-click to install
-3. If Windows SmartScreen appears:
+1. Download `Mams_vX.X.X_Portable.zip` from the latest GitHub Release
+2. Extract to any folder
+3. Run `Mams_App.exe`
+4. If Windows SmartScreen appears:
    - Click "More info"
    - Click "Run anyway"
-4. The app installs and creates shortcuts
-
-### Updates
-
-Updates are **automatic**! When you launch Mams:
-- It checks GitHub for new versions
-- If found, downloads and installs automatically
-- You'll always have the latest version
-
-### Uninstalling
-
-1. Open **Settings** ? **Apps** ? **Installed Apps**
-2. Search for "Mams"
-3. Click **Uninstall**
-
-Or use **Control Panel** ? **Programs and Features**
 
 ## Requirements for End Users
 
 - Windows 10 or later (64-bit)
 - No additional software required (runtime is bundled)
-- Internet connection for auto-updates
-
-## Troubleshooting
-
-### "Windows protected your PC" (SmartScreen)
-This appears because the app isn't signed with a paid certificate. Click "More info" ? "Run anyway".
-
-### Updates not working
-Ensure you have internet access. The app checks `https://github.com/C0D3X-25/Mams/releases/latest/download/` for updates.
 
 ## Legacy Files
 

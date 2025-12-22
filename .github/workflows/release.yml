@@ -11,6 +11,10 @@ on:
         required: true
         default: '1.0.0'
 
+# Required permissions for creating releases
+permissions:
+  contents: write
+
 env:
   GITHUB_REPO: C0D3X-25/Mams
 
@@ -42,65 +46,30 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore Mams_App/Mams_App.csproj
 
-    - name: Publish ClickOnce application
+    - name: Build and publish application
       shell: pwsh
       run: |
         $version = "${{ steps.version.outputs.VERSION }}"
-        $updateUrl = "https://github.com/${{ env.GITHUB_REPO }}/releases/latest/download/"
         
+        # Build the application
         dotnet publish Mams_App/Mams_App.csproj `
           -c Release `
-          -p:PublishProfile=ClickOnceProfile `
-          -p:ApplicationVersion=$version.0 `
-          -p:PublishUrl=$updateUrl `
-          -p:InstallUrl=$updateUrl `
-          -p:UpdateUrl=$updateUrl `
+          -r win-x64 `
+          --self-contained true `
+          -p:PublishSingleFile=false `
+          -p:UseAppHost=true `
+          -p:Version=$version `
           -p:PublishDir="${{ github.workspace }}/publish/"
 
-    - name: Create setup.exe bootstrapper
+    - name: Create release directory
       shell: pwsh
       run: |
-        # Create a simple PowerShell installer script that users can run
-        $installerScript = @'
-        # Mams Installer Script
-        $ErrorActionPreference = "Stop"
-        
-        Write-Host "Downloading Mams..." -ForegroundColor Cyan
-        $appUrl = "https://github.com/${{ env.GITHUB_REPO }}/releases/latest/download/Mams_App.application"
-        $tempPath = "$env:TEMP\Mams_App.application"
-        
-        Invoke-WebRequest -Uri $appUrl -OutFile $tempPath
-        
-        Write-Host "Launching installer..." -ForegroundColor Cyan
-        Start-Process $tempPath
-        
-        Write-Host "Installation started!" -ForegroundColor Green
-        '@
-        
-        $installerScript | Out-File -FilePath "${{ github.workspace }}/Install-Mams.ps1" -Encoding UTF8
+        New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/release"
 
-    - name: Prepare ClickOnce files for release
-      id: clickonce
+    - name: Create ClickOnce ZIP archive
       shell: pwsh
       run: |
-        $publishDir = "${{ github.workspace }}/publish"
-        $releaseDir = "${{ github.workspace }}/release"
-        
-        New-Item -ItemType Directory -Force -Path $releaseDir
-        
-        # Copy the .application manifest (main entry point)
-        $appManifest = Get-ChildItem -Path $publishDir -Filter "*.application" -Recurse | Select-Object -First 1
-        if ($appManifest) {
-          Copy-Item $appManifest.FullName -Destination $releaseDir
-          echo "APP_MANIFEST=$($appManifest.Name)" >> $env:GITHUB_OUTPUT
-        }
-        
-        # Create ZIP of all ClickOnce files
-        Compress-Archive -Path "$publishDir/*" -DestinationPath "$releaseDir/Mams_v${{ steps.version.outputs.VERSION }}_ClickOnce.zip"
-        
-        # List what we're publishing
-        Write-Host "Files to release:"
-        Get-ChildItem $releaseDir | ForEach-Object { Write-Host "  - $($_.Name)" }
+        Compress-Archive -Path "${{ github.workspace }}/publish/*" -DestinationPath "${{ github.workspace }}/release/Mams_v${{ steps.version.outputs.VERSION }}_ClickOnce.zip"
 
     - name: Publish portable application
       shell: pwsh
@@ -111,7 +80,6 @@ jobs:
           --self-contained true `
           -p:PublishSingleFile=false `
           -p:UseAppHost=true `
-          -p:PublishProtocol= `
           -p:Version=${{ steps.version.outputs.VERSION }} `
           -p:PublishDir=${{ github.workspace }}/portable
 
@@ -119,6 +87,12 @@ jobs:
       shell: pwsh
       run: |
         Compress-Archive -Path ./portable/* -DestinationPath ./release/Mams_v${{ steps.version.outputs.VERSION }}_Portable.zip
+
+    - name: List release files
+      shell: pwsh
+      run: |
+        Write-Host "Files to release:"
+        Get-ChildItem "${{ github.workspace }}/release" | ForEach-Object { Write-Host "  - $($_.Name)" }
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
@@ -129,30 +103,22 @@ jobs:
         prerelease: false
         files: |
           ./release/*
-          ./publish/*.application
-          ./publish/Application Files/**/*
-          ./Install-Mams.ps1
         body: |
           ## Mams v${{ steps.version.outputs.VERSION }}
           
           ### Installation Options
           
-          **ClickOnce Installer (Recommended - Auto-Updates!):**
-          1. Download `Mams_App.application`
-          2. Double-click to install
-          3. The app will automatically check for updates on each launch
+          **Application ZIP (Recommended):**
+          - Download `Mams_v${{ steps.version.outputs.VERSION }}_ClickOnce.zip`
+          - Extract to any folder
+          - Run `Mams_App.exe`
           
-          > ?? **First-time install:** Windows SmartScreen may show a warning. Click "More info" ? "Run anyway"
-          
-          **Portable Version (No Install):**
+          **Portable Version:**
           - Download `Mams_v${{ steps.version.outputs.VERSION }}_Portable.zip`
           - Extract to any folder
           - Run `Mams_App.exe`
-          - Note: Portable version does NOT auto-update
           
-          ### Auto-Update
-          The ClickOnce version automatically checks for updates when you launch the app. 
-          Updates are downloaded and installed seamlessly.
+          > ?? **First-time run:** Windows SmartScreen may show a warning. Click "More info" ? "Run anyway"
           
           ### Requirements
           - Windows 10 or later (64-bit)
