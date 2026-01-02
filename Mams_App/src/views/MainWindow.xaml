@@ -7,9 +7,23 @@
         xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
         mc:Ignorable="d"
         Title="Mams" 
-        Height="800" Width="1224" 
-        MinHeight="1000" MinWidth="1224">
+        Height="700" Width="1224" 
+        MinHeight="600" MinWidth="1224">
 
-    <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" 
-    ></Frame>
+    <DockPanel>
+        <!-- Menu Bar -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Settings" Click="MenuItem_Settings_Click"/>
+                <Separator/>
+                <MenuItem Header="E_xit" Click="MenuItem_Exit_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About" Click="MenuItem_About_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Main Content -->
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+    </DockPanel>
 </Window>

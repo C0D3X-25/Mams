@@ -57,7 +57,7 @@
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <NoWarn>$(NoWarn);NU1702</NoWarn>
     <EntryPointProjectUniqueName>..\Mams_App\Mams_App.csproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>E788C8977B0F071A901F454DEE2A39422B3DA5D6</PackageCertificateThumbprint>
+    <!--<PackageCertificateThumbprint>E788C8977B0F071A901F454DEE2A39422B3DA5D6</PackageCertificateThumbprint>-->
   </PropertyGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

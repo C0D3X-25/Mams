@@ -2,6 +2,7 @@
 using Mams.src.configurations;
 using Mams.src.search;
 using Mams.src.services;
+using Mams.src.settings;
 using System.Windows;
 
 namespace Mams.src.views;
@@ -30,6 +31,38 @@ public partial class MainWindow : Window {
         // Check for updates silently (no message if already up to date)
         await SUpdateCheckerService.checkForUpdatesAsync(showNoUpdateMessage: false);
     }
+
+    #region Menu Event Handlers
+
+    /// <summary>
+    /// Opens the Settings window.
+    /// </summary>
+    private void MenuItem_Settings_Click(object sender, RoutedEventArgs e)
+    {
+        SettingsWindow.ShowSettings(this);
+    }
+
+    /// <summary>
+    /// Exits the application.
+    /// </summary>
+    private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
+    /// <summary>
+    /// Shows the About dialog.
+    /// </summary>
+    private void MenuItem_About_Click(object sender, RoutedEventArgs e)
+    {
+        MessageBox.Show(
+            "Mams Application\n\nVersion 1.0.0\n\nDatabase management and backup system.",
+            "About Mams",
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
+    }
+
+    #endregion
 
     /// <summary>
     /// Loads window position and size from the configuration file.

@@ -5,57 +5,37 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Mams.src.views.UserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="100" d:DesignWidth="1224"
+             d:DesignHeight="50" d:DesignWidth="1224"
              x:Name="root">
 
     <!--Header-->
-    <Grid Grid.Row="0" Background="{Binding m_page_top_color}">
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
+    <Grid Background="{Binding m_page_top_color}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+
+        <!--Home Button-->
+        <Button 
+            Content="Home" 
+            Grid.Column="0" 
+            Margin="10,5,10,5" 
+            VerticalAlignment="Center" 
+            HorizontalAlignment="Left" 
+            MinHeight="40" MinWidth="40"
+            FontSize="12" FontWeight="Bold"
+            Background="{Binding m_button_background_color}"
+            Foreground="{Binding m_button_text_color}"
+            Command="{Binding m_navigate_homepage_command}">
+        </Button>
 
         <!--Title-->
         <Label
+            Grid.Column="1"
             Content="{Binding title, ElementName=root}" 
             FontSize="25" FontWeight="Bold"
             HorizontalAlignment="Center" VerticalAlignment="Center" 
-            Foreground="{Binding m_page_title_color}"
-        ></Label>
-
-        <!--Header Menu-->
-        <Grid Grid.Row="1" Background="{Binding m_page_bot_color}">
-            <Grid.RowDefinitions>
-                <RowDefinition/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-
-            <!--Home Menu-->
-            <Grid Grid.Row="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Button 
-                    Content="Home" 
-                    Grid.Column="0" Margin="10,0,0,0" 
-                    VerticalAlignment="Center" HorizontalAlignment="Left" 
-                    MinHeight="40" MinWidth="40"
-                    FontSize="12" FontWeight="Bold"
-                    Background="{Binding m_button_background_color}"
-                    Foreground="{Binding m_button_text_color}"
-                    Command="{Binding m_navigate_homepage_command}">
-                </Button>
-            </Grid>
-        </Grid>
+            Foreground="{Binding m_page_title_color}">
+        </Label>
     </Grid>
 </UserControl>

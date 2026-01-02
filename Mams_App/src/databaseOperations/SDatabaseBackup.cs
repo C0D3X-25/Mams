@@ -50,10 +50,66 @@ public static class SDatabaseBackup
     }
 
     /// <summary>
+    /// Restores the database from the specified backup file.
+    /// </summary>
+    /// <param name="connection">An open connection of type <see cref="MySqlConnection"/></param>
+    /// <param name="backupFilePath">Full path to the backup file to restore</param>
+    /// <exception cref="InvalidOperationException">Thrown when connection is not open</exception>
+    /// <exception cref="FileNotFoundException">Thrown when backup file doesn't exist</exception>
+    public static void restoreBackup(MySqlConnection connection, string backupFilePath)
+    {
+        if (connection == null || connection.State != System.Data.ConnectionState.Open)
+        {
+            throw new InvalidOperationException("Database connection is not established or is closed.");
+        }
+
+        if (!File.Exists(backupFilePath))
+        {
+            throw new FileNotFoundException("Backup file not found.", backupFilePath);
+        }
+
+        using (MySqlCommand cmd = new MySqlCommand())
+        {
+            using (MySqlBackup mb = new MySqlBackup(cmd))
+            {
+                cmd.Connection = connection;
+                mb.ImportFromFile(backupFilePath);
+            }
+        }
+
+        Debug.WriteLine($"[SDatabaseBackup] Backup restored successfully from: {backupFilePath}");
+    }
+
+    /// <summary>
+    /// Gets a list of all available backup files, ordered by date (newest first).
+    /// </summary>
+    /// <returns>Array of FileInfo objects representing available backups</returns>
+    public static FileInfo[] getAvailableBackups()
+    {
+        ensureBackupDirectoryExists();
+
+        var directory = new DirectoryInfo(destination_path);
+        return directory.GetFiles("backup_*.sql")
+                        .OrderByDescending(f => f.LastWriteTime)
+                        .ToArray();
+    }
+
+    /// <summary>
+    /// Gets the most recent backup file path, or null if no backups exist.
+    /// </summary>
+    /// <returns>Full path to the most recent backup, or null if none exists</returns>
+    public static string? getLatestBackupPath()
+    {
+        var backups = getAvailableBackups();
+        return backups.Length > 0 ? backups[0].FullName : null;
+    }
+
+    /// <summary>
     /// Not implemented yet.
     /// </summary>
     /// <param name="connection"></param>
     /// <exception cref="InvalidOperationException"></exception>
+    [Obsolete("Use restoreBackup(MySqlConnection connection, string backupFilePath) instead")]
     public static void restoreBackup(MySqlConnection connection)
     {
         if (connection == null || connection.State != System.Data.ConnectionState.Open)
