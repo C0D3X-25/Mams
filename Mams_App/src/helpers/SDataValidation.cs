@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Mams_App.src.globals;
 
 namespace Mams_App.src.helpers;
@@ -10,7 +5,8 @@ namespace Mams_App.src.helpers;
 /// <summary>
 /// Provides utility methods for validating data information.
 /// </summary>
-public static class SDataValidation {
+public static class SDataValidation 
+{
 
     /// <summary>
     /// Determines whether the specified string represents a valid identifier for insert or update operations.
@@ -22,15 +18,19 @@ public static class SDataValidation {
     /// <param name="id">The string to evaluate as an identifier.</param>
     /// <returns><see langword="true"/> if the string is a valid non-negative integer identifier; otherwise, <see
     /// langword="false"/>. </returns>
-    public static bool isIdValid(string id) {
+    public static bool isIdValid(string id) 
+    {
 
-        if (string.IsNullOrEmpty(id)) {
+        if (string.IsNullOrEmpty(id)) 
+        {
             return false;
         }
-        if (!isInteger(id)) {
+        if (!isInteger(id))
+        {
             return false;
         }
-        if (Convert.ToInt64(id) < 0) {
+        if (Convert.ToInt64(id) < 0) 
+        {
             return false;
         }
         return true;
@@ -44,15 +44,19 @@ public static class SDataValidation {
     /// <param name="id">The string to evaluate as an identifier.</param>
     /// <returns><see langword="true"/> if the string is a valid positive integer identifier; otherwise, <see
     /// langword="false"/>. </returns>
-    public static bool isIdValidForRetrieval(string id) {
+    public static bool isIdValidForRetrieval(string id)
+    {
 
-        if (string.IsNullOrEmpty(id)) {
+        if (string.IsNullOrEmpty(id))
+        {
             return false;
         }
-        if (!isInteger(id)) {
+        if (!isInteger(id))
+        {
             return false;
         }
-        if (Convert.ToInt64(id) <= 0) {
+        if (Convert.ToInt64(id) <= 0) 
+        {
             return false;
         }
         return true;
@@ -69,10 +73,12 @@ public static class SDataValidation {
     /// langword="false"/>. </returns>
     public static bool isIdValid(int? id) {
 
-        if (id == null) {
+        if (id == null)
+        {
             return false;
         }
-        if (id < 0) {
+        if (id < 0)
+        {
             return false;
         }
         return true;
@@ -88,10 +94,12 @@ public static class SDataValidation {
     /// langword="false"/>. </returns>
     public static bool isIdValidForRetrieval(int? id) {
 
-        if (id == null) {
+        if (id == null)
+        {
             return false;
         }
-        if (id <= 0) {
+        if (id <= 0) 
+        {
             return false;
         }
         return true;
@@ -105,12 +113,15 @@ public static class SDataValidation {
     /// <param name="value">The string to evaluate.</param>
     /// <returns><see langword="true"/> if the string can be successfully converted to an integer;  otherwise, <see
     /// langword="false"/>. </returns>
-    public static bool isInteger(string value) {
-        try {
+    public static bool isInteger(string value) 
+    {
+        try
+        {
             Convert.ToInt64(value);
             return true;
         }
-        catch {
+        catch 
+        {
             return false;
         }
     }
@@ -122,12 +133,15 @@ public static class SDataValidation {
     /// returns <see langword="false"/> for null, empty, or non-numeric strings.</remarks>
     /// <param name="value">The string to evaluate.</param>
     /// <returns><see langword="true"/> if the string represents a positive integer;  otherwise, <see langword="false"/>. </returns>
-    public static bool isPositiveInteger(string value) {
-        try {
+    public static bool isPositiveInteger(string value)
+    {
+        try 
+        {
             Convert.ToUInt64(value);
             return true;
         }
-        catch {
+        catch 
+        {
             return false;
         }
     }
@@ -141,7 +155,8 @@ public static class SDataValidation {
     /// <returns>
     /// <see langword="true"/> if the year is within the range; otherwise, <see langword="false"/>.
     /// </returns>
-    public static bool isYearInRange(int year, int min = 0, int max = 0) {
+    public static bool isYearInRange(int year, int min = 0, int max = 0) 
+    {
         if (year < 1900
             || min < 0
             || max < 0) 
@@ -149,10 +164,12 @@ public static class SDataValidation {
             return false;
         }
 
-        if (min == 0) {
+        if (min == 0) 
+        {
             min = 1900;
         }
-        if (max == 0) {
+        if (max == 0)
+        {
             max = DateTime.Now.Year + 10;
         }
         return year >= min && year <= max;
@@ -167,19 +184,20 @@ public static class SDataValidation {
     /// <see langword="true"/> if the date string is valid and matches the required format; otherwise, <see langword="false"/>.
     /// Returns <see langword="false"/> if the input is null, empty, or whitespace.
     /// </returns>
-    public static bool isDateValidFormatEU(string date) {
+    public static bool isDateValidFormatEU(string date)
+    {
 
-        if (string.IsNullOrWhiteSpace(date)) {
+        if (string.IsNullOrWhiteSpace(date))
+        {
             return false;
         }
 
-        DateTime parsedDate;
         bool valid = DateTime.TryParseExact(
             date,
             SGlobals.g_EU_DATE_FORMAT,
             System.Globalization.CultureInfo.InvariantCulture,
             System.Globalization.DateTimeStyles.None,
-            out parsedDate
+            out DateTime parsedDate
         );
 
         return valid;

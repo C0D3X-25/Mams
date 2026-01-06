@@ -80,20 +80,24 @@ public static class SPageNavigationController {
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
     public static void navigateBack(bool compare_original = false) {
-        if (_m_frame == null) {
+        if (_m_frame == null)
+        {
             throw new InvalidOperationException("Frame is not initialized. Call initialize() first.");
         }
-        if (_m_previous_page == null) {
+        if (_m_previous_page == null)
+        {
             throw new InvalidOperationException("No previous page to navigate back to.");
         }
         
         // Create a new instance of the previous page type to ensure latest data is loaded
         Type previous_page_type = _m_previous_page.GetType();
-        if (previous_page_type == null) {
+        if (previous_page_type == null)
+        {
             throw new InvalidOperationException("Previous page type is null.");
         }
         Page? new_page = (Page?)Activator.CreateInstance(previous_page_type);
-        if (new_page == null) {
+        if (new_page == null)
+        {
             throw new InvalidOperationException($"Failed to create an instance of the previous page type: {previous_page_type.FullName}");
         }
 

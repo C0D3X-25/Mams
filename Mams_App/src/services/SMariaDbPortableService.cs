@@ -24,6 +24,7 @@ public static class SMariaDbPortableService
     
     private static Process? s_mariaDbProcess;
     private static readonly HttpClient s_httpClient = new() { Timeout = TimeSpan.FromMinutes(30) };
+    private static CancellationTokenSource? s_downloadCancellationTokenSource;
 
     /// <summary>
     /// Gets the path to the MariaDB portable installation folder.
@@ -228,12 +229,18 @@ public static class SMariaDbPortableService
     {
         var tempZipPath = Path.Combine(Path.GetTempPath(), $"mariadb-portable-{Guid.NewGuid()}.zip");
 
+        // Create cancellation token source for this download
+        s_downloadCancellationTokenSource?.Cancel();
+        s_downloadCancellationTokenSource?.Dispose();
+        s_downloadCancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = s_downloadCancellationTokenSource.Token;
+
         // Create progress window
         var progressWindow = new Window
         {
             Title = "Downloading MariaDB...",
             Width = 450,
-            Height = 150,
+            Height = 180,
             WindowStartupLocation = WindowStartupLocation.CenterScreen,
             ResizeMode = ResizeMode.NoResize,
             WindowStyle = WindowStyle.ToolWindow
@@ -269,9 +276,37 @@ public static class SMariaDbPortableService
             Foreground = System.Windows.Media.Brushes.Gray
         };
 
+        var cancelButton = new Button
+        {
+            Content = "Cancel",
+            Width = 80,
+            Height = 28,
+            Margin = new Thickness(0, 10, 0, 0),
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+
+        bool userCancelled = false;
+        cancelButton.Click += (s, e) =>
+        {
+            userCancelled = true;
+            s_downloadCancellationTokenSource?.Cancel();
+            progressWindow.Close();
+        };
+
+        // Also handle window closing (X button)
+        progressWindow.Closing += (s, e) =>
+        {
+            if (!userCancelled && !cancellationToken.IsCancellationRequested)
+            {
+                userCancelled = true;
+                s_downloadCancellationTokenSource?.Cancel();
+            }
+        };
+
         stackPanel.Children.Add(statusText);
         stackPanel.Children.Add(progressBar);
         stackPanel.Children.Add(progressText);
+        stackPanel.Children.Add(cancelButton);
         progressWindow.Content = stackPanel;
         progressWindow.Show();
 
@@ -281,23 +316,25 @@ public static class SMariaDbPortableService
             Debug.WriteLine($"[MariaDbPortable] Downloading from: {MARIADB_DOWNLOAD_URL}");
             statusText.Text = "Downloading MariaDB...";
 
-            using (var response = await s_httpClient.GetAsync(MARIADB_DOWNLOAD_URL, HttpCompletionOption.ResponseHeadersRead))
+            using (var response = await s_httpClient.GetAsync(MARIADB_DOWNLOAD_URL, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
             {
                 response.EnsureSuccessStatusCode();
 
                 var totalBytes = response.Content.Headers.ContentLength ?? -1;
                 var canReportProgress = totalBytes > 0;
 
-                using (var contentStream = await response.Content.ReadAsStreamAsync())
+                using (var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken))
                 using (var fileStream = new FileStream(tempZipPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
                 {
                     var buffer = new byte[8192];
                     long downloadedBytes = 0;
                     int bytesRead;
 
-                    while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
+                    while ((bytesRead = await contentStream.ReadAsync(buffer, cancellationToken)) > 0)
                     {
-                        await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+                        cancellationToken.ThrowIfCancellationRequested();
+                        
+                        await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
                         downloadedBytes += bytesRead;
 
                         if (canReportProgress)
@@ -312,18 +349,21 @@ public static class SMariaDbPortableService
                             progressBar.IsIndeterminate = true;
                         }
 
-                        await Task.Delay(1); // Allow UI to update
+                        await Task.Delay(1, cancellationToken); // Allow UI to update
                     }
                 }
 
                 Debug.WriteLine($"[MariaDbPortable] Download complete");
             }
 
+            // Check cancellation before extraction
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Extract phase - file stream is now closed
             statusText.Text = "Extracting MariaDB...";
             progressBar.IsIndeterminate = true;
             progressText.Text = "Please wait...";
-            await Task.Delay(100);
+            await Task.Delay(100, cancellationToken);
 
             // Extract to temp location first
             var tempExtractPath = Path.Combine(Path.GetTempPath(), $"mariadb-extract-{Guid.NewGuid()}");
@@ -334,6 +374,9 @@ public static class SMariaDbPortableService
 
             Debug.WriteLine($"[MariaDbPortable] Extracting to: {tempExtractPath}");
             ZipFile.ExtractToDirectory(tempZipPath, tempExtractPath);
+
+            // Check cancellation after extraction
+            cancellationToken.ThrowIfCancellationRequested();
 
             // Find the extracted folder (it's usually named mariadb-version-winx64)
             var extractedFolders = Directory.GetDirectories(tempExtractPath);
@@ -367,6 +410,20 @@ public static class SMariaDbPortableService
             Debug.WriteLine("[MariaDbPortable] Installation complete");
             return true;
         }
+        catch (OperationCanceledException)
+        {
+            Debug.WriteLine("[MariaDbPortable] Download cancelled by user");
+            
+            // Cleanup partial download
+            try
+            {
+                if (File.Exists(tempZipPath))
+                    File.Delete(tempZipPath);
+            }
+            catch { }
+            
+            return false;
+        }
         catch (Exception ex)
         {
             Debug.WriteLine($"[MariaDbPortable] Download/extract failed: {ex.Message}");
@@ -383,7 +440,13 @@ public static class SMariaDbPortableService
         }
         finally
         {
-            progressWindow.Close();
+            if (progressWindow.IsLoaded)
+            {
+                progressWindow.Close();
+            }
+            
+            s_downloadCancellationTokenSource?.Dispose();
+            s_downloadCancellationTokenSource = null;
         }
     }
 

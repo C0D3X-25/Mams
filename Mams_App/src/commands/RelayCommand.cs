@@ -17,10 +17,11 @@ public class RelayCommand : ICommand {
     }
 
     private Action<object?> _m_execute { get; set; } // return void
-    private Func<object?, bool>? _m_can_execute; // return a boolean
+    private readonly Func<object?, bool>? _m_can_execute; // return a boolean
 
 
-    public RelayCommand(Action<object?> execute, Func<object?, bool>? can_execute = null) {
+    public RelayCommand(Action<object?> execute, Func<object?, bool>? can_execute = null)
+    {
         _m_execute = execute;
         _m_can_execute = can_execute;
     }

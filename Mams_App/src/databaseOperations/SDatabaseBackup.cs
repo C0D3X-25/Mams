@@ -31,9 +31,9 @@ public static class SDatabaseBackup
 
             var backupPath = getTimestampedBackupPath();
 
-            using (MySqlCommand cmd = new MySqlCommand())
+            using (MySqlCommand cmd = new())
             {
-                using (MySqlBackup mb = new MySqlBackup(cmd))
+                using (MySqlBackup mb = new(cmd))
                 {
                     cmd.Connection = connection;
                     mb.ExportToFile(backupPath);
@@ -68,9 +68,9 @@ public static class SDatabaseBackup
             throw new FileNotFoundException("Backup file not found.", backupFilePath);
         }
 
-        using (MySqlCommand cmd = new MySqlCommand())
+        using (MySqlCommand cmd = new())
         {
-            using (MySqlBackup mb = new MySqlBackup(cmd))
+            using (MySqlBackup mb = new(cmd))
             {
                 cmd.Connection = connection;
                 mb.ImportFromFile(backupFilePath);
@@ -117,9 +117,9 @@ public static class SDatabaseBackup
             throw new InvalidOperationException("Database connection is not established or is closed.");
         }
 
-        using (MySqlCommand cmd = new MySqlCommand()) 
+        using (MySqlCommand cmd = new())
         {
-            using (MySqlBackup mb = new MySqlBackup(cmd))
+            using (MySqlBackup mb = new(cmd))
             {
                 cmd.Connection = connection;
                 // TODO: get the correct file

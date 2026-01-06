@@ -15,8 +15,8 @@ namespace Mams_App.src.services;
 /// </summary>
 public class ServicePDF {
 
-    private string _m_invoice_directory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-    private string _m_invoice_folder_name = "Factures Miel";
+    private readonly string _m_invoice_directory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+    private readonly string _m_invoice_folder_name = "Factures Miel";
     private string _m_invoice_filename = "Facture.pdf";
 
     /// <summary>
@@ -66,9 +66,12 @@ public class ServicePDF {
     /// Opens the generated invoice PDF file using the default PDF viewer.
     /// </summary>
     private void openInvoice() {
-        var p = new Process();
-        p.StartInfo = new ProcessStartInfo(_m_invoice_save_path) {
-            UseShellExecute = true
+        var p = new Process
+        {
+            StartInfo = new ProcessStartInfo(_m_invoice_save_path)
+            {
+                UseShellExecute = true
+            }
         };
         p.Start();
     }

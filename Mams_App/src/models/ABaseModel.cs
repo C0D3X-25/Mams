@@ -9,7 +9,7 @@ namespace Mams_App.src.models;
 /// Manages database connections and transactions through connection pooling.
 /// </summary>
 public abstract class ABaseModel {
-    private static SQLConnectionModel _m_sql_connection_model = new();
+    private static readonly SQLConnectionModel _m_sql_connection_model = new();
     
     // Connection used for the current transaction - only active during transactions
     private static MySqlConnection? _m_sql_connection = null;
