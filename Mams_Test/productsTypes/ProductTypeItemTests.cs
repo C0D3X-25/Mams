@@ -1,4 +1,4 @@
-using Mams.src.productsTypes;
+using Mams_App.src.productsTypes;
 
 namespace MamsTest.productsTypes;
 

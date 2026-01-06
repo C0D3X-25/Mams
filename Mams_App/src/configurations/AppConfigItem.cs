@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Mams.src.configurations;
+namespace Mams_App.src.configurations;
 
 /// <summary>
 /// Represents the application configuration settings.

@@ -1,11 +1,11 @@
-﻿<Page x:Class="Mams.src.productsCategories.ListProductCategoryPage"
+﻿<Page x:Class="Mams_App.src.productsCategories.ListProductCategoryPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Mams.src.productsCategories"
-      xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
-      xmlns:commands="clr-namespace:Mams.src.commands"
+      xmlns:local="clr-namespace:Mams_App.src.productsCategories"
+      xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
+      xmlns:commands="clr-namespace:Mams_App.src.commands"
       mc:Ignorable="d" 
       d:DesignHeight="800" d:DesignWidth="1224"
       Title="ListCategoryPage">
@@ -25,7 +25,7 @@
             <!--Header-->
             <userControls:UCHeader 
                 Grid.Row="0"
-                title="Liste des catégories de produit">
+                title="Liste des cat�gories de produit">
 
             </userControls:UCHeader>
             <!--Header-->
@@ -105,7 +105,7 @@
                                     <GridView>
                                         <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_category_id}"/>-->
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_category_name}"/>
-                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_category_archive}"/>
+                                        <GridViewColumn Header="Archiv�" DisplayMemberBinding="{Binding product_category_archive}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -142,7 +142,7 @@
                         <!--Add new Broduct Buttons-->
                         <Button 
                             Grid.Row="2"
-                            Content="Nouvelle catégorie"
+                            Content="Nouvelle cat�gorie"
                             Command="{Binding m_add_new_item_command}"
                             Height="30" Width="140"
                             MaxHeight="30" MaxWidth="140"

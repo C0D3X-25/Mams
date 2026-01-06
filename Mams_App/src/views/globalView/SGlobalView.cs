@@ -1,5 +1,4 @@
-﻿
-namespace Mams.src.views.globalView;
+namespace Mams_App.src.views.globalView;
 
 public static class SGlobalView {
 
@@ -36,7 +35,6 @@ public static class SGlobalView {
     public static string m_menu_background_color_2 = _m_default_background_color_1;
     public static string m_menu_button_background_color = _m_default_button_color_1;
     public static string m_menu_button_text_color = _m_default_text_color;
-
 
     // Footer
     public static string m_footer_background_color = _m_default_background_color_1;

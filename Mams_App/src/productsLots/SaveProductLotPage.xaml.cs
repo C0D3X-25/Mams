@@ -1,5 +1,5 @@
-﻿using Mams.src.products;
-using Mams.src.views;
+using Mams_App.src.products;
+using Mams_App.src.views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Mams.src.productsLots;
+namespace Mams_App.src.productsLots;
 
 /// <summary>
 /// Interaction logic for SaveProductLotPage.xaml

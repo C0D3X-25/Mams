@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Mams.src.controllers;
+namespace Mams_App.src.controllers;
 
 
 public abstract class ABaseController : INotifyPropertyChanged {

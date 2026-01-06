@@ -1,7 +1,7 @@
-﻿using Mams.src.configurations;
-using Mams.src.views.globalView;
+using Mams_App.src.configurations;
+using Mams_App.src.views.globalView;
 
-namespace Mams.src.navigations;
+namespace Mams_App.src.navigations;
 
 public class UCFooterController {
     public string m_background_color { get; set; } = SGlobalView.m_footer_background_color;

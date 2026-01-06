@@ -1,7 +1,7 @@
 using System.IO;
 using System.Text.Json;
 
-namespace Mams.src.configurations;
+namespace Mams_App.src.configurations;
 
 /// <summary>
 /// Static service class for managing application configuration.

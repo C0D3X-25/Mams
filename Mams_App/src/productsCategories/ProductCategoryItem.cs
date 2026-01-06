@@ -1,6 +1,6 @@
-﻿using Mams.src.items;
+using Mams_App.src.items;
 
-namespace Mams.src.productsCategories;
+namespace Mams_App.src.productsCategories;
 
 public class ProductCategoryItem : ABaseItem {
     public int product_category_id { get; set; } = 0;

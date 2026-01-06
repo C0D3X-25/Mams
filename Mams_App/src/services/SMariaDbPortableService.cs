@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using MySqlConnector;
 
-namespace Mams.src.services;
+namespace Mams_App.src.services;
 
 /// <summary>
 /// Service to manage MariaDB Portable installation, startup, and database initialization.

@@ -1,13 +1,13 @@
-﻿using Mams.src.helpers;
-using Mams.src.invoices;
-using Mams.src.receipts;
+using Mams_App.src.helpers;
+using Mams_App.src.invoices;
+using Mams_App.src.receipts;
 using QuestPDF.Fluent;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
-namespace Mams.src.services; 
+namespace Mams_App.src.services; 
 
 /// <summary>
 /// Service class for generating and managing PDF invoices.

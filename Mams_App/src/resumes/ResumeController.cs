@@ -1,16 +1,16 @@
-﻿using Mams.src.commands;
-using Mams.src.controllers;
-using Mams.src.databaseOperations;
-using Mams.src.fees;
-using Mams.src.navigations;
-using Mams.src.profits;
-using Mams.src.search;
-using Mams.src.views.globalView;
+using Mams_App.src.commands;
+using Mams_App.src.controllers;
+using Mams_App.src.databaseOperations;
+using Mams_App.src.fees;
+using Mams_App.src.navigations;
+using Mams_App.src.profits;
+using Mams_App.src.search;
+using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Mams.src.resumes;
+namespace Mams_App.src.resumes;
 
 public class ResumeController : ABaseController {
 

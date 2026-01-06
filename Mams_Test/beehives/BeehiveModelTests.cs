@@ -1,5 +1,5 @@
-using Mams.src.beehives;
-using Mams.src.errors;
+using Mams_App.src.beehives;
+using Mams_App.src.errors;
 
 namespace MamsTest.beehives;
 

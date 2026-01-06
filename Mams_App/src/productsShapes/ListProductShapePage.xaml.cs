@@ -1,6 +1,6 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 
-namespace Mams.src.productsShapes;
+namespace Mams_App.src.productsShapes;
 
 /// <summary>
 /// Interaction logic for ListProductShapePage.xaml

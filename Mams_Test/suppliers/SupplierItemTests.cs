@@ -1,4 +1,4 @@
-using Mams.src.suppliers;
+using Mams_App.src.suppliers;
 
 namespace MamsTest.suppliers;
 

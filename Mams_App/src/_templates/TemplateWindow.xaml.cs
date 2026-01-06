@@ -1,6 +1,6 @@
-﻿using System.Windows;
+using System.Windows;
 
-namespace Mams.src.views
+namespace Mams_App.src.views
 {
     /// <summary>
     /// Interaction logic for TemplateWindow.xaml

@@ -1,6 +1,6 @@
-﻿using Mams.src.items;
+using Mams_App.src.items;
 
-namespace Mams.src.entities;
+namespace Mams_App.src.entities;
 
 public class EntityItem : ABaseItem{
     public int entity_id { get; set; } = 0;

@@ -1,8 +1,8 @@
-﻿using Mams.src.views;
+using Mams_App.src.views;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Mams.src.entities;
+namespace Mams_App.src.entities;
 
 /// <summary>
 /// Interaction logic for SaveClientsPage.xaml

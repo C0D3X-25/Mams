@@ -1,9 +1,9 @@
-﻿using System.Windows;
-using Mams.src.databaseOperations;
-using Mams.src.services;
+using System.Windows;
+using Mams_App.src.databaseOperations;
+using Mams_App.src.services;
 using MySqlConnector;
 
-namespace Mams;
+namespace Mams_App;
 
 /// <summary>
 /// Interaction logic for App.xaml
@@ -46,7 +46,7 @@ public partial class App : Application
             {
                 ShutdownMode = ShutdownMode.OnMainWindowClose;
                 
-                var mainWindow = new Mams.src.views.MainWindow();
+                var mainWindow = new Mams_App.src.views.MainWindow();
                 MainWindow = mainWindow;
                 mainWindow.Show();
             });
@@ -69,7 +69,7 @@ public partial class App : Application
     /// Performs a backup of the database.
     /// </summary>
     /// <param name="context">Context for logging (e.g., "Startup" or "Shutdown")</param>
-    private void performBackup(string context)
+    private static void performBackup(string context)
     {
         // Skip backup if MariaDB is not running
         if (!SMariaDbPortableService.isRunning())

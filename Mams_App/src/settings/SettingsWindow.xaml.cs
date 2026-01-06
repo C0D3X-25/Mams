@@ -1,8 +1,8 @@
-using Mams.src.views;
+using Mams_App.src.views;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Mams.src.settings;
+namespace Mams_App.src.settings;
 
 /// <summary>
 /// Interaction logic for SettingsWindow.xaml

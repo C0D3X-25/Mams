@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="Mams.src.views.UserControls.UCHeader"
+﻿<UserControl x:Class="Mams_App.src.views.UserControls.UCHeader"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Mams.src.views.UserControls"
+             xmlns:local="clr-namespace:Mams_App.src.views.UserControls"
              mc:Ignorable="d" 
              d:DesignHeight="50" d:DesignWidth="1224"
              x:Name="root">

@@ -1,8 +1,8 @@
-﻿using MySqlConnector;
+using MySqlConnector;
 using System.Diagnostics;
 using System.IO;
 
-namespace Mams.src.databaseOperations;
+namespace Mams_App.src.databaseOperations;
 
 public static class SDatabaseBackup 
 {

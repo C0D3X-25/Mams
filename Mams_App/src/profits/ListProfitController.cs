@@ -1,12 +1,12 @@
-﻿using Mams.src.commands;
-using Mams.src.controllers;
-using Mams.src.navigations;
-using Mams.src.views.globalView;
+using Mams_App.src.commands;
+using Mams_App.src.controllers;
+using Mams_App.src.navigations;
+using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Mams.src.profits;
+namespace Mams_App.src.profits;
 
 public class ListProfitController : ABaseController {
 
@@ -78,7 +78,7 @@ public class ListProfitController : ABaseController {
 
     private void deleteItem(object? obj) {
         if (_m_selected_item != null) {
-            MessageBoxResult result = MessageBox.Show("Supprimer cette facture définitivement?",
+            MessageBoxResult result = MessageBox.Show("Supprimer cette facture d�finitivement?",
                 "Suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.No) {
                 return;

@@ -1,4 +1,4 @@
-﻿namespace Mams.src.databaseOperations;
+namespace Mams_App.src.databaseOperations;
 
 public enum EDeleteItemOperation 
 {

@@ -1,6 +1,6 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 
-namespace Mams.src.views.pages;
+namespace Mams_App.src.views.pages;
 
 /// <summary>
 /// Interaction logic for templatePage.xaml

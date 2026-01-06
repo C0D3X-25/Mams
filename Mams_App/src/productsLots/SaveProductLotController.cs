@@ -1,16 +1,16 @@
-﻿using Mams.src.beehives;
-using Mams.src.commands;
-using Mams.src.controllers;
-using Mams.src.errors;
-using Mams.src.helpers;
-using Mams.src.navigations;
-using Mams.src.products;
-using Mams.src.views.globalView;
+using Mams_App.src.beehives;
+using Mams_App.src.commands;
+using Mams_App.src.controllers;
+using Mams_App.src.errors;
+using Mams_App.src.helpers;
+using Mams_App.src.navigations;
+using Mams_App.src.products;
+using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Mams.src.productsLots;
+namespace Mams_App.src.productsLots;
 
 public class SaveProductLotController : ABaseController, ICompareState {
 

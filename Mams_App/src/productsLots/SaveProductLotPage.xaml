@@ -1,10 +1,10 @@
-﻿<Page x:Class="Mams.src.productsLots.SaveProductLotPage"
+﻿<Page x:Class="Mams_App.src.productsLots.SaveProductLotPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Mams.src.productsLots"
-      xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
+      xmlns:local="clr-namespace:Mams_App.src.productsLots"
+      xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
       mc:Ignorable="d" 
       d:DesignHeight="800" d:DesignWidth="1224"
       Title="SaveProductLotPage">
@@ -103,7 +103,7 @@
                                 <!--Year-->
                                 <userControls:UCLabelTextBox
                                 Grid.Row="1"
-                                label="Année*"                                    
+                                label="Ann�e*"                                    
                                 text="{Binding m_product_lot.product_lot_year, UpdateSourceTrigger=PropertyChanged}"
                                 
                                 ></userControls:UCLabelTextBox>

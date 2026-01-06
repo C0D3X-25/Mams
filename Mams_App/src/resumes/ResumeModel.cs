@@ -1,19 +1,19 @@
-﻿using Mams.src.beehives;
-using Mams.src.databaseOperations;
-using Mams.src.entities;
-using Mams.src.fees;
-using Mams.src.helpers;
-using Mams.src.products;
-using Mams.src.productsCategories;
-using Mams.src.productsLots;
-using Mams.src.productsShapes;
-using Mams.src.productsTypes;
-using Mams.src.profits;
-using Mams.src.receipts;
-using Mams.src.search;
+using Mams_App.src.beehives;
+using Mams_App.src.databaseOperations;
+using Mams_App.src.entities;
+using Mams_App.src.fees;
+using Mams_App.src.helpers;
+using Mams_App.src.products;
+using Mams_App.src.productsCategories;
+using Mams_App.src.productsLots;
+using Mams_App.src.productsShapes;
+using Mams_App.src.productsTypes;
+using Mams_App.src.profits;
+using Mams_App.src.receipts;
+using Mams_App.src.search;
 using System.Collections.ObjectModel;
 
-namespace Mams.src.resumes;
+namespace Mams_App.src.resumes;
 
 /// <summary>
 /// This class is mainly used to manage the filter of the page Resume.
@@ -82,7 +82,7 @@ public class ResumeModel {
     /// </summary>
     public readonly ObservableCollection<DatabaseTablesNameItem> m_search_tables = [
         new(){ m_name_in_database = EDatabaseTableName.NONE, m_name_to_display = string.Empty }, // Search all
-        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_CATEGORY, m_name_to_display = "Catégorie" },
+        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_CATEGORY, m_name_to_display = "Cat�gorie" },
         new(){ m_name_in_database = EDatabaseTableName.ENTITY, m_name_to_display = "Client/Fournisseur" },
         new(){ m_name_in_database = EDatabaseTableName.PRODUCT_SHAPE, m_name_to_display = "Forme" },
         new(){ m_name_in_database = EDatabaseTableName.PRODUCT_LOT, m_name_to_display = "Lot" },

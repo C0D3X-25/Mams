@@ -1,4 +1,4 @@
-using Mams.src.products;
+using Mams_App.src.products;
 
 namespace MamsTest.products;
 

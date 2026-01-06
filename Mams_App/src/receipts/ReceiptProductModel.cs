@@ -1,14 +1,14 @@
-﻿using Mams.src.databaseOperations;
-using Mams.src.errors;
-using Mams.src.helpers;
-using Mams.src.models;
-using Mams.src.products;
-using Mams.src.productsLots;
+using Mams_App.src.databaseOperations;
+using Mams_App.src.errors;
+using Mams_App.src.helpers;
+using Mams_App.src.models;
+using Mams_App.src.products;
+using Mams_App.src.productsLots;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
 
-namespace Mams.src.receipts;
+namespace Mams_App.src.receipts;
 
 /// <summary>
 /// Represents a model for managing receipt product data.

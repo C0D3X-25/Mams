@@ -1,8 +1,8 @@
-﻿using Mams.src.profits;
+using Mams_App.src.profits;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Mams.src.entities;
+namespace Mams_App.src.entities;
 
 /// <summary>
 /// Interaction logic for ListClientPage.xaml

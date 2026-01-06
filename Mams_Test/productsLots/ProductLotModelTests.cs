@@ -1,5 +1,5 @@
-using Mams.src.productsLots;
-using Mams.src.errors;
+using Mams_App.src.productsLots;
+using Mams_App.src.errors;
 
 namespace MamsTest.productsLots;
 

@@ -1,5 +1,5 @@
-using Mams.src.productsShapes;
-using Mams.src.errors;
+using Mams_App.src.productsShapes;
+using Mams_App.src.errors;
 
 namespace MamsTest.productsShapes;
 

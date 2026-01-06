@@ -1,4 +1,4 @@
-﻿namespace Mams.src.databaseConnections;
+namespace Mams_App.src.databaseConnections;
 
 public enum EDatabaseConnection {
     EXIT,

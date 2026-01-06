@@ -1,6 +1,6 @@
-﻿using System.Windows.Input;
+using System.Windows.Input;
 
-namespace Mams.src.commands;
+namespace Mams_App.src.commands;
 
 /// <summary>
 /// Represents a command that can be bound to UI elements and executed in response to user interactions.

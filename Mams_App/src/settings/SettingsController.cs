@@ -5,12 +5,12 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
-using Mams.src.commands;
-using Mams.src.databaseOperations;
-using Mams.src.services;
+using Mams_App.src.commands;
+using Mams_App.src.databaseOperations;
+using Mams_App.src.services;
 using MySqlConnector;
 
-namespace Mams.src.settings;
+namespace Mams_App.src.settings;
 
 /// <summary>
 /// Controller for the Settings window. Handles backup listing and restoration.
@@ -28,7 +28,7 @@ public class SettingsController : INotifyPropertyChanged
     /// <summary>
     /// Gets the backup directory path.
     /// </summary>
-    public string BackupDirectory => SDatabaseBackup.BackupDirectoryPath;
+    public static string BackupDirectory => SDatabaseBackup.BackupDirectoryPath;
 
     /// <summary>
     /// Gets the list of available backups.
@@ -105,7 +105,7 @@ public class SettingsController : INotifyPropertyChanged
     /// <summary>
     /// Opens the backup folder in Windows Explorer.
     /// </summary>
-    private void openBackupFolder()
+    private static void openBackupFolder()
     {
         try
         {

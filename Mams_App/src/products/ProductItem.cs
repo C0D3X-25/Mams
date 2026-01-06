@@ -1,6 +1,6 @@
-﻿using Mams.src.items;
+using Mams_App.src.items;
 
-namespace Mams.src.products;
+namespace Mams_App.src.products;
 
 
 public class ProductItem : ABaseItem {

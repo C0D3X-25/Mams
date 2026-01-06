@@ -1,11 +1,11 @@
-﻿using Mams.src.beehives;
-using Mams.src.databaseOperations;
-using Mams.src.errors;
-using Mams.src.helpers;
-using Mams.src.models;
+using Mams_App.src.beehives;
+using Mams_App.src.databaseOperations;
+using Mams_App.src.errors;
+using Mams_App.src.helpers;
+using Mams_App.src.models;
 using System.Collections.ObjectModel;
 
-namespace Mams.src.receipts;
+namespace Mams_App.src.receipts;
 
 /// <summary>
 /// Provides functionality for managing receipts, including retrieval, saving, and deletion operations.

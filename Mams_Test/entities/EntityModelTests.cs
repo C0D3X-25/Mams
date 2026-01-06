@@ -1,5 +1,5 @@
-using Mams.src.entities;
-using Mams.src.errors;
+using Mams_App.src.entities;
+using Mams_App.src.errors;
 
 namespace MamsTest.entities;
 

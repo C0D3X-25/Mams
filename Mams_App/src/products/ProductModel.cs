@@ -1,12 +1,12 @@
-﻿using Mams.src.databaseOperations;
-using Mams.src.errors;
-using Mams.src.helpers;
-using Mams.src.models;
+using Mams_App.src.databaseOperations;
+using Mams_App.src.errors;
+using Mams_App.src.helpers;
+using Mams_App.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
 
-namespace Mams.src.products;
+namespace Mams_App.src.products;
 
 /// <summary>
 /// Represents a model for managing product-related data and operations.

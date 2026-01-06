@@ -1,4 +1,4 @@
-namespace Mams.src.errors;
+namespace Mams_App.src.errors;
 
 /// <summary>
 /// Provides user-friendly French error messages based on error types.

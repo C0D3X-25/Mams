@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Mams_App.src.globals;
 
-namespace Mams.src.helpers;
+namespace Mams_App.src.helpers;
 
 /// <summary>
 /// Provides utility methods for validating data information.
@@ -175,7 +176,7 @@ public static class SDataValidation {
         DateTime parsedDate;
         bool valid = DateTime.TryParseExact(
             date,
-            globals.SGlobals.g_EU_DATE_FORMAT,
+            SGlobals.g_EU_DATE_FORMAT,
             System.Globalization.CultureInfo.InvariantCulture,
             System.Globalization.DateTimeStyles.None,
             out parsedDate

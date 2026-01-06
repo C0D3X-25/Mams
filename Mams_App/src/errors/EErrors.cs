@@ -1,4 +1,4 @@
-namespace Mams.src.errors;
+namespace Mams_App.src.errors;
 
 /// <summary>
 /// Represents generic error types for operation responses.

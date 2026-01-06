@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="Mams.src.views.UserControls.UCMenu"
+﻿<UserControl x:Class="Mams_App.src.views.UserControls.UCMenu"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Mams.src.views.UserControls"
+             xmlns:local="clr-namespace:Mams_App.src.views.UserControls"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="200"
              x:Name="root">
@@ -92,7 +92,7 @@
                 Foreground="{Binding m_button_text_color}"
                 Command="{Binding m_navigate_list_beehive_command}"/>
             <Button 
-                Content="Catégories de Produit"
+                Content="Cat�gories de Produit"
                 Grid.Row="7"
                 FontSize="16" 
                 Margin="3"

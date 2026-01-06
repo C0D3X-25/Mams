@@ -1,11 +1,11 @@
-﻿using Mams.src.navigations;
-using Mams.src.configurations;
-using Mams.src.search;
-using Mams.src.services;
-using Mams.src.settings;
+using Mams_App.src.navigations;
+using Mams_App.src.configurations;
+using Mams_App.src.search;
+using Mams_App.src.services;
+using Mams_App.src.settings;
 using System.Windows;
 
-namespace Mams.src.views;
+namespace Mams_App.src.views;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml

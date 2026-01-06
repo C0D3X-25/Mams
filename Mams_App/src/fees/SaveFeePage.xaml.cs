@@ -1,6 +1,6 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 
-namespace Mams.src.fees; 
+namespace Mams_App.src.fees; 
 /// <summary>
 /// Interaction logic for SaveFeePage.xaml
 /// </summary>

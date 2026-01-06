@@ -1,9 +1,9 @@
-using Mams.src.errors;
-using Mams.src.items;
+using Mams_App.src.errors;
+using Mams_App.src.items;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 
-namespace Mams.src.databaseOperations;
+namespace Mams_App.src.databaseOperations;
 
 /// <summary>
 /// Represents the response from a get all items operation, containing the retrieved collection and any error.

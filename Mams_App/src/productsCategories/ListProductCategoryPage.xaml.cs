@@ -1,6 +1,6 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 
-namespace Mams.src.productsCategories;
+namespace Mams_App.src.productsCategories;
 
 /// <summary>
 /// Interaction logic for ListCategoryPage.xaml

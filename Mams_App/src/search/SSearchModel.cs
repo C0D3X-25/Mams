@@ -1,7 +1,7 @@
-﻿using Mams.src.databaseOperations;
+using Mams_App.src.databaseOperations;
 using System.Collections.ObjectModel;
 
-namespace Mams.src.search; 
+namespace Mams_App.src.search; 
 public static class SSearchModel
 {
     public static ObservableCollection<DatabaseTablesNameItem>? m_list_table { get; set; }

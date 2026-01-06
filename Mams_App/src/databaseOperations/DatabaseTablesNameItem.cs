@@ -1,4 +1,4 @@
-﻿namespace Mams.src.databaseOperations;
+namespace Mams_App.src.databaseOperations;
 
 public class DatabaseTablesNameItem {
     public EDatabaseTableName m_name_in_database { get; set; } = EDatabaseTableName.NONE;

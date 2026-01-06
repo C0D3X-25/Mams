@@ -1,5 +1,6 @@
-﻿
-namespace Mams.src.helpers; 
+using Mams_App.src.globals;
+
+namespace Mams_App.src.helpers; 
 
 
 public static class SFormatData {
@@ -16,7 +17,7 @@ public static class SFormatData {
             return string.Empty;
         }
 
-        DateTime parsed_date = DateTime.ParseExact(date, globals.SGlobals.g_EU_DATE_FORMAT, null);
+        DateTime parsed_date = DateTime.ParseExact(date, SGlobals.g_EU_DATE_FORMAT, null);
         return parsed_date.ToString("yyyy-MM-dd");
     }
 
@@ -37,7 +38,7 @@ public static class SFormatData {
         }
 
         DateTime parsed_date = DateTime.ParseExact(date,
-            globals.SGlobals.g_EU_DATE_FORMAT,
+            SGlobals.g_EU_DATE_FORMAT,
             System.Globalization.CultureInfo.InvariantCulture
         );
 

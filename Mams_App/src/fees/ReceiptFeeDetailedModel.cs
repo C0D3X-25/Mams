@@ -1,16 +1,16 @@
-﻿using Mams.src.databaseOperations;
-using Mams.src.entities;
-using Mams.src.errors;
-using Mams.src.helpers;
-using Mams.src.models;
-using Mams.src.products;
-using Mams.src.receipts;
-using Mams.src.suppliers;
+using Mams_App.src.databaseOperations;
+using Mams_App.src.entities;
+using Mams_App.src.errors;
+using Mams_App.src.helpers;
+using Mams_App.src.models;
+using Mams_App.src.products;
+using Mams_App.src.receipts;
+using Mams_App.src.suppliers;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
 
-namespace Mams.src.fees;
+namespace Mams_App.src.fees;
 
 /// <summary>
 /// Represents a detailed model for managing receipt fees, including operations for CRUD functionality.

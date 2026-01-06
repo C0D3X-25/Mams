@@ -1,6 +1,6 @@
-﻿using Mams.src.items;
+using Mams_App.src.items;
 
-namespace Mams.src.receipts;
+namespace Mams_App.src.receipts;
 
 public class ReceiptClientItem : ABaseItem {
     public int fk_client_id { get; set; } = 0;

@@ -1,7 +1,7 @@
-using Mams.src.errors;
+using Mams_App.src.errors;
 using MySqlConnector;
 
-namespace Mams.src.databaseOperations;
+namespace Mams_App.src.databaseOperations;
 
 /// <summary>
 /// Represents the response from a delete operation, containing success status and any error.

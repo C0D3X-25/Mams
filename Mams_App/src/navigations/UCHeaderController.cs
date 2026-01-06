@@ -1,8 +1,8 @@
-﻿using Mams.src.commands;
-using Mams.src.views.globalView;
+using Mams_App.src.commands;
+using Mams_App.src.views.globalView;
 using System.Windows.Input;
 
-namespace Mams.src.navigations;
+namespace Mams_App.src.navigations;
 
 public class UCHeaderController {
 

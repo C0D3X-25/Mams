@@ -1,11 +1,11 @@
-﻿<Page x:Class="Mams.src.fees.ListFeePage"
+﻿<Page x:Class="Mams_App.src.fees.ListFeePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Mams.src.fees"
-      xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
-      xmlns:commands="clr-namespace:Mams.src.commands"
+      xmlns:local="clr-namespace:Mams_App.src.fees"
+      xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
+      xmlns:commands="clr-namespace:Mams_App.src.commands"
       mc:Ignorable="d" 
       d:DesignHeight="800" d:DesignWidth="1224"
       Title="ListFeePage">
@@ -89,7 +89,7 @@
                                 commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
+                                        <GridViewColumn Header="N�" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
                                         <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding entity.entity_name}"/>
                                         <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
                                         <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>

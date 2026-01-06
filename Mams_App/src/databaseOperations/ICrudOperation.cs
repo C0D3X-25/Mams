@@ -1,6 +1,7 @@
-﻿using Mams.src.items;
+using Mams_App.src.items;
 
-namespace Mams.src.databaseOperations;
+namespace Mams_App.src.databaseOperations;
+
 
 /// <summary>
 /// Defines a contract for performing basic CRUD (Create, Read, Update, Delete) operations on items of type

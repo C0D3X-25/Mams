@@ -1,9 +1,9 @@
-﻿using Mams.src.fees;
-using Mams.src.items;
-using Mams.src.profits;
+using Mams_App.src.fees;
+using Mams_App.src.items;
+using Mams_App.src.profits;
 using System.Collections.ObjectModel;
 
-namespace Mams.src.resumes;
+namespace Mams_App.src.resumes;
 
 public class ResumeItem : ABaseItem {
     public ObservableCollection<ReceiptProfitDetailedItem> profit_items { get; set; } = [];

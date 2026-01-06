@@ -1,12 +1,12 @@
 ﻿<Page 
-    x:Class="Mams.src.resumes.ResumePage"
+    x:Class="Mams_App.src.resumes.ResumePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:local="clr-namespace:Mams.src.resumes"
-    xmlns:userControls="clr-namespace:Mams.src.views.UserControls"
-    xmlns:commands="clr-namespace:Mams.src.commands"
+    xmlns:local="clr-namespace:Mams_App.src.resumes"
+    xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
+    xmlns:commands="clr-namespace:Mams_App.src.commands"
     mc:Ignorable="d" 
     d:DesignHeight="1000" d:DesignWidth="1224"
     Title="ResumePage">
@@ -19,7 +19,7 @@
        </Grid.RowDefinitions>
 
        <!--Header-->
-       <userControls:UCHeader Grid.Row="0" title="Résumé"/>
+       <userControls:UCHeader Grid.Row="0" title="R�sum�"/>
 
        <!--Body-->
        <Grid Grid.Row="1">
@@ -87,7 +87,7 @@
                    </ComboBox>
 
                    <Label Grid.Column="3"
-                       Content="Pour l'année :"
+                       Content="Pour l'ann�e :"
                        FontSize="16" 
                        VerticalAlignment="Center" 
                        HorizontalAlignment="Center"/>
@@ -149,7 +149,7 @@
                        commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command_profit}">
                        <ListView.View>
                            <GridView>
-                               <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
+                               <GridViewColumn Header="N�" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
                                <GridViewColumn Header="Client" DisplayMemberBinding="{Binding entity.entity_name}"/>
                                <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
                                <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
@@ -175,7 +175,7 @@
                        commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command_fee}">
                        <ListView.View>
                            <GridView>
-                               <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
+                               <GridViewColumn Header="N�" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
                                <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding entity.entity_name}"/>
                                <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
                                <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
@@ -206,11 +206,11 @@
                    <Label Grid.Column="0" Grid.Row="1"
                        HorizontalContentAlignment="Right"
                        FontSize="16"
-                       Content="Quantité Total (profit) :"/>
+                       Content="Quantit� Total (profit) :"/>
                    <Label Grid.Column="0" Grid.Row="2"
                        HorizontalContentAlignment="Right"
                        FontSize="16"
-                       Content="Prix Moyen par Unité (profit) :"/>
+                       Content="Prix Moyen par Unit� (profit) :"/>
                     <Label Grid.Column="0" Grid.Row="3"
                        HorizontalContentAlignment="Right"
                        FontSize="16"

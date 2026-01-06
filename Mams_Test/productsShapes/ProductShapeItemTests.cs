@@ -1,4 +1,4 @@
-using Mams.src.productsShapes;
+using Mams_App.src.productsShapes;
 
 namespace MamsTest.productsShapes;
 

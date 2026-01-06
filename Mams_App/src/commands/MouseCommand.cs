@@ -1,8 +1,8 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Controls;
 
-namespace Mams.src.commands;
+namespace Mams_App.src.commands;
 
 /// <summary>
 /// Provides attached properties for binding mouse-related commands to WPF controls.
@@ -53,8 +53,8 @@ public static class MouseCommand {
     }
 
     private static void Element_MouseDoubleClick(object sender, MouseButtonEventArgs e) {
-        var element = sender as UIElement;
-        if (element == null) {
+        if (sender is not UIElement element)
+        {
             return;
         }
         var command = GetMouseDoubleClickCommand(element);

@@ -1,8 +1,8 @@
-﻿using Mams.src.services;
+using Mams_App.src.services;
 using MySqlConnector;
 using System.Windows;
 
-namespace Mams.src.databaseConnections;
+namespace Mams_App.src.databaseConnections;
 
 public class SQLConnectionModel {
 
@@ -11,7 +11,7 @@ public class SQLConnectionModel {
     /// </summary>
     private static string ConnectionString => SMariaDbPortableService.ConnectionString;
 
-    public MySqlConnection GetConnection() {
+    public static MySqlConnection GetConnection() {
         var connection = new MySqlConnection(ConnectionString);
         try {
             connection.Open();
@@ -45,7 +45,7 @@ public class SQLConnectionModel {
     /// <param name="cmd">Specifies the action to take if the connection is not open.  The default value is <see
     /// cref="EDatabaseConnection.EXIT"/>.</param>
     /// <returns><see langword="true"/> if the connection is open; otherwise, <see langword="false"/>.</returns>
-    public bool isConnectionOpen(MySqlConnection? connection, EDatabaseConnection cmd = EDatabaseConnection.EXIT)
+    public static bool isConnectionOpen(MySqlConnection? connection, EDatabaseConnection cmd = EDatabaseConnection.EXIT)
     {
         if (connection != null 
             && connection.State == System.Data.ConnectionState.Open

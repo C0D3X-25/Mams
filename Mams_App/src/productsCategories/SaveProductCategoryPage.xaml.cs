@@ -1,8 +1,8 @@
-﻿using Mams.src.views;
+using Mams_App.src.views;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Mams.src.productsCategories;
+namespace Mams_App.src.productsCategories;
 
 /// <summary>
 /// Interaction logic for SaveProductCategoryPage.xaml

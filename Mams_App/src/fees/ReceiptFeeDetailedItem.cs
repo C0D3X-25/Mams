@@ -1,10 +1,10 @@
-﻿using Mams.src.entities;
-using Mams.src.items;
-using Mams.src.receipts;
-using Mams.src.suppliers;
+using Mams_App.src.entities;
+using Mams_App.src.items;
+using Mams_App.src.receipts;
+using Mams_App.src.suppliers;
 using System.Collections.ObjectModel;
 
-namespace Mams.src.fees;
+namespace Mams_App.src.fees;
 
 // Class holding all details of a receipt fee item for frontend interaction
 public class ReceiptFeeDetailedItem : ABaseItem {

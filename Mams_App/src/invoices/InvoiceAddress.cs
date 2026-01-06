@@ -1,8 +1,8 @@
-﻿using Mams.src.entities;
+using Mams_App.src.entities;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
-namespace Mams.src.invoices;
+namespace Mams_App.src.invoices;
 
 public class InvoiceAddress : IComponent {
     private string _m_title { get; }

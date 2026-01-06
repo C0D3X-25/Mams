@@ -1,4 +1,4 @@
-using Mams.src.productsLots;
+using Mams_App.src.productsLots;
 
 namespace MamsTest.productsLots;
 

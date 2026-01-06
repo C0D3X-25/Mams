@@ -1,8 +1,8 @@
-using Mams.src.errors;
-using Mams.src.items;
+using Mams_App.src.errors;
+using Mams_App.src.items;
 using MySqlConnector;
 
-namespace Mams.src.databaseOperations;
+namespace Mams_App.src.databaseOperations;
 
 /// <summary>
 /// Represents the response from a get operation, containing the retrieved item and any error.

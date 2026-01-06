@@ -1,9 +1,9 @@
-﻿using Mams.src.items;
-using Mams.src.products;
-using Mams.src.productsLots;
-using Mams.src.views.globalView;
+using Mams_App.src.items;
+using Mams_App.src.products;
+using Mams_App.src.productsLots;
+using Mams_App.src.views.globalView;
 
-namespace Mams.src.receipts;
+namespace Mams_App.src.receipts;
 
 // It's 1 line in a fee receipt
 public class ReceiptProductItem : ABaseItem {

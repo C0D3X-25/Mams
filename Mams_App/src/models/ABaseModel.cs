@@ -1,8 +1,8 @@
-﻿using Mams.src.databaseConnections;
+using Mams_App.src.databaseConnections;
 using MySqlConnector;
 using System.Windows;
 
-namespace Mams.src.models;
+namespace Mams_App.src.models;
 
 /// <summary>
 /// Base class for all models who directly interact with the Database to inherit from.
@@ -28,7 +28,7 @@ public abstract class ABaseModel {
         }
         
         // Otherwise get a new connection from the pool
-        return _m_sql_connection_model.GetConnection();
+        return SQLConnectionModel.GetConnection();
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public abstract class ABaseModel {
         
         // Only start a real transaction if this is the first/outermost call
         if (_m_transaction_depth == 1) {
-            _m_sql_connection = _m_sql_connection_model.GetConnection();
+            _m_sql_connection = SQLConnectionModel.GetConnection();
             _m_sql_transaction = _m_sql_connection.BeginTransaction();
         }
     }
@@ -187,7 +187,7 @@ public abstract class ABaseModel {
     /// <summary>
     /// Checks if a specific item exists in a given table and column in the database.
     /// </summary>
-    protected bool isIdenticItemPresentInTable(string table_name, string column_to_search, string item_to_find)
+    protected static bool isIdenticItemPresentInTable(string table_name, string column_to_search, string item_to_find)
     {
         if (string.IsNullOrEmpty(table_name) 
             || string.IsNullOrEmpty(column_to_search) 

@@ -1,17 +1,17 @@
-﻿using Mams.src.beehives;
-using Mams.src.commands;
-using Mams.src.entities;
-using Mams.src.fees;
-using Mams.src.products;
-using Mams.src.productsCategories;
-using Mams.src.productsLots;
-using Mams.src.productsShapes;
-using Mams.src.productsTypes;
-using Mams.src.profits;
-using Mams.src.views.globalView;
+using Mams_App.src.beehives;
+using Mams_App.src.commands;
+using Mams_App.src.entities;
+using Mams_App.src.fees;
+using Mams_App.src.products;
+using Mams_App.src.productsCategories;
+using Mams_App.src.productsLots;
+using Mams_App.src.productsShapes;
+using Mams_App.src.productsTypes;
+using Mams_App.src.profits;
+using Mams_App.src.views.globalView;
 using System.Windows.Input;
 
-namespace Mams.src.navigations;
+namespace Mams_App.src.navigations;
 
 public class UCMenuController {
 

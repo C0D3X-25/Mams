@@ -1,14 +1,14 @@
-﻿using Mams.src.errors;
-using Mams.src.helpers;
-using Mams.src.items;
-using Mams.src.models;
+using Mams_App.src.errors;
+using Mams_App.src.helpers;
+using Mams_App.src.items;
+using Mams_App.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Reflection;
 using System.Windows;
 
-namespace Mams.src.databaseOperations;
+namespace Mams_App.src.databaseOperations;
 
 /// <summary>
 /// Provides static database operations for handling data models in the application.

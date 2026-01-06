@@ -1,10 +1,10 @@
-﻿using Mams.src.clients;
-using Mams.src.entities;
-using Mams.src.items;
-using Mams.src.receipts;
+using Mams_App.src.clients;
+using Mams_App.src.entities;
+using Mams_App.src.items;
+using Mams_App.src.receipts;
 using System.Collections.ObjectModel;
 
-namespace Mams.src.profits;
+namespace Mams_App.src.profits;
 
 // Class holding all details of a receipt profit item for frontend interaction
 public class ReceiptProfitDetailedItem : ABaseItem {

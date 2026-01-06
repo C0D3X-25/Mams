@@ -1,7 +1,7 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Mams.src.resumes;
+namespace Mams_App.src.resumes;
 
 /// <summary>
 /// Interaction logic for ResumePage.xaml

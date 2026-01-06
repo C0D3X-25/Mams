@@ -1,5 +1,5 @@
-using Mams.src.clients;
-using Mams.src.errors;
+using Mams_App.src.clients;
+using Mams_App.src.errors;
 
 namespace MamsTest.clients;
 

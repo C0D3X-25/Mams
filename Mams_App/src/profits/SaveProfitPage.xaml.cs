@@ -1,6 +1,6 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 
-namespace Mams.src.profits;
+namespace Mams_App.src.profits;
 
 /// <summary>
 /// Interaction logic for SaveProfitPage.xaml

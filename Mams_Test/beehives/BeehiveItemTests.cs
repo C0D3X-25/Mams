@@ -1,4 +1,4 @@
-using Mams.src.beehives;
+using Mams_App.src.beehives;
 
 namespace MamsTest.beehives;
 

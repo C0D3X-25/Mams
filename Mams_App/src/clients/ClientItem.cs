@@ -1,6 +1,6 @@
-﻿using Mams.src.items;
+using Mams_App.src.items;
 
-namespace Mams.src.clients;
+namespace Mams_App.src.clients;
 
 public class ClientItem : ABaseItem {
 

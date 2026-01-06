@@ -1,4 +1,4 @@
-using Mams.src.clients;
+using Mams_App.src.clients;
 
 namespace MamsTest.clients;
 

@@ -6,9 +6,9 @@ using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
-using Mams.src.configurations;
+using Mams_App.src.configurations;
 
-namespace Mams.src.services;
+namespace Mams_App.src.services;
 
 /// <summary>
 /// Service to check for application updates from GitHub Releases and apply them.

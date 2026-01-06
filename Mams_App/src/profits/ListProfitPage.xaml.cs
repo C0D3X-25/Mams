@@ -1,7 +1,7 @@
-﻿using System.Windows.Controls;
+using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Mams.src.profits {
+namespace Mams_App.src.profits {
     /// <summary>
     /// Interaction logic for ListProfitPage.xaml
     /// </summary>

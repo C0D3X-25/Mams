@@ -1,4 +1,4 @@
-using Mams.src.entities;
+using Mams_App.src.entities;
 
 namespace MamsTest.entities;
 

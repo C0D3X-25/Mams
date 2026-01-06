@@ -1,5 +1,4 @@
-﻿
-namespace Mams.src.items;
+namespace Mams_App.src.items;
 
 /// <summary>
 /// Represents the base class for items in a hierarchy or collection.

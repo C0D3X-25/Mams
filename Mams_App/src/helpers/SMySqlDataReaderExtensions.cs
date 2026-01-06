@@ -1,7 +1,6 @@
-
 using MySqlConnector;
 
-namespace Mams.src.helpers;
+namespace Mams_App.src.helpers;
 
 public static class SMySqlDataReaderExtensions {
 

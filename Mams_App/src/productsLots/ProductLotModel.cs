@@ -1,13 +1,13 @@
-﻿using Mams.src.beehives;
-using Mams.src.databaseOperations;
-using Mams.src.errors;
-using Mams.src.helpers;
-using Mams.src.models;
+using Mams_App.src.beehives;
+using Mams_App.src.databaseOperations;
+using Mams_App.src.errors;
+using Mams_App.src.helpers;
+using Mams_App.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.Windows;
 
-namespace Mams.src.productsLots;
+namespace Mams_App.src.productsLots;
 
 /// <summary>
 /// Represents a model for managing product lots in the database.

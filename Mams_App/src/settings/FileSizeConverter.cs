@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace Mams.src.settings;
+namespace Mams_App.src.settings;
 
 /// <summary>
 /// Converts file size in bytes to a human-readable string (KB, MB, etc.)
