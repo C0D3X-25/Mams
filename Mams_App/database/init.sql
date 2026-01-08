@@ -1,6 +1,11 @@
 -- DROP DATABASE IF EXISTS mams_db;
-CREATE DATABASE IF NOT EXISTS mams_db;
+CREATE DATABASE IF NOT EXISTS mams_db
+    CHARACTER SET utf8mb4
+    COLLATE utf8mb4_unicode_ci;
 USE mams_db;
+
+-- Set default charset for this session
+SET NAMES utf8mb4;
 
 CREATE TABLE IF NOT EXISTS entities (
     entity_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -10,27 +15,27 @@ CREATE TABLE IF NOT EXISTS entities (
     entity_city VARCHAR(50),
     entity_address VARCHAR(255),
     entity_archive DATE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_entity_name ON entities(entity_name);
 
 CREATE TABLE IF NOT EXISTS suppliers (
     supplier_id INT PRIMARY KEY AUTO_INCREMENT,
     fk_entity_id INT NOT NULL,
     FOREIGN KEY (fk_entity_id) REFERENCES entities(entity_id)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS clients (
     client_id INT PRIMARY KEY AUTO_INCREMENT,
     fk_entity_id INT NOT NULL,
     FOREIGN KEY (fk_entity_id) REFERENCES entities(entity_id)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS receipts (
     receipt_id INT PRIMARY KEY AUTO_INCREMENT,
     receipt_number VARCHAR(50) NOT NULL,
     receipt_total_price DECIMAL(9,2) NOT NULL,
     receipt_date_created DATE NOT NULL
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_receipt_number ON receipts(receipt_number);
 CREATE INDEX idx_receipt_total_price ON receipts(receipt_total_price);
 CREATE INDEX idx_receipt_date_created ON receipts(receipt_date_created);
@@ -40,41 +45,41 @@ CREATE TABLE IF NOT EXISTS receipts_suppliers(
     fk_supplier_id INT NOT NULL,
     FOREIGN KEY (fk_receipt_id) REFERENCES receipts(receipt_id),
     FOREIGN KEY (fk_supplier_id) REFERENCES suppliers(supplier_id)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS receipts_clients(
     fk_receipt_id INT NOT NULL,
     fk_client_id INT NOT NULL,
     FOREIGN KEY (fk_receipt_id) REFERENCES receipts(receipt_id),
     FOREIGN KEY (fk_client_id) REFERENCES clients(client_id)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS products_types (
     product_type_id INT PRIMARY KEY AUTO_INCREMENT,
     product_type_name VARCHAR(100) NOT NULL,
     product_type_archive DATE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_product_type_name ON products_types(product_type_name);
 
 CREATE TABLE IF NOT EXISTS products_categories (
     product_category_id INT PRIMARY KEY AUTO_INCREMENT,
     product_category_name VARCHAR(100) NOT NULL,
     product_category_archive DATE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_product_category_name ON products_categories(product_category_name);
 
 CREATE TABLE IF NOT EXISTS products_shapes (
     product_shape_id INT PRIMARY KEY AUTO_INCREMENT,
     product_shape_name VARCHAR(100) NOT NULL,
     product_shape_archive DATE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_product_shape_name ON products_shapes(product_shape_name);
 
 CREATE TABLE IF NOT EXISTS beehives (
     beehive_id INT PRIMARY KEY AUTO_INCREMENT,
     beehive_name VARCHAR(50) NOT NULL,
     beehive_archive DATE
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_beehive_name ON beehives(beehive_name);
 
 CREATE TABLE IF NOT EXISTS products_lots (
@@ -84,7 +89,7 @@ CREATE TABLE IF NOT EXISTS products_lots (
     product_lot_archive DATE,
     fk_beehive_id INT,
     FOREIGN KEY (fk_beehive_id) REFERENCES beehives(beehive_id)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_product_lot_name ON products_lots(product_lot_name);
 CREATE INDEX idx_product_lot_year ON products_lots(product_lot_year);
 
@@ -99,7 +104,7 @@ CREATE TABLE IF NOT EXISTS products (
     FOREIGN KEY (fk_product_type_id) REFERENCES products_types(product_type_id),
     FOREIGN KEY (fk_product_category_id) REFERENCES products_categories(product_category_id),
     FOREIGN KEY (fk_product_shape_id) REFERENCES products_shapes(product_shape_id)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_product_name ON products(product_name);
 CREATE INDEX idx_product_weight ON products(product_weight);
 
@@ -113,7 +118,7 @@ CREATE TABLE IF NOT EXISTS receipts_products (
     FOREIGN KEY (fk_product_id) REFERENCES products(product_id),
     FOREIGN KEY (fk_receipt_id) REFERENCES receipts(receipt_id),
     FOREIGN KEY (fk_product_lot_id) REFERENCES products_lots(product_lot_id)
-);
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_receipt_product_quantity ON receipts_products(receipt_product_quantity);
 CREATE INDEX idx_receipt_product_unity_price ON receipts_products(receipt_product_unity_price);
 

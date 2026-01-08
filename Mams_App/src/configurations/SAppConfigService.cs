@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text;
 using System.Text.Json;
 
 namespace Mams_App.src.configurations;
@@ -33,7 +34,7 @@ public static class SAppConfigService
                 return new AppConfigItem();
             }
 
-            string json = File.ReadAllText(_configFilePath);
+            string json = File.ReadAllText(_configFilePath, Encoding.UTF8);
             var config = JsonSerializer.Deserialize<AppConfigItem>(json);
             
             return config ?? new AppConfigItem();
@@ -59,7 +60,7 @@ public static class SAppConfigService
             }
 
             string json = JsonSerializer.Serialize(config, _jsonOptions);
-            File.WriteAllText(_configFilePath, json);
+            File.WriteAllText(_configFilePath, json, Encoding.UTF8);
         }
         catch
         {

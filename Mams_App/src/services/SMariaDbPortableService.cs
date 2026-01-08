@@ -49,12 +49,12 @@ public static class SMariaDbPortableService
     /// <summary>
     /// Gets the connection string for the portable MariaDB instance.
     /// </summary>
-    public static string ConnectionString => $"server=localhost;port={MARIADB_PORT};uid=root;pwd=;database={DATABASE_NAME};pooling=true;min pool size=5;max pool size=50;";
+    public static string ConnectionString => $"server=localhost;port={MARIADB_PORT};uid=root;pwd=;database={DATABASE_NAME};charset=utf8mb4;pooling=true;min pool size=5;max pool size=50;";
 
     /// <summary>
     /// Gets the connection string without database specified (for initial setup).
     /// </summary>
-    public static string ConnectionStringNoDb => $"server=localhost;port={MARIADB_PORT};uid=root;pwd=;Connection Timeout=10;";
+    public static string ConnectionStringNoDb => $"server=localhost;port={MARIADB_PORT};uid=root;pwd=;charset=utf8mb4;Connection Timeout=10;";
 
     /// <summary>
     /// Checks if MariaDB Portable is installed.
