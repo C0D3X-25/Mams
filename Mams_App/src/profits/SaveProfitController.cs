@@ -8,7 +8,6 @@ using Mams_App.src.products;
 using Mams_App.src.productsLots;
 using Mams_App.src.receipts;
 using Mams_App.src.services;
-using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -17,14 +16,6 @@ namespace Mams_App.src.profits;
 
 public class SaveProfitController : ABaseController, ICompareState
 {
-
-    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
-    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
-    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
-    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
-    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
-    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
-
 
     private readonly ProductModel _m_product_model = new();
     private readonly EntityModel _m_entity_model = new();

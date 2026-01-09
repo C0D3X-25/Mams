@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:Mams_App.src.views.UserControls"
              xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
              mc:Ignorable="d" 
-             d:DesignHeight="{x:Static globalView:SGlobalViewSize.UC_LABEL_TEXTBOX_DESIGN_HEIGHT}" 
-             d:DesignWidth="{x:Static globalView:SGlobalViewSize.UC_LABEL_TEXTBOX_DESIGN_WIDTH}"
+             d:DesignHeight="{x:Static globalView:SGlobalView.UC_LABEL_TEXTBOX_DESIGN_HEIGHT}" 
+             d:DesignWidth="{x:Static globalView:SGlobalView.UC_LABEL_TEXTBOX_DESIGN_WIDTH}"
              x:Name="root">
     
     <!--Label + TextBox-->

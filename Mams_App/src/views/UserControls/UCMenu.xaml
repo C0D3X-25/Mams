@@ -6,12 +6,12 @@
              xmlns:local="clr-namespace:Mams_App.src.views.UserControls"
              xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
              mc:Ignorable="d" 
-             d:DesignHeight="{x:Static globalView:SGlobalViewSize.UC_MENU_DESIGN_HEIGHT}" 
-             d:DesignWidth="{x:Static globalView:SGlobalViewSize.UC_MENU_DESIGN_WIDTH}"
+             d:DesignHeight="{x:Static globalView:SGlobalView.UC_MENU_DESIGN_HEIGHT}" 
+             d:DesignWidth="{x:Static globalView:SGlobalView.UC_MENU_DESIGN_WIDTH}"
              x:Name="root">
     <!--Menu-->
     <Grid Grid.Column="0" 
-          Background="{Binding m_background_color_1}" 
+          Background="{x:Static globalView:SGlobalView.MENU_BACKGROUND_COLOR}" 
           Margin="10,3,3,3">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -22,7 +22,7 @@
 
         <!--Menu Buttons-->
         <Grid Grid.Column="0" 
-              Background="{Binding m_background_color_2}" 
+              Background="{x:Static globalView:SGlobalView.MENU_BACKGROUND_COLOR}" 
               MinHeight="400" MaxHeight="600" 
               VerticalAlignment="Top">
             <Grid.RowDefinitions>
@@ -42,7 +42,7 @@
             </Grid.ColumnDefinitions>
             <Label 
                 Content="Menu"
-                Foreground="{Binding m_button_text_color}"
+                Foreground="{x:Static globalView:SGlobalView.MENU_BUTTON_TEXT_COLOR}"
                 FontSize="20" 
                 HorizontalAlignment="Center" VerticalAlignment="Center"/>
             <Button 
@@ -50,72 +50,72 @@
                 Grid.Row="1" 
                 FontSize="16" 
                 Margin="3"
-                Background="{Binding m_button_color}"
-                Foreground="{Binding m_button_text_color}"
+                Background="{x:Static globalView:SGlobalView.MENU_BUTTON_COLOR}"
+                Foreground="{x:Static globalView:SGlobalView.MENU_BUTTON_TEXT_COLOR}"
                 Command="{Binding m_navigate_list_profit_command}"/>
             <Button 
                 Content="Frais" 
                 Grid.Row="2" 
                 FontSize="16" 
                 Margin="3"
-                Background="{Binding m_button_color}"
-                Foreground="{Binding m_button_text_color}"
+                Background="{x:Static globalView:SGlobalView.MENU_BUTTON_COLOR}"
+                Foreground="{x:Static globalView:SGlobalView.MENU_BUTTON_TEXT_COLOR}"
                 Command="{Binding m_navigate_list_fee_command}"/>
             <Button 
                 Content="Contacts"
                 Grid.Row="3"
                 FontSize="16"
                 Margin="3"
-                Background="{Binding m_button_color}"
-                Foreground="{Binding m_button_text_color}"
+                Background="{x:Static globalView:SGlobalView.MENU_BUTTON_COLOR}"
+                Foreground="{x:Static globalView:SGlobalView.MENU_BUTTON_TEXT_COLOR}"
                 Command="{Binding m_navigate_list_entity_command}"/>
             <Button 
                 Content="Produits" 
                 Grid.Row="4" 
                 FontSize="16" 
                 Margin="3"
-                Background="{Binding m_button_color}"
-                Foreground="{Binding m_button_text_color}"
+                Background="{x:Static globalView:SGlobalView.MENU_BUTTON_COLOR}"
+                Foreground="{x:Static globalView:SGlobalView.MENU_BUTTON_TEXT_COLOR}"
                 Command="{Binding m_navigate_list_product_command}"/>
             <Button 
                 Content="Lots"
                 Grid.Row="5"
                 FontSize="16" 
                 Margin="3"
-                Background="{Binding m_button_color}"
-                Foreground="{Binding m_button_text_color}"
+                Background="{x:Static globalView:SGlobalView.MENU_BUTTON_COLOR}"
+                Foreground="{x:Static globalView:SGlobalView.MENU_BUTTON_TEXT_COLOR}"
                 Command="{Binding m_navigate_list_lot_command}"/>
             <Button 
                 Content="Ruchers"
                 Grid.Row="6"
                 FontSize="16" 
                 Margin="3"
-                Background="{Binding m_button_color}"
-                Foreground="{Binding m_button_text_color}"
+                Background="{x:Static globalView:SGlobalView.MENU_BUTTON_COLOR}"
+                Foreground="{x:Static globalView:SGlobalView.MENU_BUTTON_TEXT_COLOR}"
                 Command="{Binding m_navigate_list_beehive_command}"/>
             <Button 
                 Content="Catégories de Produit"
                 Grid.Row="7"
                 FontSize="16" 
                 Margin="3"
-                Background="{Binding m_button_color}"
-                Foreground="{Binding m_button_text_color}"
+                Background="{x:Static globalView:SGlobalView.MENU_BUTTON_COLOR}"
+                Foreground="{x:Static globalView:SGlobalView.MENU_BUTTON_TEXT_COLOR}"
                 Command="{Binding m_navigate_list_product_category_command}"/>
             <Button 
                 Content="Types de Produit"
                 Grid.Row="8"
                 FontSize="16" 
                 Margin="3"
-                Background="{Binding m_button_color}"
-                Foreground="{Binding m_button_text_color}"
+                Background="{x:Static globalView:SGlobalView.MENU_BUTTON_COLOR}"
+                Foreground="{x:Static globalView:SGlobalView.MENU_BUTTON_TEXT_COLOR}"
                 Command="{Binding m_navigate_list_product_type_command}"/>
             <Button 
                 Content="Formes de Produit"
                 Grid.Row="9"
                 FontSize="16" 
                 Margin="3"
-                Background="{Binding m_button_color}"
-                Foreground="{Binding m_button_text_color}"
+                Background="{x:Static globalView:SGlobalView.MENU_BUTTON_COLOR}"
+                Foreground="{x:Static globalView:SGlobalView.MENU_BUTTON_TEXT_COLOR}"
                 Command="{Binding m_navigate_list_product_shape_command}"/>
         </Grid>
         <!--Menu Buttons-->

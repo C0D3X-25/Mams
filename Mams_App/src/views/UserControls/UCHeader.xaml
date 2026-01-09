@@ -6,12 +6,12 @@
              xmlns:local="clr-namespace:Mams_App.src.views.UserControls"
              xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
              mc:Ignorable="d" 
-             d:DesignHeight="{x:Static globalView:SGlobalViewSize.UC_HEADER_DESIGN_HEIGHT}" 
-             d:DesignWidth="{x:Static globalView:SGlobalViewSize.UC_HEADER_DESIGN_WIDTH}"
+             d:DesignHeight="{x:Static globalView:SGlobalView.UC_HEADER_DESIGN_HEIGHT}" 
+             d:DesignWidth="{x:Static globalView:SGlobalView.UC_HEADER_DESIGN_WIDTH}"
              x:Name="root">
 
     <!--Header-->
-    <Grid Background="{Binding m_page_top_color}">
+    <Grid Background="{x:Static globalView:SGlobalView.HEADER_TOP_COLOR}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
@@ -26,8 +26,8 @@
             HorizontalAlignment="Left" 
             MinHeight="40" MinWidth="40"
             FontSize="12" FontWeight="Bold"
-            Background="{Binding m_button_background_color}"
-            Foreground="{Binding m_button_text_color}"
+            Background="{x:Static globalView:SGlobalView.HEADER_BUTTON_BACKGROUND_COLOR}"
+            Foreground="{x:Static globalView:SGlobalView.HEADER_BUTTON_TEXT_COLOR}"
             Command="{Binding m_navigate_homepage_command}">
         </Button>
 
@@ -37,7 +37,7 @@
             Content="{Binding title, ElementName=root}" 
             FontSize="25" FontWeight="Bold"
             HorizontalAlignment="Center" VerticalAlignment="Center" 
-            Foreground="{Binding m_page_title_color}">
+            Foreground="{x:Static globalView:SGlobalView.HEADER_TITLE_COLOR}">
         </Label>
     </Grid>
 </UserControl>

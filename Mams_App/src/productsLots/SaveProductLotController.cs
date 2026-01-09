@@ -4,7 +4,6 @@ using Mams_App.src.controllers;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
 using Mams_App.src.navigations;
-using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -13,14 +12,6 @@ namespace Mams_App.src.productsLots;
 
 public class SaveProductLotController : ABaseController, ICompareState
 {
-
-    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
-    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
-    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
-    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
-    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
-    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
-
 
     private readonly ProductLotModel _m_product_lot_model = new();
     private readonly BeehiveModel _m_beehive_model = new();

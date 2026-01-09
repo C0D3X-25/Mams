@@ -8,10 +8,10 @@
         xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
         mc:Ignorable="d"
         Title="Mams" 
-        Height="{x:Static globalView:SGlobalViewSize.MAIN_WINDOW_HEIGHT}" 
-        Width="{x:Static globalView:SGlobalViewSize.MAIN_WINDOW_WIDTH}" 
-        MinHeight="{x:Static globalView:SGlobalViewSize.MAIN_WINDOW_MIN_HEIGHT}" 
-        MinWidth="{x:Static globalView:SGlobalViewSize.MAIN_WINDOW_MIN_WIDTH}">
+        Height="{x:Static globalView:SGlobalView.MAIN_WINDOW_HEIGHT}" 
+        Width="{x:Static globalView:SGlobalView.MAIN_WINDOW_WIDTH}" 
+        MinHeight="{x:Static globalView:SGlobalView.MAIN_WINDOW_MIN_HEIGHT}" 
+        MinWidth="{x:Static globalView:SGlobalView.MAIN_WINDOW_MIN_WIDTH}">
 
     <DockPanel>
         <!-- Menu Bar -->

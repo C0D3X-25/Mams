@@ -9,11 +9,11 @@
     xmlns:commands="clr-namespace:Mams_App.src.commands"
     xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
     mc:Ignorable="d" 
-    d:DesignHeight="{x:Static globalView:SGlobalViewSize.PAGE_DESIGN_HEIGHT}" 
-    d:DesignWidth="{x:Static globalView:SGlobalViewSize.PAGE_DESIGN_WIDTH}"
+    d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
+    d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
     Title="ResumePage">
 
-    <Grid Background="{Binding m_page_background_color}">
+    <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" MaxHeight="80"/>
             <RowDefinition Height="10*"/>
@@ -35,7 +35,7 @@
 
             <!--Content-->
             <Grid Grid.Column="1" 
-                 Background="{Binding m_body_background_color}" 
+                 Background="{x:Static globalView:SGlobalView.PAGE_BODY_COLOR}" 
                  Margin="3,3,10,3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
@@ -118,12 +118,12 @@
                        MaxWidth="25" MaxHeight="25"
                        Content="X"
                        Command="{Binding m_clear_search_command}"
-                       Background="{Binding m_page_button_color_1}"
-                       Foreground="{Binding m_page_button_text_color}"/>
+                       Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
+                       Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"/>
                 </Grid>
 
                 <!--Resume Views-->
-                <Grid Grid.Row="1" Margin="05">
+                <Grid Grid.Row="1" Margin="5">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -186,85 +186,111 @@
                     </ListView>
                 </Grid>
 
-                <Grid Grid.Row="2" Margin="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                <Grid Grid.Row="2" Margin="5, 2">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
 
-                    <!--Row 0: Poids Total / Total Profits-->
-                    <Label Grid.Column="0" Grid.Row="0"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Poids Total (profit) :"/>
-                    <Label Grid.Column="1" Grid.Row="0"
-                       HorizontalContentAlignment="Left"
-                       FontSize="16"
-                       Content="{Binding m_total_weight_ui}"/>
-                    <Label Grid.Column="2" Grid.Row="0"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Total Profits :"/>
-                    <Label Grid.Column="3" Grid.Row="0"
-                       HorizontalContentAlignment="Left"
-                       FontSize="16"
-                       Content="{Binding m_total_profit_ui}"/>
+                    <!--Profit Totals (Left Column)-->
+                    <Grid Grid.Column="0" Margin="0,0,5,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <!--Row 1: Quantité Total / Total Frais-->
-                    <Label Grid.Column="0" Grid.Row="1"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Quantité Total (profit) :"/>
-                    <Label Grid.Column="1" Grid.Row="1"
-                       HorizontalContentAlignment="Left"
-                       FontSize="16"
-                       Content="{Binding m_total_quantity_ui}"/>
-                    <Label Grid.Column="2" Grid.Row="1"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Total Frais :"/>
-                    <Label Grid.Column="3" Grid.Row="1"
-                       HorizontalContentAlignment="Left"
-                       FontSize="16"
-                       Foreground="{Binding m_total_fee_color}"
-                       Content="{Binding m_total_fee_ui}"/>
+                        <!--Row 0: Poids Total-->
+                        <Label Grid.Column="0" Grid.Row="0"
+                           HorizontalContentAlignment="Right"
+                           FontSize="16"
+                           Content="Poids Total (profit) :"/>
+                        <Label Grid.Column="1" Grid.Row="0"
+                           HorizontalContentAlignment="Left"
+                           FontSize="16"
+                           Content="{Binding m_total_weight_ui}"/>
 
-                    <!--Row 2: Prix Moyen par Unité / Total-->
-                    <Label Grid.Column="0" Grid.Row="2"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Prix Moyen par Unité (profit) :"/>
-                    <Label Grid.Column="1" Grid.Row="2"
-                       HorizontalContentAlignment="Left"
-                       FontSize="16"
-                       Content="{Binding m_average_price_per_unit_ui}"/>
-                    <Label Grid.Column="2" Grid.Row="2"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Total :"/>
-                    <Label Grid.Column="3" Grid.Row="2"
-                       HorizontalContentAlignment="Left"
-                       FontSize="16"
-                       Foreground="{Binding m_total_color}"
-                       Content="{Binding m_total_ui}"/>
+                        <!--Row 1: Quantité Total-->
+                        <Label Grid.Column="0" Grid.Row="1"
+                           HorizontalContentAlignment="Right"
+                           FontSize="16"
+                           Content="Quantité Total (profit) :"/>
+                        <Label Grid.Column="1" Grid.Row="1"
+                           HorizontalContentAlignment="Left"
+                           FontSize="16"
+                           Content="{Binding m_total_quantity_ui}"/>
 
-                    <!--Row 3: Prix Moyen par kg-->
-                    <Label Grid.Column="0" Grid.Row="3"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Prix Moyen par kg (profit) :"/>
-                    <Label Grid.Column="1" Grid.Row="3"
-                       HorizontalContentAlignment="Left"
-                       FontSize="16"
-                       Content="{Binding m_average_price_per_weight_ui}"/>
+                        <!--Row 2: Prix Moyen par Unité-->
+                        <Label Grid.Column="0" Grid.Row="2"
+                           HorizontalContentAlignment="Right"
+                           FontSize="16"
+                           Content="Prix Moyen par Unité (profit) :"/>
+                        <Label Grid.Column="1" Grid.Row="2"
+                           HorizontalContentAlignment="Left"
+                           FontSize="16"
+                           Content="{Binding m_average_price_per_unit_ui}"/>
+
+                        <!--Row 3: Prix Moyen par kg-->
+                        <Label Grid.Column="0" Grid.Row="3"
+                           HorizontalContentAlignment="Right"
+                           FontSize="16"
+                           Content="Prix Moyen par kg (profit) :"/>
+                        <Label Grid.Column="1" Grid.Row="3"
+                           HorizontalContentAlignment="Left"
+                           FontSize="16"
+                           Content="{Binding m_average_price_per_weight_ui}"/>
+                    </Grid>
+
+                    <!--Fee Totals (Right Column)-->
+                    <Grid Grid.Column="1" Margin="5,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!--Row 0: Total Profits-->
+                        <Label Grid.Column="0" Grid.Row="0"
+                           HorizontalContentAlignment="Right"
+                           FontSize="16"
+                           Content="Total Profits :"/>
+                        <Label Grid.Column="1" Grid.Row="0"
+                           HorizontalContentAlignment="Left"
+                           FontSize="16"
+                           Content="{Binding m_total_profit_ui}"/>
+
+                        <!--Row 1: Total Frais-->
+                        <Label Grid.Column="0" Grid.Row="1"
+                           HorizontalContentAlignment="Right"
+                           FontSize="16"
+                           Content="Total Frais :"/>
+                        <Label Grid.Column="1" Grid.Row="1"
+                           HorizontalContentAlignment="Left"
+                           FontSize="16"
+                           Foreground="{Binding m_total_fee_color}"
+                           Content="{Binding m_total_fee_ui}"/>
+
+                        <!--Row 2: Total-->
+                        <Label Grid.Column="0" Grid.Row="2"
+                           HorizontalContentAlignment="Right"
+                           FontSize="16"
+                           Content="Total :"/>
+                        <Label Grid.Column="1" Grid.Row="2"
+                           HorizontalContentAlignment="Left"
+                           FontSize="16"
+                           Foreground="{Binding m_total_color}"
+                           Content="{Binding m_total_ui}"/>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>

@@ -5,18 +5,16 @@ using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Mams_App.src.profits;
 
 public class ListProfitController : ABaseController
 {
 
-    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
-    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
-    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
-    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
-    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
-    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+
+    public SolidColorBrush m_delete_button_color { get; } = SGlobalView.DELETE_BUTTON_COLOR;
+    public SolidColorBrush m_delete_button_text_color { get; } = SGlobalView.DELETE_BUTTON_TEXT_COLOR;
 
 
     private readonly ReceiptProfitDetailedModel _m_item_model = new();

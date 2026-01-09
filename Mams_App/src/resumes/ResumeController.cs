@@ -15,11 +15,6 @@ namespace Mams_App.src.resumes;
 public class ResumeController : ABaseController
 {
 
-    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
-    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
-    public string m_page_button_color_1 { get; set; } = SGlobalView.m_header_button_background_color;
-    public string m_page_button_text_color { get; set; } = SGlobalView.m_header_button_text_color;
-
     public ICommand m_clear_search_command { get; }
     public ICommand m_double_click_command_profit { get; }
     public ICommand m_double_click_command_fee { get; }
@@ -249,7 +244,7 @@ public class ResumeController : ABaseController
     }
     public string m_average_price_per_weight_ui => $"{m_average_price_per_weight:F2} CHF/kg";
 
-    private SolidColorBrush _m_total_fee_color = Brushes.Black;
+    private SolidColorBrush _m_total_fee_color = SGlobalView.DEFAULT_TEXT_COLOR;
     public SolidColorBrush m_total_fee_color
     {
         get => _m_total_fee_color;
@@ -263,9 +258,7 @@ public class ResumeController : ABaseController
         }
     }
 
-
-
-    private SolidColorBrush _m_total_color = Brushes.Black;
+    private SolidColorBrush _m_total_color = SGlobalView.DEFAULT_TEXT_COLOR;
     public SolidColorBrush m_total_color
     {
         get => _m_total_color;
@@ -409,9 +402,9 @@ public class ResumeController : ABaseController
         m_total_fee = transaction_totals.total_fee;
         m_total = transaction_totals.total;
 
-        // UI-specific logic stays in the controller
-        m_total_fee_color = transaction_totals.total_fee < 0 ? Brushes.Red : Brushes.Black;
-        m_total_color = transaction_totals.total < 0 ? Brushes.Red : Brushes.Black;
+        // Update colors based on negative values
+        m_total_fee_color = transaction_totals.total_fee < 0 ? SGlobalView.NEGATIVE_VALUE_COLOR : SGlobalView.DEFAULT_TEXT_COLOR;
+        m_total_color = transaction_totals.total < 0 ? SGlobalView.NEGATIVE_VALUE_COLOR : SGlobalView.DEFAULT_TEXT_COLOR;
     }
 
     private void updateDisplayedDetailTransactions()

@@ -7,10 +7,10 @@
         xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
         mc:Ignorable="d"
         Title="Settings" 
-        Height="{x:Static globalView:SGlobalViewSize.SETTINGS_WINDOW_HEIGHT}" 
-        Width="{x:Static globalView:SGlobalViewSize.SETTINGS_WINDOW_WIDTH}"
-        MinHeight="{x:Static globalView:SGlobalViewSize.SETTINGS_WINDOW_MIN_HEIGHT}" 
-        MinWidth="{x:Static globalView:SGlobalViewSize.SETTINGS_WINDOW_MIN_WIDTH}"
+        Height="{x:Static globalView:SGlobalView.SETTINGS_WINDOW_HEIGHT}" 
+        Width="{x:Static globalView:SGlobalView.SETTINGS_WINDOW_WIDTH}"
+        MinHeight="{x:Static globalView:SGlobalView.SETTINGS_WINDOW_MIN_HEIGHT}" 
+        MinWidth="{x:Static globalView:SGlobalView.SETTINGS_WINDOW_MIN_WIDTH}"
         WindowStartupLocation="CenterOwner"
         ResizeMode="CanResize">
         

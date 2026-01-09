@@ -8,11 +8,11 @@
       xmlns:commands="clr-namespace:Mams_App.src.commands"
       xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
       mc:Ignorable="d" 
-      d:DesignHeight="{x:Static globalView:SGlobalViewSize.PAGE_DESIGN_HEIGHT}" 
-      d:DesignWidth="{x:Static globalView:SGlobalViewSize.PAGE_DESIGN_WIDTH}"
+      d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
+      d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
       Title="ListProfitPage">
 
-    <Grid Background="{Binding m_page_background_color}">
+    <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" MaxHeight="80"/>
             <RowDefinition Height="10*"/>
@@ -46,7 +46,7 @@
             <!--Content-->
             <Grid 
                 Grid.Column="1" 
-                Background="{Binding m_body_background_color}" 
+                Background="{x:Static globalView:SGlobalView.PAGE_BODY_COLOR}" 
                 Margin="3,3,10,3">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -72,7 +72,7 @@
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="10*"/>
                             <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
 
@@ -119,8 +119,8 @@
                         HorizontalAlignment="Right" VerticalAlignment="Center"
                         Margin="0,0,200,0"
                         FontSize="16"
-                        Background="{Binding m_button_color}"
-                        Foreground="{Binding m_button_text_color}"                            
+                        Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
+                        Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"                            
                     ></Button>
 
                     <!--Add new Product Buttons-->
@@ -133,8 +133,8 @@
                         HorizontalAlignment="Right" VerticalAlignment="Center"
                         Margin="0,0,50,0"
                         FontSize="16"
-                        Background="{Binding m_button_color}"
-                        Foreground="{Binding m_button_text_color}"                            
+                        Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
+                        Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"                            
                     ></Button>
                 </Grid>
             </Grid>

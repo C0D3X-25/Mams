@@ -8,18 +8,12 @@ using Mams_App.src.productsLots;
 using Mams_App.src.productsShapes;
 using Mams_App.src.productsTypes;
 using Mams_App.src.profits;
-using Mams_App.src.views.globalView;
 using System.Windows.Input;
 
 namespace Mams_App.src.navigations;
 
 public class UCMenuController
 {
-
-    public string m_background_color_1 { get; set; } = SGlobalView.m_menu_background_color_1;
-    public string m_background_color_2 { get; set; } = SGlobalView.m_menu_background_color_2;
-    public string m_button_color { get; set; } = SGlobalView.m_menu_button_background_color;
-    public string m_button_text_color { get; set; } = SGlobalView.m_menu_button_text_color;
 
 
     public ICommand m_navigate_list_fee_command { get; set; }

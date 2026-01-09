@@ -6,12 +6,13 @@
              xmlns:local="clr-namespace:Mams_App.src.views.UserControls"
              xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
              mc:Ignorable="d" 
-             d:DesignHeight="{x:Static globalView:SGlobalViewSize.UC_FOOTER_DESIGN_HEIGHT}" 
-             d:DesignWidth="{x:Static globalView:SGlobalViewSize.UC_FOOTER_DESIGN_WIDTH}"
+             d:DesignHeight="{x:Static globalView:SGlobalView.UC_FOOTER_DESIGN_HEIGHT}" 
+             d:DesignWidth="{x:Static globalView:SGlobalView.UC_FOOTER_DESIGN_WIDTH}"
              x:Name="root">
     <!--Footer-->
     <Grid 
-          Grid.Row="3" Background="{Binding m_background_color}">
+          Grid.Row="3" 
+          Background="{x:Static globalView:SGlobalView.FOOTER_BACKGROUND_COLOR}">
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>

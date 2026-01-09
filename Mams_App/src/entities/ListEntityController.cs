@@ -6,6 +6,7 @@ using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Mams_App.src.entities;
 
@@ -15,12 +16,33 @@ namespace Mams_App.src.entities;
 public class ListEntityController : ABaseController
 {
 
-    public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
-    public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
-    public string m_button_color { get; set; } = SGlobalView.m_page_button_color_1;
-    public string m_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
-    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
-    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
+    private SolidColorBrush _m_delete_button_color = SGlobalView.DELETE_BUTTON_COLOR;
+    public SolidColorBrush m_delete_button_color
+    {
+        get => _m_delete_button_color;
+        set
+        {
+            if (_m_delete_button_color != value)
+            {
+                _m_delete_button_color = value;
+                onPropertyChanged();
+            }
+        }
+    }
+
+    private SolidColorBrush _m_delete_button_text_color = SGlobalView.DELETE_BUTTON_TEXT_COLOR;
+    public SolidColorBrush m_delete_button_text_color
+    {
+        get => _m_delete_button_text_color;
+        set
+        {
+            if (_m_delete_button_text_color != value)
+            {
+                _m_delete_button_text_color = value;
+                onPropertyChanged();
+            }
+        }
+    }
 
 
     private readonly EntityModel _m_item_model = new();
@@ -110,6 +132,8 @@ public class ListEntityController : ABaseController
                 all_items.Where(item => item.entity_archive == string.Empty)
             );
             m_delete_button_text = "Supprimer";
+            m_delete_button_color = SGlobalView.DELETE_BUTTON_COLOR;
+            m_delete_button_text_color = SGlobalView.DELETE_BUTTON_TEXT_COLOR;
         }
         else
         {
@@ -117,6 +141,8 @@ public class ListEntityController : ABaseController
                 all_items.Where(item => item.entity_archive != string.Empty)
             );
             m_delete_button_text = "Restaurer";
+            m_delete_button_color = SGlobalView.RESTORE_BUTTON_COLOR;
+            m_delete_button_text_color = SGlobalView.DEFAULT_TEXT_COLOR;
         }
     }
 

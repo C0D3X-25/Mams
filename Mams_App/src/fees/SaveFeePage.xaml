@@ -7,11 +7,12 @@
       xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
       xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
       mc:Ignorable="d" 
-      d:DesignHeight="{x:Static globalView:SGlobalViewSize.PAGE_DESIGN_HEIGHT}" 
-      d:DesignWidth="{x:Static globalView:SGlobalViewSize.PAGE_DESIGN_WIDTH}"
+      d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
+      d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
       Title="SaveFeePage">
 
-    <Grid Background="{Binding m_page_background_color}">
+    <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}"
+          d:Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" MaxHeight="80"/>
             <RowDefinition Height="10*"/>
@@ -40,7 +41,7 @@
             <!--Content-->
             <Grid 
                 Grid.Column="1" 
-                Background="{Binding m_body_background_color}" 
+                Background="{x:Static globalView:SGlobalView.PAGE_BODY_COLOR}" 
                 Margin="3,3,10,3">
 
                 <Grid Margin="5">
@@ -238,8 +239,8 @@
                                             CommandParameter="{Binding}"
                                             Height="20" Width="20"
                                             Margin="5"
-                                            Background="{Binding m_delete_button_color}"
-                                            Foreground="{Binding m_delete_button_text_color}">
+                                            Background="{x:Static globalView:SGlobalView.DELETE_BUTTON_COLOR}"
+                                            Foreground="{x:Static globalView:SGlobalView.DELETE_BUTTON_TEXT_COLOR}">
                                         </Button>
                                     </Grid>
                                 </DataTemplate>
@@ -257,8 +258,8 @@
                         MaxHeight="25" MaxWidth="100"
                         HorizontalAlignment="Center" VerticalAlignment="Bottom"
                         FontSize="16"
-                        Background="{Binding m_button_color}"
-                        Foreground="{Binding m_button_text_color}">
+                        Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
+                        Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}">
                     </Button>
 
                     <!--Abort & Save Buttons-->
@@ -271,8 +272,8 @@
                         HorizontalAlignment="Right" VerticalAlignment="Center"
                         Margin="0,0,50,0"
                         FontSize="16"
-                        Background="{Binding m_button_color}"
-                        Foreground="{Binding m_button_text_color}">
+                        Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
+                        Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}">
                     </Button>
 
                     <Button 
@@ -284,8 +285,8 @@
                         HorizontalAlignment="Left" VerticalAlignment="Center"
                         Margin="50,0,0,0"
                         FontSize="16"
-                        Background="{Binding m_button_color}"
-                        Foreground="{Binding m_button_text_color}">
+                        Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
+                        Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}">
                     </Button>
                 </Grid>
             </Grid>

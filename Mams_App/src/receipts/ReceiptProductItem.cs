@@ -1,7 +1,6 @@
 using Mams_App.src.items;
 using Mams_App.src.products;
 using Mams_App.src.productsLots;
-using Mams_App.src.views.globalView;
 
 namespace Mams_App.src.receipts;
 
@@ -14,8 +13,4 @@ public class ReceiptProductItem : ABaseItem
     public int fk_receipt_id { get; set; } = 0;
     public ProductItem product_item { get; set; } = new();
     public ProductLotItem product_lot_item { get; set; } = new();
-
-    // Add UI color properties
-    public string m_delete_button_color { get; set; } = SGlobalView.m_page_button_color_2;
-    public string m_delete_button_text_color { get; set; } = SGlobalView.m_page_button_text_color;
 }
