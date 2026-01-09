@@ -46,14 +46,15 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore Mams_App/Mams_App.csproj
 
-    - name: Update version in app_config.json
+    - name: Update version in version.json
       shell: pwsh
       run: |
-        $configPath = "Mams_App/ressources/app_config.json"
-        $config = Get-Content $configPath -Raw | ConvertFrom-Json
-        $config.version = "${{ steps.version.outputs.VERSION }}"
-        $config | ConvertTo-Json -Depth 10 | Set-Content $configPath -Encoding UTF8
-        Write-Host "Updated app_config.json version to ${{ steps.version.outputs.VERSION }}"
+        $versionPath = "Mams_App/ressources/version.json"
+        $versionContent = @{
+          version = "${{ steps.version.outputs.VERSION }}"
+        }
+        $versionContent | ConvertTo-Json -Depth 10 | Set-Content $versionPath -Encoding UTF8
+        Write-Host "Updated version.json to ${{ steps.version.outputs.VERSION }}"
 
     - name: Publish portable application
       shell: pwsh
