@@ -13,156 +13,149 @@
       Title="ListCategoryPage">
 
     <Grid Background="{Binding m_page_background_color}">
-        <!--Page is 12* per 12*-->
-        <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" MaxHeight="80"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="1*" MaxHeight="50"/>
+        </Grid.RowDefinitions>
+
+        <!--Header-->
+        <userControls:UCHeader 
+            Grid.Row="0"
+            title="Liste des catégories de produit">
+
+        </userControls:UCHeader>
+
+        <!--Body-->
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*" MaxHeight="100"/>
-                <RowDefinition Height="9*"/>
-                <RowDefinition Height="1*" MaxHeight="50"/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="12*"/>
+                <ColumnDefinition Width="2*" MaxWidth="200"/>
+                <!--For menu-->
+                <ColumnDefinition Width="10*"/>
+                <!--For content-->
             </Grid.ColumnDefinitions>
 
-            <!--Header-->
-            <userControls:UCHeader 
-                Grid.Row="0"
-                title="Liste des catégories de produit">
+            <!--Menu-->
+            <userControls:UCMenu>
 
-            </userControls:UCHeader>
-            <!--Header-->
+            </userControls:UCMenu>
 
-            <!--Body-->
-            <Grid Grid.Row="1">
+            <!--Content-->
+            <Grid 
+                Grid.Column="1" 
+                Background="{Binding m_body_background_color}" 
+                Margin="3,3,10,3">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" MaxWidth="200"/>
-                    <!--For menu-->
-                    <ColumnDefinition Width="10*"/>
-                    <!--For content-->
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
 
-                <!--Menu-->
-                <userControls:UCMenu>
-
-                </userControls:UCMenu>
-
-                <!--Content-->
-                <Grid 
-                    Grid.Column="1" 
-                    Background="{Binding m_body_background_color}" 
-                    Margin="3,3,10,3">
+                <Grid Grid.Column="1" Margin="5">
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="10*"/>
+                        <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="2*"/>
                     </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Column="1" Margin="5">
+                    <!--CheckBox Archived-->
+                    <CheckBox 
+                    Grid.Row="0"
+                    Content="Archives"
+                    IsChecked="{Binding m_is_show_archived_checked, UpdateSourceTrigger=PropertyChanged}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Margin="0,0,50,0"
+                    FontSize="16">
+
+                    </CheckBox>
+
+                    <!--List of Product-->
+                    <Grid Grid.Row="1">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"/>
-                            <RowDefinition Height="10*"/>
-                            <RowDefinition Height="1*"/>
+                            <RowDefinition/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="1*"/>
                         </Grid.ColumnDefinitions>
 
-                        <!--CheckBox Archived-->
-                        <CheckBox 
-                        Grid.Row="0"
-                        Content="Archives"
-                        IsChecked="{Binding m_is_show_archived_checked, UpdateSourceTrigger=PropertyChanged}"
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-                        VerticalContentAlignment="Center"
-                        Margin="0,0,50,0"
-                        FontSize="16">
-
-                        </CheckBox>
-
-                        <!--List of Product-->
-                        <Grid Grid.Row="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="1*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <ListView 
-                                Grid.Column="1" 
-                                Margin="0,0,0,10"
-                                MinWidth="500"
-                                FontSize="14"
-                                ItemsSource="{Binding m_list_items}"
-                                SelectedItem="{Binding m_selected_item}"
-                                commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command}">
-                                <ListView.View>
-                                    <GridView>
-                                        <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_category_id}"/>-->
-                                        <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_category_name}"/>
-                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_category_archive}"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                        </Grid>
-
-                        <!--Delete Buttons-->
-                        <Button 
-                            Grid.Row="2"
-                            Content="{Binding m_delete_button_text}"
-                            Command="{Binding m_delete_item_command}"
-                            Height="30" Width="130"
-                            MaxHeight="30" MaxWidth="130"
-                            HorizontalAlignment="left" VerticalAlignment="Center"
-                            Margin="50,0,0,0"
-                            FontSize="16"
-                            Background="{Binding m_delete_button_color}"
-                            Foreground="{Binding m_delete_button_text_color}"
-                        ></Button>
-
-                        <!--Modifiy Buttons-->
-                        <Button 
-                            Grid.Row="2"
-                            Content="Modifier"
-                            Command="{Binding m_modify_item_command}"
-                            Height="30" Width="130"
-                            MaxHeight="30" MaxWidth="130"
-                            HorizontalAlignment="Right" VerticalAlignment="Center"
-                            Margin="0,0,200,0"
-                            FontSize="16"
-                            Background="{Binding m_button_color}"
-                            Foreground="{Binding m_button_text_color}"                            
-                        ></Button>
-
-                        <!--Add new Broduct Buttons-->
-                        <Button 
-                            Grid.Row="2"
-                            Content="Nouvelle catégorie"
-                            Command="{Binding m_add_new_item_command}"
-                            Height="30" Width="140"
-                            MaxHeight="30" MaxWidth="140"
-                            HorizontalAlignment="Right" VerticalAlignment="Center"
-                            Margin="0,0,50,0"
-                            FontSize="16"
-                            Background="{Binding m_button_color}"
-                            Foreground="{Binding m_button_text_color}"                            
-                        ></Button>
+                        <ListView 
+                            Grid.Column="1" 
+                            Margin="0,0,0,10"
+                            MinWidth="500"
+                            FontSize="14"
+                            ItemsSource="{Binding m_list_items}"
+                            SelectedItem="{Binding m_selected_item}"
+                            commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command}">
+                            <ListView.View>
+                                <GridView>
+                                    <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_category_id}"/>-->
+                                    <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_category_name}"/>
+                                    <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_category_archive}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
                     </Grid>
+
+                    <!--Delete Buttons-->
+                    <Button 
+                        Grid.Row="2"
+                        Content="{Binding m_delete_button_text}"
+                        Command="{Binding m_delete_item_command}"
+                        Height="30" Width="130"
+                        MaxHeight="30" MaxWidth="130"
+                        HorizontalAlignment="left" VerticalAlignment="Center"
+                        Margin="50,0,0,0"
+                        FontSize="16"
+                        Background="{Binding m_delete_button_color}"
+                        Foreground="{Binding m_delete_button_text_color}"
+                    ></Button>
+
+                    <!--Modifiy Buttons-->
+                    <Button 
+                        Grid.Row="2"
+                        Content="Modifier"
+                        Command="{Binding m_modify_item_command}"
+                        Height="30" Width="130"
+                        MaxHeight="30" MaxWidth="130"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,200,0"
+                        FontSize="16"
+                        Background="{Binding m_button_color}"
+                        Foreground="{Binding m_button_text_color}"                            
+                    ></Button>
+
+                    <!--Add new Broduct Buttons-->
+                    <Button 
+                        Grid.Row="2"
+                        Content="Nouvelle catégorie"
+                        Command="{Binding m_add_new_item_command}"
+                        Height="30" Width="140"
+                        MaxHeight="30" MaxWidth="140"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,50,0"
+                        FontSize="16"
+                        Background="{Binding m_button_color}"
+                        Foreground="{Binding m_button_text_color}"                            
+                    ></Button>
                 </Grid>
             </Grid>
-
-            <!--Footer-->
-            <userControls:UCFooter
-                Grid.Row="2">
-
-            </userControls:UCFooter>
         </Grid>
+
+        <!--Footer-->
+        <userControls:UCFooter
+            Grid.Row="2">
+
+        </userControls:UCFooter>
     </Grid>
 </Page>

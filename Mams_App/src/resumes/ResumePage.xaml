@@ -13,103 +13,103 @@
     d:DesignWidth="{x:Static globalView:SGlobalViewSize.PAGE_DESIGN_WIDTH}"
     Title="ResumePage">
 
-   <Grid Background="{Binding m_page_background_color}">
-       <Grid.RowDefinitions>
-           <RowDefinition Height="1*" MaxHeight="80"/>
-           <RowDefinition Height="10*"/>
-           <RowDefinition Height="1*" MaxHeight="50"/>
-       </Grid.RowDefinitions>
+    <Grid Background="{Binding m_page_background_color}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" MaxHeight="80"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="1*" MaxHeight="50"/>
+        </Grid.RowDefinitions>
 
-       <!--Header-->
-       <userControls:UCHeader Grid.Row="0" title="Résumé"/>
+        <!--Header-->
+        <userControls:UCHeader Grid.Row="0" title="Résumé"/>
 
-       <!--Body-->
-       <Grid Grid.Row="1">
-           <Grid.ColumnDefinitions>
-               <ColumnDefinition Width="2*" MaxWidth="200"/>
-               <ColumnDefinition Width="10*"/>
-           </Grid.ColumnDefinitions>
+        <!--Body-->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" MaxWidth="200"/>
+                <ColumnDefinition Width="10*"/>
+            </Grid.ColumnDefinitions>
 
-           <!--Menu-->
-           <userControls:UCMenu/>
+            <!--Menu-->
+            <userControls:UCMenu/>
 
-           <!--Content-->
-           <Grid Grid.Column="1" 
+            <!--Content-->
+            <Grid Grid.Column="1" 
                  Background="{Binding m_body_background_color}" 
                  Margin="3,3,10,3">
-               <Grid.RowDefinitions>
-                   <RowDefinition Height="1*"/>
-                   <RowDefinition Height="9*"/>
-                   <RowDefinition Height="2*"/>
-               </Grid.RowDefinitions>
-                   
-               <!--Search Bar-->
-               <Grid>
-                   <Grid.ColumnDefinitions>
-                       <ColumnDefinition Width="2*"/>
-                       <ColumnDefinition Width="2*"/>
-                       <ColumnDefinition Width="4*"/>
-                       <ColumnDefinition Width="2*"/>
-                       <ColumnDefinition Width="2*"/>
-                       <ColumnDefinition Width="1*"/>
-                   </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="9*"/>
+                    <RowDefinition Height="2*" MinHeight="150"/>
+                </Grid.RowDefinitions>
 
-                   <Label Grid.Column="0"
+                <!--Search Bar-->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="4*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Column="0"
                        Content="Rechercher par :"
                        FontSize="16" 
                        VerticalAlignment="Center" 
                        HorizontalAlignment="Right"/>
 
-                   <!--Search in table-->
-                   <ComboBox Grid.Column="1"
+                    <!--Search in table-->
+                    <ComboBox Grid.Column="1"
                        Margin="5,0,5,0" 
                        FontSize="16" 
                        VerticalAlignment="Center"
                        ItemsSource="{Binding m_list_table}"
                        SelectedItem="{Binding m_selected_table}">
-                       <ComboBox.ItemTemplate>
-                           <DataTemplate>
-                               <TextBlock Text="{Binding m_name_to_display}"/>
-                           </DataTemplate>
-                       </ComboBox.ItemTemplate>
-                   </ComboBox>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding m_name_to_display}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
-                   <!--Search by -->
-                   <ComboBox Grid.Column="2"
+                    <!--Search by -->
+                    <ComboBox Grid.Column="2"
                        Margin="5,0,5,0" 
                        FontSize="16" 
                        VerticalAlignment="Center"
                        ItemsSource="{Binding m_list_search_item}"
                        SelectedItem="{Binding m_selected_search_item}">
-                       <ComboBox.ItemTemplate>
-                           <DataTemplate>
-                               <TextBlock Text="{Binding search_item_to_display}"/>
-                           </DataTemplate>
-                       </ComboBox.ItemTemplate>
-                   </ComboBox>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding search_item_to_display}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
-                   <Label Grid.Column="3"
+                    <Label Grid.Column="3"
                        Content="Pour l'année :"
                        FontSize="16" 
                        VerticalAlignment="Center" 
                        HorizontalAlignment="Center"/>
 
-                   <!--Search by year-->
-                   <ComboBox Grid.Column="4"
+                    <!--Search by year-->
+                    <ComboBox Grid.Column="4"
                        Margin="5,0,5,0" 
                        FontSize="16" 
                        VerticalAlignment="Center"
                        ItemsSource="{Binding m_list_year}"
                        SelectedItem="{Binding m_selected_year}">
-                       <ComboBox.ItemTemplate>
-                           <DataTemplate>
-                               <TextBlock Text="{Binding search_year}"/>
-                           </DataTemplate>
-                       </ComboBox.ItemTemplate>
-                   </ComboBox>
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding search_year}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
-                   <!--Clear Search Button-->
-                   <Button Grid.Column="5"
+                    <!--Clear Search Button-->
+                    <Button Grid.Column="5"
                        Margin="5,0,5,0" 
                        FontSize="16" 
                        VerticalAlignment="Center" 
@@ -120,27 +120,27 @@
                        Command="{Binding m_clear_search_command}"
                        Background="{Binding m_page_button_color_1}"
                        Foreground="{Binding m_page_button_text_color}"/>
-               </Grid>
+                </Grid>
 
-               <!--Resume Views-->
-               <Grid Grid.Row="1" Margin="5">
-                   <Grid.RowDefinitions>
-                       <RowDefinition Height="Auto"/>
-                       <RowDefinition Height="*"/>
-                   </Grid.RowDefinitions>
-                   <Grid.ColumnDefinitions>
-                       <ColumnDefinition/>
-                       <ColumnDefinition/>
-                   </Grid.ColumnDefinitions>
+                <!--Resume Views-->
+                <Grid Grid.Row="1" Margin="05">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
 
-                   <Label Grid.Column="0"
+                    <Label Grid.Column="0"
                        Content="Profits" 
                        FontSize="20"
                        HorizontalAlignment="Center" 
                        VerticalAlignment="Center"/>
 
-                   <!--Profit-->
-                   <ListView Grid.Column="0" Grid.Row="1"
+                    <!--Profit-->
+                    <ListView Grid.Column="0" Grid.Row="1"
                        FontSize="14"
                        Margin="0,0,5,0"
                        ItemsSource="{Binding m_list_profit_item}"
@@ -149,24 +149,24 @@
                        VirtualizingPanel.VirtualizationMode="Recycling"
                        ScrollViewer.IsDeferredScrollingEnabled="True"
                        commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command_profit}">
-                       <ListView.View>
-                           <GridView>
-                               <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
-                               <GridViewColumn Header="Client" DisplayMemberBinding="{Binding entity.entity_name}"/>
-                               <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
-                               <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
-                           </GridView>
-                       </ListView.View>
-                   </ListView>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
+                                <GridViewColumn Header="Client" DisplayMemberBinding="{Binding entity.entity_name}"/>
+                                <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
 
-                   <Label Grid.Column="1"
+                    <Label Grid.Column="1"
                        Content="Frais" 
                        FontSize="20"
                        HorizontalAlignment="Center" 
                        VerticalAlignment="Center"/>
 
-                   <!--Fees-->
-                   <ListView Grid.Column="1" Grid.Row="1"
+                    <!--Fees-->
+                    <ListView Grid.Column="1" Grid.Row="1"
                        FontSize="14"
                        Margin="5,0,0,0"
                        ItemsSource="{Binding m_list_fee_item}"
@@ -175,101 +175,101 @@
                        VirtualizingPanel.VirtualizationMode="Recycling"
                        ScrollViewer.IsDeferredScrollingEnabled="True"
                        commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command_fee}">
-                       <ListView.View>
-                           <GridView>
-                               <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
-                               <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding entity.entity_name}"/>
-                               <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
-                               <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
-                           </GridView>
-                       </ListView.View>
-                   </ListView>
-               </Grid>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
+                                <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding entity.entity_name}"/>
+                                <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
 
-               <Grid Grid.Row="2" Margin="5">
-                   <Grid.RowDefinitions>
-                       <RowDefinition/>
-                       <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
+                <Grid Grid.Row="2" Margin="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                   <Grid.ColumnDefinitions>
-                       <ColumnDefinition/>
-                       <ColumnDefinition/>
-                       <ColumnDefinition/>
-                       <ColumnDefinition/>
-                   </Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                   <!--Details Label-->
-                   <Label Grid.Column="0" Grid.Row="0"
+                    <!--Row 0: Poids Total / Total Profits-->
+                    <Label Grid.Column="0" Grid.Row="0"
                        HorizontalContentAlignment="Right"
                        FontSize="16"
                        Content="Poids Total (profit) :"/>
-                   <Label Grid.Column="0" Grid.Row="1"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Quantité Total (profit) :"/>
-                   <Label Grid.Column="0" Grid.Row="2"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Prix Moyen par Unité (profit) :"/>
-                    <Label Grid.Column="0" Grid.Row="3"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Prix Moyen par kg (profit) :"/>
-                   
-                    <!--Details Value-->
-                   <Label Grid.Column="1" Grid.Row="0"
+                    <Label Grid.Column="1" Grid.Row="0"
                        HorizontalContentAlignment="Left"
                        FontSize="16"
                        Content="{Binding m_total_weight_ui}"/>
-                   <Label Grid.Column="1" Grid.Row="1"
-                       HorizontalContentAlignment="Left"
-                       FontSize="16"
-                       Content="{Binding m_total_quantity_ui}"/>
-                   <Label Grid.Column="1" Grid.Row="2"
-                       HorizontalContentAlignment="Left"
-                       FontSize="16"
-                       Content="{Binding m_average_price_per_unit_ui}"/>
-                    <Label Grid.Column="1" Grid.Row="3"
-                       HorizontalContentAlignment="Left"
-                       FontSize="16"
-                       Content="{Binding m_average_price_per_weight_ui}"/>
-
-                    <!--Total Label-->
-                   <Label Grid.Column="2" Grid.Row="0"
+                    <Label Grid.Column="2" Grid.Row="0"
                        HorizontalContentAlignment="Right"
                        FontSize="16"
                        Content="Total Profits :"/>
-                   <Label Grid.Column="2" Grid.Row="1"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Total Frais :"/>
-                   <Label Grid.Column="2" Grid.Row="2"
-                       HorizontalContentAlignment="Right"
-                       FontSize="16"
-                       Content="Total :"/>
-
-                   <!--Total Value-->
-                   <Label Grid.Column="3" Grid.Row="0"
+                    <Label Grid.Column="3" Grid.Row="0"
                        HorizontalContentAlignment="Left"
                        FontSize="16"
                        Content="{Binding m_total_profit_ui}"/>
-                   <Label Grid.Column="3" Grid.Row="1"
+
+                    <!--Row 1: Quantité Total / Total Frais-->
+                    <Label Grid.Column="0" Grid.Row="1"
+                       HorizontalContentAlignment="Right"
+                       FontSize="16"
+                       Content="Quantité Total (profit) :"/>
+                    <Label Grid.Column="1" Grid.Row="1"
+                       HorizontalContentAlignment="Left"
+                       FontSize="16"
+                       Content="{Binding m_total_quantity_ui}"/>
+                    <Label Grid.Column="2" Grid.Row="1"
+                       HorizontalContentAlignment="Right"
+                       FontSize="16"
+                       Content="Total Frais :"/>
+                    <Label Grid.Column="3" Grid.Row="1"
                        HorizontalContentAlignment="Left"
                        FontSize="16"
                        Foreground="{Binding m_total_fee_color}"
                        Content="{Binding m_total_fee_ui}"/>
-                   <Label Grid.Column="3" Grid.Row="2"
+
+                    <!--Row 2: Prix Moyen par Unité / Total-->
+                    <Label Grid.Column="0" Grid.Row="2"
+                       HorizontalContentAlignment="Right"
+                       FontSize="16"
+                       Content="Prix Moyen par Unité (profit) :"/>
+                    <Label Grid.Column="1" Grid.Row="2"
+                       HorizontalContentAlignment="Left"
+                       FontSize="16"
+                       Content="{Binding m_average_price_per_unit_ui}"/>
+                    <Label Grid.Column="2" Grid.Row="2"
+                       HorizontalContentAlignment="Right"
+                       FontSize="16"
+                       Content="Total :"/>
+                    <Label Grid.Column="3" Grid.Row="2"
                        HorizontalContentAlignment="Left"
                        FontSize="16"
                        Foreground="{Binding m_total_color}"
                        Content="{Binding m_total_ui}"/>
-               </Grid>
-           </Grid>
-       </Grid>
 
-       <!--Footer-->
-       <userControls:UCFooter x:Name="footer" Grid.Row="2"/>
-   </Grid>
+                    <!--Row 3: Prix Moyen par kg-->
+                    <Label Grid.Column="0" Grid.Row="3"
+                       HorizontalContentAlignment="Right"
+                       FontSize="16"
+                       Content="Prix Moyen par kg (profit) :"/>
+                    <Label Grid.Column="1" Grid.Row="3"
+                       HorizontalContentAlignment="Left"
+                       FontSize="16"
+                       Content="{Binding m_average_price_per_weight_ui}"/>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <!--Footer-->
+        <userControls:UCFooter x:Name="footer" Grid.Row="2"/>
+    </Grid>
 </Page>

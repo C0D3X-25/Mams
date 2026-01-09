@@ -12,154 +12,121 @@
       Title="SaveProductCategoryPage">
 
     <Grid Background="{Binding m_page_background_color}">
-        <!--Page is 12* per 12*-->
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="2*" MaxHeight="100"/>
-                <RowDefinition Height="9*"/>
-                <RowDefinition Height="1*" MaxHeight="50"/>
-            </Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" MaxHeight="80"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="1*" MaxHeight="50"/>
+        </Grid.RowDefinitions>
+
+        <!--Header-->
+        <userControls:UCHeader 
+            Grid.Row="0"
+            title="Catégorie de produit"
+        ></userControls:UCHeader>
+
+        <!--Body-->
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="12*"/>
+                <ColumnDefinition Width="2*" MaxWidth="200"/>
+                <ColumnDefinition Width="10*"/>
             </Grid.ColumnDefinitions>
 
-            <!--Header-->
-            <userControls:UCHeader 
-                Grid.Row="0"
-                title="Catégorie de produit"
+            <!--Menu-->
+            <userControls:UCMenu
 
-            ></userControls:UCHeader>
+            ></userControls:UCMenu>
 
-            <!--Body-->
-            <Grid Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" MaxWidth="200"/>
-                    <!--For menu-->
-                    <ColumnDefinition Width="10*"/>
-                    <!--For content-->
-                </Grid.ColumnDefinitions>
+            <!--Content-->
+            <Grid 
+                Grid.Column="1" 
+                Background="{Binding m_body_background_color}" 
+                Margin="3,3,10,3">
 
-                <!--Menu-->
-                <userControls:UCMenu
-
-                ></userControls:UCMenu>
-
-                <!--Content-->
-                <Grid 
-                    Grid.Column="1" 
-                    Background="{Binding m_body_background_color}" 
-                    Margin="3,3,10,3">
+                <Grid Margin="5">
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="9*"/>
+                        <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
 
-                    <Grid Grid.Column="1" Margin="5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="2*"/>
-                            <RowDefinition Height="9*"/>
-                            <RowDefinition Height="1*"/>
-                        </Grid.RowDefinitions>
+                    <!--Fields-->
+                    <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <!--Fields-->
-                        <Grid Grid.Row="1">
+                        <!--Left Grid-->
+                        <Grid Grid.Column="0" 
+                              HorizontalAlignment="Right"
+                              Margin="0,0,25,0">
                             <Grid.RowDefinitions>
-                                <RowDefinition/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="7*"/>
                             </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <!--Left Grid-->
-                            <Grid Grid.Column="0" Grid.Row="1" 
-                                  HorizontalAlignment="Right"
-                                  Margin="0,0,25,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="7*"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                
-                                <!--Name-->
-                                <userControls:UCLabelTextBox
-                                    Grid.Row="0"
-                                    label="Nom de la catégorie*"
-                                    text="{Binding m_product_category.product_category_name, UpdateSourceTrigger=PropertyChanged}"
-                                
-                                ></userControls:UCLabelTextBox>
-                            </Grid>
-
-                            <!--Right Grid-->
-                            <Grid Grid.Column="1" Grid.Row="1" 
-                                  HorizontalAlignment="Left"
-                                  Margin="25,0,0,0">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="7*"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                
-                                <!--ID-->
-                                <userControls:UCLabelTextBox
-                                    Grid.Row="0"
-                                    label="ID"
-                                    text="{Binding m_product_category.product_category_id, UpdateSourceTrigger=PropertyChanged}"
-                                    isEnabled="False"
-                                    Visibility="Hidden"
-                                ></userControls:UCLabelTextBox>
-
-                            </Grid>
+                            
+                            <!--Name-->
+                            <userControls:UCLabelTextBox
+                                Grid.Row="0"
+                                label="Nom de la catégorie*"
+                                text="{Binding m_product_category.product_category_name, UpdateSourceTrigger=PropertyChanged}"
+                            
+                            ></userControls:UCLabelTextBox>
                         </Grid>
 
-                        <!--Abort Save Buttons-->
-                        <Button 
-                            Grid.Row="2"
-                            Content="Enregistrer"
-                            Command="{Binding m_save_command}"
-                            Height="30" Width="130"
-                            MaxHeight="30" MaxWidth="130"
-                            HorizontalAlignment="Right" VerticalAlignment="Center"
-                            Margin="0,0,50,0"
-                            FontSize="16"
-                            Background="{Binding m_button_color}"
-                            Foreground="{Binding m_button_text_color}"                            
-                        ></Button>
-
-                        <Button 
-                            Grid.Row="2"
-                            Content="Annuler"
-                            Command="{Binding m_abort_command}"
-                            Height="30" Width="130"
-                            MaxHeight="30" MaxWidth="130"
-                            HorizontalAlignment="Left" VerticalAlignment="Center"
-                            Margin="50,0,0,0"
-                            FontSize="16"
-                            Background="{Binding m_button_color}"
-                            Foreground="{Binding m_button_text_color}"                            
-                        ></Button>
+                        <!--Right Grid-->
+                        <Grid Grid.Column="1" 
+                              HorizontalAlignment="Left"
+                              Margin="25,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="7*"/>
+                            </Grid.RowDefinitions>
+                            
+                            <!--ID-->
+                            <userControls:UCLabelTextBox
+                                Grid.Row="0"
+                                label="ID"
+                                text="{Binding m_product_category.product_category_id, UpdateSourceTrigger=PropertyChanged}"
+                                isEnabled="False"
+                                Visibility="Hidden"
+                            ></userControls:UCLabelTextBox>
+                        </Grid>
                     </Grid>
+
+                    <!--Abort Save Buttons-->
+                    <Button 
+                        Grid.Row="2"
+                        Content="Enregistrer"
+                        Command="{Binding m_save_command}"
+                        Height="30" Width="130"
+                        MaxHeight="30" MaxWidth="130"
+                        HorizontalAlignment="Right" VerticalAlignment="Center"
+                        Margin="0,0,50,0"
+                        FontSize="16"
+                        Background="{Binding m_button_color}"
+                        Foreground="{Binding m_button_text_color}"                            
+                    ></Button>
+
+                    <Button 
+                        Grid.Row="2"
+                        Content="Annuler"
+                        Command="{Binding m_abort_command}"
+                        Height="30" Width="130"
+                        MaxHeight="30" MaxWidth="130"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"
+                        Margin="50,0,0,0"
+                        FontSize="16"
+                        Background="{Binding m_button_color}"
+                        Foreground="{Binding m_button_text_color}"                            
+                    ></Button>
                 </Grid>
             </Grid>
-
-            <!--Footer-->
-            <userControls:UCFooter
-                Grid.Row="2">
-
-            </userControls:UCFooter>
         </Grid>
+
+        <!--Footer-->
+        <userControls:UCFooter Grid.Row="2"/>
+
     </Grid>
 </Page>
