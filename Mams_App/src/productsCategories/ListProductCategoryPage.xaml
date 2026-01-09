@@ -25,7 +25,7 @@
             <!--Header-->
             <userControls:UCHeader 
                 Grid.Row="0"
-                title="Liste des cat�gories de produit">
+                title="Liste des catégories de produit">
 
             </userControls:UCHeader>
             <!--Header-->
@@ -105,7 +105,7 @@
                                     <GridView>
                                         <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_category_id}"/>-->
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_category_name}"/>
-                                        <GridViewColumn Header="Archiv�" DisplayMemberBinding="{Binding product_category_archive}"/>
+                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_category_archive}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
@@ -142,7 +142,7 @@
                         <!--Add new Broduct Buttons-->
                         <Button 
                             Grid.Row="2"
-                            Content="Nouvelle cat�gorie"
+                            Content="Nouvelle catégorie"
                             Command="{Binding m_add_new_item_command}"
                             Height="30" Width="140"
                             MaxHeight="30" MaxWidth="140"

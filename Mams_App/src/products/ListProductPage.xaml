@@ -107,9 +107,9 @@
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_name}"/>
                                         <GridViewColumn Header="Poids(g)" DisplayMemberBinding="{Binding product_weight}"/>
                                         <GridViewColumn Header="Type" DisplayMemberBinding="{Binding product_type_name}"/>
-                                        <GridViewColumn Header="Cat�gorie" DisplayMemberBinding="{Binding product_category_name}"/>
+                                        <GridViewColumn Header="Catégorie" DisplayMemberBinding="{Binding product_category_name}"/>
                                         <GridViewColumn Header="Forme" DisplayMemberBinding="{Binding product_shape_name}"/>
-                                        <GridViewColumn Header="Archiv�" DisplayMemberBinding="{Binding product_archive}"/>
+                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_archive}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>

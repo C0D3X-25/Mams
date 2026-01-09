@@ -103,11 +103,11 @@
                                     <GridView>
                                         <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding entity_id}"/>-->
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding entity_name}"/>
-                                        <GridViewColumn Header="T�l�phone" DisplayMemberBinding="{Binding entity_phone}"/>
+                                        <GridViewColumn Header="Téléphone" DisplayMemberBinding="{Binding entity_phone}"/>
                                         <GridViewColumn Header="Email" DisplayMemberBinding="{Binding entity_email}"/>
                                         <GridViewColumn Header="Ville" DisplayMemberBinding="{Binding entity_city}"/>
                                         <GridViewColumn Header="Adresse" DisplayMemberBinding="{Binding entity_address}"/>
-                                        <GridViewColumn Header="Archiv�" DisplayMemberBinding="{Binding entity_archive}"/>
+                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding entity_archive}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>

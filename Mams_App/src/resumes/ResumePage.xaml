@@ -19,7 +19,7 @@
        </Grid.RowDefinitions>
 
        <!--Header-->
-       <userControls:UCHeader Grid.Row="0" title="R�sum�"/>
+       <userControls:UCHeader Grid.Row="0" title="Résumé"/>
 
        <!--Body-->
        <Grid Grid.Row="1">
@@ -87,7 +87,7 @@
                    </ComboBox>
 
                    <Label Grid.Column="3"
-                       Content="Pour l'ann�e :"
+                       Content="Pour l'année :"
                        FontSize="16" 
                        VerticalAlignment="Center" 
                        HorizontalAlignment="Center"/>
@@ -149,7 +149,7 @@
                        commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command_profit}">
                        <ListView.View>
                            <GridView>
-                               <GridViewColumn Header="N�" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
+                               <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
                                <GridViewColumn Header="Client" DisplayMemberBinding="{Binding entity.entity_name}"/>
                                <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
                                <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
@@ -175,7 +175,7 @@
                        commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command_fee}">
                        <ListView.View>
                            <GridView>
-                               <GridViewColumn Header="N�" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
+                               <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
                                <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding entity.entity_name}"/>
                                <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
                                <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
@@ -206,11 +206,11 @@
                    <Label Grid.Column="0" Grid.Row="1"
                        HorizontalContentAlignment="Right"
                        FontSize="16"
-                       Content="Quantit� Total (profit) :"/>
+                       Content="Quantité Total (profit) :"/>
                    <Label Grid.Column="0" Grid.Row="2"
                        HorizontalContentAlignment="Right"
                        FontSize="16"
-                       Content="Prix Moyen par Unit� (profit) :"/>
+                       Content="Prix Moyen par Unité (profit) :"/>
                     <Label Grid.Column="0" Grid.Row="3"
                        HorizontalContentAlignment="Right"
                        FontSize="16"

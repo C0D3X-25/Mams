@@ -106,9 +106,9 @@
                                     <GridView>
                                         <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_lot_id}"/>-->
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_lot_name}"/>
-                                        <GridViewColumn Header="Ann�e" DisplayMemberBinding="{Binding product_lot_year}"/>
+                                        <GridViewColumn Header="Année" DisplayMemberBinding="{Binding product_lot_year}"/>
                                         <GridViewColumn Header="Rucher" DisplayMemberBinding="{Binding beehive_name}"/>
-                                        <GridViewColumn Header="Archiv�" DisplayMemberBinding="{Binding product_lot_archive}"/>
+                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_lot_archive}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>

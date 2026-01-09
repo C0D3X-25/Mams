@@ -92,7 +92,7 @@
                 Foreground="{Binding m_button_text_color}"
                 Command="{Binding m_navigate_list_beehive_command}"/>
             <Button 
-                Content="Cat�gories de Produit"
+                Content="Catégories de Produit"
                 Grid.Row="7"
                 FontSize="16" 
                 Margin="3"

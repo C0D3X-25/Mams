@@ -103,7 +103,7 @@
                                 <!--Year-->
                                 <userControls:UCLabelTextBox
                                 Grid.Row="1"
-                                label="Ann�e*"                                    
+                                label="Année*"                                    
                                 text="{Binding m_product_lot.product_lot_year, UpdateSourceTrigger=PropertyChanged}"
                                 
                                 ></userControls:UCLabelTextBox>

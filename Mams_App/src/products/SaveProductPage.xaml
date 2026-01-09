@@ -113,7 +113,7 @@
 
                                     <Label
                                         Grid.Column="0" Grid.Row="0" 
-                                        Content="Cat�gorie*"
+                                        Content="Catégorie*"
                                         FontSize="16" 
                                         VerticalAlignment="Center" HorizontalAlignment="Right"
 

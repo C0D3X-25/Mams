@@ -134,7 +134,7 @@
                                 <!--Phone-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="0"
-                                    label="N� T�l�phone"
+                                    label="N° Téléphone"
                                     text="{Binding m_entity.entity_phone, UpdateSourceTrigger=PropertyChanged}"
                                     
                                 ></userControls:UCLabelTextBox>

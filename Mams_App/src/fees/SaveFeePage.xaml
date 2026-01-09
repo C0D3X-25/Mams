@@ -82,7 +82,7 @@
                             <!--Receipt number-->
                             <userControls:UCLabelTextBox
                                 Grid.Column="0" Grid.Row="0"
-                                label="N� de Facture*"
+                                label="N° de Facture*"
                                 text="{Binding m_fee_receipt_detail.receipt.receipt_number, UpdateSourceTrigger=PropertyChanged}"
                             ></userControls:UCLabelTextBox>
 
@@ -221,7 +221,7 @@
                                             <!--Quantity-->
                                             <Label
                                                 Grid.Column="2" Grid.Row="0"
-                                                Content="Quantit�*" 
+                                                Content="Quantité*" 
                                                 FontSize="16" 
                                                 VerticalAlignment="Center" HorizontalAlignment="Right"
                                                 Margin="5,0,0,0"

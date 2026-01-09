@@ -24,7 +24,7 @@
             <!--Header-->
             <userControls:UCHeader 
                 Grid.Row="0"
-                title="Cat�gorie de produit"
+                title="Catégorie de produit"
 
             ></userControls:UCHeader>
 
@@ -92,7 +92,7 @@
                                 <!--Name-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="0"
-                                    label="Nom de la cat�gorie*"
+                                    label="Nom de la catégorie*"
                                     text="{Binding m_product_category.product_category_name, UpdateSourceTrigger=PropertyChanged}"
                                 
                                 ></userControls:UCLabelTextBox>

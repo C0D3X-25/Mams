@@ -89,7 +89,7 @@
                                 commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command}">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="N�" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
+                                        <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
                                         <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding entity.entity_name}"/>
                                         <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
                                         <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>

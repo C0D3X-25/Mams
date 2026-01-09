@@ -104,7 +104,7 @@
                                     <GridView>
                                         <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding beehive_id}"/>-->
                                         <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding beehive_name}"/>
-                                        <GridViewColumn Header="Archiv�" DisplayMemberBinding="{Binding beehive_archive}"/>
+                                        <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding beehive_archive}"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
