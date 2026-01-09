@@ -13,7 +13,8 @@ namespace Mams_App.src.databaseOperations;
 /// including success status determination and error information from MySQL operations.
 /// </remarks>
 /// <typeparam name="T">The type of items retrieved. Must inherit from <see cref="ABaseItem"/>.</typeparam>
-public class ResponseGetAllItems<T> where T : ABaseItem {
+public class ResponseGetAllItems<T> where T : ABaseItem
+{
 
     /// <summary>
     /// Gets or sets the collection of items retrieved from the get all operation.
@@ -73,7 +74,8 @@ public class ResponseGetAllItems<T> where T : ABaseItem {
     /// Initializes a new instance of the <see cref="ResponseGetAllItems{T}"/> class with the specified collection.
     /// </summary>
     /// <param name="items">The collection of items retrieved from the get all operation.</param>
-    public ResponseGetAllItems(ObservableCollection<T> items) {
+    public ResponseGetAllItems(ObservableCollection<T> items)
+    {
         returned_items = items;
     }
 
@@ -82,7 +84,8 @@ public class ResponseGetAllItems<T> where T : ABaseItem {
     /// </summary>
     /// <param name="items">The collection of items retrieved from the get all operation.</param>
     /// <param name="error">The error type from the get all operation.</param>
-    public ResponseGetAllItems(ObservableCollection<T> items, EErrors error) {
+    public ResponseGetAllItems(ObservableCollection<T> items, EErrors error)
+    {
         returned_items = items;
         this.error = error;
     }
@@ -93,7 +96,8 @@ public class ResponseGetAllItems<T> where T : ABaseItem {
     /// <param name="items">The collection of items retrieved from the get all operation.</param>
     /// <param name="error">The error type from the get all operation.</param>
     /// <param name="errorMessageDetail">The detailed error message for developers.</param>
-    public ResponseGetAllItems(ObservableCollection<T> items, EErrors error, string errorMessageDetail) {
+    public ResponseGetAllItems(ObservableCollection<T> items, EErrors error, string errorMessageDetail)
+    {
         returned_items = items;
         this.error = error;
         error_message_detail = errorMessageDetail;
@@ -125,7 +129,7 @@ public class ResponseGetAllItems<T> where T : ABaseItem {
     /// <param name="error">The error type describing the failure.</param>
     /// <param name="errorMessageDetail">The detailed error message for developers.</param>
     /// <returns>A <see cref="ResponseGetAllItems{T}"/> indicating failure.</returns>
-    public static ResponseGetAllItems<T> Failure(EErrors error, string errorMessageDetail) 
+    public static ResponseGetAllItems<T> Failure(EErrors error, string errorMessageDetail)
         => new([], error, errorMessageDetail);
 
     /// <summary>
@@ -134,6 +138,6 @@ public class ResponseGetAllItems<T> where T : ABaseItem {
     /// <param name="errorCode">The MySQL error code.</param>
     /// <param name="message">The error message.</param>
     /// <returns>A <see cref="ResponseGetAllItems{T}"/> indicating failure with formatted MySQL error details.</returns>
-    public static ResponseGetAllItems<T> MySqlFailure(MySqlErrorCode errorCode, string message) 
+    public static ResponseGetAllItems<T> MySqlFailure(MySqlErrorCode errorCode, string message)
         => new([], EErrors.DATABASE_QUERY, $"MySQL Error [{errorCode}]: {message}");
 }

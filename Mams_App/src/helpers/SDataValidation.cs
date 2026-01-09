@@ -5,7 +5,7 @@ namespace Mams_App.src.helpers;
 /// <summary>
 /// Provides utility methods for validating data information.
 /// </summary>
-public static class SDataValidation 
+public static class SDataValidation
 {
 
     /// <summary>
@@ -18,10 +18,10 @@ public static class SDataValidation
     /// <param name="id">The string to evaluate as an identifier.</param>
     /// <returns><see langword="true"/> if the string is a valid non-negative integer identifier; otherwise, <see
     /// langword="false"/>. </returns>
-    public static bool isIdValid(string id) 
+    public static bool isIdValid(string id)
     {
 
-        if (string.IsNullOrEmpty(id)) 
+        if (string.IsNullOrEmpty(id))
         {
             return false;
         }
@@ -29,7 +29,7 @@ public static class SDataValidation
         {
             return false;
         }
-        if (Convert.ToInt64(id) < 0) 
+        if (Convert.ToInt64(id) < 0)
         {
             return false;
         }
@@ -55,7 +55,7 @@ public static class SDataValidation
         {
             return false;
         }
-        if (Convert.ToInt64(id) <= 0) 
+        if (Convert.ToInt64(id) <= 0)
         {
             return false;
         }
@@ -71,7 +71,8 @@ public static class SDataValidation
     /// <param name="id">The integer to evaluate as an identifier.</param>
     /// <returns><see langword="true"/> if the integer is a valid non-negative identifier; otherwise, <see
     /// langword="false"/>. </returns>
-    public static bool isIdValid(int? id) {
+    public static bool isIdValid(int? id)
+    {
 
         if (id == null)
         {
@@ -92,13 +93,14 @@ public static class SDataValidation
     /// <param name="id">The integer to evaluate as an identifier.</param>
     /// <returns><see langword="true"/> if the integer is a valid positive identifier; otherwise, <see
     /// langword="false"/>. </returns>
-    public static bool isIdValidForRetrieval(int? id) {
+    public static bool isIdValidForRetrieval(int? id)
+    {
 
         if (id == null)
         {
             return false;
         }
-        if (id <= 0) 
+        if (id <= 0)
         {
             return false;
         }
@@ -113,14 +115,14 @@ public static class SDataValidation
     /// <param name="value">The string to evaluate.</param>
     /// <returns><see langword="true"/> if the string can be successfully converted to an integer;  otherwise, <see
     /// langword="false"/>. </returns>
-    public static bool isInteger(string value) 
+    public static bool isInteger(string value)
     {
         try
         {
             Convert.ToInt64(value);
             return true;
         }
-        catch 
+        catch
         {
             return false;
         }
@@ -135,12 +137,12 @@ public static class SDataValidation
     /// <returns><see langword="true"/> if the string represents a positive integer;  otherwise, <see langword="false"/>. </returns>
     public static bool isPositiveInteger(string value)
     {
-        try 
+        try
         {
             Convert.ToUInt64(value);
             return true;
         }
-        catch 
+        catch
         {
             return false;
         }
@@ -155,16 +157,16 @@ public static class SDataValidation
     /// <returns>
     /// <see langword="true"/> if the year is within the range; otherwise, <see langword="false"/>.
     /// </returns>
-    public static bool isYearInRange(int year, int min = 0, int max = 0) 
+    public static bool isYearInRange(int year, int min = 0, int max = 0)
     {
         if (year < 1900
             || min < 0
-            || max < 0) 
-            {
+            || max < 0)
+        {
             return false;
         }
 
-        if (min == 0) 
+        if (min == 0)
         {
             min = 1900;
         }

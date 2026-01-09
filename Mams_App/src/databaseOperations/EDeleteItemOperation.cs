@@ -1,6 +1,6 @@
 namespace Mams_App.src.databaseOperations;
 
-public enum EDeleteItemOperation 
+public enum EDeleteItemOperation
 {
     SOFT_DELETE, // sets the archive date to today
     HARD_DELETE, // removes the item from the database

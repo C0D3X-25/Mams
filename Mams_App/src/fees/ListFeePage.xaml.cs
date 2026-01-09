@@ -1,13 +1,14 @@
-using Mams_App.src.profits;
 using System.Windows.Controls;
-using System.Windows.Input;
 
-namespace Mams_App.src.fees {
+namespace Mams_App.src.fees
+{
     /// <summary>
     /// Interaction logic for ListFeePage.xaml
     /// </summary>
-    public partial class ListFeePage : Page {
-        public ListFeePage() {
+    public partial class ListFeePage : Page
+    {
+        public ListFeePage()
+        {
             InitializeComponent();
             DataContext = new ListFeeController();
         }

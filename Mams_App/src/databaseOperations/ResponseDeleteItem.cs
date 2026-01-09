@@ -10,7 +10,8 @@ namespace Mams_App.src.databaseOperations;
 /// This class provides a structured way to handle the result of delete operations,
 /// including success status determination and error information from MySQL operations.
 /// </remarks>
-public class ResponseDeleteItem {
+public class ResponseDeleteItem
+{
 
     /// <summary>
     /// Gets or sets a value indicating whether the delete operation was successful.
@@ -58,7 +59,8 @@ public class ResponseDeleteItem {
     /// Initializes a new instance of the <see cref="ResponseDeleteItem"/> class with the specified success status.
     /// </summary>
     /// <param name="deleted">A value indicating whether the delete operation was successful.</param>
-    public ResponseDeleteItem(bool deleted) {
+    public ResponseDeleteItem(bool deleted)
+    {
         is_deleted = deleted;
     }
 
@@ -67,7 +69,8 @@ public class ResponseDeleteItem {
     /// </summary>
     /// <param name="deleted">A value indicating whether the delete operation was successful.</param>
     /// <param name="error">The error type from the delete operation.</param>
-    public ResponseDeleteItem(bool deleted, EErrors error) {
+    public ResponseDeleteItem(bool deleted, EErrors error)
+    {
         is_deleted = deleted;
         this.error = error;
     }
@@ -78,7 +81,8 @@ public class ResponseDeleteItem {
     /// <param name="deleted">A value indicating whether the delete operation was successful.</param>
     /// <param name="error">The error type from the delete operation.</param>
     /// <param name="errorMessageDetail">The detailed error message for developers.</param>
-    public ResponseDeleteItem(bool deleted, EErrors error, string errorMessageDetail) {
+    public ResponseDeleteItem(bool deleted, EErrors error, string errorMessageDetail)
+    {
         is_deleted = deleted;
         this.error = error;
         error_message_detail = errorMessageDetail;
@@ -103,7 +107,7 @@ public class ResponseDeleteItem {
     /// <param name="error">The error type describing the failure.</param>
     /// <param name="errorMessageDetail">The detailed error message for developers.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> indicating failure.</returns>
-    public static ResponseDeleteItem Failure(EErrors error, string errorMessageDetail) 
+    public static ResponseDeleteItem Failure(EErrors error, string errorMessageDetail)
         => new(false, error, errorMessageDetail);
 
     /// <summary>
@@ -112,6 +116,6 @@ public class ResponseDeleteItem {
     /// <param name="errorCode">The MySQL error code.</param>
     /// <param name="message">The error message.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> indicating failure with formatted MySQL error details.</returns>
-    public static ResponseDeleteItem MySqlFailure(MySqlErrorCode errorCode, string message) 
+    public static ResponseDeleteItem MySqlFailure(MySqlErrorCode errorCode, string message)
         => new(false, EErrors.DATABASE_QUERY, $"MySQL Error [{errorCode}]: {message}");
 }

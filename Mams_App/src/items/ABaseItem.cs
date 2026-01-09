@@ -5,6 +5,7 @@ namespace Mams_App.src.items;
 /// </summary>
 /// <remarks>This abstract class serves as a foundation for derived item types, providing shared functionality  or
 /// structure. It cannot be instantiated directly.</remarks>
-public abstract class ABaseItem {
+public abstract class ABaseItem
+{
 
 }

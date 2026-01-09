@@ -11,7 +11,8 @@ namespace Mams_App.src.receipts;
 /// <summary>
 /// Represents a model for managing receipt data in the database.
 /// </summary>
-public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
+public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem>
+{
 
     private const string _m_TBL_NAME = "receipts";
     private const string _m_COL_ID = "receipt_id";
@@ -28,7 +29,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
-    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE)
+    {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
     }
 
@@ -37,14 +39,18 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// </summary>
     /// <param name="id">The unique identifier of the receipt item to retrieve. Must be a valid identifier.</param>
     /// <returns>A <see cref="ResponseGetItem{ReceiptItem}"/> containing the receipt item and any error message.</returns>
-    public ResponseGetItem<ReceiptItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValidForRetrieval(id)) {
+    public ResponseGetItem<ReceiptItem> getItemByID(string id)
+    {
+        if (!SDataValidation.isIdValidForRetrieval(id))
+        {
             return ResponseGetItem<ReceiptItem>.Failure(EErrors.INVALID_INPUT,
                 $"ReceiptModel.getItemByID: Invalid ID provided '{id}'");
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, " +
                     $"{_m_COL_RECEIPT_NUMBER}, " +
@@ -58,8 +64,10 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 cmd.Parameters.AddWithValue("@id", id);
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
-                if (reader.Read()) {
-                    return ResponseGetItem<ReceiptItem>.Success(new ReceiptItem {
+                if (reader.Read())
+                {
+                    return ResponseGetItem<ReceiptItem>.Success(new ReceiptItem
+                    {
                         receipt_id = reader.getSafeValue<int>(_m_COL_ID),
                         receipt_number = reader.getSafeValue(_m_COL_RECEIPT_NUMBER, string.Empty),
                         receipt_total_price = reader.getSafeValue<decimal>(_m_COL_RECEIPT_TOTAL_PRICE),
@@ -68,7 +76,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 }
                 return ResponseGetItem<ReceiptItem>.NotFound();
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetItem<ReceiptItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
@@ -78,7 +87,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// Retrieves all receipt items from the database.
     /// </summary>
     /// <returns>A <see cref="ResponseGetAllItems{ReceiptItem}"/> containing all receipt items and any error message.</returns>
-    public ResponseGetAllItems<ReceiptItem> getAllItems() {
+    public ResponseGetAllItems<ReceiptItem> getAllItems()
+    {
         var items = SDatabaseModel.getAllRowsInTable<ReceiptItem>(_m_TBL_NAME, _m_COL_RECEIPT_DATE_CREATED);
         return ResponseGetAllItems<ReceiptItem>.Success(items);
     }
@@ -135,10 +145,13 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
 
         startTransaction();
 
-        try {
-            if (item_id == 0) {
+        try
+        {
+            if (item_id == 0)
+            {
                 // For INSERT operations
-                item_id = executeWithConnection(connection => {
+                item_id = executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@receipt_number", receipt_nbr);
                     cmd.Parameters.AddWithValue("@total_price", item.receipt_total_price);
@@ -146,9 +159,11 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 });
             }
-            else {
+            else
+            {
                 // For UPDATE operations
-                executeWithConnection(connection => {
+                executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@receipt_number", receipt_nbr);
@@ -161,7 +176,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
             commitTransaction();
             return ResponseSaveItem.Success(item_id);
         }
-        catch (MySqlException ex) {
+        catch (MySqlException ex)
+        {
             rollbackTransaction();
             return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
@@ -172,26 +188,31 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// </summary>
     /// <returns>An <see cref="ObservableCollection{T}"/> containing the IDs of the rows in the specified database table. If an
     /// error occurs during the query execution, the collection may be empty or partially populated.</returns>
-    public ObservableCollection<int> getRowsID() {
-        return executeWithConnection(connection => {
+    public ObservableCollection<int> getRowsID()
+    {
+        return executeWithConnection(connection =>
+        {
             ObservableCollection<int> items = new();
 
-            try {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME} ORDER BY {_m_COL_RECEIPT_DATE_CREATED} DESC;",
                     connection,
                     m_transaction
                 );
-                
+
                 using MySqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) {
+                while (reader.Read())
+                {
                     items.Add(reader.getSafeValue<int>(_m_COL_ID));
                 }
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             }
-            
+
             return items;
         });
     }
@@ -201,11 +222,14 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// </summary>
     /// <returns>An <see cref="ObservableCollection{T}"/> of strings containing the distinct years in descending order. The
     /// collection will be empty if no data is found or if an error occurs.</returns>
-    public ObservableCollection<string> getExistingYear() {
-        return executeWithConnection(connection => {
+    public ObservableCollection<string> getExistingYear()
+    {
+        return executeWithConnection(connection =>
+        {
             ObservableCollection<string> items = new();
 
-            try {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT DISTINCT YEAR({_m_COL_RECEIPT_DATE_CREATED}) " +
                     $"AS year " +
@@ -214,16 +238,18 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                     connection,
                     m_transaction
                 );
-                
+
                 using MySqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) {
+                while (reader.Read())
+                {
                     items.Add(reader.getSafeValue<int>("year").ToString());
                 }
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             }
-            
+
             return items;
         });
     }
@@ -266,13 +292,17 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
     /// </summary>
     /// <param name="receipt_number">The string attribued to the receipt</param>
     /// <returns>The ID of the corresponding receipt number. Else 0 if not found</returns>
-    public int getIdWithReceiptNumber(string receipt_number) {
-        if (string.IsNullOrWhiteSpace(receipt_number)) {
+    public int getIdWithReceiptNumber(string receipt_number)
+    {
+        if (string.IsNullOrWhiteSpace(receipt_number))
+        {
             return 0;
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID} FROM {_m_TBL_NAME} WHERE {_m_COL_RECEIPT_NUMBER} = @receipt_number;",
                     connection,
@@ -282,7 +312,8 @@ public class ReceiptModel : ABaseModel, ICrudOperation<ReceiptItem> {
                 object? result = cmd.ExecuteScalar();
                 return result != null && result != DBNull.Value ? Convert.ToInt32(result) : 0;
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
                 return 0;
             }

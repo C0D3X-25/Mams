@@ -1,14 +1,15 @@
-using Mams_App.src.views;
-using System.Windows;
 using System.Windows.Controls;
 
-namespace Mams_App.src.productsTypes; 
+namespace Mams_App.src.productsTypes;
+
 /// <summary>
 /// Interaction logic for SaveProductTypePage.xaml
 /// </summary>
-public partial class SaveProductTypePage : Page {
+public partial class SaveProductTypePage : Page
+{
 
-    public SaveProductTypePage(int id_to_load = 0) {
+    public SaveProductTypePage(int id_to_load = 0)
+    {
 
         InitializeComponent();
         DataContext = new SaveProductTypeController(id_to_load);

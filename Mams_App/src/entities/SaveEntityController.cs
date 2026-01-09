@@ -11,7 +11,8 @@ namespace Mams_App.src.entities;
 /// <summary>
 /// Controller for managing the creation and modification of client entities
 /// </summary>
-public class SaveEntityController : ABaseController, ICompareState {
+public class SaveEntityController : ABaseController, ICompareState
+{
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
@@ -29,9 +30,11 @@ public class SaveEntityController : ABaseController, ICompareState {
 
     private EntityItem _m_original_entity = new();
     private EntityItem _m_entity = new();
-    public EntityItem m_entity {
+    public EntityItem m_entity
+    {
         get => _m_entity;
-        set {
+        set
+        {
             _m_entity = value;
             onPropertyChanged();
         }
@@ -43,9 +46,11 @@ public class SaveEntityController : ABaseController, ICompareState {
     /// </summary>
     /// <param name="page_navigation">The navigation controller for managing page transitions</param>
     /// <param name="id_to_load">Optional ID of an existing client to modify. If 0, creates a new client</param>
-    public SaveEntityController(int id_to_load = 0) {
-        
-        if (id_to_load != 0) {
+    public SaveEntityController(int id_to_load = 0)
+    {
+
+        if (id_to_load != 0)
+        {
             _m_entity = _m_entity_model.getItemByID(id_to_load.ToString()).returned_item ?? new EntityItem();
             _m_original_entity = _m_entity_model.getItemByID(id_to_load.ToString()).returned_item ?? new EntityItem();
         }
@@ -54,7 +59,8 @@ public class SaveEntityController : ABaseController, ICompareState {
         m_abort_command = new RelayCommand(abortClient);
     }
 
-    public bool isStateOriginal() {
+    public bool isStateOriginal()
+    {
 
         if (!_m_original_entity.entity_id.Equals(_m_entity.entity_id)
             || !_m_original_entity.entity_name.Equals(_m_entity.entity_name, StringComparison.Ordinal)
@@ -63,7 +69,8 @@ public class SaveEntityController : ABaseController, ICompareState {
             || !_m_original_entity.entity_email.Equals(_m_entity.entity_email, StringComparison.Ordinal)
             || !_m_original_entity.entity_city.Equals(_m_entity.entity_city, StringComparison.Ordinal)
             || !_m_original_entity.entity_address.Equals(_m_entity.entity_address, StringComparison.Ordinal)
-            ) {
+            )
+        {
             return false;
         }
         return true;
@@ -74,7 +81,8 @@ public class SaveEntityController : ABaseController, ICompareState {
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
     /// <returns>True if the client has a name, false otherwise</returns>
-    private bool canSaveClient(object? obj) {
+    private bool canSaveClient(object? obj)
+    {
         return !string.IsNullOrEmpty(m_entity.entity_name);
     }
 
@@ -87,12 +95,15 @@ public class SaveEntityController : ABaseController, ICompareState {
     /// If successful, navigates back to the client list page.
     /// If a client with the same name exists, shows an error message.
     /// </remarks>
-    private void saveClient(object? obj) {
+    private void saveClient(object? obj)
+    {
         var result = _m_entity_model.saveItem(m_entity);
-        if (result.is_success) {
+        if (result.is_success)
+        {
             SPageNavigationController.navigateBack();
         }
-        else {
+        else
+        {
             string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error, m_entity.entity_name);
             string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
             MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -104,7 +115,8 @@ public class SaveEntityController : ABaseController, ICompareState {
     /// Cancels the current operation and returns to the client list page
     /// </summary>
     /// <param name="obj">Command parameter (not used)</param>
-    private void abortClient(object? obj) {
+    private void abortClient(object? obj)
+    {
         SPageNavigationController.navigateBack(true);
     }
 }

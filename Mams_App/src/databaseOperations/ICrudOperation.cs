@@ -11,7 +11,8 @@ namespace Mams_App.src.databaseOperations;
 /// entire collection. Implementations may vary in how operations are performed, such as handling persistence or
 /// applying specific deletion strategies.</remarks>
 /// <typeparam name="T">The type of item managed by the CRUD operations. Must inherit from <see cref="ABaseItem"/>.</typeparam>
-public interface ICrudOperation<T> where T : ABaseItem {
+public interface ICrudOperation<T> where T : ABaseItem
+{
 
     /// <summary>
     /// Retrieves all items from the data store.

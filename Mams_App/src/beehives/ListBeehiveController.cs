@@ -13,7 +13,8 @@ namespace Mams_App.src.beehives;
 /// Provides functionality for managing a list of beehive items, including adding, modifying, deleting, and restoring
 /// items. Supports filtering between archived and active items.
 /// </summary>
-public class ListBeehiveController : ABaseController {
+public class ListBeehiveController : ABaseController
+{
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
@@ -33,9 +34,11 @@ public class ListBeehiveController : ABaseController {
 
 
     private bool _m_is_show_archived_checked = false;
-    public bool m_is_show_archived_checked {
+    public bool m_is_show_archived_checked
+    {
         get { return _m_is_show_archived_checked; }
-        set {
+        set
+        {
             _m_is_show_archived_checked = value;
             onPropertyChanged();
             updateListItems();
@@ -43,34 +46,41 @@ public class ListBeehiveController : ABaseController {
     }
 
     private string _m_delete_button_text = string.Empty;
-    public string m_delete_button_text {
+    public string m_delete_button_text
+    {
         get { return _m_delete_button_text; }
-        set {
+        set
+        {
             _m_delete_button_text = value;
             onPropertyChanged();
         }
     }
 
     private ObservableCollection<BeehiveItem>? _m_list_items;
-    public ObservableCollection<BeehiveItem>? m_list_items {
+    public ObservableCollection<BeehiveItem>? m_list_items
+    {
         get { return _m_list_items; }
-        set {
+        set
+        {
             _m_list_items = value;
             onPropertyChanged();
         }
     }
 
     private BeehiveItem? _m_selected_item;
-    public BeehiveItem? m_selected_item {
+    public BeehiveItem? m_selected_item
+    {
         get { return _m_selected_item; }
-        set {
+        set
+        {
             _m_selected_item = value;
             onPropertyChanged();
         }
     }
 
 
-    public ListBeehiveController() {
+    public ListBeehiveController()
+    {
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
         m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
@@ -79,16 +89,19 @@ public class ListBeehiveController : ABaseController {
     }
 
 
-    private void updateListItems() {
+    private void updateListItems()
+    {
         var all_items = _m_item_model.getAllItems().returned_items;
 
-        if (!_m_is_show_archived_checked) {
+        if (!_m_is_show_archived_checked)
+        {
             m_list_items = new ObservableCollection<BeehiveItem>(
                 all_items.Where(item => item.beehive_archive == string.Empty)
             );
             m_delete_button_text = "Supprimer";
         }
-        else {
+        else
+        {
             m_list_items = new ObservableCollection<BeehiveItem>(
                 all_items.Where(item => item.beehive_archive != string.Empty)
             );
@@ -97,38 +110,47 @@ public class ListBeehiveController : ABaseController {
     }
 
 
-    private void navigateToSavePage(object? obj) {
+    private void navigateToSavePage(object? obj)
+    {
         SPageNavigationController.navigateTo(new SaveBeehivePage());
     }
 
 
-    private bool isItemSelected(object? arg) {
+    private bool isItemSelected(object? arg)
+    {
         return m_selected_item != null;
     }
 
 
-    public void navigateToModifyPage(object? obj) {
-        if (_m_selected_item != null) {
+    public void navigateToModifyPage(object? obj)
+    {
+        if (_m_selected_item != null)
+        {
             SPageNavigationController.navigateTo(new SaveBeehivePage(_m_selected_item.beehive_id));
         }
     }
 
 
-    private void deleteOrRestoreItem(object? obj) {
-        if (_m_selected_item != null) {
+    private void deleteOrRestoreItem(object? obj)
+    {
+        if (_m_selected_item != null)
+        {
             ResponseDeleteItem result;
-            if (!_m_is_show_archived_checked) {
+            if (!_m_is_show_archived_checked)
+            {
                 result = _m_item_model.deleteItem(_m_selected_item.beehive_id.ToString());
             }
-            else {
+            else
+            {
                 result = _m_item_model.deleteItem(_m_selected_item.beehive_id.ToString(), EDeleteItemOperation.RESTORE);
             }
-            
-            if (!result.is_success) {
-                MessageBox.Show("Une erreur s'est produite lors de la suppression.", 
+
+            if (!result.is_success)
+            {
+                MessageBox.Show("Une erreur s'est produite lors de la suppression.",
                     "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            
+
             updateListItems();
         }
     }

@@ -8,7 +8,8 @@ using System.Windows.Input;
 
 namespace Mams_App.src.beehives;
 
-public class SaveBeehiveController : ABaseController, ICompareState {
+public class SaveBeehiveController : ABaseController, ICompareState
+{
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
@@ -27,17 +28,21 @@ public class SaveBeehiveController : ABaseController, ICompareState {
 
     private BeehiveItem _m_beehive = new();
     private BeehiveItem _m_original_beehive = new();
-    public BeehiveItem m_beehive {
+    public BeehiveItem m_beehive
+    {
         get => _m_beehive;
-        set {
+        set
+        {
             _m_beehive = value;
             onPropertyChanged();
         }
     }
 
-    public SaveBeehiveController(int id_to_load = 0) {
+    public SaveBeehiveController(int id_to_load = 0)
+    {
 
-        if (id_to_load != 0) {
+        if (id_to_load != 0)
+        {
             _m_beehive = _m_beehive_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
             _m_original_beehive = _m_beehive_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
         }
@@ -47,28 +52,34 @@ public class SaveBeehiveController : ABaseController, ICompareState {
     }
 
 
-    public bool isStateOriginal() {
+    public bool isStateOriginal()
+    {
         if (!_m_original_beehive.beehive_id.Equals(_m_beehive.beehive_id)
             || !_m_original_beehive.beehive_name.Equals(_m_beehive.beehive_name, StringComparison.Ordinal)
             || !_m_original_beehive.beehive_archive.Equals(_m_beehive.beehive_archive, StringComparison.Ordinal)
-            ) {
+            )
+        {
             return false;
         }
         return true;
     }
 
 
-    private bool canSaveBeehive(object? arg) {
+    private bool canSaveBeehive(object? arg)
+    {
         return !string.IsNullOrEmpty(m_beehive.beehive_name);
     }
 
 
-    private void saveBeehive(object? obj) {
+    private void saveBeehive(object? obj)
+    {
         var result = _m_beehive_model.saveItem(m_beehive);
-        if (result.is_success) {
+        if (result.is_success)
+        {
             SPageNavigationController.navigateBack();
         }
-        else {
+        else
+        {
             string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error, m_beehive.beehive_name);
             string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
             MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -76,7 +87,8 @@ public class SaveBeehiveController : ABaseController, ICompareState {
     }
 
 
-    private void abortBeehive(object? obj) {
+    private void abortBeehive(object? obj)
+    {
         SPageNavigationController.navigateBack(true);
     }
 }

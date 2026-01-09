@@ -9,7 +9,6 @@ using Mams_App.src.productsLots;
 using Mams_App.src.receipts;
 using MySqlConnector;
 using System.Collections.ObjectModel;
-using System.Windows;
 
 namespace Mams_App.src.profits;
 
@@ -17,7 +16,8 @@ namespace Mams_App.src.profits;
 /// Represents a detailed model for managing receipt profit data, including operations for CRUD functionality.
 /// </summary>
 public class ReceiptProfitDetailedModel : ABaseModel,
-    ICrudOperation<ReceiptProfitDetailedItem> {
+    ICrudOperation<ReceiptProfitDetailedItem>
+{
 
     private readonly ReceiptHandlerModel _m_receipt_handler_model = new();
     private readonly EntityModel _m_entity_model = new();
@@ -47,7 +47,8 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.HARD_DELETE"/>.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
-    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE)
+    {
         return _m_receipt_handler_model.deleteItem(id);
     }
 
@@ -129,11 +130,12 @@ public class ReceiptProfitDetailedModel : ABaseModel,
 
                 ReceiptProfitDetailedItem? item = null;
 
-                while (reader.Read()) {
+                while (reader.Read())
+                {
                     // First row: create the item with receipt, client, entity data
-                    item ??= new ReceiptProfitDetailedItem 
+                    item ??= new ReceiptProfitDetailedItem
                     {
-                        receipt = new ReceiptItem 
+                        receipt = new ReceiptItem
                         {
                             receipt_id = reader.getSafeValue<int>("receipt_id"),
                             receipt_number = reader.getSafeValue("receipt_number", string.Empty),
@@ -145,12 +147,12 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                             fk_client_id = reader.getSafeValue<int>("fk_client_id"),
                             fk_receipt_id = reader.getSafeValue<int>("rc_fk_receipt_id")
                         },
-                        client = new ClientItem 
+                        client = new ClientItem
                         {
                             client_id = reader.getSafeValue<int>("client_id"),
                             fk_entity_id = reader.getSafeValue<int>("fk_entity_id")
                         },
-                        entity = new EntityItem 
+                        entity = new EntityItem
                         {
                             entity_id = reader.getSafeValue<int>("entity_id"),
                             entity_name = reader.getSafeValue("entity_name", string.Empty),
@@ -204,7 +206,8 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                 }
                 return ResponseGetItem<ReceiptProfitDetailedItem>.NotFound();
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetItem<ReceiptProfitDetailedItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
@@ -214,7 +217,8 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// Retrieves all detailed receipt profit items from the database.
     /// </summary>
     /// <returns>A <see cref="ResponseGetAllItems{ReceiptProfitDetailedItem}"/> containing all receipt profit items and any error message.</returns>
-    public ResponseGetAllItems<ReceiptProfitDetailedItem> getAllItems() {
+    public ResponseGetAllItems<ReceiptProfitDetailedItem> getAllItems()
+    {
         return executeWithConnection(connection =>
         {
             var items = new ObservableCollection<ReceiptProfitDetailedItem>();
@@ -375,8 +379,10 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// the associated entity must have a valid <c>entity_id</c>.</param>
     /// <returns>A <see cref="ResponseSaveItem"/> containing the result of the save operation and any error message.
     /// Returns a response with ID 0 if the input is invalid or the operation fails.</returns>
-    public ResponseSaveItem saveItem(ReceiptProfitDetailedItem item) {
-        if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0) {
+    public ResponseSaveItem saveItem(ReceiptProfitDetailedItem item)
+    {
+        if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0)
+        {
             return ResponseSaveItem.Failure(EErrors.INVALID_INPUT,
                 $"ReceiptProfitDetailedModel.saveItem: Invalid input - item is null ({item == null}), products count ({item?.receipt_products.Count}), or entity_id ({item?.entity.entity_id}) is invalid");
         }
@@ -386,16 +392,18 @@ public class ReceiptProfitDetailedModel : ABaseModel,
         try
         {
             int client_id = findClientIdOrCreateNew(item.entity.entity_id);
-            if (client_id == 0) {
+            if (client_id == 0)
+            {
                 throw new InvalidOperationException($"Failed to find or create client for entity ID: {item.entity.entity_id}");
             }
-            
+
             item.receipt_client.fk_client_id = client_id;
             item.client.client_id = client_id;
 
             UpdateReceiptTotalPrice(item);
 
-            var handlerItem = new ReceiptHandlerItem {
+            var handlerItem = new ReceiptHandlerItem
+            {
                 receipt_item = item.receipt,
                 receipt_product_items = item.receipt_products,
                 receipt_client_item = item.receipt_client
@@ -424,17 +432,21 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// <param name="entity_id">The ID of the entity for which the client ID is being retrieved or created. Must be greater than 0.</param>
     /// <returns>The client ID associated with the specified entity ID. Returns 0 if the <paramref name="entity_id"/> is invalid
     /// or if the operation fails to create or retrieve a client record.</returns>
-    private int findClientIdOrCreateNew(int entity_id) {
-        if (!SDataValidation.isIdValid(entity_id)) {
+    private int findClientIdOrCreateNew(int entity_id)
+    {
+        if (!SDataValidation.isIdValid(entity_id))
+        {
             return 0;
         }
 
         var client = _m_client_model.getClientWithEntityFK(entity_id.ToString());
-        if (client != null && client.client_id > 0) {
+        if (client != null && client.client_id > 0)
+        {
             return client.client_id;
         }
 
-        var new_client = new ClientItem {
+        var new_client = new ClientItem
+        {
             fk_entity_id = entity_id
         };
         var result = _m_client_model.saveItem(new_client);
@@ -445,13 +457,16 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// Updates the total price of the receipt associated with the specified item.
     /// </summary>
     /// <param name="item">The detailed receipt item containing the list of products and their quantities and unit prices.</param>
-    private static void UpdateReceiptTotalPrice(ReceiptProfitDetailedItem item) {
-        if (item == null || item.receipt_products == null || item.receipt_products.Count == 0) {
+    private static void UpdateReceiptTotalPrice(ReceiptProfitDetailedItem item)
+    {
+        if (item == null || item.receipt_products == null || item.receipt_products.Count == 0)
+        {
             return;
         }
 
         decimal total = 0;
-        foreach (var product in item.receipt_products) {
+        foreach (var product in item.receipt_products)
+        {
             total += product.receipt_product_quantity * product.receipt_product_unity_price;
         }
         item.receipt.receipt_total_price = total;
@@ -465,14 +480,17 @@ public class ReceiptProfitDetailedModel : ABaseModel,
     /// <param name="yearFilter">The year to filter by (empty for no filter)</param>
     /// <returns>A collection of filtered profit items sorted by date descending.</returns>
     public ResponseGetAllItems<ReceiptProfitDetailedItem> getFilteredItems(
-        EDatabaseTableName filterTable, 
-        int filterId, 
-        string yearFilter) {
-        
-        return executeWithConnection(connection => {
+        EDatabaseTableName filterTable,
+        int filterId,
+        string yearFilter)
+    {
+
+        return executeWithConnection(connection =>
+        {
             var items = new ObservableCollection<ReceiptProfitDetailedItem>();
 
-            try {
+            try
+            {
                 var queryBuilder = new System.Text.StringBuilder($@"
                     SELECT 
                         r.receipt_id,
@@ -524,13 +542,16 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                     WHERE rs.fk_supplier_id IS NULL");
 
                 // Add year filter
-                if (!string.IsNullOrEmpty(yearFilter)) {
+                if (!string.IsNullOrEmpty(yearFilter))
+                {
                     queryBuilder.Append(" AND YEAR(r.receipt_date_created) = @year");
                 }
 
                 // Add specific filters based on filter type
-                if (filterId > 0) {
-                    switch (filterTable) {
+                if (filterId > 0)
+                {
+                    switch (filterTable)
+                    {
                         case EDatabaseTableName.ENTITY:
                             queryBuilder.Append(" AND e.entity_id = @filterId");
                             break;
@@ -559,11 +580,13 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                 queryBuilder.Append(" ORDER BY r.receipt_date_created DESC, r.receipt_id, rp.receipt_product_id");
 
                 using MySqlCommand cmd = new(queryBuilder.ToString(), connection);
-                
-                if (!string.IsNullOrEmpty(yearFilter)) {
+
+                if (!string.IsNullOrEmpty(yearFilter))
+                {
                     cmd.Parameters.AddWithValue("@year", yearFilter);
                 }
-                if (filterId > 0) {
+                if (filterId > 0)
+                {
                     cmd.Parameters.AddWithValue("@filterId", filterId);
                 }
 
@@ -571,26 +594,33 @@ public class ReceiptProfitDetailedModel : ABaseModel,
 
                 var receiptDict = new Dictionary<int, ReceiptProfitDetailedItem>();
 
-                while (reader.Read()) {
+                while (reader.Read())
+                {
                     int receiptId = reader.getSafeValue<int>("receipt_id");
 
-                    if (!receiptDict.TryGetValue(receiptId, out var item)) {
-                        item = new ReceiptProfitDetailedItem {
-                            receipt = new ReceiptItem {
+                    if (!receiptDict.TryGetValue(receiptId, out var item))
+                    {
+                        item = new ReceiptProfitDetailedItem
+                        {
+                            receipt = new ReceiptItem
+                            {
                                 receipt_id = receiptId,
                                 receipt_number = reader.getSafeValue("receipt_number", string.Empty),
                                 receipt_total_price = 0, // Will be calculated from filtered products
                                 receipt_date_created = reader.getSafeValue("receipt_date_created", DateOnly.MinValue).ToString(globals.SGlobals.g_EU_DATE_FORMAT)
                             },
-                            receipt_client = new ReceiptClientItem {
+                            receipt_client = new ReceiptClientItem
+                            {
                                 fk_client_id = reader.getSafeValue<int>("fk_client_id"),
                                 fk_receipt_id = reader.getSafeValue<int>("rc_fk_receipt_id")
                             },
-                            client = new ClientItem {
+                            client = new ClientItem
+                            {
                                 client_id = reader.getSafeValue<int>("client_id"),
                                 fk_entity_id = reader.getSafeValue<int>("fk_entity_id")
                             },
-                            entity = new EntityItem {
+                            entity = new EntityItem
+                            {
                                 entity_id = reader.getSafeValue<int>("entity_id"),
                                 entity_name = reader.getSafeValue("entity_name", string.Empty),
                                 entity_phone = reader.getSafeValue("entity_phone", string.Empty),
@@ -607,13 +637,16 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                     }
 
                     // Add product if present
-                    if (!reader.IsDBNull(reader.GetOrdinal("receipt_product_id"))) {
-                        var productItem = new ReceiptProductItem {
+                    if (!reader.IsDBNull(reader.GetOrdinal("receipt_product_id")))
+                    {
+                        var productItem = new ReceiptProductItem
+                        {
                             receipt_product_id = reader.getSafeValue<int>("receipt_product_id"),
                             receipt_product_quantity = reader.getSafeValue<int>("receipt_product_quantity"),
                             receipt_product_unity_price = reader.getSafeValue<decimal>("receipt_product_unity_price"),
                             fk_receipt_id = reader.getSafeValue<int>("rp_fk_receipt_id"),
-                            product_item = new ProductItem {
+                            product_item = new ProductItem
+                            {
                                 product_id = reader.getSafeValue<int>("product_id"),
                                 product_name = reader.getSafeValue("product_name", string.Empty),
                                 product_weight = reader.getSafeValue<int>("product_weight"),
@@ -625,7 +658,8 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                                 product_category_name = reader.getSafeValue("product_category_name", string.Empty),
                                 product_shape_name = reader.getSafeValue("product_shape_name", string.Empty)
                             },
-                            product_lot_item = new ProductLotItem {
+                            product_lot_item = new ProductLotItem
+                            {
                                 product_lot_id = reader.getSafeValue<int>("product_lot_id"),
                                 product_lot_name = reader.getSafeValue("product_lot_name", string.Empty),
                                 product_lot_year = reader.getSafeValue<int>("product_lot_year"),
@@ -642,7 +676,8 @@ public class ReceiptProfitDetailedModel : ABaseModel,
 
                 return ResponseGetAllItems<ReceiptProfitDetailedItem>.Success(items);
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetAllItems<ReceiptProfitDetailedItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });

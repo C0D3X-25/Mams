@@ -4,7 +4,6 @@ using Mams_App.src.controllers;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
 using Mams_App.src.navigations;
-using Mams_App.src.products;
 using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -12,7 +11,8 @@ using System.Windows.Input;
 
 namespace Mams_App.src.productsLots;
 
-public class SaveProductLotController : ABaseController, ICompareState {
+public class SaveProductLotController : ABaseController, ICompareState
+{
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
@@ -31,9 +31,11 @@ public class SaveProductLotController : ABaseController, ICompareState {
 
     private ProductLotItem _m_original_product_lot = new();
     private ProductLotItem _m_product_lot = new();
-    public ProductLotItem m_product_lot {
+    public ProductLotItem m_product_lot
+    {
         get => _m_product_lot;
-        set {
+        set
+        {
             _m_product_lot = value;
             onPropertyChanged();
         }
@@ -41,9 +43,11 @@ public class SaveProductLotController : ABaseController, ICompareState {
 
 
     private ObservableCollection<BeehiveItem> _m_list_beehive = new();
-    public ObservableCollection<BeehiveItem> m_list_beehive {
+    public ObservableCollection<BeehiveItem> m_list_beehive
+    {
         get { return _m_list_beehive; }
-        set { 
+        set
+        {
             _m_list_beehive = value;
             onPropertyChanged();
         }
@@ -51,9 +55,11 @@ public class SaveProductLotController : ABaseController, ICompareState {
 
 
     private BeehiveItem _m_selected_beehive = new();
-    public BeehiveItem m_selected_beehive {
+    public BeehiveItem m_selected_beehive
+    {
         get { return _m_selected_beehive; }
-        set { 
+        set
+        {
             _m_selected_beehive = value;
             m_product_lot.fk_beehive_id = _m_selected_beehive.beehive_id;
             onPropertyChanged();
@@ -61,11 +67,13 @@ public class SaveProductLotController : ABaseController, ICompareState {
     }
 
 
-    public SaveProductLotController(int id_to_load = 0) {
-        
+    public SaveProductLotController(int id_to_load = 0)
+    {
+
         _m_list_beehive = _m_beehive_model.getAllItems().returned_items;
 
-        if (id_to_load != 0) {
+        if (id_to_load != 0)
+        {
             _m_original_product_lot = _m_product_lot_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
             _m_product_lot = _m_product_lot_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
 
@@ -78,36 +86,43 @@ public class SaveProductLotController : ABaseController, ICompareState {
         m_abort_command = new RelayCommand(abortProduct);
     }
 
-    public bool isStateOriginal() {
+    public bool isStateOriginal()
+    {
         if (!_m_original_product_lot.product_lot_id.Equals(_m_product_lot.product_lot_id)
             || !_m_original_product_lot.product_lot_name.Equals(_m_product_lot.product_lot_name, StringComparison.Ordinal)
             || !_m_original_product_lot.product_lot_year.Equals(_m_product_lot.product_lot_year)
             || !_m_original_product_lot.fk_beehive_id.Equals(_m_product_lot.fk_beehive_id)
             || !_m_original_product_lot.beehive_name.Equals(_m_product_lot.beehive_name, StringComparison.Ordinal)
-            ) {
+            )
+        {
             return false;
         }
         return true;
 
     }
 
-    private bool canSaveProduct(object? arg) {
+    private bool canSaveProduct(object? arg)
+    {
         return !string.IsNullOrEmpty(m_product_lot.product_lot_name)
             && SDataValidation.isYearInRange(m_product_lot.product_lot_year);
     }
 
 
-    private void saveProduct(object? obj) {
-        if (m_selected_beehive != null) {
+    private void saveProduct(object? obj)
+    {
+        if (m_selected_beehive != null)
+        {
             m_product_lot.fk_beehive_id = m_selected_beehive.beehive_id;
             m_product_lot.beehive_name = m_selected_beehive.beehive_name;
         }
 
         var result = _m_product_lot_model.saveItem(m_product_lot);
-        if (result.is_success) {
+        if (result.is_success)
+        {
             SPageNavigationController.navigateBack();
         }
-        else {
+        else
+        {
             string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error, m_product_lot.product_lot_name);
             string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
             MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -115,7 +130,8 @@ public class SaveProductLotController : ABaseController, ICompareState {
     }
 
 
-    private void abortProduct(object? obj) {
+    private void abortProduct(object? obj)
+    {
         SPageNavigationController.navigateBack(true);
     }
 }

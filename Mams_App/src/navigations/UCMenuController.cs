@@ -13,7 +13,8 @@ using System.Windows.Input;
 
 namespace Mams_App.src.navigations;
 
-public class UCMenuController {
+public class UCMenuController
+{
 
     public string m_background_color_1 { get; set; } = SGlobalView.m_menu_background_color_1;
     public string m_background_color_2 { get; set; } = SGlobalView.m_menu_background_color_2;
@@ -31,7 +32,8 @@ public class UCMenuController {
     public ICommand m_navigate_list_product_type_command { get; set; }
     public ICommand m_navigate_list_product_shape_command { get; set; }
 
-    public UCMenuController() {
+    public UCMenuController()
+    {
         m_navigate_list_fee_command = new RelayCommand(navigateToListFee);
         m_navigate_list_profit_command = new RelayCommand(navigateToListProfit);
         m_navigate_list_entity_command = new RelayCommand(navigateToListEntity);
@@ -43,38 +45,47 @@ public class UCMenuController {
         m_navigate_list_product_shape_command = new RelayCommand(navigateToListProductShape);
     }
 
-    private void navigateToListFee(object? obj) {
+    private void navigateToListFee(object? obj)
+    {
         SPageNavigationController.navigateTo(new ListFeePage(), true);
     }
 
-    private void navigateToListProfit(object? obj) {
+    private void navigateToListProfit(object? obj)
+    {
         SPageNavigationController.navigateTo(new ListProfitPage(), true);
     }
 
-    private void navigateToListEntity(object? obj) {
+    private void navigateToListEntity(object? obj)
+    {
         SPageNavigationController.navigateTo(new ListEntityPage(), true);
     }
-    private void navigateToListProduct(object? obj) {
+    private void navigateToListProduct(object? obj)
+    {
         SPageNavigationController.navigateTo(new ListProductPage(), true);
     }
 
-    private void navigateToListLot(object? obj) {
+    private void navigateToListLot(object? obj)
+    {
         SPageNavigationController.navigateTo(new ListProductLotPage(), true);
     }
 
-    private void navigateToListBeehive(object? obj) {
+    private void navigateToListBeehive(object? obj)
+    {
         SPageNavigationController.navigateTo(new ListBeehivePage(), true);
     }
 
-    private void navigateToListProductCategory(object? obj) {
+    private void navigateToListProductCategory(object? obj)
+    {
         SPageNavigationController.navigateTo(new ListProductCategoryPage(), true);
     }
 
-    private void navigateToListProductType(object? obj) {
+    private void navigateToListProductType(object? obj)
+    {
         SPageNavigationController.navigateTo(new ListProductTypePage(), true);
     }
 
-    private void navigateToListProductShape(object? obj) {
+    private void navigateToListProductShape(object? obj)
+    {
         SPageNavigationController.navigateTo(new ListProductShapePage(), true);
     }
 }

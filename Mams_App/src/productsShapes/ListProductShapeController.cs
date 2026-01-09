@@ -9,7 +9,8 @@ using System.Windows.Input;
 
 namespace Mams_App.src.productsShapes;
 
-public class ListProductShapeController : ABaseController {
+public class ListProductShapeController : ABaseController
+{
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
@@ -28,9 +29,11 @@ public class ListProductShapeController : ABaseController {
 
 
     private bool _m_is_show_archived_checked = false;
-    public bool m_is_show_archived_checked {
+    public bool m_is_show_archived_checked
+    {
         get { return _m_is_show_archived_checked; }
-        set {
+        set
+        {
             _m_is_show_archived_checked = value;
             onPropertyChanged();
             updateListItems();
@@ -38,35 +41,42 @@ public class ListProductShapeController : ABaseController {
     }
 
     private string _m_delete_button_text;
-    public string m_delete_button_text {
+    public string m_delete_button_text
+    {
         get { return _m_delete_button_text; }
-        set {
+        set
+        {
             _m_delete_button_text = value;
             onPropertyChanged();
         }
     }
 
     private ObservableCollection<ProductShapeItem>? _m_list_items;
-    public ObservableCollection<ProductShapeItem>? m_list_items {
+    public ObservableCollection<ProductShapeItem>? m_list_items
+    {
         get { return _m_list_items; }
-        set {
+        set
+        {
             _m_list_items = value;
             onPropertyChanged();
         }
     }
 
     private ProductShapeItem? _m_selected_item;
-    public ProductShapeItem? m_selected_item {
+    public ProductShapeItem? m_selected_item
+    {
         get { return _m_selected_item; }
-        set {
+        set
+        {
             _m_selected_item = value;
             onPropertyChanged();
         }
     }
 
 
-    public ListProductShapeController() {
-        
+    public ListProductShapeController()
+    {
+
         _m_item_model = new();
         _m_delete_button_text = string.Empty;
         updateListItems();
@@ -77,16 +87,19 @@ public class ListProductShapeController : ABaseController {
     }
 
 
-    private void updateListItems() {
+    private void updateListItems()
+    {
         var all_items = _m_item_model.getAllItems().returned_items;
 
-        if (!_m_is_show_archived_checked) {
+        if (!_m_is_show_archived_checked)
+        {
             m_list_items = new ObservableCollection<ProductShapeItem>(
                 all_items.Where(item => item.product_shape_archive == string.Empty)
             );
             m_delete_button_text = "Supprimer";
         }
-        else {
+        else
+        {
             m_list_items = new ObservableCollection<ProductShapeItem>(
                 all_items.Where(item => item.product_shape_archive != string.Empty)
             );
@@ -95,38 +108,47 @@ public class ListProductShapeController : ABaseController {
     }
 
 
-    private void navigateToSavePage(object? obj) {
+    private void navigateToSavePage(object? obj)
+    {
         SPageNavigationController.navigateTo(new SaveProductShapePage());
     }
 
 
-    private bool isItemSelected(object? arg) {
+    private bool isItemSelected(object? arg)
+    {
         return m_selected_item != null;
     }
 
 
-    public void navigateToModifyPage(object? obj) {
-        if (_m_selected_item != null) {
+    public void navigateToModifyPage(object? obj)
+    {
+        if (_m_selected_item != null)
+        {
             SPageNavigationController.navigateTo(new SaveProductShapePage(_m_selected_item.product_shape_id));
         }
     }
 
 
-    private void deleteOrRestoreItem(object? obj) {
-        if (_m_selected_item != null) {
+    private void deleteOrRestoreItem(object? obj)
+    {
+        if (_m_selected_item != null)
+        {
             ResponseDeleteItem result;
-            if (!_m_is_show_archived_checked) {
+            if (!_m_is_show_archived_checked)
+            {
                 result = _m_item_model.deleteItem(_m_selected_item.product_shape_id.ToString());
             }
-            else {
+            else
+            {
                 result = _m_item_model.deleteItem(_m_selected_item.product_shape_id.ToString(), EDeleteItemOperation.RESTORE);
             }
-            
-            if (!result.is_success) {
-                MessageBox.Show("Une erreur s'est produite lors de la suppression.", 
+
+            if (!result.is_success)
+            {
+                MessageBox.Show("Une erreur s'est produite lors de la suppression.",
                     "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            
+
             updateListItems();
         }
     }

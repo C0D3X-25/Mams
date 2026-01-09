@@ -4,17 +4,21 @@ using QuestPDF.Infrastructure;
 
 namespace Mams_App.src.invoices;
 
-public class InvoiceAddress : IComponent {
+public class InvoiceAddress : IComponent
+{
     private string _m_title { get; }
     private EntityItem _m_entity { get; }
 
-    public InvoiceAddress(string title, EntityItem entity) {
+    public InvoiceAddress(string title, EntityItem entity)
+    {
         _m_title = title;
         _m_entity = entity;
     }
 
-    public void Compose(IContainer container) {
-        container.ShowEntire().Column(column => {
+    public void Compose(IContainer container)
+    {
+        container.ShowEntire().Column(column =>
+        {
             column.Spacing(2);
 
             column.Item().Text(_m_title).SemiBold();

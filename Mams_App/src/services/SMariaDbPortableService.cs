@@ -1,10 +1,10 @@
+using MySqlConnector;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using System.Windows;
 using System.Windows.Controls;
-using MySqlConnector;
 
 namespace Mams_App.src.services;
 
@@ -18,10 +18,10 @@ public static class SMariaDbPortableService
     private const string MARIADB_FOLDER_NAME = "mariadb";
     private const string DATABASE_NAME = "mams_db";
     private const string INIT_SQL_FILENAME = "init.sql";
-    
+
     // Use a non-standard port to avoid conflicts with existing MySQL/MariaDB installations
     private const int MARIADB_PORT = 3307;
-    
+
     private static Process? s_mariaDbProcess;
     private static readonly HttpClient s_httpClient = new() { Timeout = TimeSpan.FromMinutes(30) };
     private static CancellationTokenSource? s_downloadCancellationTokenSource;
@@ -70,7 +70,7 @@ public static class SMariaDbPortableService
     /// </summary>
     public static bool isDataInitialized()
     {
-        return Directory.Exists(MariaDbDataPath) && 
+        return Directory.Exists(MariaDbDataPath) &&
                Directory.GetFiles(MariaDbDataPath, "*", SearchOption.AllDirectories).Length > 0;
     }
 
@@ -333,7 +333,7 @@ public static class SMariaDbPortableService
                     while ((bytesRead = await contentStream.ReadAsync(buffer, cancellationToken)) > 0)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        
+
                         await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
                         downloadedBytes += bytesRead;
 
@@ -413,7 +413,7 @@ public static class SMariaDbPortableService
         catch (OperationCanceledException)
         {
             Debug.WriteLine("[MariaDbPortable] Download cancelled by user");
-            
+
             // Cleanup partial download
             try
             {
@@ -421,13 +421,13 @@ public static class SMariaDbPortableService
                     File.Delete(tempZipPath);
             }
             catch { }
-            
+
             return false;
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"[MariaDbPortable] Download/extract failed: {ex.Message}");
-            
+
             // Try to cleanup on failure
             try
             {
@@ -435,7 +435,7 @@ public static class SMariaDbPortableService
                     File.Delete(tempZipPath);
             }
             catch { }
-            
+
             return false;
         }
         finally
@@ -444,7 +444,7 @@ public static class SMariaDbPortableService
             {
                 progressWindow.Close();
             }
-            
+
             s_downloadCancellationTokenSource?.Dispose();
             s_downloadCancellationTokenSource = null;
         }
@@ -576,7 +576,7 @@ public static class SMariaDbPortableService
         {
             var mysqldPath = Path.Combine(MariaDbBinPath, "mysqld.exe");
             var processes = Process.GetProcessesByName("mysqld");
-            
+
             foreach (var proc in processes)
             {
                 try
@@ -594,7 +594,7 @@ public static class SMariaDbPortableService
                     // Can't access MainModule for some processes, skip them
                 }
             }
-            
+
             Debug.WriteLine("[MariaDbPortable] Could not find matching mysqld process to attach");
         }
         catch (Exception ex)
@@ -614,7 +614,7 @@ public static class SMariaDbPortableService
             if (isRunning())
             {
                 Debug.WriteLine("[MariaDbPortable] Stopping MariaDB via mysqladmin...");
-                
+
                 var mysqladmin = Path.Combine(MariaDbBinPath, "mysqladmin.exe");
                 if (File.Exists(mysqladmin))
                 {
@@ -628,7 +628,7 @@ public static class SMariaDbPortableService
 
                     using var shutdownProcess = Process.Start(shutdownInfo);
                     shutdownProcess?.WaitForExit(10000);
-                    
+
                     // Wait a bit for shutdown to complete
                     System.Threading.Thread.Sleep(2000);
                 }
@@ -689,13 +689,13 @@ public static class SMariaDbPortableService
             if (!File.Exists(InitSqlPath))
             {
                 Debug.WriteLine($"[MariaDbPortable] init.sql not found at: {InitSqlPath}");
-                
+
                 // Create database without init.sql
                 using var connection = new MySqlConnection(ConnectionStringNoDb);
                 await connection.OpenAsync();
                 using var cmd = new MySqlCommand($"CREATE DATABASE IF NOT EXISTS {DATABASE_NAME};", connection);
                 await cmd.ExecuteNonQueryAsync();
-                
+
                 Debug.WriteLine("[MariaDbPortable] Created empty database (no init.sql found)");
                 return true;
             }

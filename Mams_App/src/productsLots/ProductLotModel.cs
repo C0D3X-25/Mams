@@ -13,7 +13,8 @@ namespace Mams_App.src.productsLots;
 /// Represents a model for managing product lots in the database.
 /// </summary>
 public class ProductLotModel : ABaseModel,
-    ICrudOperation<ProductLotItem> {
+    ICrudOperation<ProductLotItem>
+{
 
     private const string _m_TBL_NAME = "products_lots";
     private const string _m_COL_ID = "product_lot_id";
@@ -24,8 +25,8 @@ public class ProductLotModel : ABaseModel,
 
     // This default data are directly inserted in the database when she is created.
     // They are used because a FK can't be null, so we need to have a default value.
-    private const int       _m_DEFAULT_LOT_FK_BEEHIVE = 1;
-    private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
+    private const int _m_DEFAULT_LOT_FK_BEEHIVE = 1;
+    private const string _m_DEFAULT_ARCHIVE = "1901-01-01";
 
     /// <summary>
     /// Deletes an item from the database based on the specified identifier and delete operation type.
@@ -35,7 +36,8 @@ public class ProductLotModel : ABaseModel,
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
-    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE)
+    {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
@@ -44,14 +46,18 @@ public class ProductLotModel : ABaseModel,
     /// </summary>
     /// <param name="id">The unique identifier of the product lot item to retrieve. Must be a valid identifier.</param>
     /// <returns>A <see cref="ResponseGetItem{ProductLotItem}"/> containing the product lot item and any error message.</returns>
-    public ResponseGetItem<ProductLotItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValidForRetrieval(id)) {
+    public ResponseGetItem<ProductLotItem> getItemByID(string id)
+    {
+        if (!SDataValidation.isIdValidForRetrieval(id))
+        {
             return ResponseGetItem<ProductLotItem>.Failure(EErrors.INVALID_INPUT,
                 $"ProductLotModel.getItemByID: Invalid ID provided '{id}'");
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE}, {_m_COL_ARCHIVE} " +
                     $"FROM {_m_TBL_NAME} " +
@@ -66,7 +72,8 @@ public class ProductLotModel : ABaseModel,
                 cmd.Parameters.AddWithValue("@id", id);
 
                 using MySqlDataReader reader = cmd.ExecuteReader();
-                if (reader.Read()) {
+                if (reader.Read())
+                {
                     beehive_id = reader.getSafeValue<int>(_m_COL_FK_BEEHIVE, 0);
 
                     product_lot.product_lot_id = reader.getSafeValue<int>(_m_COL_ID);
@@ -75,7 +82,8 @@ public class ProductLotModel : ABaseModel,
                     product_lot.fk_beehive_id = beehive_id;
                     product_lot.product_lot_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString();
                 }
-                else {
+                else
+                {
                     return ResponseGetItem<ProductLotItem>.NotFound();
                 }
 
@@ -83,7 +91,8 @@ public class ProductLotModel : ABaseModel,
 
                 return ResponseGetItem<ProductLotItem>.Success(product_lot);
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetItem<ProductLotItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
@@ -93,14 +102,16 @@ public class ProductLotModel : ABaseModel,
     /// Retrieves all product lot items from the database, with additional beehive name information populated for each item.
     /// </summary>
     /// <returns>A <see cref="ResponseGetAllItems{ProductLotItem}"/> containing all product lot items and any error message.</returns>
-    public ResponseGetAllItems<ProductLotItem> getAllItems() {
+    public ResponseGetAllItems<ProductLotItem> getAllItems()
+    {
         ObservableCollection<ProductLotItem> table = SDatabaseModel.getAllRowsInTable<ProductLotItem>(_m_TBL_NAME, _m_COL_ARCHIVE);
 
         BeehiveModel beehive_model = new();
 
-        foreach (ProductLotItem item in table) {
-            item.beehive_name = item.fk_beehive_id > 0 
-                ? beehive_model.getItemByID(item.fk_beehive_id.ToString()).returned_item?.beehive_name ?? string.Empty 
+        foreach (ProductLotItem item in table)
+        {
+            item.beehive_name = item.fk_beehive_id > 0
+                ? beehive_model.getItemByID(item.fk_beehive_id.ToString()).returned_item?.beehive_name ?? string.Empty
                 : string.Empty;
         }
         return ResponseGetAllItems<ProductLotItem>.Success(table);
@@ -110,9 +121,12 @@ public class ProductLotModel : ABaseModel,
     /// Retrieves all active (non-archived) product lot items from the database.
     /// </summary>
     /// <returns>An <see cref="ObservableCollection{ProductLotItem}"/> containing all non-archived product lots, ordered by name.</returns>
-    public ObservableCollection<ProductLotItem> getActiveProductLots() {
-        return executeWithConnection(connection => {
-            try {
+    public ObservableCollection<ProductLotItem> getActiveProductLots()
+    {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 string query = $@"
                     SELECT pl.{_m_COL_ID}, pl.{_m_COL_NAME}, pl.{_m_COL_YEAR}, pl.{_m_COL_FK_BEEHIVE}, pl.{_m_COL_ARCHIVE}, b.beehive_name
                     FROM {_m_TBL_NAME} pl
@@ -125,8 +139,10 @@ public class ProductLotModel : ABaseModel,
 
                 ObservableCollection<ProductLotItem> items = new();
 
-                while (reader.Read()) {
-                    items.Add(new ProductLotItem {
+                while (reader.Read())
+                {
+                    items.Add(new ProductLotItem
+                    {
                         product_lot_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_lot_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_lot_year = reader.getSafeValue<int>(_m_COL_YEAR),
@@ -138,7 +154,8 @@ public class ProductLotModel : ABaseModel,
 
                 return items;
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
                 return new ObservableCollection<ProductLotItem>();
             }
@@ -151,8 +168,10 @@ public class ProductLotModel : ABaseModel,
     /// <param name="item">The <see cref="ProductLotItem"/> to save. Must not be null.</param>
     /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved <see cref="ProductLotItem"/> and any error message.
     /// Returns a response with ID 0 if the operation fails or if the item is null.</returns>
-    public ResponseSaveItem saveItem(ProductLotItem item) {
-        if (item == null) {
+    public ResponseSaveItem saveItem(ProductLotItem item)
+    {
+        if (item == null)
+        {
             return ResponseSaveItem.Failure(EErrors.NULL_VALUE,
                 "ProductLotModel.saveItem: Item cannot be null");
         }
@@ -160,22 +179,25 @@ public class ProductLotModel : ABaseModel,
         int item_id = item.product_lot_id;
         string item_name = item.product_lot_name.Trim();
         string query;
-        
+
         // Determine if we're inserting or updating
         bool isInsert = (item_id == 0);
-        
-        if (isInsert) {
+
+        if (isInsert)
+        {
             // Check for duplicate name before inserting
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_lot_name.Trim())) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_lot_name.Trim()))
+            {
                 return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
                     $"ProductLotModel.saveItem: Product lot with name '{item.product_lot_name}' already exists");
             }
-            
+
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE}) " +
                 $"VALUES (@name, @year, @fk_beehive); " +
                 $"SELECT LAST_INSERT_ID();";
         }
-        else {
+        else
+        {
             query = $"UPDATE {_m_TBL_NAME} " +
                 $"SET {_m_COL_NAME} = @name, {_m_COL_YEAR} = @year, {_m_COL_FK_BEEHIVE} = @fk_beehive " +
                 $"WHERE {_m_COL_ID} = @id";
@@ -183,19 +205,24 @@ public class ProductLotModel : ABaseModel,
 
         // Start transaction if needed
         bool need_transaction = !isTransactionActive();
-        if (need_transaction) {
+        if (need_transaction)
+        {
             startTransaction();
         }
 
-        try {
+        try
+        {
             // Ensure beehive ID is valid
-            if (item.fk_beehive_id == 0) {
+            if (item.fk_beehive_id == 0)
+            {
                 item.fk_beehive_id = _m_DEFAULT_LOT_FK_BEEHIVE;
             }
-            
-            if (isInsert) {
+
+            if (isInsert)
+            {
                 // For INSERT operations, we need to return the new ID
-                item_id = executeWithConnection(connection => {
+                item_id = executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item_name);
                     cmd.Parameters.AddWithValue("@year", item.product_lot_year);
@@ -203,9 +230,11 @@ public class ProductLotModel : ABaseModel,
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 });
             }
-            else {
+            else
+            {
                 // For UPDATE operations, we just execute the command
-                executeWithConnection(connection => {
+                executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@name", item_name);
@@ -214,15 +243,18 @@ public class ProductLotModel : ABaseModel,
                     cmd.ExecuteNonQuery();
                 });
             }
-            
-            if (need_transaction) {
+
+            if (need_transaction)
+            {
                 commitTransaction();
             }
-            
+
             return ResponseSaveItem.Success(item_id);
         }
-        catch (MySqlException ex) {
-            if (need_transaction) {
+        catch (MySqlException ex)
+        {
+            if (need_transaction)
+            {
                 rollbackTransaction();
             }
             return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
@@ -236,15 +268,19 @@ public class ProductLotModel : ABaseModel,
     /// <returns>An <see cref="ObservableCollection{T}"/> containing <see cref="ProductLotItem"/> objects that correspond to the
     /// specified beehive IDs. Returns an empty collection if the input list is empty or if no matching product lot
     /// items are found.</returns>
-    public ObservableCollection<ProductLotItem> getProductLotsWithBeehiveId(List<int> beehive_ids) {
+    public ObservableCollection<ProductLotItem> getProductLotsWithBeehiveId(List<int> beehive_ids)
+    {
         ObservableCollection<ProductLotItem> items = new();
 
-        if (beehive_ids.Count == 0) {
+        if (beehive_ids.Count == 0)
+        {
             return items;
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 // Create parameterized query
                 string parameters = string.Join(",", beehive_ids.Select((_, i) => $"@id{i}"));
                 string query = $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_YEAR}, {_m_COL_FK_BEEHIVE} " +
@@ -254,23 +290,27 @@ public class ProductLotModel : ABaseModel,
                 using MySqlCommand cmd = new(query, connection);
 
                 // Add parameters
-                for (int i = 0; i < beehive_ids.Count; i++) {
+                for (int i = 0; i < beehive_ids.Count; i++)
+                {
                     cmd.Parameters.AddWithValue($"@id{i}", beehive_ids[i]);
                 }
 
                 using MySqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) {
-                    items.Add(new ProductLotItem {
+                while (reader.Read())
+                {
+                    items.Add(new ProductLotItem
+                    {
                         product_lot_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_lot_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_lot_year = reader.getSafeValue<int>(_m_COL_YEAR),
                         fk_beehive_id = reader.getSafeValue<int>(_m_COL_FK_BEEHIVE)
                     });
                 }
-                
+
                 return items;
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
                 return items;
             }

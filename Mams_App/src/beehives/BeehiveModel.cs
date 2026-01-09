@@ -12,7 +12,8 @@ namespace Mams_App.src.beehives;
 /// Represents a model for managing beehive data in the database.
 /// </summary>
 public class BeehiveModel : ABaseModel,
-    ICrudOperation<BeehiveItem> {
+    ICrudOperation<BeehiveItem>
+{
 
     private const string _m_TBL_NAME = "beehives";
     private const string _m_COL_ID = "beehive_id";
@@ -29,7 +30,8 @@ public class BeehiveModel : ABaseModel,
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
-    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE)
+    {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
@@ -38,14 +40,18 @@ public class BeehiveModel : ABaseModel,
     /// </summary>
     /// <param name="id">The unique identifier of the item to retrieve. Must be a valid ID string.</param>
     /// <returns>A <see cref="ResponseGetItem{BeehiveItem}"/> containing the item with the specified ID and any error message.</returns>
-    public ResponseGetItem<BeehiveItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValidForRetrieval(id)) {
+    public ResponseGetItem<BeehiveItem> getItemByID(string id)
+    {
+        if (!SDataValidation.isIdValidForRetrieval(id))
+        {
             return ResponseGetItem<BeehiveItem>.Failure(EErrors.INVALID_INPUT,
                 $"BeehiveModel.getItemByID: Invalid ID provided '{id}'");
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
                     $"FROM {_m_TBL_NAME} " +
@@ -56,8 +62,10 @@ public class BeehiveModel : ABaseModel,
                 cmd.Parameters.AddWithValue("@id", id);
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
-                if (reader.Read()) {
-                    return ResponseGetItem<BeehiveItem>.Success(new BeehiveItem {
+                if (reader.Read())
+                {
+                    return ResponseGetItem<BeehiveItem>.Success(new BeehiveItem
+                    {
                         beehive_id = reader.getSafeValue<int>(_m_COL_ID),
                         beehive_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         beehive_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
@@ -65,7 +73,8 @@ public class BeehiveModel : ABaseModel,
                 }
                 return ResponseGetItem<BeehiveItem>.NotFound();
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetItem<BeehiveItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
@@ -75,7 +84,8 @@ public class BeehiveModel : ABaseModel,
     /// Retrieves all rows from the beehive table.
     /// </summary>
     /// <returns>A <see cref="ResponseGetAllItems{BeehiveItem}"/> containing all beehive items and any error message.</returns>
-    public ResponseGetAllItems<BeehiveItem> getAllItems() {
+    public ResponseGetAllItems<BeehiveItem> getAllItems()
+    {
         var items = SDatabaseModel.getAllRowsInTable<BeehiveItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
         return ResponseGetAllItems<BeehiveItem>.Success(items);
     }
@@ -84,9 +94,12 @@ public class BeehiveModel : ABaseModel,
     /// Retrieves all active (non-archived) beehive items from the database.
     /// </summary>
     /// <returns>An <see cref="ObservableCollection{BeehiveItem}"/> containing all non-archived beehives, ordered by name.</returns>
-    public ObservableCollection<BeehiveItem> getActiveBeehives() {
-        return executeWithConnection(connection => {
-            try {
+    public ObservableCollection<BeehiveItem> getActiveBeehives()
+    {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 string query = $@"
                     SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE}
                     FROM {_m_TBL_NAME}
@@ -98,8 +111,10 @@ public class BeehiveModel : ABaseModel,
 
                 ObservableCollection<BeehiveItem> items = [];
 
-                while (reader.Read()) {
-                    items.Add(new BeehiveItem {
+                while (reader.Read())
+                {
+                    items.Add(new BeehiveItem
+                    {
                         beehive_id = reader.getSafeValue<int>(_m_COL_ID),
                         beehive_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         beehive_archive = string.Empty
@@ -108,7 +123,8 @@ public class BeehiveModel : ABaseModel,
 
                 return items;
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
                 return [];
             }
@@ -122,8 +138,10 @@ public class BeehiveModel : ABaseModel,
     /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved item and any error message.
     /// Returns a response with ID 0 if the operation fails, the item is <see langword="null"/>, or the
     /// item name already exists in the database.</returns>
-    public ResponseSaveItem saveItem(BeehiveItem item) {
-        if (item == null) {
+    public ResponseSaveItem saveItem(BeehiveItem item)
+    {
+        if (item == null)
+        {
             return ResponseSaveItem.Failure(EErrors.NULL_VALUE,
                 "BeehiveModel.saveItem: Item cannot be null");
         }
@@ -131,57 +149,64 @@ public class BeehiveModel : ABaseModel,
         int item_id = item.beehive_id;
         string item_name = item.beehive_name.Trim();
         string query;
-        
+
         // Determine if we're inserting or updating
         bool isInsert = (item_id == 0);
-        
-        if (isInsert) {
+
+        if (isInsert)
+        {
             // Check for duplicate name before inserting
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.beehive_name.Trim())) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.beehive_name.Trim()))
+            {
                 return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
                     $"BeehiveModel.saveItem: Beehive with name '{item.beehive_name}' already exists");
             }
-            
+
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
                 $"VALUES (@name); " +
                 $"SELECT LAST_INSERT_ID();";
         }
-        else {
+        else
+        {
             query = $"UPDATE {_m_TBL_NAME} " +
                 $"SET {_m_COL_NAME} = @name " +
                 $"WHERE {_m_COL_ID} = @id;";
         }
-        
+
         // Start transaction if needed
         bool need_transaction = !isTransactionActive();
 
         startTransaction();
-        
-        try {
-            if (isInsert) 
+
+        try
+        {
+            if (isInsert)
             {
                 // For INSERT operations, we need to return the new ID
-                item_id = executeWithConnection(connection => {
+                item_id = executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item_name);
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 });
             }
-            else 
+            else
             {
                 // For UPDATE operations, we just execute the command
-                executeWithConnection(connection => {
+                executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@name", item_name);
                     cmd.ExecuteNonQuery();
                 });
             }
-            
+
             commitTransaction();
             return ResponseSaveItem.Success(item_id);
         }
-        catch (MySqlException ex) {
+        catch (MySqlException ex)
+        {
             rollbackTransaction();
             return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }

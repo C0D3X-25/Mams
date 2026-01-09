@@ -7,7 +7,8 @@ namespace Mams_App.src.errors;
 /// This enum provides a clean and standardized way to handle errors across the application.
 /// The specific error messages should be generated when displaying to the user based on the context.
 /// </remarks>
-public enum EErrors {
+public enum EErrors
+{
     /// <summary>
     /// No error occurred. The operation was successful.
     /// </summary>

@@ -4,7 +4,8 @@ using System.Windows.Input;
 
 namespace Mams_App.src.navigations;
 
-public class UCHeaderController {
+public class UCHeaderController
+{
 
     public ICommand m_navigate_homepage_command { get; set; }
     public string m_page_top_color { get; set; } = SGlobalView.m_header_top_color;
@@ -14,7 +15,8 @@ public class UCHeaderController {
     public string m_button_text_color { get; set; } = SGlobalView.m_header_button_text_color;
     public string m_button_over_color { get; set; } = SGlobalView.m_header_button_over_color;
 
-    public UCHeaderController() {
+    public UCHeaderController()
+    {
         m_navigate_homepage_command = new RelayCommand(navigateToHomepage);
     }
 
@@ -23,7 +25,8 @@ public class UCHeaderController {
     /// </summary>
     /// <param name="obj">An optional parameter that can be used to pass additional context for navigation. This parameter is currently
     /// unused.</param>
-    private void navigateToHomepage(object? obj) {
+    private void navigateToHomepage(object? obj)
+    {
         SPageNavigationController.navigateToHomePage();
     }
 }

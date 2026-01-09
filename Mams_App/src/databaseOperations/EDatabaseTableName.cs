@@ -1,5 +1,7 @@
-namespace Mams_App.src.databaseOperations; 
-public enum EDatabaseTableName {
+namespace Mams_App.src.databaseOperations;
+
+public enum EDatabaseTableName
+{
     NONE,
     ENTITY,
     CLIENT,

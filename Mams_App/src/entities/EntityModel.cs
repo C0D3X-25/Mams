@@ -4,7 +4,6 @@ using Mams_App.src.helpers;
 using Mams_App.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
-using System.Windows;
 
 namespace Mams_App.src.entities;
 
@@ -12,9 +11,10 @@ namespace Mams_App.src.entities;
 /// Represents a model for managing entities in a database./>
 /// </summary>
 public class EntityModel : ABaseModel,
-    ICrudOperation<EntityItem> {
+    ICrudOperation<EntityItem>
+{
 
-    private const string _m_TBL_NAME  = "entities";
+    private const string _m_TBL_NAME = "entities";
     private const string _m_COL_ID = "entity_id";
     private const string _m_COL_NAME = "entity_name";
     private const string _m_COL_PHONE = "entity_phone";
@@ -31,7 +31,8 @@ public class EntityModel : ABaseModel,
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
-    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE)
+    {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
@@ -40,14 +41,18 @@ public class EntityModel : ABaseModel,
     /// </summary>
     /// <param name="id">The unique identifier of the entity item to retrieve. This value must not be null or empty.</param>
     /// <returns>A <see cref="ResponseGetItem{EntityItem}"/> containing the entity item and any error message.</returns>
-    public ResponseGetItem<EntityItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValidForRetrieval(id)) {
-            return ResponseGetItem<EntityItem>.Failure(EErrors.INVALID_INPUT, 
+    public ResponseGetItem<EntityItem> getItemByID(string id)
+    {
+        if (!SDataValidation.isIdValidForRetrieval(id))
+        {
+            return ResponseGetItem<EntityItem>.Failure(EErrors.INVALID_INPUT,
                 $"EntityModel.getItemByID: Invalid ID provided '{id}'");
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}, {_m_COL_ARCHIVE} " +
                     $"FROM {_m_TBL_NAME} " +
@@ -58,8 +63,10 @@ public class EntityModel : ABaseModel,
                 cmd.Parameters.AddWithValue("@id", id);
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
-                if (reader.Read()) {
-                    return ResponseGetItem<EntityItem>.Success(new EntityItem {
+                if (reader.Read())
+                {
+                    return ResponseGetItem<EntityItem>.Success(new EntityItem
+                    {
                         entity_id = reader.getSafeValue<int>(_m_COL_ID),
                         entity_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         entity_phone = reader.getSafeValue(_m_COL_PHONE, string.Empty),
@@ -71,7 +78,8 @@ public class EntityModel : ABaseModel,
                 }
                 return ResponseGetItem<EntityItem>.NotFound();
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetItem<EntityItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
@@ -81,7 +89,8 @@ public class EntityModel : ABaseModel,
     /// Retrieves all entity items from the database.
     /// </summary>
     /// <returns>A <see cref="ResponseGetAllItems{EntityItem}"/> containing all entity items and any error message.</returns>
-    public ResponseGetAllItems<EntityItem> getAllItems() {
+    public ResponseGetAllItems<EntityItem> getAllItems()
+    {
         var items = SDatabaseModel.getAllRowsInTable<EntityItem>(_m_TBL_NAME, _m_COL_NAME);
         return ResponseGetAllItems<EntityItem>.Success(items);
     }
@@ -91,7 +100,8 @@ public class EntityModel : ABaseModel,
     /// </summary>
     /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="EntityItem"/> objects  that are not archived. The
     /// collection will be empty if no such entities exist.</returns>
-    public ObservableCollection<EntityItem> getNonArchivedEntities() {
+    public ObservableCollection<EntityItem> getNonArchivedEntities()
+    {
         return SDatabaseModel.getAllRowsInTable<EntityItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
     }
 
@@ -102,30 +112,35 @@ public class EntityModel : ABaseModel,
     /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved item and any error message.
     /// Returns a response with ID 0 if the operation fails, the item is <c>null</c>, or a duplicate item
     /// is detected.</returns>
-    public ResponseSaveItem saveItem(EntityItem item) {
-        if (item == null) {
-            return ResponseSaveItem.Failure(EErrors.NULL_VALUE, 
+    public ResponseSaveItem saveItem(EntityItem item)
+    {
+        if (item == null)
+        {
+            return ResponseSaveItem.Failure(EErrors.NULL_VALUE,
                 "EntityModel.saveItem: Item cannot be null");
         }
 
         int item_id = item.entity_id;
         string query;
-        
+
         // Determine if we're inserting or updating
         bool isInsert = (item_id == 0);
-        
-        if (isInsert) {
+
+        if (isInsert)
+        {
             // Check for duplicate name before inserting
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.entity_name)) {
-                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS, 
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.entity_name))
+            {
+                return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
                     $"EntityModel.saveItem: Entity with name '{item.entity_name}' already exists");
             }
-            
+
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS}) " +
                 $"VALUES (@name, @phone, @email, @city, @address); " +
                 $"SELECT LAST_INSERT_ID(); ";
         }
-        else {
+        else
+        {
             query = $"UPDATE {_m_TBL_NAME} " +
                 $"SET {_m_COL_NAME} = @name, {_m_COL_PHONE} = @phone, {_m_COL_EMAIL} = @email, " +
                 $"{_m_COL_CITY} = @city, {_m_COL_ADDRESS} = @address " +
@@ -134,14 +149,18 @@ public class EntityModel : ABaseModel,
 
         // Start transaction if needed
         bool need_transaction = !isTransactionActive();
-        if (need_transaction) {
+        if (need_transaction)
+        {
             startTransaction();
         }
 
-        try {
-            if (isInsert) {
+        try
+        {
+            if (isInsert)
+            {
                 // For INSERT operations, we need to return the new ID
-                item_id = executeWithConnection(connection => {
+                item_id = executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item.entity_name.Trim());
                     cmd.Parameters.AddWithValue("@phone", item.entity_phone.Trim());
@@ -151,9 +170,11 @@ public class EntityModel : ABaseModel,
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 });
             }
-            else {
+            else
+            {
                 // For UPDATE operations, we just execute the command
-                executeWithConnection(connection => {
+                executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@name", item.entity_name.Trim());
@@ -164,15 +185,18 @@ public class EntityModel : ABaseModel,
                     cmd.ExecuteNonQuery();
                 });
             }
-            
-            if (need_transaction) {
+
+            if (need_transaction)
+            {
                 commitTransaction();
             }
-            
+
             return ResponseSaveItem.Success(item_id);
         }
-        catch (MySqlException ex) {
-            if (need_transaction) {
+        catch (MySqlException ex)
+        {
+            if (need_transaction)
+            {
                 rollbackTransaction();
             }
             return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);

@@ -4,7 +4,7 @@ using System.IO;
 
 namespace Mams_App.src.databaseOperations;
 
-public static class SDatabaseBackup 
+public static class SDatabaseBackup
 {
     private static readonly string destination_path = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

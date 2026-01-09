@@ -12,7 +12,8 @@ namespace Mams_App.src.databaseOperations;
 /// including success status determination and error information from MySQL operations.
 /// </remarks>
 /// <typeparam name="T">The type of item retrieved. Must inherit from <see cref="ABaseItem"/>.</typeparam>
-public class ResponseGetItem<T> where T : ABaseItem {
+public class ResponseGetItem<T> where T : ABaseItem
+{
 
     /// <summary>
     /// Gets or sets the item retrieved from the get operation.
@@ -68,7 +69,8 @@ public class ResponseGetItem<T> where T : ABaseItem {
     /// Initializes a new instance of the <see cref="ResponseGetItem{T}"/> class with the specified item.
     /// </summary>
     /// <param name="item">The item retrieved from the get operation.</param>
-    public ResponseGetItem(T? item) {
+    public ResponseGetItem(T? item)
+    {
         returned_item = item;
     }
 
@@ -77,7 +79,8 @@ public class ResponseGetItem<T> where T : ABaseItem {
     /// </summary>
     /// <param name="item">The item retrieved from the get operation.</param>
     /// <param name="error">The error type from the get operation.</param>
-    public ResponseGetItem(T? item, EErrors error) {
+    public ResponseGetItem(T? item, EErrors error)
+    {
         returned_item = item;
         this.error = error;
     }
@@ -88,7 +91,8 @@ public class ResponseGetItem<T> where T : ABaseItem {
     /// <param name="item">The item retrieved from the get operation.</param>
     /// <param name="error">The error type from the get operation.</param>
     /// <param name="errorMessageDetail">The detailed error message for developers.</param>
-    public ResponseGetItem(T? item, EErrors error, string errorMessageDetail) {
+    public ResponseGetItem(T? item, EErrors error, string errorMessageDetail)
+    {
         returned_item = item;
         this.error = error;
         error_message_detail = errorMessageDetail;
@@ -120,7 +124,7 @@ public class ResponseGetItem<T> where T : ABaseItem {
     /// <param name="error">The error type describing the failure.</param>
     /// <param name="errorMessageDetail">The detailed error message for developers.</param>
     /// <returns>A <see cref="ResponseGetItem{T}"/> indicating failure.</returns>
-    public static ResponseGetItem<T> Failure(EErrors error, string errorMessageDetail) 
+    public static ResponseGetItem<T> Failure(EErrors error, string errorMessageDetail)
         => new(default, error, errorMessageDetail);
 
     /// <summary>
@@ -129,6 +133,6 @@ public class ResponseGetItem<T> where T : ABaseItem {
     /// <param name="errorCode">The MySQL error code.</param>
     /// <param name="message">The error message.</param>
     /// <returns>A <see cref="ResponseGetItem{T}"/> indicating failure with formatted MySQL error details.</returns>
-    public static ResponseGetItem<T> MySqlFailure(MySqlErrorCode errorCode, string message) 
+    public static ResponseGetItem<T> MySqlFailure(MySqlErrorCode errorCode, string message)
         => new(default, EErrors.DATABASE_QUERY, $"MySQL Error [{errorCode}]: {message}");
 }

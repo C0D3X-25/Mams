@@ -8,7 +8,6 @@ using Mams_App.src.receipts;
 using Mams_App.src.suppliers;
 using MySqlConnector;
 using System.Collections.ObjectModel;
-using System.Windows;
 
 namespace Mams_App.src.fees;
 
@@ -16,7 +15,8 @@ namespace Mams_App.src.fees;
 /// Represents a detailed model for managing receipt fees, including operations for CRUD functionality.
 /// </summary>
 public class ReceiptFeeDetailedModel : ABaseModel,
-    ICrudOperation<ReceiptFeeDetailedItem> {
+    ICrudOperation<ReceiptFeeDetailedItem>
+{
 
     private readonly ReceiptHandlerModel _m_receipt_handler_model = new();
     private readonly EntityModel _m_entity_model = new();
@@ -43,7 +43,8 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.HARD_DELETE"/>.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
-    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE)
+    {
         return _m_receipt_handler_model.deleteItem(id);
     }
 
@@ -340,8 +341,10 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// greater than zero.</param>
     /// <returns>A <see cref="ResponseSaveItem"/> containing the result of the save operation and any error message.
     /// Returns a response with ID 0 if the input is invalid or the save operation fails.</returns>
-    public ResponseSaveItem saveItem(ReceiptFeeDetailedItem item) {
-        if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0) {
+    public ResponseSaveItem saveItem(ReceiptFeeDetailedItem item)
+    {
+        if (item == null || item.receipt_products.Count < 1 || item.entity.entity_id == 0)
+        {
             return ResponseSaveItem.Failure(EErrors.INVALID_INPUT,
                 $"ReceiptFeeDetailedModel.saveItem: Invalid input - item is null ({item == null}), products count ({item?.receipt_products.Count}), or entity_id ({item?.entity.entity_id}) is invalid");
         }
@@ -351,20 +354,23 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         try
         {
             int supplier_id = findSupplierIdOrCreateNew(item.entity.entity_id);
-            if (supplier_id == 0) {
+            if (supplier_id == 0)
+            {
                 throw new InvalidOperationException($"Failed to find or create supplier for entity ID: {item.entity.entity_id}");
             }
-            
+
             item.receipt_supplier.fk_supplier_id = supplier_id;
             item.supplier.supplier_id = supplier_id;
 
-            if (string.IsNullOrEmpty(item.receipt.receipt_number)) {
+            if (string.IsNullOrEmpty(item.receipt.receipt_number))
+            {
                 generateFeeReceiptNumber(item);
             }
-            
+
             UpdateReceiptTotalPrice(item);
 
-            var handlerItem = new ReceiptHandlerItem {
+            var handlerItem = new ReceiptHandlerItem
+            {
                 receipt_item = item.receipt,
                 receipt_product_items = item.receipt_products,
                 receipt_supplier_item = item.receipt_supplier
@@ -393,18 +399,22 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// <param name="entity_id">The ID of the entity for which the supplier ID is to be retrieved or created. Must be greater than 0.</param>
     /// <returns>The supplier ID associated with the specified entity ID. Returns 0 if the <paramref name="entity_id"/> is
     /// invalid or if the operation fails to create or retrieve a supplier.</returns>
-    private int findSupplierIdOrCreateNew(int entity_id) {
-        if (!SDataValidation.isIdValid(entity_id)) {
+    private int findSupplierIdOrCreateNew(int entity_id)
+    {
+        if (!SDataValidation.isIdValid(entity_id))
+        {
             return 0;
         }
 
         var supplier = _m_supplier_model.getSupplierWithEntityFK(entity_id.ToString());
-        if (supplier != null && supplier.supplier_id > 0) {
+        if (supplier != null && supplier.supplier_id > 0)
+        {
             return supplier.supplier_id;
         }
 
-        var new_supplier = new SupplierItem {
-            fk_entity_id = entity_id 
+        var new_supplier = new SupplierItem
+        {
+            fk_entity_id = entity_id
         };
         var result = _m_supplier_model.saveItem(new_supplier);
         return result.returned_id;
@@ -414,9 +424,11 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// Updates the total price of the receipt based on the quantities and unit prices of the products.
     /// </summary>
     /// <param name="item">The detailed receipt item containing the list of products and their associated quantities and unit prices.</param>
-    private static void UpdateReceiptTotalPrice(ReceiptFeeDetailedItem item) {
+    private static void UpdateReceiptTotalPrice(ReceiptFeeDetailedItem item)
+    {
         decimal total = 0.0M;
-        foreach (var product in item.receipt_products) {
+        foreach (var product in item.receipt_products)
+        {
             total += product.receipt_product_quantity * product.receipt_product_unity_price;
         }
         item.receipt.receipt_total_price = total;
@@ -428,24 +440,28 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// </summary>
     /// <param name="item">The <see cref="ReceiptFeeDetailedItem"/> to which the receipt number will be assigned.  
     /// If <paramref name="item"/> is <see langword="null"/> or its receipt already has a number, no action is taken.</param>
-    private void generateFeeReceiptNumber(ReceiptFeeDetailedItem item) {
-        if (item == null || !string.IsNullOrEmpty(item.receipt.receipt_number)) {
-            return; 
+    private void generateFeeReceiptNumber(ReceiptFeeDetailedItem item)
+    {
+        if (item == null || !string.IsNullOrEmpty(item.receipt.receipt_number))
+        {
+            return;
         }
 
         ReceiptModel receipt_model = new();
         string currentDate = DateTime.Now.ToString(globals.SGlobals.g_EU_DATE_FORMAT);
         string baseNumber = "F-" + currentDate;
-        
+
         // Try to find a non-existing receipt number using a more efficient approach
-        for (int counter = 1; counter <= 999; counter++) {
+        for (int counter = 1; counter <= 999; counter++)
+        {
             string candidateNumber = $"{baseNumber}-{counter:D3}";
-            if (!receipt_model.isReceiptNumberExisting(candidateNumber)) {
+            if (!receipt_model.isReceiptNumberExisting(candidateNumber))
+            {
                 item.receipt.receipt_number = candidateNumber;
                 return;
             }
         }
-        
+
         // If we reach here, we've tried 999 numbers and all exist (extremely unlikely)
         // Generate a unique fallback using ticks
         item.receipt.receipt_number = $"{baseNumber}-{DateTime.Now.Ticks % 1000000:D6}";
@@ -459,19 +475,23 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     /// <param name="yearFilter">The year to filter by (empty for no filter)</param>
     /// <returns>A collection of filtered fee items sorted by date descending.</returns>
     public ResponseGetAllItems<ReceiptFeeDetailedItem> getFilteredItems(
-        EDatabaseTableName filterTable, 
-        int filterId, 
-        string yearFilter) {
-        
+        EDatabaseTableName filterTable,
+        int filterId,
+        string yearFilter)
+    {
+
         // Return empty collection for filter types that are not applicable to fees
-        if (filterId > 0 && (filterTable == EDatabaseTableName.PRODUCT_LOT || filterTable == EDatabaseTableName.BEEHIVE)) {
+        if (filterId > 0 && (filterTable == EDatabaseTableName.PRODUCT_LOT || filterTable == EDatabaseTableName.BEEHIVE))
+        {
             return ResponseGetAllItems<ReceiptFeeDetailedItem>.Success([]);
         }
 
-        return executeWithConnection(connection => {
+        return executeWithConnection(connection =>
+        {
             var items = new ObservableCollection<ReceiptFeeDetailedItem>();
 
-            try {
+            try
+            {
                 var queryBuilder = new System.Text.StringBuilder($@"
                     SELECT 
                         r.receipt_id,
@@ -515,13 +535,16 @@ public class ReceiptFeeDetailedModel : ABaseModel,
                     WHERE rc.fk_client_id IS NULL");
 
                 // Add year filter
-                if (!string.IsNullOrEmpty(yearFilter)) {
+                if (!string.IsNullOrEmpty(yearFilter))
+                {
                     queryBuilder.Append(" AND YEAR(r.receipt_date_created) = @year");
                 }
 
                 // Add specific filters based on filter type
-                if (filterId > 0) {
-                    switch (filterTable) {
+                if (filterId > 0)
+                {
+                    switch (filterTable)
+                    {
                         case EDatabaseTableName.ENTITY:
                             queryBuilder.Append(" AND e.entity_id = @filterId");
                             break;
@@ -537,7 +560,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
                         case EDatabaseTableName.PRODUCT_SHAPE:
                             queryBuilder.Append(" AND p.fk_product_shape_id = @filterId");
                             break;
-                        // Note: PRODUCT_LOT and BEEHIVE are not applicable for fees as they don't have lot data
+                            // Note: PRODUCT_LOT and BEEHIVE are not applicable for fees as they don't have lot data
                     }
                 }
 
@@ -545,11 +568,13 @@ public class ReceiptFeeDetailedModel : ABaseModel,
                 queryBuilder.Append(" ORDER BY r.receipt_date_created DESC, r.receipt_id, rp.receipt_product_id");
 
                 using MySqlCommand cmd = new(queryBuilder.ToString(), connection);
-                
-                if (!string.IsNullOrEmpty(yearFilter)) {
+
+                if (!string.IsNullOrEmpty(yearFilter))
+                {
                     cmd.Parameters.AddWithValue("@year", yearFilter);
                 }
-                if (filterId > 0) {
+                if (filterId > 0)
+                {
                     cmd.Parameters.AddWithValue("@filterId", filterId);
                 }
 
@@ -557,26 +582,33 @@ public class ReceiptFeeDetailedModel : ABaseModel,
 
                 var receiptDict = new Dictionary<int, ReceiptFeeDetailedItem>();
 
-                while (reader.Read()) {
+                while (reader.Read())
+                {
                     int receiptId = reader.getSafeValue<int>("receipt_id");
 
-                    if (!receiptDict.TryGetValue(receiptId, out var item)) {
-                        item = new ReceiptFeeDetailedItem {
-                            receipt = new ReceiptItem {
+                    if (!receiptDict.TryGetValue(receiptId, out var item))
+                    {
+                        item = new ReceiptFeeDetailedItem
+                        {
+                            receipt = new ReceiptItem
+                            {
                                 receipt_id = receiptId,
                                 receipt_number = reader.getSafeValue("receipt_number", string.Empty),
                                 receipt_total_price = 0, // Will be calculated from filtered products
                                 receipt_date_created = reader.getSafeValue("receipt_date_created", DateOnly.MinValue).ToString(globals.SGlobals.g_EU_DATE_FORMAT)
                             },
-                            receipt_supplier = new ReceiptSupplierItem {
+                            receipt_supplier = new ReceiptSupplierItem
+                            {
                                 fk_supplier_id = reader.getSafeValue<int>("fk_supplier_id"),
                                 fk_receipt_id = reader.getSafeValue<int>("rs_fk_receipt_id")
                             },
-                            supplier = new SupplierItem {
+                            supplier = new SupplierItem
+                            {
                                 supplier_id = reader.getSafeValue<int>("supplier_id"),
                                 fk_entity_id = reader.getSafeValue<int>("fk_entity_id")
                             },
-                            entity = new EntityItem {
+                            entity = new EntityItem
+                            {
                                 entity_id = reader.getSafeValue<int>("entity_id"),
                                 entity_name = reader.getSafeValue("entity_name", string.Empty),
                                 entity_phone = reader.getSafeValue("entity_phone", string.Empty),
@@ -593,13 +625,16 @@ public class ReceiptFeeDetailedModel : ABaseModel,
                     }
 
                     // Add product if present
-                    if (!reader.IsDBNull(reader.GetOrdinal("receipt_product_id"))) {
-                        var productItem = new ReceiptProductItem {
+                    if (!reader.IsDBNull(reader.GetOrdinal("receipt_product_id")))
+                    {
+                        var productItem = new ReceiptProductItem
+                        {
                             receipt_product_id = reader.getSafeValue<int>("receipt_product_id"),
                             receipt_product_quantity = reader.getSafeValue<int>("receipt_product_quantity"),
                             receipt_product_unity_price = reader.getSafeValue<decimal>("receipt_product_unity_price"),
                             fk_receipt_id = reader.getSafeValue<int>("rp_fk_receipt_id"),
-                            product_item = new ProductItem {
+                            product_item = new ProductItem
+                            {
                                 product_id = reader.getSafeValue<int>("product_id"),
                                 product_name = reader.getSafeValue("product_name", string.Empty),
                                 product_weight = reader.getSafeValue<int>("product_weight"),
@@ -620,7 +655,8 @@ public class ReceiptFeeDetailedModel : ABaseModel,
 
                 return ResponseGetAllItems<ReceiptFeeDetailedItem>.Success(items);
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetAllItems<ReceiptFeeDetailedItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });

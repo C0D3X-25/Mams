@@ -6,8 +6,10 @@
       xmlns:local="clr-namespace:Mams_App.src.beehives"
       xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
       xmlns:commands="clr-namespace:Mams_App.src.commands"
+      xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
       mc:Ignorable="d" 
-      d:DesignHeight="800" d:DesignWidth="1224"
+      d:DesignHeight="{x:Static globalView:SGlobalViewSize.PAGE_DESIGN_HEIGHT}" 
+      d:DesignWidth="{x:Static globalView:SGlobalViewSize.PAGE_DESIGN_WIDTH}"
       Title="ListBeehivePage">
 
     <Grid Background="{Binding m_page_background_color}">

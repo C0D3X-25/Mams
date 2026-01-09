@@ -2,7 +2,8 @@ using MySqlConnector;
 
 namespace Mams_App.src.helpers;
 
-public static class SMySqlDataReaderExtensions {
+public static class SMySqlDataReaderExtensions
+{
 
     /// <summary>
     /// Retrieves the value of the specified column from a <see cref="MySqlDataReader"/> as the specified type. If the
@@ -20,9 +21,11 @@ public static class SMySqlDataReaderExtensions {
     /// <returns>The value of the specified column converted to the specified type <typeparamref name="T"/>. If the column value
     /// is <see langword="null"/>, or if the conversion is not supported, the <paramref name="default_value"/> is
     /// returned.</returns>
-    public static T getSafeValue<T>(this MySqlDataReader reader, string column_name, T default_value = default!) {
+    public static T getSafeValue<T>(this MySqlDataReader reader, string column_name, T default_value = default!)
+    {
         var ordinal = reader.GetOrdinal(column_name);
-        if (reader.IsDBNull(ordinal)) {
+        if (reader.IsDBNull(ordinal))
+        {
             return default_value;
         }
 

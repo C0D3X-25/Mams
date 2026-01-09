@@ -4,20 +4,24 @@ using System.Windows;
 
 namespace Mams_App.src.databaseConnections;
 
-public class SQLConnectionModel {
+public class SQLConnectionModel
+{
 
     /// <summary>
     /// Gets the connection string from the portable MariaDB service.
     /// </summary>
     private static string ConnectionString => SMariaDbPortableService.ConnectionString;
 
-    public static MySqlConnection GetConnection() {
+    public static MySqlConnection GetConnection()
+    {
         var connection = new MySqlConnection(ConnectionString);
-        try {
+        try
+        {
             connection.Open();
             return connection;
         }
-        catch (MySqlException e) {
+        catch (MySqlException e)
+        {
             MessageBox.Show("Failed to connect to the database.\n" +
                 $"Code:   {e.ErrorCode}\n" +
                 $"Number: {e.Number}\n" +
@@ -47,9 +51,10 @@ public class SQLConnectionModel {
     /// <returns><see langword="true"/> if the connection is open; otherwise, <see langword="false"/>.</returns>
     public static bool isConnectionOpen(MySqlConnection? connection, EDatabaseConnection cmd = EDatabaseConnection.EXIT)
     {
-        if (connection != null 
+        if (connection != null
             && connection.State == System.Data.ConnectionState.Open
-            ) {
+            )
+        {
             return true;
         }
 

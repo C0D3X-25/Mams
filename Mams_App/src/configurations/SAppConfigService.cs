@@ -11,7 +11,7 @@ public static class SAppConfigService
 {
     private static readonly string _configFolderPath = Path.Combine(
         AppDomain.CurrentDomain.BaseDirectory, "ressources");
-    
+
     private static readonly string _configFilePath = Path.Combine(
         _configFolderPath, "app_config.json");
 
@@ -36,7 +36,7 @@ public static class SAppConfigService
 
             string json = File.ReadAllText(_configFilePath, Encoding.UTF8);
             var config = JsonSerializer.Deserialize<AppConfigItem>(json);
-            
+
             return config ?? new AppConfigItem();
         }
         catch

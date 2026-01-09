@@ -13,7 +13,8 @@ namespace Mams_App.src.productsShapes;
 /// </summary>
 public class ProductShapeModel :
     ABaseModel,
-    ICrudOperation<ProductShapeItem> {
+    ICrudOperation<ProductShapeItem>
+{
 
     private const string _m_TBL_NAME = "products_shapes";
     private const string _m_COL_ID = "product_shape_id";
@@ -30,7 +31,8 @@ public class ProductShapeModel :
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
-    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE)
+    {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
@@ -39,14 +41,18 @@ public class ProductShapeModel :
     /// </summary>
     /// <param name="id">The unique identifier of the product shape item to retrieve. Cannot be null or empty.</param>
     /// <returns>A <see cref="ResponseGetItem{ProductShapeItem}"/> containing the product shape and any error message.</returns>
-    public ResponseGetItem<ProductShapeItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValidForRetrieval(id)) {
+    public ResponseGetItem<ProductShapeItem> getItemByID(string id)
+    {
+        if (!SDataValidation.isIdValidForRetrieval(id))
+        {
             return ResponseGetItem<ProductShapeItem>.Failure(EErrors.INVALID_INPUT,
                 $"ProductShapeModel.getItemByID: Invalid ID provided '{id}'");
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
                     $"FROM {_m_TBL_NAME} " +
@@ -57,8 +63,10 @@ public class ProductShapeModel :
                 cmd.Parameters.AddWithValue("@id", id);
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
-                if (reader.Read()) {
-                    return ResponseGetItem<ProductShapeItem>.Success(new ProductShapeItem {
+                if (reader.Read())
+                {
+                    return ResponseGetItem<ProductShapeItem>.Success(new ProductShapeItem
+                    {
                         product_shape_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_shape_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_shape_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
@@ -66,7 +74,8 @@ public class ProductShapeModel :
                 }
                 return ResponseGetItem<ProductShapeItem>.NotFound();
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetItem<ProductShapeItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
@@ -76,7 +85,8 @@ public class ProductShapeModel :
     /// Retrieves all product shape items from the database.
     /// </summary>
     /// <returns>A <see cref="ResponseGetAllItems{ProductShapeItem}"/> containing all product shape items and any error message.</returns>
-    public ResponseGetAllItems<ProductShapeItem> getAllItems() {
+    public ResponseGetAllItems<ProductShapeItem> getAllItems()
+    {
         var items = SDatabaseModel.getAllRowsInTable<ProductShapeItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
         return ResponseGetAllItems<ProductShapeItem>.Success(items);
     }
@@ -85,9 +95,12 @@ public class ProductShapeModel :
     /// Retrieves all active (non-archived) product shape items from the database.
     /// </summary>
     /// <returns>An <see cref="ObservableCollection{ProductShapeItem}"/> containing all non-archived product shapes, ordered by name.</returns>
-    public ObservableCollection<ProductShapeItem> getActiveProductShapes() {
-        return executeWithConnection(connection => {
-            try {
+    public ObservableCollection<ProductShapeItem> getActiveProductShapes()
+    {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 string query = $@"
                     SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE}
                     FROM {_m_TBL_NAME}
@@ -99,8 +112,10 @@ public class ProductShapeModel :
 
                 ObservableCollection<ProductShapeItem> items = [];
 
-                while (reader.Read()) {
-                    items.Add(new ProductShapeItem {
+                while (reader.Read())
+                {
+                    items.Add(new ProductShapeItem
+                    {
                         product_shape_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_shape_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_shape_archive = string.Empty
@@ -109,7 +124,8 @@ public class ProductShapeModel :
 
                 return items;
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
                 return [];
             }
@@ -122,8 +138,10 @@ public class ProductShapeModel :
     /// <param name="item">The <see cref="ProductShapeItem"/> to save. Must not be <c>null</c>.</param>
     /// <returns>A <see cref="ResponseSaveItem"/> containing the <c>product_shape_id</c> of the saved item and any error message.
     /// Returns a response with ID 0 if the operation fails or if the item is <c>null</c>.</returns>
-    public ResponseSaveItem saveItem(ProductShapeItem item) {
-        if (item == null) {
+    public ResponseSaveItem saveItem(ProductShapeItem item)
+    {
+        if (item == null)
+        {
             return ResponseSaveItem.Failure(EErrors.NULL_VALUE,
                 "ProductShapeModel.saveItem: Item cannot be null");
         }
@@ -131,22 +149,25 @@ public class ProductShapeModel :
         int item_id = item.product_shape_id;
         string item_name = item.product_shape_name.Trim();
         string query;
-        
+
         // Determine if we're inserting or updating
         bool isInsert = (item_id == 0);
-        
-        if (isInsert) {
+
+        if (isInsert)
+        {
             // Check for duplicate name before inserting
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_shape_name.Trim())) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_shape_name.Trim()))
+            {
                 return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
                     $"ProductShapeModel.saveItem: Product shape with name '{item.product_shape_name}' already exists");
             }
-            
+
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
                 $"VALUES (@name); " +
                 $"SELECT LAST_INSERT_ID();";
         }
-        else {
+        else
+        {
             query = $"UPDATE {_m_TBL_NAME} " +
                 $"SET {_m_COL_NAME} = @name " +
                 $"WHERE {_m_COL_ID} = @id;";
@@ -154,37 +175,46 @@ public class ProductShapeModel :
 
         // Start transaction if needed
         bool need_transaction = !isTransactionActive();
-        if (need_transaction) {
+        if (need_transaction)
+        {
             startTransaction();
         }
 
-        try {
-            if (isInsert) {
+        try
+        {
+            if (isInsert)
+            {
                 // For INSERT operations, we need to return the new ID
-                item_id = executeWithConnection(connection => {
+                item_id = executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item_name);
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 });
             }
-            else {
+            else
+            {
                 // For UPDATE operations, we just execute the command
-                executeWithConnection(connection => {
+                executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@name", item_name);
                     cmd.ExecuteNonQuery();
                 });
             }
-            
-            if (need_transaction) {
+
+            if (need_transaction)
+            {
                 commitTransaction();
             }
-            
+
             return ResponseSaveItem.Success(item_id);
         }
-        catch (MySqlException ex) {
-            if (need_transaction) {
+        catch (MySqlException ex)
+        {
+            if (need_transaction)
+            {
                 rollbackTransaction();
             }
             return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);

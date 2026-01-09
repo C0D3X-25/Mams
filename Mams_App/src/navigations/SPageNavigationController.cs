@@ -5,7 +5,8 @@ using System.Windows.Controls;
 
 namespace Mams_App.src.navigations;
 
-public static class SPageNavigationController {
+public static class SPageNavigationController
+{
 
     private static Frame? _m_frame;
     private static Page? _m_current_page;
@@ -15,7 +16,8 @@ public static class SPageNavigationController {
     /// Initializes the application with the specified frame and navigates to the home page.
     /// </summary>
     /// <param name="frame">The <see cref="Frame"/> object used for navigation and rendering within the application.</param>
-    public static void initialize(Frame frame) {
+    public static void initialize(Frame frame)
+    {
         _m_frame = frame;
         navigateToHomePage();
     }
@@ -23,7 +25,8 @@ public static class SPageNavigationController {
     /// <summary>
     /// Navigates to the application's home page.
     /// </summary>
-    public static void navigateToHomePage() {
+    public static void navigateToHomePage()
+    {
         navigateTo(new ResumePage());
     }
 
@@ -42,21 +45,27 @@ public static class SPageNavigationController {
     /// <exception cref="InvalidOperationException">Thrown if the navigation frame is not initialized. Ensure that <c>initialize()</c> is called before invoking
     /// this method.</exception>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="page"/> is <see langword="null"/>.</exception>
-    public static void navigateTo(Page page, bool compare_original = false) {
-        if (_m_frame == null) {
+    public static void navigateTo(Page page, bool compare_original = false)
+    {
+        if (_m_frame == null)
+        {
             throw new InvalidOperationException("Frame is not initialized. Call initialize() first.");
         }
-        if (page == null) {
+        if (page == null)
+        {
             throw new ArgumentNullException(nameof(page), "Page cannot be null.");
         }
-        if (_m_current_page != null && _m_current_page.GetType() == page.GetType()) {
+        if (_m_current_page != null && _m_current_page.GetType() == page.GetType())
+        {
             // If the current page is the same as the new page, do not navigate again.
             return;
         }
 
         // Check if current page's DataContext implements ICompareState and has unsaved changes
-        if (compare_original) {
-            if (_m_current_page?.DataContext is ICompareState compareState && !compareState.isStateOriginal()) {
+        if (compare_original)
+        {
+            if (_m_current_page?.DataContext is ICompareState compareState && !compareState.isStateOriginal())
+            {
                 MessageBoxResult result = MessageBox.Show(
                     "En quittant la page, toutes les données modifiées seront perdues. Voulez-vous continuer?",
                     "Annuler",
@@ -64,7 +73,8 @@ public static class SPageNavigationController {
                     MessageBoxImage.Warning
                 );
 
-                if (result == MessageBoxResult.No) {
+                if (result == MessageBoxResult.No)
+                {
                     return; // Cancel navigation
                 }
             }
@@ -79,7 +89,8 @@ public static class SPageNavigationController {
     /// Navigates to the previous page in the navigation stack.
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
-    public static void navigateBack(bool compare_original = false) {
+    public static void navigateBack(bool compare_original = false)
+    {
         if (_m_frame == null)
         {
             throw new InvalidOperationException("Frame is not initialized. Call initialize() first.");
@@ -88,7 +99,7 @@ public static class SPageNavigationController {
         {
             throw new InvalidOperationException("No previous page to navigate back to.");
         }
-        
+
         // Create a new instance of the previous page type to ensure latest data is loaded
         Type previous_page_type = _m_previous_page.GetType();
         if (previous_page_type == null)

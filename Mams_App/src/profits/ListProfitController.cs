@@ -8,7 +8,8 @@ using System.Windows.Input;
 
 namespace Mams_App.src.profits;
 
-public class ListProfitController : ABaseController {
+public class ListProfitController : ABaseController
+{
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
@@ -28,9 +29,11 @@ public class ListProfitController : ABaseController {
 
 
     private ObservableCollection<ReceiptProfitDetailedItem>? _m_list_items;
-    public ObservableCollection<ReceiptProfitDetailedItem>? m_list_items {
+    public ObservableCollection<ReceiptProfitDetailedItem>? m_list_items
+    {
         get { return _m_list_items; }
-        set {
+        set
+        {
             _m_list_items = value;
             onPropertyChanged();
         }
@@ -38,16 +41,19 @@ public class ListProfitController : ABaseController {
 
 
     private ReceiptProfitDetailedItem? _m_selected_item;
-    public ReceiptProfitDetailedItem? m_selected_item {
+    public ReceiptProfitDetailedItem? m_selected_item
+    {
         get { return _m_selected_item; }
-        set {
+        set
+        {
             _m_selected_item = value;
             onPropertyChanged();
         }
     }
 
 
-    public ListProfitController() {
+    public ListProfitController()
+    {
         updateListItems();
         m_add_new_item_command = new RelayCommand(navigateToSavePage);
         m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
@@ -55,37 +61,46 @@ public class ListProfitController : ABaseController {
         m_double_click_command = new RelayCommand(navigateToModifyPage, isItemSelected);
     }
 
-    public void navigateToModifyPage(object? obj) {
-        if (_m_selected_item != null) {
+    public void navigateToModifyPage(object? obj)
+    {
+        if (_m_selected_item != null)
+        {
             SPageNavigationController.navigateTo(new SaveProfitPage(_m_selected_item.receipt.receipt_id));
         }
     }
 
-    private void updateListItems() {
+    private void updateListItems()
+    {
         m_list_items = _m_item_model.getAllItems().returned_items;
     }
 
 
-    private void navigateToSavePage(object? obj) {
+    private void navigateToSavePage(object? obj)
+    {
         SPageNavigationController.navigateTo(new SaveProfitPage());
     }
 
 
-    private bool isItemSelected(object? arg) {
+    private bool isItemSelected(object? arg)
+    {
         return m_selected_item != null;
     }
 
 
-    private void deleteItem(object? obj) {
-        if (_m_selected_item != null) {
+    private void deleteItem(object? obj)
+    {
+        if (_m_selected_item != null)
+        {
             MessageBoxResult result = MessageBox.Show("Supprimer cette facture définitivement?",
                 "Suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (result == MessageBoxResult.No) {
+            if (result == MessageBoxResult.No)
+            {
                 return;
             }
             var deleteResult = _m_item_model.deleteItem(_m_selected_item.receipt.receipt_id.ToString());
-            if (!deleteResult.is_success) {
-                MessageBox.Show("Une erreur s'est produite lors de la suppression.", 
+            if (!deleteResult.is_success)
+            {
+                MessageBox.Show("Une erreur s'est produite lors de la suppression.",
                     "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             updateListItems();

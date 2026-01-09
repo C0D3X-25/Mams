@@ -1,6 +1,4 @@
-using Mams_App.src.views;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Mams_App.src.settings;
 

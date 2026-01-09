@@ -12,7 +12,8 @@ namespace Mams_App.src.products;
 /// Represents a model for managing product-related data and operations.
 /// </summary>
 public class ProductModel : ABaseModel,
-    ICrudOperation<ProductItem> {
+    ICrudOperation<ProductItem>
+{
 
     private const string _m_TBL_NAME = "products";
     private const string _m_COL_ID = "product_id";
@@ -23,8 +24,8 @@ public class ProductModel : ABaseModel,
     private const string _m_COL_FK_PRODUCT_SHAPE = "fk_product_shape_id";
     private const string _m_COL_ARCHIVE = "product_archive";
 
-    private const int       _m_DEFAUL_FK_PRODUCT_SHAPE = 1;
-    private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
+    private const int _m_DEFAUL_FK_PRODUCT_SHAPE = 1;
+    private const string _m_DEFAULT_ARCHIVE = "1901-01-01";
 
     /// <summary>
     /// Deletes an item from the database based on the specified identifier and delete operation type.
@@ -34,7 +35,8 @@ public class ProductModel : ABaseModel,
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
-    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE)
+    {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
@@ -79,9 +81,11 @@ public class ProductModel : ABaseModel,
                 cmd.Parameters.AddWithValue("@id", id);
 
                 using MySqlDataReader reader = cmd.ExecuteReader();
-                if (reader.Read()) {
+                if (reader.Read())
+                {
                     var archiveDate = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue);
-                    return ResponseGetItem<ProductItem>.Success(new ProductItem {
+                    return ResponseGetItem<ProductItem>.Success(new ProductItem
+                    {
                         product_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0),
@@ -96,7 +100,8 @@ public class ProductModel : ABaseModel,
                 }
                 return ResponseGetItem<ProductItem>.NotFound();
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetItem<ProductItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
@@ -106,9 +111,12 @@ public class ProductModel : ABaseModel,
     /// Retrieves all product items from the database, with additional details populated for related entities.
     /// </summary>
     /// <returns>A <see cref="ResponseGetAllItems{ProductItem}"/> containing all product items and any error message.</returns>
-    public ResponseGetAllItems<ProductItem> getAllItems() {
-        return executeWithConnection(connection => {
-            try {
+    public ResponseGetAllItems<ProductItem> getAllItems()
+    {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 string query = $@"
                     SELECT 
                         p.{_m_COL_ID}, 
@@ -132,9 +140,11 @@ public class ProductModel : ABaseModel,
 
                 ObservableCollection<ProductItem> items = [];
 
-                while (reader.Read()) {
+                while (reader.Read())
+                {
                     var archiveDate = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue);
-                    items.Add(new ProductItem {
+                    items.Add(new ProductItem
+                    {
                         product_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0),
@@ -150,7 +160,8 @@ public class ProductModel : ABaseModel,
 
                 return ResponseGetAllItems<ProductItem>.Success(items);
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetAllItems<ProductItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
@@ -173,25 +184,27 @@ public class ProductModel : ABaseModel,
         int item_id = item.product_id;
         string item_product_name = item.product_name.Trim();
         string query;
-        
+
         // Determine if we're inserting or updating
         bool is_insert = (item_id == 0);
-        
+
         if (is_insert)
         {
             // Check for duplicate name before inserting
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_product_name)) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item_product_name))
+            {
                 return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
                     $"ProductModel.saveItem: Product with name '{item_product_name}' already exists");
             }
-            
+
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_WEIGHT}, " +
                 $"{_m_COL_FK_PRODUCT_TYPE}, {_m_COL_FK_PRODUCT_CATEGORY}, " +
                 $"{_m_COL_FK_PRODUCT_SHAPE}) " +
                 $"VALUES (@name, @weight, @fk_product_type, @fk_product_category, @fk_product_shape); " +
                 $"SELECT LAST_INSERT_ID();";
         }
-        else {
+        else
+        {
             query = $"UPDATE {_m_TBL_NAME} " +
                 $"SET {_m_COL_NAME} = @name, {_m_COL_WEIGHT} = @weight, " +
                 $"{_m_COL_FK_PRODUCT_TYPE} = @fk_product_type, " +
@@ -211,7 +224,7 @@ public class ProductModel : ABaseModel,
 
             if (is_insert)
             {
-                item_id = executeWithConnection(connection => 
+                item_id = executeWithConnection(connection =>
                 {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item_product_name);
@@ -222,7 +235,8 @@ public class ProductModel : ABaseModel,
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 });
             }
-            else {
+            else
+            {
                 executeWithConnection(connection =>
                 {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
@@ -237,7 +251,7 @@ public class ProductModel : ABaseModel,
             }
 
             commitTransaction();
-            
+
             return ResponseSaveItem.Success(item_id);
         }
         catch (MySqlException ex)
@@ -251,9 +265,12 @@ public class ProductModel : ABaseModel,
     /// Retrieves all active (non-archived) product items from the database.
     /// </summary>
     /// <returns>An <see cref="ObservableCollection{ProductItem}"/> containing all non-archived products, ordered by name.</returns>
-    public ObservableCollection<ProductItem> getActiveProducts() {
-        return executeWithConnection(connection => {
-            try {
+    public ObservableCollection<ProductItem> getActiveProducts()
+    {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 string query = $@"
                     SELECT 
                         p.{_m_COL_ID}, 
@@ -278,8 +295,10 @@ public class ProductModel : ABaseModel,
 
                 ObservableCollection<ProductItem> items = [];
 
-                while (reader.Read()) {
-                    items.Add(new ProductItem {
+                while (reader.Read())
+                {
+                    items.Add(new ProductItem
+                    {
                         product_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0),
@@ -295,7 +314,8 @@ public class ProductModel : ABaseModel,
 
                 return items;
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
                 return [];
             }
@@ -343,7 +363,7 @@ public class ProductModel : ABaseModel,
     /// <param name="ids">A list of integer IDs used to filter the query results. Each ID is matched against the specified column.</param>
     /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="ProductItem"/> objects representing the products that
     /// match the specified criteria. If no matching products are found, the collection will be empty.</returns>
-    private ObservableCollection<ProductItem> getProductWith(string column_name, List<int> ids) 
+    private ObservableCollection<ProductItem> getProductWith(string column_name, List<int> ids)
     {
         ObservableCollection<ProductItem> product_items = new();
 
@@ -351,28 +371,29 @@ public class ProductModel : ABaseModel,
         {
             return product_items;
         }
-        
-        foreach (int id in ids) {
+
+        foreach (int id in ids)
+        {
             if (!SDataValidation.isIdValid(id))
             {
                 return product_items;
             }
         }
-        
+
         return executeWithConnection(connection =>
         {
-            try 
+            try
             {
                 string query = $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_WEIGHT}, " +
                     $"{_m_COL_FK_PRODUCT_TYPE}, {_m_COL_FK_PRODUCT_CATEGORY}, " +
                     $"{_m_COL_FK_PRODUCT_SHAPE} " +
                     $"FROM {_m_TBL_NAME} " +
                     $"WHERE {column_name} IN ({string.Join(",", ids.Select((id, index) => $"@id{index}"))});";
-                
+
                 using MySqlCommand cmd = new(query, connection);
 
                 // Add parameters for each ID
-                for (int i = 0; i < ids.Count; i++) 
+                for (int i = 0; i < ids.Count; i++)
                 {
                     cmd.Parameters.AddWithValue($"@id{i}", ids[i]);
                 }
@@ -380,7 +401,8 @@ public class ProductModel : ABaseModel,
                 using MySqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    product_items.Add(new ProductItem {
+                    product_items.Add(new ProductItem
+                    {
                         product_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0),
@@ -389,7 +411,7 @@ public class ProductModel : ABaseModel,
                         fk_product_shape_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0),
                     });
                 }
-                
+
                 return product_items;
             }
             catch (MySqlException ex)

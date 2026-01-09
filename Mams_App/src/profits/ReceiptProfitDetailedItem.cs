@@ -7,7 +7,8 @@ using System.Collections.ObjectModel;
 namespace Mams_App.src.profits;
 
 // Class holding all details of a receipt profit item for frontend interaction
-public class ReceiptProfitDetailedItem : ABaseItem {
+public class ReceiptProfitDetailedItem : ABaseItem
+{
     public EntityItem entity { get; set; } = new();
     public ClientItem client { get; set; } = new();
     public ReceiptClientItem receipt_client { get; set; } = new();

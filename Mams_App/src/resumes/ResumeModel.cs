@@ -19,7 +19,8 @@ namespace Mams_App.src.resumes;
 /// This class is mainly used to manage the filter of the page Resume.
 /// Uses direct MySQL queries for filtering and sorting for optimal performance.
 /// </summary>
-public class ResumeModel {
+public class ResumeModel
+{
 
     private readonly ReceiptProfitDetailedModel _m_profit_model = new();
     private readonly ReceiptFeeDetailedModel _m_fee_model = new();
@@ -45,7 +46,8 @@ public class ResumeModel {
     /// <summary>
     /// Initializes a new instance of the <see cref="ResumeModel"/> class with thread-safe lazy loading for dropdown data.
     /// </summary>
-    public ResumeModel() {
+    public ResumeModel()
+    {
         // Initialize lazy loaders with thread-safe mode
         // Each loader fetches non-archived items from the database on first access using optimized queries
         _m_lazy_entity_not_archived = new Lazy<ObservableCollection<EntityItem>>(
@@ -97,7 +99,8 @@ public class ResumeModel {
     /// </summary>
     /// <param name="search">The search criteria used to filter and sort the resume item. Can be null.</param>
     /// <returns>A <see cref="ResumeItem"/> object that matches the specified search criteria, sorted by date descending.</returns>
-    public ResumeItem getFilteredResume(SearchItem? search) {
+    public ResumeItem getFilteredResume(SearchItem? search)
+    {
         var resume_item = new ResumeItem();
 
         // Extract filter parameters
@@ -106,19 +109,22 @@ public class ResumeModel {
         var yearFilter = extractYear(search?.search_year);
 
         // Return empty if filter is selected but no ID provided (except for NONE which means no filter)
-        if (filterId == 0 && filterTable != EDatabaseTableName.NONE) {
+        if (filterId == 0 && filterTable != EDatabaseTableName.NONE)
+        {
             return resume_item;
         }
 
         // Query profits with filtering and sorting at database level
         var profitResult = _m_profit_model.getFilteredItems(filterTable, filterId, yearFilter);
-        if (profitResult.is_success && profitResult.returned_items != null) {
+        if (profitResult.is_success && profitResult.returned_items != null)
+        {
             resume_item.profit_items = profitResult.returned_items;
         }
 
         // Query fees with filtering and sorting at database level
         var feeResult = _m_fee_model.getFilteredItems(filterTable, filterId, yearFilter);
-        if (feeResult.is_success && feeResult.returned_items != null) {
+        if (feeResult.is_success && feeResult.returned_items != null)
+        {
             resume_item.fee_items = feeResult.returned_items;
         }
 
@@ -130,8 +136,10 @@ public class ResumeModel {
     /// </summary>
     /// <param name="dateString">The date string to extract year from.</param>
     /// <returns>The year as a string, or empty string if invalid.</returns>
-    private static string extractYear(string? dateString) {
-        if (string.IsNullOrEmpty(dateString)) {
+    private static string extractYear(string? dateString)
+    {
+        if (string.IsNullOrEmpty(dateString))
+        {
             return string.Empty;
         }
         return SFormatData.getYearFromDate(dateString);
@@ -142,69 +150,85 @@ public class ResumeModel {
     /// </summary>
     /// <param name="selected_table">The database table from which to retrieve search items.</param>
     /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="SearchItem"/> objects.</returns>
-    public ObservableCollection<SearchItem> getListSearchItems(DatabaseTablesNameItem selected_table) {
+    public ObservableCollection<SearchItem> getListSearchItems(DatabaseTablesNameItem selected_table)
+    {
 
         ObservableCollection<SearchItem> list_search_item = [];
 
-        switch (selected_table.m_name_in_database) {
+        switch (selected_table.m_name_in_database)
+        {
             case EDatabaseTableName.ENTITY:
-                foreach (var item in _m_lazy_entity_not_archived.Value) {
-                    list_search_item.Add(new SearchItem {
+                foreach (var item in _m_lazy_entity_not_archived.Value)
+                {
+                    list_search_item.Add(new SearchItem
+                    {
                         search_id = item.entity_id,
                         search_item_to_display = item.entity_name
                     });
                 }
                 break;
             case EDatabaseTableName.BEEHIVE:
-                foreach (var item in _m_lazy_beehive_not_archived.Value) {
-                    list_search_item.Add(new SearchItem {
+                foreach (var item in _m_lazy_beehive_not_archived.Value)
+                {
+                    list_search_item.Add(new SearchItem
+                    {
                         search_id = item.beehive_id,
                         search_item_to_display = item.beehive_name
                     });
                 }
                 break;
             case EDatabaseTableName.PRODUCT:
-                foreach (var item in _m_lazy_product_not_archived.Value) {
-                    list_search_item.Add(new SearchItem {
+                foreach (var item in _m_lazy_product_not_archived.Value)
+                {
+                    list_search_item.Add(new SearchItem
+                    {
                         search_id = item.product_id,
                         search_item_to_display = item.product_name
                     });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_SHAPE:
-                foreach (var item in _m_lazy_product_shape_not_archived.Value) {
-                    list_search_item.Add(new SearchItem {
+                foreach (var item in _m_lazy_product_shape_not_archived.Value)
+                {
+                    list_search_item.Add(new SearchItem
+                    {
                         search_id = item.product_shape_id,
                         search_item_to_display = item.product_shape_name
                     });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_CATEGORY:
-                foreach (var item in _m_lazy_product_category_not_archived.Value) {
-                    list_search_item.Add(new SearchItem {
+                foreach (var item in _m_lazy_product_category_not_archived.Value)
+                {
+                    list_search_item.Add(new SearchItem
+                    {
                         search_id = item.product_category_id,
                         search_item_to_display = item.product_category_name
                     });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_TYPE:
-                foreach (var item in _m_lazy_product_type_not_archived.Value) {
-                    list_search_item.Add(new SearchItem {
+                foreach (var item in _m_lazy_product_type_not_archived.Value)
+                {
+                    list_search_item.Add(new SearchItem
+                    {
                         search_id = item.product_type_id,
                         search_item_to_display = item.product_type_name
                     });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_LOT:
-                foreach (var item in _m_lazy_product_lot_not_archived.Value) {
-                    list_search_item.Add(new SearchItem {
+                foreach (var item in _m_lazy_product_lot_not_archived.Value)
+                {
+                    list_search_item.Add(new SearchItem
+                    {
                         search_id = item.product_lot_id,
                         search_item_to_display = item.product_lot_name
                     });
                 }
                 break;
         }
-        
+
         return list_search_item;
     }
 
@@ -212,10 +236,12 @@ public class ResumeModel {
     /// Retrieves a collection of search items representing available years.
     /// </summary>
     /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="SearchItem"/> objects.</returns>
-    public ObservableCollection<SearchItem> getListYears() {
+    public ObservableCollection<SearchItem> getListYears()
+    {
         var years = _m_receipt_model.getExistingYear();
-        
-        if (years == null) {
+
+        if (years == null)
+        {
             return [];
         }
 
@@ -225,9 +251,11 @@ public class ResumeModel {
                 search_item_to_display = string.Empty
             }
         };
-                
-        foreach (string year in years) {
-            list_search_year.Add(new SearchItem {
+
+        foreach (string year in years)
+        {
+            list_search_year.Add(new SearchItem
+            {
                 search_year = year,
                 search_item_to_display = string.Empty
             });
@@ -243,7 +271,7 @@ public class ResumeModel {
     /// <param name="fee_items">Collection of fee items to calculate from.</param>
     /// <returns>Tuple containing (total_profit, total_fee, total).</returns>
     public (decimal total_profit, decimal total_fee, decimal total) calculateTotalTransactions(
-        ObservableCollection<ReceiptProfitDetailedItem>? profit_items, 
+        ObservableCollection<ReceiptProfitDetailedItem>? profit_items,
         ObservableCollection<ReceiptFeeDetailedItem>? fee_items)
     {
         decimal total_profit = 0.00M;

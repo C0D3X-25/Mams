@@ -1,5 +1,5 @@
-using Mams_App.src.navigations;
 using Mams_App.src.configurations;
+using Mams_App.src.navigations;
 using Mams_App.src.search;
 using Mams_App.src.services;
 using Mams_App.src.settings;
@@ -10,15 +10,17 @@ namespace Mams_App.src.views;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : Window {
+public partial class MainWindow : Window
+{
 
-    public MainWindow() {
+    public MainWindow()
+    {
         InitializeComponent();
         SPageNavigationController.initialize(MainFrame);
         SSearchModel.initialize();
-        
+
         loadWindowSettings();
-        
+
         Closing += MainWindow_Closing;
         Loaded += MainWindow_Loaded;
     }
@@ -71,31 +73,31 @@ public partial class MainWindow : Window {
     {
         var config = SAppConfigService.loadConfig();
         var windowConfig = config.m_window;
-        
+
         // Validate that the window position is within screen bounds
         var screenWidth = SystemParameters.VirtualScreenWidth;
         var screenHeight = SystemParameters.VirtualScreenHeight;
-        
+
         if (windowConfig.m_left >= 0 && windowConfig.m_left < screenWidth)
         {
             Left = windowConfig.m_left;
         }
-        
+
         if (windowConfig.m_top >= 0 && windowConfig.m_top < screenHeight)
         {
             Top = windowConfig.m_top;
         }
-        
+
         if (windowConfig.m_width >= MinWidth && windowConfig.m_width <= screenWidth)
         {
             Width = windowConfig.m_width;
         }
-        
+
         if (windowConfig.m_height >= MinHeight && windowConfig.m_height <= screenHeight)
         {
             Height = windowConfig.m_height;
         }
-        
+
         if (windowConfig.m_is_maximized)
         {
             WindowState = WindowState.Maximized;
@@ -109,7 +111,7 @@ public partial class MainWindow : Window {
     {
         var config = SAppConfigService.loadConfig();
         var windowConfig = config.m_window;
-        
+
         // Save the restore bounds if maximized, otherwise save current bounds
         if (WindowState == WindowState.Maximized)
         {
@@ -127,7 +129,7 @@ public partial class MainWindow : Window {
             windowConfig.m_height = Height;
             windowConfig.m_is_maximized = false;
         }
-        
+
         SAppConfigService.saveConfig(config);
     }
 }

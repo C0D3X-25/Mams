@@ -13,7 +13,8 @@ namespace Mams_App.src.productsCategories;
 /// </summary>
 public class ProductCategoryModel :
     ABaseModel,
-    ICrudOperation<ProductCategoryItem> {
+    ICrudOperation<ProductCategoryItem>
+{
 
     private const string _m_TBL_NAME = "products_categories";
     private const string _m_COL_ID = "product_category_id";
@@ -30,7 +31,8 @@ public class ProductCategoryModel :
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
-    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE) {
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE)
+    {
         return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
@@ -39,14 +41,18 @@ public class ProductCategoryModel :
     /// </summary>
     /// <param name="id">The unique identifier of the product category item to retrieve. Must be a valid identifier.</param>
     /// <returns>A <see cref="ResponseGetItem{ProductCategoryItem}"/> containing the product category and any error message.</returns>
-    public ResponseGetItem<ProductCategoryItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValidForRetrieval(id)) {
+    public ResponseGetItem<ProductCategoryItem> getItemByID(string id)
+    {
+        if (!SDataValidation.isIdValidForRetrieval(id))
+        {
             return ResponseGetItem<ProductCategoryItem>.Failure(EErrors.INVALID_INPUT,
                 $"ProductCategoryModel.getItemByID: Invalid ID provided '{id}'");
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
                     $"FROM {_m_TBL_NAME} " +
@@ -57,8 +63,10 @@ public class ProductCategoryModel :
                 cmd.Parameters.AddWithValue("@id", id);
                 using MySqlDataReader reader = cmd.ExecuteReader();
 
-                if (reader.Read()) {
-                    return ResponseGetItem<ProductCategoryItem>.Success(new ProductCategoryItem {
+                if (reader.Read())
+                {
+                    return ResponseGetItem<ProductCategoryItem>.Success(new ProductCategoryItem
+                    {
                         product_category_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_category_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_category_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
@@ -66,7 +74,8 @@ public class ProductCategoryModel :
                 }
                 return ResponseGetItem<ProductCategoryItem>.NotFound();
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetItem<ProductCategoryItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
@@ -76,7 +85,8 @@ public class ProductCategoryModel :
     /// Retrieves all product category items from the database.
     /// </summary>
     /// <returns>A <see cref="ResponseGetAllItems{ProductCategoryItem}"/> containing all product category items and any error message.</returns>
-    public ResponseGetAllItems<ProductCategoryItem> getAllItems() {
+    public ResponseGetAllItems<ProductCategoryItem> getAllItems()
+    {
         var items = SDatabaseModel.getAllRowsInTable<ProductCategoryItem>(_m_TBL_NAME, _m_COL_NAME);
         return ResponseGetAllItems<ProductCategoryItem>.Success(items);
     }
@@ -85,9 +95,12 @@ public class ProductCategoryModel :
     /// Retrieves all active (non-archived) product category items from the database.
     /// </summary>
     /// <returns>An <see cref="ObservableCollection{ProductCategoryItem}"/> containing all non-archived product categories, ordered by name.</returns>
-    public ObservableCollection<ProductCategoryItem> getActiveProductCategories() {
-        return executeWithConnection(connection => {
-            try {
+    public ObservableCollection<ProductCategoryItem> getActiveProductCategories()
+    {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 string query = $@"
                     SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE}
                     FROM {_m_TBL_NAME}
@@ -99,8 +112,10 @@ public class ProductCategoryModel :
 
                 ObservableCollection<ProductCategoryItem> items = [];
 
-                while (reader.Read()) {
-                    items.Add(new ProductCategoryItem {
+                while (reader.Read())
+                {
+                    items.Add(new ProductCategoryItem
+                    {
                         product_category_id = reader.getSafeValue<int>(_m_COL_ID),
                         product_category_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         product_category_archive = string.Empty
@@ -109,7 +124,8 @@ public class ProductCategoryModel :
 
                 return items;
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
                 return [];
             }
@@ -124,8 +140,10 @@ public class ProductCategoryModel :
     /// property determines whether the item is inserted (if 0) or updated (if non-zero).</param>
     /// <returns>A <see cref="ResponseSaveItem"/> containing the ID of the saved product category item and any error message.
     /// Returns a response with ID 0 if the operation fails or if the item is null.</returns>
-    public ResponseSaveItem saveItem(ProductCategoryItem item) {
-        if (item == null) {
+    public ResponseSaveItem saveItem(ProductCategoryItem item)
+    {
+        if (item == null)
+        {
             return ResponseSaveItem.Failure(EErrors.NULL_VALUE,
                 "ProductCategoryModel.saveItem: Item cannot be null");
         }
@@ -133,22 +151,25 @@ public class ProductCategoryModel :
         int item_id = item.product_category_id;
         string item_name = item.product_category_name.Trim();
         string query;
-        
+
         // Determine if we're inserting or updating
         bool isInsert = (item_id == 0);
-        
-        if (isInsert) {
+
+        if (isInsert)
+        {
             // Check for duplicate name before inserting
-            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_category_name.Trim())) {
+            if (isIdenticItemPresentInTable(_m_TBL_NAME, _m_COL_NAME, item.product_category_name.Trim()))
+            {
                 return ResponseSaveItem.Failure(EErrors.ALREADY_EXISTS,
                     $"ProductCategoryModel.saveItem: Product category with name '{item.product_category_name}' already exists");
             }
-            
+
             query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
                 $"VALUES (@name); " +
                 $"SELECT LAST_INSERT_ID();";
         }
-        else {
+        else
+        {
             query = $"UPDATE {_m_TBL_NAME} " +
                 $"SET {_m_COL_NAME} = @name " +
                 $"WHERE {_m_COL_ID} = @id;";
@@ -156,37 +177,46 @@ public class ProductCategoryModel :
 
         // Start transaction if needed
         bool need_transaction = !isTransactionActive();
-        if (need_transaction) {
+        if (need_transaction)
+        {
             startTransaction();
         }
 
-        try {
-            if (isInsert) {
+        try
+        {
+            if (isInsert)
+            {
                 // For INSERT operations, we need to return the new ID
-                item_id = executeWithConnection(connection => {
+                item_id = executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item_name);
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 });
             }
-            else {
+            else
+            {
                 // For UPDATE operations, we just execute the command
-                executeWithConnection(connection => {
+                executeWithConnection(connection =>
+                {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@name", item_name);
                     cmd.ExecuteNonQuery();
                 });
             }
-            
-            if (need_transaction) {
+
+            if (need_transaction)
+            {
                 commitTransaction();
             }
-            
+
             return ResponseSaveItem.Success(item_id);
         }
-        catch (MySqlException ex) {
-            if (need_transaction) {
+        catch (MySqlException ex)
+        {
+            if (need_transaction)
+            {
                 rollbackTransaction();
             }
             return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);

@@ -8,7 +8,8 @@ using System.Windows.Input;
 
 namespace Mams_App.src.productsTypes;
 
-public class SaveProductTypeController : ABaseController, ICompareState {
+public class SaveProductTypeController : ABaseController, ICompareState
+{
 
     public string m_page_background_color { get; set; } = SGlobalView.m_page_frame_color;
     public string m_body_background_color { get; set; } = SGlobalView.m_page_body_color;
@@ -26,18 +27,22 @@ public class SaveProductTypeController : ABaseController, ICompareState {
 
     private ProductTypeItem _m_original_product_type = new();
     private ProductTypeItem _m_product_type = new();
-    public ProductTypeItem m_product_type {
+    public ProductTypeItem m_product_type
+    {
         get => _m_product_type;
-        set {
+        set
+        {
             _m_product_type = value;
             onPropertyChanged();
         }
     }
 
 
-    public SaveProductTypeController(int id_to_load = 0) {
+    public SaveProductTypeController(int id_to_load = 0)
+    {
 
-        if (id_to_load != 0) {
+        if (id_to_load != 0)
+        {
             _m_original_product_type = _m_product_type_model.getItemByID(id_to_load.ToString()).returned_item ?? new ProductTypeItem();
             _m_product_type = _m_product_type_model.getItemByID(id_to_load.ToString()).returned_item ?? new ProductTypeItem();
         }
@@ -46,27 +51,33 @@ public class SaveProductTypeController : ABaseController, ICompareState {
         m_abort_command = new RelayCommand(abortProduct);
     }
 
-    public bool isStateOriginal() {
+    public bool isStateOriginal()
+    {
         if (!_m_original_product_type.product_type_id.Equals(_m_product_type.product_type_id)
             || !_m_original_product_type.product_type_name.Equals(_m_product_type.product_type_name, StringComparison.Ordinal)
-            || !_m_original_product_type.product_type_archive.Equals(_m_product_type.product_type_archive, StringComparison.Ordinal)) {
+            || !_m_original_product_type.product_type_archive.Equals(_m_product_type.product_type_archive, StringComparison.Ordinal))
+        {
             return false;
         }
         return true;
     }
 
 
-    private bool canSaveProduct(object? arg) {
+    private bool canSaveProduct(object? arg)
+    {
         return !string.IsNullOrEmpty(m_product_type.product_type_name);
     }
 
 
-    private void saveProduct(object? obj) {
+    private void saveProduct(object? obj)
+    {
         var result = _m_product_type_model.saveItem(m_product_type);
-        if (result.is_success) {
+        if (result.is_success)
+        {
             SPageNavigationController.navigateBack();
         }
-        else {
+        else
+        {
             string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error, m_product_type.product_type_name);
             string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
             MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -74,7 +85,8 @@ public class SaveProductTypeController : ABaseController, ICompareState {
     }
 
 
-    private void abortProduct(object? obj) {
+    private void abortProduct(object? obj)
+    {
         SPageNavigationController.navigateBack(true);
     }
 }

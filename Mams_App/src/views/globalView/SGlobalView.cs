@@ -1,6 +1,7 @@
 namespace Mams_App.src.views.globalView;
 
-public static class SGlobalView {
+public static class SGlobalView
+{
 
     // Text
     private static string _m_default_text_color = "#000000";
@@ -14,7 +15,7 @@ public static class SGlobalView {
     private static string _m_default_button_color_2 = "#dd58b1";
     // Button Mouse Over
     private static string _m_default_over_button_color_1 = "#fd0098";
-    
+
     // Page
     public static string m_page_frame_color = _m_default_background_color_4;
     public static string m_page_body_color = _m_default_background_color_3;

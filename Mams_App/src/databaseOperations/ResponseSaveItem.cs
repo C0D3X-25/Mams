@@ -10,7 +10,8 @@ namespace Mams_App.src.databaseOperations;
 /// This class provides a structured way to handle the result of save operations,
 /// including success status determination and error information from MySQL operations.
 /// </remarks>
-public class ResponseSaveItem {
+public class ResponseSaveItem
+{
 
     /// <summary>
     /// Gets or sets the unique identifier returned from the save operation.
@@ -59,7 +60,8 @@ public class ResponseSaveItem {
     /// Initializes a new instance of the <see cref="ResponseSaveItem"/> class with the specified ID.
     /// </summary>
     /// <param name="id">The returned ID from the save operation.</param>
-    public ResponseSaveItem(int id) {
+    public ResponseSaveItem(int id)
+    {
         returned_id = id;
     }
 
@@ -68,7 +70,8 @@ public class ResponseSaveItem {
     /// </summary>
     /// <param name="id">The returned ID from the save operation.</param>
     /// <param name="error">The error type from the save operation.</param>
-    public ResponseSaveItem(int id, EErrors error) {
+    public ResponseSaveItem(int id, EErrors error)
+    {
         returned_id = id;
         this.error = error;
     }
@@ -79,7 +82,8 @@ public class ResponseSaveItem {
     /// <param name="id">The returned ID from the save operation.</param>
     /// <param name="error">The error type from the save operation.</param>
     /// <param name="errorMessageDetail">The detailed error message for developers.</param>
-    public ResponseSaveItem(int id, EErrors error, string errorMessageDetail) {
+    public ResponseSaveItem(int id, EErrors error, string errorMessageDetail)
+    {
         returned_id = id;
         this.error = error;
         error_message_detail = errorMessageDetail;
@@ -105,7 +109,7 @@ public class ResponseSaveItem {
     /// <param name="error">The error type describing the failure.</param>
     /// <param name="errorMessageDetail">The detailed error message for developers.</param>
     /// <returns>A <see cref="ResponseSaveItem"/> indicating failure.</returns>
-    public static ResponseSaveItem Failure(EErrors error, string errorMessageDetail) 
+    public static ResponseSaveItem Failure(EErrors error, string errorMessageDetail)
         => new(0, error, errorMessageDetail);
 
     /// <summary>
@@ -114,6 +118,6 @@ public class ResponseSaveItem {
     /// <param name="errorCode">The MySQL error code.</param>
     /// <param name="message">The error message.</param>
     /// <returns>A <see cref="ResponseSaveItem"/> indicating failure with formatted MySQL error details.</returns>
-    public static ResponseSaveItem MySqlFailure(MySqlErrorCode errorCode, string message) 
+    public static ResponseSaveItem MySqlFailure(MySqlErrorCode errorCode, string message)
         => new(0, EErrors.DATABASE_QUERY, $"MySQL Error [{errorCode}]: {message}");
 }

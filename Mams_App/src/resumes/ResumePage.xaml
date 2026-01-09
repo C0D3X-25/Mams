@@ -7,14 +7,16 @@
     xmlns:local="clr-namespace:Mams_App.src.resumes"
     xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
     xmlns:commands="clr-namespace:Mams_App.src.commands"
+    xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
     mc:Ignorable="d" 
-    d:DesignHeight="1000" d:DesignWidth="1224"
+    d:DesignHeight="{x:Static globalView:SGlobalViewSize.PAGE_DESIGN_HEIGHT}" 
+    d:DesignWidth="{x:Static globalView:SGlobalViewSize.PAGE_DESIGN_WIDTH}"
     Title="ResumePage">
 
    <Grid Background="{Binding m_page_background_color}">
        <Grid.RowDefinitions>
-           <RowDefinition Height="2*" MaxHeight="100"/>
-           <RowDefinition Height="9*"/>
+           <RowDefinition Height="1*" MaxHeight="80"/>
+           <RowDefinition Height="10*"/>
            <RowDefinition Height="1*" MaxHeight="50"/>
        </Grid.RowDefinitions>
 

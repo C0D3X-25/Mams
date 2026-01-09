@@ -2,18 +2,18 @@ using Mams_App.src.helpers;
 using Mams_App.src.invoices;
 using Mams_App.src.receipts;
 using QuestPDF.Fluent;
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
-namespace Mams_App.src.services; 
+namespace Mams_App.src.services;
 
 /// <summary>
 /// Service class for generating and managing PDF invoices.
 /// Handles the creation, saving, and opening of invoice PDFs based on receipt data.
 /// </summary>
-public class ServicePDF {
+public class ServicePDF
+{
 
     private readonly string _m_invoice_directory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
     private readonly string _m_invoice_folder_name = "Factures Miel";
@@ -33,9 +33,11 @@ public class ServicePDF {
     /// Generates an invoice PDF for the specified receipt ID and opens it using the default PDF viewer.
     /// </summary>
     /// <param name="receipt_id">The ID of the receipt for which to generate an invoice.</param>
-    public void generateAndOpenInvoice(string receipt_id) {
+    public void generateAndOpenInvoice(string receipt_id)
+    {
 
-        if (!SDataValidation.isIdValid(receipt_id)) {
+        if (!SDataValidation.isIdValid(receipt_id))
+        {
             MessageBox.Show("Invalid receipt ID.");
             return;
         }
@@ -43,20 +45,22 @@ public class ServicePDF {
         ReceiptHandlerModel receipt_handler_model = new();
         var result = receipt_handler_model.getItemByID(receipt_id);
 
-        if (!result.is_found || result.returned_item is null) {
+        if (!result.is_found || result.returned_item is null)
+        {
             MessageBox.Show("Receipt not found.");
             return;
         }
 
         var item = result.returned_item;
         _m_invoice_filename = $"Facture {item.receipt_item.receipt_number}.pdf";
-        
+
         // Ensure the directory exists before generating the PDF
         string directoryPath = Path.Combine(_m_invoice_directory, _m_invoice_folder_name);
-        if (!Directory.Exists(directoryPath)) {
+        if (!Directory.Exists(directoryPath))
+        {
             Directory.CreateDirectory(directoryPath);
         }
-        
+
         InvoiceTemplate document = new(item);
         document.GeneratePdf(_m_invoice_save_path);
         openInvoice();
@@ -65,7 +69,8 @@ public class ServicePDF {
     /// <summary>
     /// Opens the generated invoice PDF file using the default PDF viewer.
     /// </summary>
-    private void openInvoice() {
+    private void openInvoice()
+    {
         var p = new Process
         {
             StartInfo = new ProcessStartInfo(_m_invoice_save_path)

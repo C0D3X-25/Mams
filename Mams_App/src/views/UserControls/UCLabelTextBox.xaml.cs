@@ -6,14 +6,17 @@ namespace Mams_App.src.views.UserControls;
 /// <summary>
 /// Interaction logic for UCLabelTextBox.xaml
 /// </summary>
-public partial class UCLabelTextBox : UserControl {
+public partial class UCLabelTextBox : UserControl
+{
 
-    public UCLabelTextBox() {
+    public UCLabelTextBox()
+    {
         InitializeComponent();
     }
 
 
-    public string label {
+    public string label
+    {
         get { return (string)GetValue(labelProperty); }
         set { SetValue(labelProperty, value); }
     }
@@ -22,7 +25,8 @@ public partial class UCLabelTextBox : UserControl {
             new PropertyMetadata("use 'label' to change text"));
 
 
-    public string text {
+    public string text
+    {
         get { return (string)GetValue(textProperty); }
         set { SetValue(textProperty, value); }
     }
@@ -35,10 +39,11 @@ public partial class UCLabelTextBox : UserControl {
         );
 
 
-    public bool isEnabled {
+    public bool isEnabled
+    {
         get { return (bool)GetValue(isEnabledProperty); }
         set { SetValue(isEnabledProperty, value); }
-    }        
+    }
     public static readonly DependencyProperty isEnabledProperty =
         DependencyProperty.Register("isEnabled", typeof(bool), typeof(UCLabelTextBox), new PropertyMetadata(true));
 

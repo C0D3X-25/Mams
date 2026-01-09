@@ -15,7 +15,8 @@ namespace Mams_App.src.databaseOperations;
 /// Contains methods for retrieving, deleting, and managing database records.
 /// Even if the Class is abstract, all methods are static and can be used without instantiation.
 /// </summary>
-public abstract class SDatabaseModel : ABaseModel {
+public abstract class SDatabaseModel : ABaseModel
+{
 
     private const string DEFAULT_ARCHIVE_DATE = "1901-01-01";
 
@@ -30,7 +31,8 @@ public abstract class SDatabaseModel : ABaseModel {
     /// An ObservableCollection of type T containing the converted database records.
     /// Returns an empty collection if an error occurs during data retrieval or conversion.
     /// </returns>
-    public static ObservableCollection<T> getAllRowsInTable<T>(string table, string? asc_column = null, string? archive_field = null) where T : ABaseItem, new() {
+    public static ObservableCollection<T> getAllRowsInTable<T>(string table, string? asc_column = null, string? archive_field = null) where T : ABaseItem, new()
+    {
         DataTable? data_table = getDataTable(table, asc_column, archive_field);
         return populateColumnName<T>(data_table);
     }
@@ -47,13 +49,14 @@ public abstract class SDatabaseModel : ABaseModel {
     /// A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.
     /// </returns>
     public static ResponseDeleteItem deleteRow(
-        string id, 
-        string field_id, 
+        string id,
+        string field_id,
         string field_archive,
-        string table, 
-        EDeleteItemOperation delete_type) 
+        string table,
+        EDeleteItemOperation delete_type)
     {
-        if (!areDeleteParametersProvided(id, field_id, table, delete_type)) {
+        if (!areDeleteParametersProvided(id, field_id, table, delete_type))
+        {
             return ResponseDeleteItem.Failure(EErrors.INVALID_INPUT,
                 $"SDatabaseModel.deleteRow: Invalid parameters - id: '{id}', field_id: '{field_id}', table: '{table}', delete_type: {delete_type}");
         }
@@ -75,7 +78,7 @@ public abstract class SDatabaseModel : ABaseModel {
         string id,
         string field_id,
         string table,
-        EDeleteItemOperation delete_type) 
+        EDeleteItemOperation delete_type)
     {
         if (!areDeleteParametersProvided(id, field_id, table, delete_type))
         {
@@ -97,30 +100,38 @@ public abstract class SDatabaseModel : ABaseModel {
     /// <returns>
     /// An ObservableCollection of type T containing the converted database records.
     /// </returns>
-    private static ObservableCollection<T> populateColumnName<T>(DataTable? data_table) where T : ABaseItem, new() {
-        if (data_table == null) {
+    private static ObservableCollection<T> populateColumnName<T>(DataTable? data_table) where T : ABaseItem, new()
+    {
+        if (data_table == null)
+        {
             return [];
         }
 
-        try {
+        try
+        {
             Type item_type = typeof(T);
-            
+
             // Get or create property cache for this type
-            if (!s_property_cache.TryGetValue(item_type, out var property_map)) {
+            if (!s_property_cache.TryGetValue(item_type, out var property_map))
+            {
                 property_map = new Dictionary<string, PropertyInfo>(StringComparer.OrdinalIgnoreCase);
-                foreach (var prop in item_type.GetProperties()) {
+                foreach (var prop in item_type.GetProperties())
+                {
                     property_map[prop.Name] = prop;
                 }
                 s_property_cache[item_type] = property_map;
             }
-            
+
             ObservableCollection<T> items = new();
-            foreach (DataRow row in data_table.Rows) {
+            foreach (DataRow row in data_table.Rows)
+            {
                 T item = new();
-                foreach (DataColumn col in data_table.Columns) {
+                foreach (DataColumn col in data_table.Columns)
+                {
                     var value = row[col.ColumnName];
-                    if (value != DBNull.Value && 
-                        property_map.TryGetValue(col.ColumnName, out PropertyInfo? property)) {
+                    if (value != DBNull.Value &&
+                        property_map.TryGetValue(col.ColumnName, out PropertyInfo? property))
+                    {
                         property.SetValue(item, Convert.ChangeType(value, property.PropertyType));
                     }
                 }
@@ -128,7 +139,8 @@ public abstract class SDatabaseModel : ABaseModel {
             }
             return items;
         }
-        catch (Exception ex) {
+        catch (Exception ex)
+        {
             MessageBox.Show($"Error converting data: {ex.Message}");
             return new ObservableCollection<T>();
         }
@@ -148,14 +160,16 @@ public abstract class SDatabaseModel : ABaseModel {
         string field_id,
         string field_archive,
         string table,
-        EDeleteItemOperation delete_type) 
+        EDeleteItemOperation delete_type)
     {
         string query;
 
-        switch (delete_type) {
+        switch (delete_type)
+        {
             // Archive the record
             case EDeleteItemOperation.SOFT_DELETE:
-                if (!isArchiveFieldProvided(field_archive)) {
+                if (!isArchiveFieldProvided(field_archive))
+                {
                     return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD,
                         $"SDatabaseModel.deleteOperation: Archive field is required for SOFT_DELETE on table '{table}'");
                 }
@@ -167,7 +181,8 @@ public abstract class SDatabaseModel : ABaseModel {
                 break;
             // Check if the record is linked in another table, then SOFT_DELETE or HARD_DELETE
             case EDeleteItemOperation.SAFE_DELETE:
-                if (!isArchiveFieldProvided(field_archive)) {
+                if (!isArchiveFieldProvided(field_archive))
+                {
                     return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD,
                         $"SDatabaseModel.deleteOperation: Archive field is required for SAFE_DELETE on table '{table}'");
                 }
@@ -175,7 +190,8 @@ public abstract class SDatabaseModel : ABaseModel {
                 break;
             // Restore the record from the archive
             case EDeleteItemOperation.RESTORE:
-                if (!isArchiveFieldProvided(field_archive)) {
+                if (!isArchiveFieldProvided(field_archive))
+                {
                     return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD,
                         $"SDatabaseModel.deleteOperation: Archive field is required for RESTORE on table '{table}'");
                 }
@@ -187,39 +203,45 @@ public abstract class SDatabaseModel : ABaseModel {
         }
 
         bool need_transaction = !isTransactionActive();
-        if (need_transaction) 
+        if (need_transaction)
         {
             startTransaction();
         }
 
-        try {
+        try
+        {
             // Use transaction connection directly since we already have a transaction started
-            executeWithConnection(connection => {
+            executeWithConnection(connection =>
+            {
                 using var cmd = new MySqlCommand(query, connection, m_transaction);
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.ExecuteNonQuery();
             });
 
-            if (need_transaction) {
+            if (need_transaction)
+            {
                 commitTransaction();
             }
             return ResponseDeleteItem.Success();
         }
-        catch (MySqlException ex) {
+        catch (MySqlException ex)
+        {
             // In case of a foreign key constraint violation, try soft delete if archive field is provided
-            if ((ex.ErrorCode == MySqlErrorCode.RowIsReferenced2 || 
-                 ex.ErrorCode == MySqlErrorCode.RowIsReferenced) && 
-                isArchiveFieldProvided(field_archive)) {
+            if ((ex.ErrorCode == MySqlErrorCode.RowIsReferenced2 ||
+                 ex.ErrorCode == MySqlErrorCode.RowIsReferenced) &&
+                isArchiveFieldProvided(field_archive))
+            {
                 clearTransaction();
                 return deleteOperation(
-                    id, 
-                    field_id, 
-                    field_archive, 
-                    table, 
+                    id,
+                    field_id,
+                    field_archive,
+                    table,
                     EDeleteItemOperation.SOFT_DELETE
                 );
             }
-            if (need_transaction) {
+            if (need_transaction)
+            {
                 rollbackTransaction();
             }
             return ResponseDeleteItem.MySqlFailure(ex.ErrorCode, ex.Message);
@@ -231,8 +253,10 @@ public abstract class SDatabaseModel : ABaseModel {
     /// </summary>
     /// <param name="field_archive">The name of the archive field to validate.</param>
     /// <returns><see langword="true"/> if the archive field name is valid; otherwise, <see langword="false"/>.</returns>
-    private static bool isArchiveFieldProvided(string field_archive) {
-        if (string.IsNullOrWhiteSpace(field_archive)) {
+    private static bool isArchiveFieldProvided(string field_archive)
+    {
+        if (string.IsNullOrWhiteSpace(field_archive))
+        {
             MessageBox.Show("Archive field name cannot be empty for soft delete operation.");
             return false;
         }
@@ -247,12 +271,14 @@ public abstract class SDatabaseModel : ABaseModel {
     /// <param name="table">The name of the database table where the item resides.</param>
     /// <param name="delete_type">The type of delete operation to perform.</param>
     /// <returns><see langword="true"/> if all required parameters are valid and provided; otherwise, <see langword="false"/>.</returns>
-    private static bool areDeleteParametersProvided(string id, string field_id, string table, EDeleteItemOperation delete_type) {
+    private static bool areDeleteParametersProvided(string id, string field_id, string table, EDeleteItemOperation delete_type)
+    {
         if (!SDataValidation.isIdValid(id)
             || string.IsNullOrWhiteSpace(field_id)
             || string.IsNullOrWhiteSpace(table)
             || delete_type == EDeleteItemOperation.NONE
-            ) {
+            )
+        {
             MessageBox.Show("Invalid parameters provided for delete operation.");
             return false;
         }
@@ -269,26 +295,32 @@ public abstract class SDatabaseModel : ABaseModel {
     /// A DataTable containing all records from the specified table.
     /// Returns null if an error occurs during the database operation.
     /// </returns>
-    private static DataTable? getDataTable(string table, string? asc_column, string? archive_field) {
-        if (string.IsNullOrWhiteSpace(table)) {
+    private static DataTable? getDataTable(string table, string? asc_column, string? archive_field)
+    {
+        if (string.IsNullOrWhiteSpace(table))
+        {
             return null;
         }
 
         var query_builder = new System.Text.StringBuilder($"SELECT * FROM {table}");
-        
-        if (archive_field != null) {
+
+        if (archive_field != null)
+        {
             query_builder.Append($" WHERE {archive_field} != '{DEFAULT_ARCHIVE_DATE}' OR {archive_field} IS NULL");
         }
-        
-        if (asc_column != null) {
+
+        if (asc_column != null)
+        {
             query_builder.Append($" ORDER BY {asc_column} ASC");
         }
-        
+
         string query = query_builder.ToString();
-            
+
         // Use ExecuteWithConnection to get a connection from the pool
-        return executeWithConnection<DataTable?>(connection => {
-            try {
+        return executeWithConnection<DataTable?>(connection =>
+        {
+            try
+            {
                 DataTable data_table = new();
                 using var cmd = new MySqlCommand(query, connection);
                 using var reader = cmd.ExecuteReader();
@@ -296,7 +328,8 @@ public abstract class SDatabaseModel : ABaseModel {
 
                 return data_table;
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
                 return null;
             }

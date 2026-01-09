@@ -1,3 +1,4 @@
+using Mams_App.src.configurations;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -6,7 +7,6 @@ using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
-using Mams_App.src.configurations;
 
 namespace Mams_App.src.services;
 
@@ -41,7 +41,7 @@ public static class SUpdateCheckerService
         {
             Debug.WriteLine($"[UpdateChecker] Checking for updates at: {GITHUB_API_URL}");
             Debug.WriteLine($"[UpdateChecker] Current version: {getCurrentVersion()}");
-            
+
             var latestRelease = await getLatestReleaseAsync();
             if (latestRelease == null)
             {
@@ -62,7 +62,7 @@ public static class SUpdateCheckerService
             }
 
             Debug.WriteLine($"[UpdateChecker] Latest release found: {latestRelease.TagName}");
-            
+
             var currentVersion = getCurrentVersion();
             var latestVersion = parseVersion(latestRelease.TagName);
 
@@ -122,8 +122,8 @@ public static class SUpdateCheckerService
         {
             // Find the portable ZIP asset
             Debug.WriteLine($"[UpdateChecker] Looking for Portable ZIP in {release.Assets?.Count ?? 0} assets");
-            
-            var zipAsset = release.Assets?.FirstOrDefault(a => 
+
+            var zipAsset = release.Assets?.FirstOrDefault(a =>
                 a.Name?.Contains("Portable", StringComparison.OrdinalIgnoreCase) == true &&
                 a.Name?.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) == true);
 
@@ -204,25 +204,25 @@ public static class SUpdateCheckerService
                 // Download the ZIP file with progress
                 Debug.WriteLine($"[UpdateChecker] Downloading from: {zipAsset.DownloadUrl}");
                 statusText.Text = $"Downloading {zipAsset.Name}...";
-                
+
                 using var response = await s_httpClient.GetAsync(zipAsset.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();
 
                 var totalBytes = response.Content.Headers.ContentLength ?? -1;
                 var canReportProgress = totalBytes > 0;
-                
+
                 await using var contentStream = await response.Content.ReadAsStreamAsync();
                 await using var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
-                
+
                 var buffer = new byte[8192];
                 long downloadedBytes = 0;
                 int bytesRead;
-                
+
                 while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
                 {
                     await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
                     downloadedBytes += bytesRead;
-                    
+
                     if (canReportProgress)
                     {
                         var percentage = (double)downloadedBytes / totalBytes * 100;
@@ -234,13 +234,13 @@ public static class SUpdateCheckerService
                         progressText.Text = $"Downloaded: {formatBytes(downloadedBytes)}";
                         progressBar.IsIndeterminate = true;
                     }
-                    
+
                     // Allow UI to update
                     await Task.Delay(1);
                 }
-                
+
                 Debug.WriteLine($"[UpdateChecker] Download complete: {downloadedBytes} bytes");
-                
+
                 // Extract phase
                 statusText.Text = "Extracting update...";
                 progressBar.IsIndeterminate = true;
@@ -302,13 +302,13 @@ public static class SUpdateCheckerService
         string[] sizes = ["B", "KB", "MB", "GB"];
         int order = 0;
         double size = bytes;
-        
+
         while (size >= 1024 && order < sizes.Length - 1)
         {
             order++;
             size /= 1024;
         }
-        
+
         return $"{size:F2} {sizes[order]}";
     }
 
@@ -456,9 +456,9 @@ Write-Host 'Update complete!'
         try
         {
             var response = await s_httpClient.GetAsync(GITHUB_API_URL);
-            
+
             Debug.WriteLine($"[UpdateChecker] GitHub API response: {response.StatusCode}");
-            
+
             if (!response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();

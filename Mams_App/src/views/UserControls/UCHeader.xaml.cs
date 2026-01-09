@@ -1,15 +1,17 @@
+using Mams_App.src.navigations;
 using System.Windows;
 using System.Windows.Controls;
-using Mams_App.src.navigations;
 
 namespace Mams_App.src.views.UserControls;
 
 /// <summary>
 /// Interaction logic for UCHeader.xaml
 /// </summary>
-public partial class UCHeader : UserControl {
+public partial class UCHeader : UserControl
+{
 
-    public string title {
+    public string title
+    {
         get { return (string)GetValue(titleProperty); }
         set { SetValue(titleProperty, value); }
     }
@@ -18,7 +20,8 @@ public partial class UCHeader : UserControl {
     public static readonly DependencyProperty titleProperty =
         DependencyProperty.Register("title", typeof(string), typeof(UCHeader), new PropertyMetadata("Page Title"));
 
-    public UCHeader() {
+    public UCHeader()
+    {
         InitializeComponent();
         DataContext = new UCHeaderController();
     }

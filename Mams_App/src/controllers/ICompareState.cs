@@ -1,5 +1,6 @@
-namespace Mams_App.src.controllers; 
+namespace Mams_App.src.controllers;
 
-internal interface ICompareState {
+internal interface ICompareState
+{
     bool isStateOriginal();
 }

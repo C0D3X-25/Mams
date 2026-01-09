@@ -15,7 +15,8 @@ namespace Mams_App.src.receipts;
 /// </summary>
 /// <remarks>One instance is one line in the receipt.</remarks>
 public class ReceiptProductModel : ABaseModel,
-    ICrudOperation<ReceiptProductItem> {
+    ICrudOperation<ReceiptProductItem>
+{
 
     private const string _m_TBL_NAME = "receipts_products";
     private const string _m_COL_ID = "receipt_product_id";
@@ -27,8 +28,8 @@ public class ReceiptProductModel : ABaseModel,
 
     // This default data are directly inserted in the database when she is created.
     // They are used because a FK can't be null, so we need to have a default value.
-    private const int       _m_DEFAULT_FK_PRODUCT_LOT = 1;
-    private const string    _m_DEFAULT_ARCHIVE = "1901-01-01";
+    private const int _m_DEFAULT_FK_PRODUCT_LOT = 1;
+    private const string _m_DEFAULT_ARCHIVE = "1901-01-01";
 
     /// <summary>
     /// Deletes an item from the database based on the specified identifier and delete operation type.
@@ -38,7 +39,8 @@ public class ReceiptProductModel : ABaseModel,
     /// <param name="id">The unique identifier of the item to be deleted. Cannot be null or empty.</param>
     /// <param name="delete_type">The type of delete operation to perform. Defaults to <see cref="EDeleteItemOperation.SAFE_DELETE"/>.</param>
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
-    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE) {
+    public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.HARD_DELETE)
+    {
         return SDatabaseModel.deleteRow(id, _m_COL_FK_RECEIPT, string.Empty, _m_TBL_NAME, delete_type);
     }
 
@@ -47,14 +49,18 @@ public class ReceiptProductModel : ABaseModel,
     /// </summary>
     /// <param name="id">The unique identifier of the receipt product item to retrieve. Cannot be null or empty.</param>
     /// <returns>A <see cref="ResponseGetItem{ReceiptProductItem}"/> containing the receipt product item and any error message.</returns>
-    public ResponseGetItem<ReceiptProductItem> getItemByID(string id) {
-        if (!SDataValidation.isIdValid(id)) {
+    public ResponseGetItem<ReceiptProductItem> getItemByID(string id)
+    {
+        if (!SDataValidation.isIdValid(id))
+        {
             return ResponseGetItem<ReceiptProductItem>.Failure(EErrors.INVALID_INPUT,
                 $"ReceiptProductModel.getItemByID: Invalid ID provided '{id}'");
         }
 
-        return executeWithConnection(connection => {
-            try {
+        return executeWithConnection(connection =>
+        {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_QUANTITY}, {_m_COL_UNITY_PRICE}, " +
                     $"{_m_COL_FK_PRODUCT}, {_m_COL_FK_RECEIPT}, {_m_COL_FK_PRODUCT_LOT} " +
@@ -64,22 +70,25 @@ public class ReceiptProductModel : ABaseModel,
                 );
 
                 cmd.Parameters.AddWithValue("@id", id);
-                
+
                 ReceiptProductItem? item = null;
                 using MySqlDataReader reader = cmd.ExecuteReader();
-                if (reader.Read()) {
+                if (reader.Read())
+                {
                     item = readDataAndBuildItem(reader);
                 }
 
-                if (item != null) {
+                if (item != null)
+                {
                     // Complete the item with the product and product lot data
                     completeData(item);
                     return ResponseGetItem<ReceiptProductItem>.Success(item);
                 }
-                
+
                 return ResponseGetItem<ReceiptProductItem>.NotFound();
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetItem<ReceiptProductItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
@@ -89,11 +98,14 @@ public class ReceiptProductModel : ABaseModel,
     /// Retrieves all receipt product items from the database.
     /// </summary>
     /// <returns>A <see cref="ResponseGetAllItems{ReceiptProductItem}"/> containing all receipt product items and any error message.</returns>
-    public ResponseGetAllItems<ReceiptProductItem> getAllItems() {
-        return executeWithConnection(connection => {
+    public ResponseGetAllItems<ReceiptProductItem> getAllItems()
+    {
+        return executeWithConnection(connection =>
+        {
             ObservableCollection<ReceiptProductItem> items = new();
 
-            try {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_QUANTITY}, {_m_COL_UNITY_PRICE}, " +
                     $"{_m_COL_FK_PRODUCT}, {_m_COL_FK_RECEIPT}, {_m_COL_FK_PRODUCT_LOT} " +
@@ -102,17 +114,20 @@ public class ReceiptProductModel : ABaseModel,
                 );
 
                 using MySqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) {
+                while (reader.Read())
+                {
                     items.Add(readDataAndBuildItem(reader));
                 }
 
                 // Complete the items with the product and product lot data
-                foreach (var item in items) {
+                foreach (var item in items)
+                {
                     completeData(item);
                 }
                 return ResponseGetAllItems<ReceiptProductItem>.Success(items);
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 return ResponseGetAllItems<ReceiptProductItem>.MySqlFailure(ex.ErrorCode, ex.Message);
             }
         });
@@ -124,12 +139,14 @@ public class ReceiptProductModel : ABaseModel,
     /// <param name="item">The <see cref="ReceiptProductItem"/> instance containing the details of the receipt product to be saved.</param>
     /// <returns>A <see cref="ResponseSaveItem"/> containing the unique identifier of the saved item and any error message.
     /// Returns a response with ID 0 if the operation fails.</returns>
-    public ResponseSaveItem saveItem(ReceiptProductItem item) {
-        if (!ValidateReceiptProduct(item)) { 
+    public ResponseSaveItem saveItem(ReceiptProductItem item)
+    {
+        if (!ValidateReceiptProduct(item))
+        {
             return ResponseSaveItem.Failure(EErrors.INVALID_INPUT,
                 $"ReceiptProductModel.saveItem: Invalid input - item is null or has invalid values (quantity: {item?.receipt_product_quantity}, price: {item?.receipt_product_unity_price}, receipt_id: {item?.fk_receipt_id}, product_id: {item?.product_item?.product_id})");
         }
-        
+
         // Check if the item already exists in the database, if not insert the item into the database
         string query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_QUANTITY}, {_m_COL_UNITY_PRICE}, " +
                 $"{_m_COL_FK_RECEIPT}, {_m_COL_FK_PRODUCT}, {_m_COL_FK_PRODUCT_LOT}) " +
@@ -138,13 +155,16 @@ public class ReceiptProductModel : ABaseModel,
 
         startTransaction();
 
-        try {
+        try
+        {
             // Ensure product lot ID is valid
-            if (item.product_lot_item.product_lot_id == 0) {
+            if (item.product_lot_item.product_lot_id == 0)
+            {
                 item.product_lot_item.product_lot_id = _m_DEFAULT_FK_PRODUCT_LOT;
             }
 
-            int item_id = executeWithConnection(connection => {
+            int item_id = executeWithConnection(connection =>
+            {
                 using MySqlCommand cmd = new(query, connection, m_transaction);
                 cmd.Parameters.AddWithValue("@quantity", item.receipt_product_quantity);
                 cmd.Parameters.AddWithValue("@unity_price", item.receipt_product_unity_price);
@@ -158,7 +178,8 @@ public class ReceiptProductModel : ABaseModel,
             commitTransaction();
             return ResponseSaveItem.Success(item_id);
         }
-        catch (MySqlException ex) {
+        catch (MySqlException ex)
+        {
             rollbackTransaction();
             return ResponseSaveItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
@@ -171,15 +192,19 @@ public class ReceiptProductModel : ABaseModel,
     /// <returns>An <see cref="ObservableCollection{T}"/> containing <see cref="ReceiptProductItem"/> objects associated with the
     /// specified receipt ID. If the <paramref name="fk_receipt"/> is null or empty, or if no matching items are found,
     /// an empty collection is returned.</returns>
-    public ObservableCollection<ReceiptProductItem> getListItemWithReceiptID(string fk_receipt) {
-        if (!SDataValidation.isIdValid(fk_receipt)) {
+    public ObservableCollection<ReceiptProductItem> getListItemWithReceiptID(string fk_receipt)
+    {
+        if (!SDataValidation.isIdValid(fk_receipt))
+        {
             return new ObservableCollection<ReceiptProductItem>();
         }
 
-        return executeWithConnection(connection => {
+        return executeWithConnection(connection =>
+        {
             ObservableCollection<ReceiptProductItem> items = new();
 
-            try {
+            try
+            {
                 using MySqlCommand cmd = new(
                     $"SELECT {_m_COL_ID}, {_m_COL_QUANTITY}, {_m_COL_UNITY_PRICE}, " +
                     $"{_m_COL_FK_PRODUCT}, {_m_COL_FK_RECEIPT}, {_m_COL_FK_PRODUCT_LOT} " +
@@ -189,18 +214,21 @@ public class ReceiptProductModel : ABaseModel,
                 );
 
                 cmd.Parameters.AddWithValue("@fk_receipt", fk_receipt);
-                
+
                 using MySqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read()) {
+                while (reader.Read())
+                {
                     items.Add(readDataAndBuildItem(reader));
                 }
 
                 // Complete the items with the product and product lot data
-                foreach (var item in items) {
+                foreach (var item in items)
+                {
                     completeData(item);
                 }
             }
-            catch (MySqlException ex) {
+            catch (MySqlException ex)
+            {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
             }
 
@@ -214,7 +242,8 @@ public class ReceiptProductModel : ABaseModel,
     /// <param name="item">The receipt product item to validate. Must not be <see langword="null"/>.</param>
     /// <returns><see langword="true"/> if the receipt product item is valid; otherwise, <see langword="false"/>. A valid item
     /// must have a positive quantity, a non-negative unit price, a valid receipt ID, and a valid product ID.</returns>
-    private bool ValidateReceiptProduct(ReceiptProductItem item) {
+    private bool ValidateReceiptProduct(ReceiptProductItem item)
+    {
         return item != null
             && item.receipt_product_quantity > 0
             && item.receipt_product_unity_price >= 0
@@ -228,9 +257,10 @@ public class ReceiptProductModel : ABaseModel,
     /// <remarks>Still need to get the data of the <see cref="ProductItem"/> and <see cref="ProductLotItem"/>.</remarks>
     /// <param name="reader"><see cref="MySqlDataReader"/>.</param>
     /// <returns><see cref="ReceiptProductItem"/>.</returns>
-    private ReceiptProductItem readDataAndBuildItem(MySqlDataReader reader) {
+    private ReceiptProductItem readDataAndBuildItem(MySqlDataReader reader)
+    {
         ReceiptProductItem receipt_item = new();
-        
+
         receipt_item.receipt_product_id = reader.getSafeValue<int>(_m_COL_ID);
         receipt_item.receipt_product_quantity = reader.getSafeValue<int>(_m_COL_QUANTITY);
         receipt_item.receipt_product_unity_price = reader.getSafeValue<decimal>(_m_COL_UNITY_PRICE);
@@ -247,7 +277,8 @@ public class ReceiptProductModel : ABaseModel,
     /// </summary>
     /// <param name="item">A <see cref="ReceiptProductItem"/>.</param>
     /// <returns>A <see cref="ReceiptProductItem"/>.</returns>
-    private ReceiptProductItem completeData(ReceiptProductItem item) {
+    private ReceiptProductItem completeData(ReceiptProductItem item)
+    {
         ProductModel product_model = new();
         ProductLotModel product_lot_model = new();
 

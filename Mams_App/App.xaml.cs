@@ -1,7 +1,7 @@
-using System.Windows;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.services;
 using MySqlConnector;
+using System.Windows;
 
 namespace Mams_App;
 
@@ -30,7 +30,7 @@ public partial class App : Application
         {
             // Ensure MariaDB Portable is installed, running, and database is ready
             bool mariaDbReady = await SMariaDbPortableService.ensureMariaDbReadyAsync();
-            
+
             if (!mariaDbReady)
             {
                 // MariaDB setup failed, exit the application
@@ -45,7 +45,7 @@ public partial class App : Application
             Dispatcher.Invoke(() =>
             {
                 ShutdownMode = ShutdownMode.OnMainWindowClose;
-                
+
                 var mainWindow = new Mams_App.src.views.MainWindow();
                 MainWindow = mainWindow;
                 mainWindow.Show();

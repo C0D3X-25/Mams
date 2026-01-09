@@ -1,3 +1,7 @@
+using Mams_App.src.commands;
+using Mams_App.src.databaseOperations;
+using Mams_App.src.services;
+using MySqlConnector;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -5,10 +9,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
-using Mams_App.src.commands;
-using Mams_App.src.databaseOperations;
-using Mams_App.src.services;
-using MySqlConnector;
 
 namespace Mams_App.src.settings;
 
@@ -173,7 +173,7 @@ public class SettingsController : INotifyPropertyChanged
             // Perform the restore
             using var connection = new MySqlConnection(SMariaDbPortableService.ConnectionString);
             connection.Open();
-            
+
             SDatabaseBackup.restoreBackup(connection, SelectedBackup.FullName);
 
             MessageBox.Show(
