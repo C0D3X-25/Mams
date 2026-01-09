@@ -6,14 +6,16 @@ namespace Mams_App.src.configurations;
 
 /// <summary>
 /// Static service class for managing application configuration.
+/// Settings are stored in the AppData folder to prevent accidental deletion by users.
 /// </summary>
 public static class SAppConfigService
 {
     private static readonly string _configFolderPath = Path.Combine(
-        AppDomain.CurrentDomain.BaseDirectory, "ressources");
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        "Mams");
 
     private static readonly string _configFilePath = Path.Combine(
-        _configFolderPath, "app_config.json");
+        _configFolderPath, "settings.json");
 
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
@@ -21,7 +23,12 @@ public static class SAppConfigService
     };
 
     /// <summary>
-    /// Loads the application configuration from the config file.
+    /// Gets the path to the settings file.
+    /// </summary>
+    public static string SettingsFilePath => _configFilePath;
+
+    /// <summary>
+    /// Loads the application configuration from the settings file.
     /// Returns default values if the file doesn't exist or is invalid.
     /// </summary>
     /// <returns>The loaded <see cref="AppConfigItem"/> or default values.</returns>
@@ -31,7 +38,10 @@ public static class SAppConfigService
         {
             if (!File.Exists(_configFilePath))
             {
-                return new AppConfigItem();
+                // Create default config and save it
+                var defaultConfig = new AppConfigItem();
+                saveConfig(defaultConfig);
+                return defaultConfig;
             }
 
             string json = File.ReadAllText(_configFilePath, Encoding.UTF8);
@@ -46,8 +56,8 @@ public static class SAppConfigService
     }
 
     /// <summary>
-    /// Saves the application configuration to the config file.
-    /// Creates the resources folder if it doesn't exist.
+    /// Saves the application configuration to the settings file.
+    /// Creates the Mams folder in AppData if it doesn't exist.
     /// </summary>
     /// <param name="config">The configuration to save.</param>
     public static void saveConfig(AppConfigItem config)

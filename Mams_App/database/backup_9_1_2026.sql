@@ -93,7 +93,7 @@ CREATE TABLE `entities` (
 
 LOCK TABLES `entities` WRITE;
 /*!40000 ALTER TABLE `entities` DISABLE KEYS */;
-INSERT INTO `entities` VALUES (1,'Bluette','','','','',NULL),(2,'Roggen','','','','',NULL),(3,'Ruchat','','','','',NULL),(4,'Espace Abeilles','','','','',NULL),(5,'Carmelina','','','','',NULL),(6,'Chandines','','','','',NULL),(7,'Arbothévoz','','','','',NULL),(8,'Particuliers','','','','',NULL),(9,'Rithner','','','','',NULL),(10,'Bienen Meier','','','','',NULL),(11,'Apimat','','','','',NULL),(12,'Landi','','','','',NULL),(13,'Marché Ressudens 10.05.25','','','','',NULL),(14,'Marco location','','','','',NULL),(15,'Nicolas location','','','','',NULL),(16,'Corso Ivrea','','','','','2025-10-04'),(17,'JUMBO','','','','',NULL),(18,'Bastella','','','','',NULL),(19,'MIGROS','','','','',NULL),(20,'TEMPONNEMOI.COM','','','','',NULL),(21,'Frais divers','','','','',NULL),(22,'smartphoto','','','','',NULL),(23,'VBS','','','','',NULL),(24,'L\'PIXL','026 675 53 90','info@lpixl.ch','1580 Avenches','Rue Bibracte 4a',NULL),(25,'ROUTE D\'OR F','','','','',NULL),(26,'MANOR','','','','',NULL),(27,'Rue des Arts sàrl','','','1870 Monthey','Rue de Coppet 2',NULL),(28,'Ocres de France','0033 4 90 74 63 82','www.ocres-de-france.com','F 84400 Apt','Ch des Ocriers 200',NULL),(29,'Droguerie du Portail','026 660 25 18','','1530 Payerne','Grand Rue 64',NULL),(30,'SAR','','','','',NULL),(31,'COOP','','','','',NULL),(32,'Schilliger','','','','',NULL),(33,'FVA','','','','',NULL),(34,'Kurt Nobs','079 252 69 52','','1583 Villarepos','La Solitude 5',NULL),(35,'Corinne Thumelin','026 667 11 78','','1773 Russy','Rte de l\'Ecole 12','1901-01-01'),(36,'La cartoleria ENRICO','+39 0125 61 58 83','www.enricocart.it','10015 Ivrea','Corso Vercelli 334',NULL),(37,'Sanima','026 305 22 82','www.sanima.ch','1725 Posieux','Rte de Grangeneuve 21',NULL);
+INSERT INTO `entities` VALUES (1,'Bluette','','','','',NULL),(2,'Roggen','','','','',NULL),(3,'Ruchat','','','','',NULL),(4,'Espace Abeilles','','','','',NULL),(5,'Carmelina','','','','',NULL),(6,'Chandines','','','','',NULL),(7,'Arbothévoz','','','','',NULL),(8,'Particuliers','','','','',NULL),(9,'Rithner','','','','',NULL),(10,'Bienen Meier','','','','',NULL),(11,'Apimat','','','','',NULL),(12,'Landi','','','','',NULL),(13,'Marché Ressudens 10.05.25','','','','',NULL),(14,'Marco location','','','','',NULL),(15,'Nicolas location','','','','',NULL),(16,'Corso Ivrea','','','','','2025-10-04'),(17,'JUMBO','','','','',NULL),(18,'Bastella','','','','',NULL),(19,'MIGROS','','','','',NULL),(20,'TEMPONNEMOI.COM','','','','',NULL),(21,'Frais divers','','','','',NULL),(22,'smartphoto','','','','',NULL),(23,'VBS','','','','',NULL),(24,'L\'PIXL','026 675 53 90','info@lpixl.ch','1580 Avenches','Rue Bibracte 4a',NULL),(25,'ROUTE D\'OR F','','','','',NULL),(26,'MANOR','','','','',NULL),(27,'Rue des Arts sàrl','','','1870 Monthey','Rue de Coppet 2',NULL),(28,'Ocres de France','0033 4 90 74 63 82','www.ocres-de-france.com','F 84400 Apt','Ch des Ocriers 200',NULL),(29,'Droguerie du Portail','026 660 25 18','','1530 Payerne','Grand Rue 64',NULL),(30,'SAR','','','','',NULL),(31,'COOP','','','','',NULL),(32,'Schilliger','','','','',NULL),(33,'FVA','','','','',NULL),(34,'Kurt Nobs','079 252 69 52','','1583 Villarepos','La Solitude 5',NULL),(36,'La cartoleria ENRICO','+39 0125 61 58 83','www.enricocart.it','10015 Ivrea','Corso Vercelli 334',NULL),(37,'Sanima','026 305 22 82','www.sanima.ch','1725 Posieux','Rte de Grangeneuve 21',NULL);
 /*!40000 ALTER TABLE `entities` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -385,6 +385,34 @@ LOCK TABLES `suppliers` WRITE;
 /*!40000 ALTER TABLE `suppliers` DISABLE KEYS */;
 INSERT INTO `suppliers` VALUES (11,1),(7,2),(13,9),(20,11),(18,12),(19,13),(1,16),(6,17),(4,18),(8,19),(2,20),(3,21),(5,22),(9,23),(10,24),(12,25),(15,26),(14,27),(16,28),(17,29),(21,30),(22,31),(23,32),(24,33),(25,34),(26,36),(27,37);
 /*!40000 ALTER TABLE `suppliers` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `user_name` varchar(50) NOT NULL,
+  `user_phone` varchar(25) DEFAULT NULL,
+  `user_email` varchar(255) DEFAULT NULL,
+  `user_city` varchar(50) DEFAULT NULL,
+  `user_address` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'Corinne Thumelin','026 667 11 78','','1773 Russy','Rte de l\'Ecole 12');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --

@@ -60,9 +60,6 @@
     <None Update="ressources\invoice_pdf_logo.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\app_config.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <!-- Copy init.sql to ressources folder in output -->

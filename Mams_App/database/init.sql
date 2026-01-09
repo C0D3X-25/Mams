@@ -122,6 +122,16 @@ CREATE TABLE IF NOT EXISTS receipts_products (
 CREATE INDEX idx_receipt_product_quantity ON receipts_products(receipt_product_quantity);
 CREATE INDEX idx_receipt_product_unity_price ON receipts_products(receipt_product_unity_price);
 
+-- User table for invoice generation (stores the app owner's information)
+CREATE TABLE IF NOT EXISTS users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_name VARCHAR(50) NOT NULL,
+    user_phone VARCHAR(25),
+    user_email VARCHAR(255),
+    user_city VARCHAR(50),
+    user_address VARCHAR(255)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- Insert default data to avoid NULL values in foreign keys
 INSERT INTO products_shapes (product_shape_name, product_shape_archive) VALUES
 ('', '1901-01-01');
@@ -129,7 +139,3 @@ INSERT INTO beehives (beehive_name, beehive_archive) VALUES
 ('', '1901-01-01');
 INSERT INTO products_lots (product_lot_name, product_lot_year, fk_beehive_id, product_lot_archive) VALUES
 ('', 0, 1, '1901-01-01');
-
--- Insert the user data for invoice generation
-INSERT INTO entities (entity_id, entity_name, entity_phone, entity_email, entity_city, entity_address, entity_archive) VALUES
-(1, 'Corinne Thumelin', '026 667 11 78', '', '1773 Russy', 'Rte de l''Ecole 12', '1901-01-01');

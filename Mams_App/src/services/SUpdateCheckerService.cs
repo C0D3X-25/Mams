@@ -212,10 +212,13 @@ public static class SUpdateCheckerService
                 var canReportProgress = totalBytes > 0;
 
                 await using var contentStream = await response.Content.ReadAsStreamAsync();
-                await using var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true);
+                await using var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true);
 
-                var buffer = new byte[8192];
+                // Use larger buffer for better download performance
+                var buffer = new byte[65536]; // 64KB buffer instead of 8KB
                 long downloadedBytes = 0;
+                long lastReportedBytes = 0;
+                const long progressReportInterval = 102400; // Update UI every 100KB
                 int bytesRead;
 
                 while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
@@ -223,20 +226,33 @@ public static class SUpdateCheckerService
                     await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
                     downloadedBytes += bytesRead;
 
-                    if (canReportProgress)
+                    // Only update UI periodically to avoid slowing down the download
+                    if (downloadedBytes - lastReportedBytes >= progressReportInterval)
                     {
-                        var percentage = (double)downloadedBytes / totalBytes * 100;
-                        progressBar.Value = percentage;
-                        progressText.Text = $"{percentage:F1}% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
-                    }
-                    else
-                    {
-                        progressText.Text = $"Downloaded: {formatBytes(downloadedBytes)}";
-                        progressBar.IsIndeterminate = true;
-                    }
+                        lastReportedBytes = downloadedBytes;
 
-                    // Allow UI to update
-                    await Task.Delay(1);
+                        if (canReportProgress)
+                        {
+                            var percentage = (double)downloadedBytes / totalBytes * 100;
+                            progressBar.Value = percentage;
+                            progressText.Text = $"{percentage:F1}% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
+                        }
+                        else
+                        {
+                            progressText.Text = $"Downloaded: {formatBytes(downloadedBytes)}";
+                            progressBar.IsIndeterminate = true;
+                        }
+
+                        // Yield to allow UI to update, but don't add artificial delay
+                        await Task.Yield();
+                    }
+                }
+
+                // Final progress update
+                if (canReportProgress)
+                {
+                    progressBar.Value = 100;
+                    progressText.Text = $"100% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
                 }
 
                 Debug.WriteLine($"[UpdateChecker] Download complete: {downloadedBytes} bytes");
@@ -322,12 +338,11 @@ public static class SUpdateCheckerService
 $ErrorActionPreference = 'Stop'
 
 $sourcePath = '{sourcePath.Replace("'", "''")}'
-
 $targetPath = '{targetPath.Replace("'", "''")}'
-
 $newVersion = '{newVersion}'
+
 $appExe = Join-Path $targetPath 'Mams_App.exe'
-$configPath = Join-Path $targetPath 'ressources\app_config.json'
+$versionPath = Join-Path $targetPath 'ressources\version.json'
 
 # Wait for the application to close
 Write-Host 'Waiting for application to close...'
@@ -370,7 +385,6 @@ while ($waited -lt $maxWait) {{
 
 # Files and folders to skip during update (preserve user data)
 $skipPatterns = @(
-    'ressources\app_config.json',
     'mariadb\*'
 )
 
@@ -403,35 +417,18 @@ foreach ($file in $files) {{
     Copy-Item -Path $file.FullName -Destination $destPath -Force
 }}
 
-# Update version in config file
-Write-Host 'Updating version in config...'
-if (Test-Path $configPath) {{
-    $config = Get-Content $configPath -Raw | ConvertFrom-JSON
-    $config.version = $newVersion
-    $config | ConvertTo-Json -Depth 10 | Set-Content $configPath -Encoding UTF8
-}} else {{
-    # Create config with just the version if it doesn't exist
-    $config = @{{
-        version = $newVersion
-        window = @{{
-            left = 100
-            top = 100
-            width = 1224
-            height = 800
-            is_maximized = $false
-        }}
-        localization = @{{
-            language = 'en'
-        }}
-    }}
-    
-    $configDir = Split-Path $configPath -Parent
-    if (-not (Test-Path $configDir)) {{
-        New-Item -ItemType Directory -Path $configDir -Force | Out-Null
-    }}
-    
-    $config | ConvertTo-Json -Depth 10 | Set-Content $configPath -Encoding UTF8
+# Update version in version.json file
+Write-Host 'Updating version...'
+$versionContent = @{{
+    version = $newVersion
 }}
+
+$versionDir = Split-Path $versionPath -Parent
+if (-not (Test-Path $versionDir)) {{
+    New-Item -ItemType Directory -Path $versionDir -Force | Out-Null
+}}
+
+$versionContent | ConvertTo-Json -Depth 10 | Set-Content $versionPath -Encoding UTF8
 
 # Start the updated application
 Write-Host 'Starting updated application...'
@@ -476,12 +473,11 @@ Write-Host 'Update complete!'
     }
 
     /// <summary>
-    /// Gets the current application version from the config file.
+    /// Gets the current application version from the version.json file.
     /// </summary>
     private static Version getCurrentVersion()
     {
-        var config = SAppConfigService.loadConfig();
-        return parseVersion(config.m_version);
+        return parseVersion(SVersionService.GetVersion());
     }
 
     /// <summary>

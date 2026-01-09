@@ -36,6 +36,159 @@
 
         <!-- Settings Content -->
         <TabControl Grid.Row="1">
+            <!-- User Tab -->
+            <TabItem Header="Utilisateur">
+                <Grid Margin="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- User Section Header -->
+                    <StackPanel Grid.Row="0" Margin="0,0,0,15">
+                        <TextBlock Text="Informations de l'utilisateur" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="Ces informations apparaissent sur les factures générées."
+                                   Foreground="Gray"
+                                   TextWrapping="Wrap"
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <!-- User Fields -->
+                    <Grid Grid.Row="1" Margin="0,10,0,10">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*" MaxWidth="300"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Name -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Nom:" 
+                                   VerticalAlignment="Center" Margin="0,5"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                 Text="{Binding UserName, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="5" Padding="5"/>
+
+                        <!-- Phone -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Téléphone:" 
+                                   VerticalAlignment="Center" Margin="0,5"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" 
+                                 Text="{Binding UserPhone, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="5" Padding="5"/>
+
+                        <!-- Email -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Email:" 
+                                   VerticalAlignment="Center" Margin="0,5"/>
+                        <TextBox Grid.Row="2" Grid.Column="1" 
+                                 Text="{Binding UserEmail, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="5" Padding="5"/>
+
+                        <!-- City -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Ville:" 
+                                   VerticalAlignment="Center" Margin="0,5"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" 
+                                 Text="{Binding UserCity, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="5" Padding="5"/>
+
+                        <!-- Address -->
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Adresse:" 
+                                   VerticalAlignment="Center" Margin="0,5"/>
+                        <TextBox Grid.Row="4" Grid.Column="1" 
+                                 Text="{Binding UserAddress, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="5" Padding="5"/>
+                    </Grid>
+
+                    <!-- Save Button -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Button Content="Enregistrer" 
+                                Command="{Binding SaveUserCommand}"
+                                Padding="20,10"
+                                FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Localisation Tab -->
+            <TabItem Header="Localisation">
+                <Grid Margin="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Localisation Section Header -->
+                    <StackPanel Grid.Row="0" Margin="0,0,0,15">
+                        <TextBlock Text="Paramètres régionaux" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="Configurez la devise et le format des nombres utilisés dans l'application."
+                                   Foreground="Gray"
+                                   TextWrapping="Wrap"
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <!-- Currency Selection -->
+                    <Grid Grid.Row="1" Margin="0,10,0,20">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*" MaxWidth="300"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" Text="Devise / Région:" 
+                                   VerticalAlignment="Center" Margin="0,5"/>
+                        <ComboBox Grid.Column="1" 
+                                  ItemsSource="{Binding AvailableCultures}"
+                                  SelectedItem="{Binding SelectedCultureItem}"
+                                  Margin="5" Padding="5"/>
+                    </Grid>
+
+                    <!-- Settings Location -->
+                    <StackPanel Grid.Row="2" Margin="0,0,0,15">
+                        <TextBlock Text="Emplacement des paramètres:" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding SettingsFilePath}" 
+                                   Foreground="Gray"
+                                   TextWrapping="Wrap"
+                                   Margin="0,3,0,0"/>
+                        <Button Content="Ouvrir le dossier" 
+                                Command="{Binding OpenSettingsFolderCommand}"
+                                HorizontalAlignment="Left"
+                                Padding="15,5"
+                                Margin="0,8,0,0"/>
+                    </StackPanel>
+
+                    <!-- Info message -->
+                    <TextBlock Grid.Row="3" 
+                               Text="Note: Les changements de localisation nécessitent un redémarrage de l'application."
+                               Foreground="Gray"
+                               FontStyle="Italic"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Top"
+                               Margin="0,10,0,0"/>
+
+                    <!-- Save Button -->
+                    <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Button Content="Enregistrer" 
+                                Command="{Binding SaveLocalizationCommand}"
+                                Padding="20,10"
+                                FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
             <!-- Backup Tab -->
             <TabItem Header="Backup &amp; Restore">
                 <Grid Margin="15">
@@ -127,13 +280,13 @@
                 </Grid>
             </TabItem>
 
-            <!-- Placeholder for future settings tabs -->
+            <!-- About Tab -->
             <TabItem Header="About">
                 <StackPanel Margin="15">
                     <TextBlock Text="Mams Application" 
                                FontSize="16" 
                                FontWeight="SemiBold"/>
-                    <TextBlock Text="Version 1.0.0"
+                    <TextBlock Text="{Binding AppVersion, StringFormat='Version {0}'}"
                                Foreground="Gray"
                                Margin="0,5,0,0"/>
                     <TextBlock Text="Database management and backup system."

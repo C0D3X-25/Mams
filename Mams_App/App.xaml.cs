@@ -1,6 +1,8 @@
+using Mams_App.src.configurations;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.services;
 using MySqlConnector;
+using System.Globalization;
 using System.Windows;
 
 namespace Mams_App;
@@ -14,11 +16,46 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        // Load configuration and set culture
+        var config = SAppConfigService.loadConfig();
+        setCultureFromConfig(config);
+
         // Prevent the MainWindow from showing automatically
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
         // Start initialization
         initializeApplicationAsync();
+    }
+
+    /// <summary>
+    /// Sets the application culture from the configuration.
+    /// </summary>
+    /// <param name="config">The application configuration.</param>
+    private static void setCultureFromConfig(AppConfigItem config)
+    {
+        try
+        {
+            var cultureName = config.m_localization.m_culture;
+            if (string.IsNullOrEmpty(cultureName))
+            {
+                cultureName = "fr-CH"; // Default to Swiss French
+            }
+
+            var culture = new CultureInfo(cultureName);
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
+        }
+        catch
+        {
+            // If culture is invalid, fall back to Swiss French
+            var swissCulture = new CultureInfo("fr-CH");
+            CultureInfo.DefaultThreadCurrentCulture = swissCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = swissCulture;
+            Thread.CurrentThread.CurrentCulture = swissCulture;
+            Thread.CurrentThread.CurrentUICulture = swissCulture;
+        }
     }
 
     /// <summary>

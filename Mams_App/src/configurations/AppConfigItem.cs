@@ -8,12 +8,6 @@ namespace Mams_App.src.configurations;
 public class AppConfigItem
 {
     /// <summary>
-    /// Gets or sets the application version.
-    /// </summary>
-    [JsonPropertyName("version")]
-    public string m_version { get; set; } = "1.0.0";
-
-    /// <summary>
     /// Gets or sets the window configuration settings.
     /// </summary>
     [JsonPropertyName("window")]
@@ -71,5 +65,11 @@ public class LocalizationConfigItem
     /// Gets or sets the language code (e.g., "en", "fr", "de").
     /// </summary>
     [JsonPropertyName("language")]
-    public string m_language { get; set; } = "en";
+    public string m_language { get; set; } = "fr";
+
+    /// <summary>
+    /// Gets or sets the culture code for currency and number formatting (e.g., "fr-CH", "en-US", "de-DE").
+    /// </summary>
+    [JsonPropertyName("culture")]
+    public string m_culture { get; set; } = "fr-CH";
 }

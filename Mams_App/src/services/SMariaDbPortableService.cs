@@ -324,10 +324,13 @@ public static class SMariaDbPortableService
                 var canReportProgress = totalBytes > 0;
 
                 using (var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken))
-                using (var fileStream = new FileStream(tempZipPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
+                using (var fileStream = new FileStream(tempZipPath, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
                 {
-                    var buffer = new byte[8192];
+                    // Use larger buffer for better download performance
+                    var buffer = new byte[65536]; // 64KB buffer instead of 8KB
                     long downloadedBytes = 0;
+                    long lastReportedBytes = 0;
+                    const long progressReportInterval = 102400; // Update UI every 100KB
                     int bytesRead;
 
                     while ((bytesRead = await contentStream.ReadAsync(buffer, cancellationToken)) > 0)
@@ -337,19 +340,33 @@ public static class SMariaDbPortableService
                         await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
                         downloadedBytes += bytesRead;
 
-                        if (canReportProgress)
+                        // Only update UI periodically to avoid slowing down the download
+                        if (downloadedBytes - lastReportedBytes >= progressReportInterval)
                         {
-                            var percentage = (double)downloadedBytes / totalBytes * 100;
-                            progressBar.Value = percentage;
-                            progressText.Text = $"{percentage:F1}% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
-                        }
-                        else
-                        {
-                            progressText.Text = $"Downloaded: {formatBytes(downloadedBytes)}";
-                            progressBar.IsIndeterminate = true;
-                        }
+                            lastReportedBytes = downloadedBytes;
+                            
+                            if (canReportProgress)
+                            {
+                                var percentage = (double)downloadedBytes / totalBytes * 100;
+                                progressBar.Value = percentage;
+                                progressText.Text = $"{percentage:F1}% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
+                            }
+                            else
+                            {
+                                progressText.Text = $"Downloaded: {formatBytes(downloadedBytes)}";
+                                progressBar.IsIndeterminate = true;
+                            }
 
-                        await Task.Delay(1, cancellationToken); // Allow UI to update
+                            // Yield to allow UI to update, but don't add artificial delay
+                            await Task.Yield();
+                        }
+                    }
+
+                    // Final progress update
+                    if (canReportProgress)
+                    {
+                        progressBar.Value = 100;
+                        progressText.Text = $"100% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
                     }
                 }
 

@@ -1,6 +1,7 @@
 using Mams_App.src.clients;
 using Mams_App.src.entities;
 using Mams_App.src.receipts;
+using Mams_App.src.users;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -14,9 +15,9 @@ namespace Mams_App.src.invoices;
 /// </summary>
 public class InvoiceTemplate : IDocument
 {
-
     private readonly EntityModel _m_entity_model = new();
     private readonly ClientModel _m_client_model = new();
+    private readonly UserModel _m_user_model = new();
 
     private static string _m_company_logo_path => Path.Combine(
         AppDomain.CurrentDomain.BaseDirectory,
@@ -116,13 +117,27 @@ public class InvoiceTemplate : IDocument
                     return;
                 }
 
-                EntityItem? entity_me_item = new();
                 EntityItem? entity_client_item = new();
 
-                entity_me_item = _m_entity_model.getItemByID(((int)EEntityPredefine.ME).ToString()).returned_item;
+                // Get the user (app owner) information from the users table
+                var user_result = _m_user_model.getUser();
+                EntityItem entity_me_item = new();
+                if (user_result.is_found && user_result.returned_item != null)
+                {
+                    // Convert UserItem to EntityItem for InvoiceAddress compatibility
+                    entity_me_item = new EntityItem
+                    {
+                        entity_name = user_result.returned_item.user_name,
+                        entity_phone = user_result.returned_item.user_phone,
+                        entity_email = user_result.returned_item.user_email,
+                        entity_city = user_result.returned_item.user_city,
+                        entity_address = user_result.returned_item.user_address
+                    };
+                }
+
                 entity_client_item = _m_entity_model.getItemByID(client_result.returned_item!.fk_entity_id.ToString()).returned_item;
 
-                row.RelativeItem().Component(new InvoiceAddress("De", entity_me_item ?? new EntityItem()));
+                row.RelativeItem().Component(new InvoiceAddress("De", entity_me_item));
                 row.ConstantItem(50);
                 row.RelativeItem().Component(new InvoiceAddress("Pour", entity_client_item ?? new EntityItem()));
             });
