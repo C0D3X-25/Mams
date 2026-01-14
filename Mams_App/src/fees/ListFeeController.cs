@@ -1,4 +1,4 @@
-using Mams_App.src.commands;
+﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
 using Mams_App.src.navigations;
 using Mams_App.src.views.globalView;
@@ -90,7 +90,7 @@ public class ListFeeController : ABaseController
     {
         if (_m_selected_item != null)
         {
-            MessageBoxResult result = MessageBox.Show("Supprimer cette facture d�finitivement?",
+            MessageBoxResult result = MessageBox.Show("Supprimer cette facture définitivement?",
                 "Suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.No)
             {

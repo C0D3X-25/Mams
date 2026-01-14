@@ -1,4 +1,4 @@
-namespace Mams_App.src.errors;
+ï»¿namespace Mams_App.src.errors;
 
 /// <summary>
 /// Provides user-friendly French error messages based on error types.
@@ -21,20 +21,20 @@ public static class SErrorMessageHelper
         {
             EErrors.NONE => string.Empty,
             EErrors.UNKNOWN => "Une erreur inconnue est survenue.",
-            EErrors.INVALID_INPUT => "Les données saisies sont invalides.",
-            EErrors.MISSING_PARAMETER => "Un paramètre requis est manquant.",
-            EErrors.NOT_FOUND => "L'élément demandé n'a pas été trouvé.",
-            EErrors.ALREADY_EXISTS => "Un élément avec les mêmes informations existe déjà.",
-            EErrors.NULL_VALUE => "Une valeur requise n'a pas été fournie.",
-            EErrors.DATABASE_CONNECTION => "Impossible de se connecter à la base de données.",
-            EErrors.DATABASE_QUERY => "Une erreur est survenue lors de l'accès à la base de données.",
-            EErrors.FOREIGN_KEY_VIOLATION => "Cet élément est utilisé par d'autres données et ne peut pas être modifié.",
-            EErrors.UNIQUE_CONSTRAINT_VIOLATION => "Cette valeur existe déjà et doit être unique.",
-            EErrors.UNAUTHORIZED => "Vous n'avez pas les droits nécessaires pour effectuer cette action.",
-            EErrors.TIMEOUT => "L'opération a pris trop de temps et a été annulée.",
-            EErrors.CANCELLED => "L'opération a été annulée.",
-            EErrors.INVALID_OPERATION => "Cette opération n'est pas autorisée.",
-            EErrors.MISSING_ARCHIVE_FIELD => "Impossible d'archiver cet élément.",
+            EErrors.INVALID_INPUT => "Les donnÃ©es saisies sont invalides.",
+            EErrors.MISSING_PARAMETER => "Un paramÃ¨tre requis est manquant.",
+            EErrors.NOT_FOUND => "L'Ã©lÃ©ment demandÃ© n'a pas Ã©tÃ© trouvÃ©.",
+            EErrors.ALREADY_EXISTS => "Un Ã©lÃ©ment avec les mÃªmes informations existe dÃ©jÃ .",
+            EErrors.NULL_VALUE => "Une valeur requise n'a pas Ã©tÃ© fournie.",
+            EErrors.DATABASE_CONNECTION => "Impossible de se connecter Ã  la base de donnÃ©es.",
+            EErrors.DATABASE_QUERY => "Une erreur est survenue lors de l'accÃ¨s Ã  la base de donnÃ©es.",
+            EErrors.FOREIGN_KEY_VIOLATION => "Cet Ã©lÃ©ment est utilisÃ© par d'autres donnÃ©es et ne peut pas Ãªtre modifiÃ©.",
+            EErrors.UNIQUE_CONSTRAINT_VIOLATION => "Cette valeur existe dÃ©jÃ  et doit Ãªtre unique.",
+            EErrors.UNAUTHORIZED => "Vous n'avez pas les droits nÃ©cessaires pour effectuer cette action.",
+            EErrors.TIMEOUT => "L'opÃ©ration a pris trop de temps et a Ã©tÃ© annulÃ©e.",
+            EErrors.CANCELLED => "L'opÃ©ration a Ã©tÃ© annulÃ©e.",
+            EErrors.INVALID_OPERATION => "Cette opÃ©ration n'est pas autorisÃ©e.",
+            EErrors.MISSING_ARCHIVE_FIELD => "Impossible d'archiver cet Ã©lÃ©ment.",
             _ => "Une erreur est survenue."
         };
     }
@@ -50,15 +50,15 @@ public static class SErrorMessageHelper
         return error switch
         {
             EErrors.ALREADY_EXISTS when !string.IsNullOrEmpty(itemName)
-                => $"Un élément avec le nom '{itemName}' existe déjà.",
+                => $"Un Ã©lÃ©ment avec le nom '{itemName}' existe dÃ©jÃ .",
             EErrors.ALREADY_EXISTS
-                => "Un élément avec les mêmes informations existe déjà.",
+                => "Un Ã©lÃ©ment avec les mÃªmes informations existe dÃ©jÃ .",
             EErrors.NULL_VALUE
-                => "Les données à enregistrer sont invalides.",
+                => "Les donnÃ©es Ã  enregistrer sont invalides.",
             EErrors.INVALID_INPUT
                 => "Les informations saisies sont incorrectes.",
             EErrors.DATABASE_CONNECTION
-                => "Impossible de se connecter à la base de données. Vérifiez votre connexion.",
+                => "Impossible de se connecter Ã  la base de donnÃ©es. VÃ©rifiez votre connexion.",
             EErrors.DATABASE_QUERY
                 => "Une erreur est survenue lors de l'enregistrement.",
             _ => GetUserMessage(error)
@@ -75,11 +75,11 @@ public static class SErrorMessageHelper
         return error switch
         {
             EErrors.NOT_FOUND
-                => "L'élément à supprimer n'a pas été trouvé.",
+                => "L'Ã©lÃ©ment Ã  supprimer n'a pas Ã©tÃ© trouvÃ©.",
             EErrors.FOREIGN_KEY_VIOLATION
-                => "Cet élément est utilisé par d'autres données et ne peut pas être supprimé.",
+                => "Cet Ã©lÃ©ment est utilisÃ© par d'autres donnÃ©es et ne peut pas Ãªtre supprimÃ©.",
             EErrors.INVALID_INPUT
-                => "Impossible de supprimer cet élément.",
+                => "Impossible de supprimer cet Ã©lÃ©ment.",
             EErrors.DATABASE_QUERY
                 => "Une erreur est survenue lors de la suppression.",
             _ => GetUserMessage(error)
@@ -96,13 +96,13 @@ public static class SErrorMessageHelper
         return error switch
         {
             EErrors.NOT_FOUND
-                => "L'élément demandé n'a pas été trouvé.",
+                => "L'Ã©lÃ©ment demandÃ© n'a pas Ã©tÃ© trouvÃ©.",
             EErrors.INVALID_INPUT
                 => "L'identifiant fourni est invalide.",
             EErrors.DATABASE_CONNECTION
-                => "Impossible de se connecter à la base de données.",
+                => "Impossible de se connecter Ã  la base de donnÃ©es.",
             EErrors.DATABASE_QUERY
-                => "Une erreur est survenue lors du chargement des données.",
+                => "Une erreur est survenue lors du chargement des donnÃ©es.",
             _ => GetUserMessage(error)
         };
     }
@@ -119,6 +119,6 @@ public static class SErrorMessageHelper
         {
             return userMessage;
         }
-        return $"{userMessage}\n\nDétails techniques:\n{errorDetail}";
+        return $"{userMessage}\n\nDÃ©tails techniques:\n{errorDetail}";
     }
 }
