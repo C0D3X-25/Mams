@@ -13,9 +13,9 @@
         <!--Page is 12* per 12*-->
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="2*" MaxHeight="100"/>
-                <RowDefinition Height="9*"/>
                 <RowDefinition Height="1*" MaxHeight="50"/>
+                <RowDefinition Height="9*"/>
+                <RowDefinition Height="1*" MaxHeight="25"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="12*"/>

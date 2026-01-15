@@ -16,9 +16,9 @@ Title="ResumePage">
 
     <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*" MaxHeight="80"/>
-            <RowDefinition Height="10*"/>
             <RowDefinition Height="1*" MaxHeight="50"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="1*" MaxHeight="25"/>
         </Grid.RowDefinitions>
 
         <!--Header-->
@@ -41,7 +41,7 @@ Title="ResumePage">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="9*"/>
-                    <RowDefinition Height="2*" MinHeight="150"/>
+                    <RowDefinition Height="2*" MinHeight="175"/>
                 </Grid.RowDefinitions>
 
                 <!--Search Bar-->
@@ -200,48 +200,59 @@ Title="ResumePage">
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <!--Row 0: Poids Total-->
-                        <Label Grid.Column="0" Grid.Row="0"
+                        <!--Row 0: Include Free Items Toggle-->
+                        <CheckBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                                  VerticalAlignment="Center"
+                                  HorizontalAlignment="Left"
+                                  Margin="0,0,5,0"
+                                  FontSize="16"
+                                  IsChecked="{Binding m_include_free_items}"
+                                  Content="{loc:Translate Resume.IncludeFreeItems}"/>
+
+                        <!--Row 1: Poids Total-->
+                        <Label Grid.Row="1" Grid.Column="1"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
                            Content="{loc:Translate Resume.TotalWeightProfit}"/>
-                        <Label Grid.Column="1" Grid.Row="0"
+                        <Label Grid.Row="1" Grid.Column="2"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
                            Content="{Binding m_total_weight_ui}"/>
 
-                        <!--Row 1: Quantité Total-->
-                        <Label Grid.Column="0" Grid.Row="1"
+                        <!--Row 2: Quantité Total-->
+                        <Label Grid.Row="2" Grid.Column="1"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
                            Content="{loc:Translate Resume.TotalQuantityProfit}"/>
-                        <Label Grid.Column="1" Grid.Row="1"
+                        <Label Grid.Row="2" Grid.Column="2"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
                            Content="{Binding m_total_quantity_ui}"/>
 
-                        <!--Row 2: Prix Moyen par Unité-->
-                        <Label Grid.Column="0" Grid.Row="2"
+                        <!--Row 3: Prix Moyen par Unité-->
+                        <Label Grid.Row="3" Grid.Column="1"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
                            Content="{loc:Translate Resume.AveragePricePerUnit}"/>
-                        <Label Grid.Column="1" Grid.Row="2"
+                        <Label Grid.Row="3" Grid.Column="2"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
                            Content="{Binding m_average_price_per_unit_ui}"/>
 
-                        <!--Row 3: Prix Moyen par kg-->
-                        <Label Grid.Column="0" Grid.Row="3"
+                        <!--Row 4: Prix Moyen par kg-->
+                        <Label Grid.Row="4" Grid.Column="1"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
                            Content="{loc:Translate Resume.AveragePricePerKg}"/>
-                        <Label Grid.Column="1" Grid.Row="3"
+                        <Label Grid.Row="4" Grid.Column="2"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
                            Content="{Binding m_average_price_per_weight_ui}"/>
@@ -254,39 +265,40 @@ Title="ResumePage">
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
 
-                        <!--Row 0: Total Profits-->
-                        <Label Grid.Column="0" Grid.Row="0"
+                        <!--Row 1: Total Profits-->
+                        <Label Grid.Column="0" Grid.Row="1"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
                            Content="{loc:Translate Resume.TotalProfits}"/>
-                        <Label Grid.Column="1" Grid.Row="0"
+                        <Label Grid.Column="1" Grid.Row="1"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
                            Content="{Binding m_total_profit_ui}"/>
 
-                        <!--Row 1: Total Frais-->
-                        <Label Grid.Column="0" Grid.Row="1"
+                        <!--Row 2: Total Frais-->
+                        <Label Grid.Column="0" Grid.Row="2"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
                            Content="{loc:Translate Resume.TotalFees}"/>
-                        <Label Grid.Column="1" Grid.Row="1"
+                        <Label Grid.Column="1" Grid.Row="2"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
                            Foreground="{Binding m_total_fee_color}"
                            Content="{Binding m_total_fee_ui}"/>
 
-                        <!--Row 2: Total-->
-                        <Label Grid.Column="0" Grid.Row="2"
+                        <!--Row 3: Total-->
+                        <Label Grid.Column="0" Grid.Row="3"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
                            Content="{loc:Translate Resume.Total}"/>
-                        <Label Grid.Column="1" Grid.Row="2"
+                        <Label Grid.Column="1" Grid.Row="3"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
                            Foreground="{Binding m_total_color}"

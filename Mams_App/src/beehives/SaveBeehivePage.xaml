@@ -14,9 +14,9 @@ Title="SaveBeehivePage">
 
     <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*" MaxHeight="80"/>
-            <RowDefinition Height="10*"/>
             <RowDefinition Height="1*" MaxHeight="50"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="1*" MaxHeight="25"/>
         </Grid.RowDefinitions>
 
         <!--Header-->

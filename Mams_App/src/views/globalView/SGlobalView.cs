@@ -1,4 +1,4 @@
-using System.Windows.Media;
+﻿using System.Windows.Media;
 
 namespace Mams_App.src.views.globalView;
 
@@ -62,7 +62,7 @@ public static class SGlobalView
     public const double UC_FOOTER_DESIGN_WIDTH = 1224;
 
     /// <summary>Design height for footer user control.</summary>
-    public const double UC_FOOTER_DESIGN_HEIGHT = 80;
+    public const double UC_FOOTER_DESIGN_HEIGHT = 25;
 
     /// <summary>Design width for menu user control.</summary>
     public const double UC_MENU_DESIGN_WIDTH = 200;

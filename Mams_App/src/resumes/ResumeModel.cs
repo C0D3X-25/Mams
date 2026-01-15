@@ -52,7 +52,7 @@ public class ResumeModel
         // Initialize lazy loaders with thread-safe mode
         // Each loader fetches non-archived items from the database on first access using optimized queries
         _m_lazy_entity_not_archived = new Lazy<ObservableCollection<EntityItem>>(
-            () => _m_entity_model.getNonArchivedEntities(),
+            () => _m_entity_model.getActiveEntities(),
             LazyThreadSafetyMode.ExecutionAndPublication);
 
         _m_lazy_product_not_archived = new Lazy<ObservableCollection<ProductItem>>(
@@ -304,11 +304,13 @@ public class ResumeModel
     /// <param name="profit_items">Collection of profit items to calculate from.</param>
     /// <param name="search_item">Current search item for validation.</param>
     /// <param name="total_profit">Total profit value for average calculation.</param>
+    /// <param name="includeFreeItems">If true, includes items with price of 0 (gifts/free) in average calculations.</param>
     /// <returns>Tuple containing (total_weight_kg, total_quantity, average_price_per_unit, average_price_per_weight).</returns>
     public (decimal total_weight_kg, int total_quantity, decimal average_price_per_unit, decimal average_price_per_weight) calculateDetailTransactions(
         ObservableCollection<ReceiptProfitDetailedItem>? profit_items,
         SearchItem? search_item,
-        decimal total_profit)
+        decimal total_profit,
+        bool includeFreeItems = false)
     {
         // Reset values for invalid search criteria
         if (search_item == null || search_item.search_id == 0)
@@ -327,7 +329,7 @@ public class ResumeModel
             {
                 foreach (var receipt_product in profit_item.receipt_products)
                 {
-                    if (receipt_product.receipt_product_unity_price > 0)
+                    if (includeFreeItems || receipt_product.receipt_product_unity_price > 0)
                     {
                         counted_quantity += receipt_product.receipt_product_quantity;
                         counted_weight_g += receipt_product.product_item.product_weight * receipt_product.receipt_product_quantity;

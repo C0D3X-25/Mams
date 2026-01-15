@@ -245,6 +245,24 @@ public class ResumeController : ABaseController
     }
     public string m_average_price_per_weight_ui => $"{m_average_price_per_weight:F2} {Loc.Currency}/kg";
 
+    private bool _m_include_free_items;
+    /// <summary>
+    /// When true, includes items with price of 0 (gifts/free) in average calculations.
+    /// </summary>
+    public bool m_include_free_items
+    {
+        get => _m_include_free_items;
+        set
+        {
+            if (_m_include_free_items != value)
+            {
+                _m_include_free_items = value;
+                onPropertyChanged();
+                updateDisplayedDetailTransactions();
+            }
+        }
+    }
+
     private SolidColorBrush _m_total_fee_color = SGlobalView.DEFAULT_TEXT_COLOR;
     public SolidColorBrush m_total_fee_color
     {
@@ -413,7 +431,8 @@ public class ResumeController : ABaseController
         var transaction_details = _m_resume_model.calculateDetailTransactions(
             m_list_profit_item,
             m_selected_search_item,
-            m_total_profit);
+            m_total_profit,
+            m_include_free_items);
 
         m_total_weight = transaction_details.total_weight_kg;
         m_total_quantity = transaction_details.total_quantity;

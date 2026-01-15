@@ -100,7 +100,7 @@ public class EntityModel : ABaseModel,
     /// </summary>
     /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="EntityItem"/> objects  that are not archived. The
     /// collection will be empty if no such entities exist.</returns>
-    public ObservableCollection<EntityItem> getNonArchivedEntities()
+    public ObservableCollection<EntityItem> getActiveEntities()
     {
         return SDatabaseModel.getAllRowsInTable<EntityItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
     }

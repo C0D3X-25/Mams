@@ -134,7 +134,7 @@ public class SaveProfitController : ABaseController, ICompareState
 
         _m_list_product = _m_product_model.getActiveProducts();
         _m_list_product_lot = _m_product_lot_model.getActiveProductLots();
-        _m_list_entity = _m_entity_model.getNonArchivedEntities();
+        _m_list_entity = _m_entity_model.getActiveEntities();
 
         initializeProfit(id_to_load);
 
