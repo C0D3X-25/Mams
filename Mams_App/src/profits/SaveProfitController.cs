@@ -1,4 +1,4 @@
-using Mams_App.src.commands;
+﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
 using Mams_App.src.entities;
 using Mams_App.src.errors;
@@ -131,8 +131,8 @@ public class SaveProfitController : ABaseController, ICompareState
     public SaveProfitController(int id_to_load = 0)
     {
 
-        _m_list_product = _m_product_model.getAllItems().returned_items;
-        _m_list_product_lot = _m_product_lot_model.getAllItems().returned_items;
+        _m_list_product = _m_product_model.getActiveProducts();
+        _m_list_product_lot = _m_product_lot_model.getActiveProductLots();
         _m_list_entity = _m_entity_model.getNonArchivedEntities();
 
         initializeProfit(id_to_load);

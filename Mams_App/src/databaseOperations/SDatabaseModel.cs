@@ -1,4 +1,4 @@
-using Mams_App.src.errors;
+﻿using Mams_App.src.errors;
 using Mams_App.src.helpers;
 using Mams_App.src.items;
 using Mams_App.src.models;
@@ -306,7 +306,7 @@ public abstract class SDatabaseModel : ABaseModel
 
         if (archive_field != null)
         {
-            query_builder.Append($" WHERE {archive_field} != '{DEFAULT_ARCHIVE_DATE}' OR {archive_field} IS NULL");
+            query_builder.Append($" WHERE {archive_field} = '{DEFAULT_ARCHIVE_DATE}' OR {archive_field} IS NULL");
         }
 
         if (asc_column != null)
