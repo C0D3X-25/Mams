@@ -1,4 +1,4 @@
-using Mams_App.src.commands;
+ï»¿using Mams_App.src.commands;
 using Mams_App.src.controllers;
 using Mams_App.src.navigations;
 using Mams_App.src.views.globalView;
@@ -15,6 +15,7 @@ public class ListProfitController : ABaseController
 
     public SolidColorBrush m_delete_button_color { get; } = SGlobalView.DELETE_BUTTON_COLOR;
     public SolidColorBrush m_delete_button_text_color { get; } = SGlobalView.DELETE_BUTTON_TEXT_COLOR;
+    public string m_delete_button_text { get; } = "Supprimer";
 
 
     private readonly ReceiptProfitDetailedModel _m_item_model = new();
@@ -89,7 +90,7 @@ public class ListProfitController : ABaseController
     {
         if (_m_selected_item != null)
         {
-            MessageBoxResult result = MessageBox.Show("Supprimer cette facture définitivement?",
+            MessageBoxResult result = MessageBox.Show("Supprimer cette facture dï¿½finitivement?",
                 "Suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.No)
             {

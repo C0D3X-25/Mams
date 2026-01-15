@@ -1,4 +1,4 @@
-using Mams_App.src.databaseOperations;
+﻿using Mams_App.src.databaseOperations;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
 using Mams_App.src.models;
@@ -103,6 +103,17 @@ public class EntityModel : ABaseModel,
     public ObservableCollection<EntityItem> getNonArchivedEntities()
     {
         return SDatabaseModel.getAllRowsInTable<EntityItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
+    }
+
+    /// <summary>
+    /// Determines whether an entity can be permanently deleted or will be archived due to foreign key references.
+    /// </summary>
+    /// <param name="id">The unique identifier of the entity to check.</param>
+    /// <returns><see langword="true"/> if the entity can be permanently deleted; 
+    /// <see langword="false"/> if it will be archived due to references.</returns>
+    public bool canBeHardDeleted(string id)
+    {
+        return !isReferencedByOtherTables(_m_TBL_NAME, _m_COL_ID, id);
     }
 
     /// <summary>

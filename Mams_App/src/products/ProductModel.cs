@@ -1,4 +1,4 @@
-using Mams_App.src.databaseOperations;
+﻿using Mams_App.src.databaseOperations;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
 using Mams_App.src.models;
@@ -320,6 +320,17 @@ public class ProductModel : ABaseModel,
                 return [];
             }
         });
+    }
+
+    /// <summary>
+    /// Determines whether a product can be permanently deleted or will be archived due to foreign key references.
+    /// </summary>
+    /// <param name="id">The unique identifier of the product to check.</param>
+    /// <returns><see langword="true"/> if the product can be permanently deleted; 
+    /// <see langword="false"/> if it will be archived due to references.</returns>
+    public bool canBeHardDeleted(string id)
+    {
+        return !isReferencedByOtherTables(_m_TBL_NAME, _m_COL_ID, id);
     }
 
     /// <summary>

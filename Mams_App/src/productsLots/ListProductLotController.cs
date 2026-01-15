@@ -1,4 +1,4 @@
-using Mams_App.src.commands;
+﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.navigations;
@@ -92,6 +92,7 @@ public class ListProductLotController : ABaseController
         {
             _m_selected_item = value;
             onPropertyChanged();
+            _ = updateDeleteButtonTextAsync();
         }
     }
 
@@ -116,7 +117,6 @@ public class ListProductLotController : ABaseController
             m_list_items = new ObservableCollection<ProductLotItem>(
                 all_items.Where(item => item.product_lot_archive == string.Empty)
             );
-            m_delete_button_text = "Supprimer";
             m_delete_button_color = SGlobalView.DELETE_BUTTON_COLOR;
             m_delete_button_text_color = SGlobalView.DELETE_BUTTON_TEXT_COLOR;
         }
@@ -125,9 +125,34 @@ public class ListProductLotController : ABaseController
             m_list_items = new ObservableCollection<ProductLotItem>(
                 all_items.Where(item => item.product_lot_archive != string.Empty)
             );
-            m_delete_button_text = "Restaurer";
             m_delete_button_color = SGlobalView.RESTORE_BUTTON_COLOR;
             m_delete_button_text_color = SGlobalView.DEFAULT_TEXT_COLOR;
+        }
+        _ = updateDeleteButtonTextAsync();
+    }
+
+    /// <summary>
+    /// Updates the delete button text based on the selected item and archive status asynchronously.
+    /// </summary>
+    private async Task updateDeleteButtonTextAsync()
+    {
+        if (_m_is_show_archived_checked)
+        {
+            m_delete_button_text = "Restaurer";
+        }
+        else if (_m_selected_item != null)
+        {
+            var selectedId = _m_selected_item.product_lot_id;
+            bool canHardDelete = await Task.Run(() => _m_item_model.canBeHardDeleted(selectedId.ToString()));
+            
+            if (_m_selected_item?.product_lot_id == selectedId)
+            {
+                m_delete_button_text = canHardDelete ? "Supprimer" : "Archiver";
+            }
+        }
+        else
+        {
+            m_delete_button_text = "Supprimer";
         }
     }
 

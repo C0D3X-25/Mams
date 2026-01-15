@@ -163,6 +163,17 @@ public class ProductLotModel : ABaseModel,
     }
 
     /// <summary>
+    /// Determines whether a product lot can be permanently deleted or will be archived due to foreign key references.
+    /// </summary>
+    /// <param name="id">The unique identifier of the product lot to check.</param>
+    /// <returns><see langword="true"/> if the product lot can be permanently deleted; 
+    /// <see langword="false"/> if it will be archived due to references.</returns>
+    public bool canBeHardDeleted(string id)
+    {
+        return !isReferencedByOtherTables(_m_TBL_NAME, _m_COL_ID, id);
+    }
+
+    /// <summary>
     /// Saves the specified <see cref="ProductLotItem"/> to the database.
     /// </summary>
     /// <param name="item">The <see cref="ProductLotItem"/> to save. Must not be null.</param>

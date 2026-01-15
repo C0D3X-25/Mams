@@ -1,4 +1,4 @@
-using Mams_App.src.databaseConnections;
+﻿using Mams_App.src.databaseConnections;
 using MySqlConnector;
 using System.Windows;
 
@@ -246,6 +246,70 @@ public abstract class ABaseModel
             catch (MySqlException ex)
             {
                 MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return false;
+            }
+        });
+    }
+
+    /// <summary>
+    /// Checks if a record is referenced by foreign keys in other tables.
+    /// </summary>
+    /// <param name="table_name">The name of the table containing the record.</param>
+    /// <param name="column_id">The name of the primary key column.</param>
+    /// <param name="id">The ID value to check for references.</param>
+    /// <returns><see langword="true"/> if the record is referenced by other tables; otherwise, <see langword="false"/>.</returns>
+    protected static bool isReferencedByOtherTables(string table_name, string column_id, string id)
+    {
+        if (string.IsNullOrEmpty(table_name) || string.IsNullOrEmpty(column_id) || string.IsNullOrEmpty(id))
+        {
+            return false;
+        }
+
+        return executeWithConnection(connection =>
+        {
+            try
+            {
+                // Query to find all foreign key references to this table
+                string query = @"
+                    SELECT 
+                        TABLE_NAME,
+                        COLUMN_NAME
+                    FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+                    WHERE REFERENCED_TABLE_SCHEMA = DATABASE()
+                        AND REFERENCED_TABLE_NAME = @table_name
+                        AND REFERENCED_COLUMN_NAME = @column_id";
+
+                using MySqlCommand cmd = new(query, connection, _m_sql_transaction);
+                cmd.Parameters.AddWithValue("@table_name", table_name);
+                cmd.Parameters.AddWithValue("@column_id", column_id);
+
+                using var reader = cmd.ExecuteReader();
+                var references = new List<(string TableName, string ColumnName)>();
+
+                while (reader.Read())
+                {
+                    references.Add((reader.GetString(0), reader.GetString(1)));
+                }
+                reader.Close();
+
+                // Check each referencing table for actual references
+                foreach (var (refTable, refColumn) in references)
+                {
+                    string checkQuery = $"SELECT COUNT(*) FROM {refTable} WHERE {refColumn} = @id LIMIT 1";
+                    using MySqlCommand checkCmd = new(checkQuery, connection, _m_sql_transaction);
+                    checkCmd.Parameters.AddWithValue("@id", id);
+
+                    int count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                    if (count > 0)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            catch (MySqlException)
+            {
                 return false;
             }
         });

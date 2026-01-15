@@ -14,6 +14,7 @@ public class ListFeeController : ABaseController
 
     public SolidColorBrush m_delete_button_color { get; } = SGlobalView.DELETE_BUTTON_COLOR;
     public SolidColorBrush m_delete_button_text_color { get; } = SGlobalView.DELETE_BUTTON_TEXT_COLOR;
+    public string m_delete_button_text { get; } = "Supprimer";
 
 
     private readonly ReceiptFeeDetailedModel _m_item_model = new();
