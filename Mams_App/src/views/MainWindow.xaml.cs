@@ -1,4 +1,5 @@
-using Mams_App.src.configurations;
+﻿using Mams_App.src.configurations;
+using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.search;
 using Mams_App.src.services;
@@ -57,9 +58,13 @@ public partial class MainWindow : Window
     /// </summary>
     private void MenuItem_About_Click(object sender, RoutedEventArgs e)
     {
+        var version = SVersionService.GetVersion();
+        var message = $"{Loc.Get("Settings.AppName")}\n\n{Loc.Get("Settings.Version")} {version}\n\n{Loc.Get("Settings.AppDescription")}";
+        var title = Loc.Get("Menu.About");
+        
         MessageBox.Show(
-            "Mams Application\n\nVersion 1.0.0\n\nDatabase management and backup system.",
-            "About Mams",
+            message,
+            title,
             MessageBoxButton.OK,
             MessageBoxImage.Information);
     }

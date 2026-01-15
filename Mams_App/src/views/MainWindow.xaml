@@ -6,8 +6,9 @@
         xmlns:local="clr-namespace:Mams_App.src.views"
         xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
         xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
+        xmlns:loc="clr-namespace:Mams_App.src.localizations"
         mc:Ignorable="d"
-        Title="Mams" 
+        Title="{loc:Translate App.Title}" 
         Height="{x:Static globalView:SGlobalView.MAIN_WINDOW_HEIGHT}" 
         Width="{x:Static globalView:SGlobalView.MAIN_WINDOW_WIDTH}" 
         MinHeight="{x:Static globalView:SGlobalView.MAIN_WINDOW_MIN_HEIGHT}" 
@@ -16,13 +17,13 @@
     <DockPanel>
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Settings" Click="MenuItem_Settings_Click"/>
+            <MenuItem Header="{loc:Translate Menu.File}">
+                <MenuItem Header="{loc:Translate Menu.Settings}" Click="MenuItem_Settings_Click"/>
                 <Separator/>
-                <MenuItem Header="E_xit" Click="MenuItem_Exit_Click"/>
+                <MenuItem Header="{loc:Translate Menu.Exit}" Click="MenuItem_Exit_Click"/>
             </MenuItem>
-            <MenuItem Header="_Help">
-                <MenuItem Header="_About" Click="MenuItem_About_Click"/>
+            <MenuItem Header="{loc:Translate Menu.Help}">
+                <MenuItem Header="{loc:Translate Menu.About}" Click="MenuItem_About_Click"/>
             </MenuItem>
         </Menu>
 
