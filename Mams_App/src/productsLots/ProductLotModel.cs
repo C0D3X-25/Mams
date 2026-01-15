@@ -1,4 +1,4 @@
-using Mams_App.src.beehives;
+﻿using Mams_App.src.beehives;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
@@ -132,7 +132,7 @@ public class ProductLotModel : ABaseModel,
                     FROM {_m_TBL_NAME} pl
                     LEFT JOIN beehives b ON pl.{_m_COL_FK_BEEHIVE} = b.beehive_id
                     WHERE pl.{_m_COL_ARCHIVE} = '{_m_DEFAULT_ARCHIVE}' OR pl.{_m_COL_ARCHIVE} IS NULL
-                    ORDER BY pl.{_m_COL_NAME} ASC;";
+                    ORDER BY pl.{_m_COL_YEAR} DESC, pl.{_m_COL_NAME} ASC;";
 
                 using MySqlCommand cmd = new(query, connection);
                 using MySqlDataReader reader = cmd.ExecuteReader();
