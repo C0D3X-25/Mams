@@ -1,7 +1,8 @@
-using Mams_App.src.commands;
+﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.fees;
+using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.profits;
 using Mams_App.src.search;
@@ -146,7 +147,7 @@ public class ResumeController : ABaseController
             }
         }
     }
-    public string m_total_profit_ui => $"{_m_total_profit:F2} CHF";
+    public string m_total_profit_ui => $"{_m_total_profit:F2} {Loc.Currency}";
 
     private decimal _m_total_fee;
     public decimal m_total_fee
@@ -162,7 +163,7 @@ public class ResumeController : ABaseController
             }
         }
     }
-    public string m_total_fee_ui => $"{_m_total_fee:F2} CHF";
+    public string m_total_fee_ui => $"{_m_total_fee:F2} {Loc.Currency}";
 
     private decimal _m_total;
     public decimal m_total
@@ -178,7 +179,7 @@ public class ResumeController : ABaseController
             }
         }
     }
-    public string m_total_ui => $"{_m_total:F2} CHF";
+    public string m_total_ui => $"{_m_total:F2} {Loc.Currency}";
 
     private decimal _m_total_weight;
     public decimal m_total_weight
@@ -194,7 +195,7 @@ public class ResumeController : ABaseController
             }
         }
     }
-    public string m_total_weight_ui => $"{_m_total_weight:F2} kg";
+    public string m_total_weight_ui => $"{_m_total_weight:F2} {Loc.Get("Unit.Kg")}";
 
     private int _m_total_quantity;
     public int m_total_quantity
@@ -226,7 +227,7 @@ public class ResumeController : ABaseController
             }
         }
     }
-    public string m_average_price_per_unit_ui => $"{m_average_price_per_unit:F2} CHF/u";
+    public string m_average_price_per_unit_ui => $"{m_average_price_per_unit:F2} {Loc.Currency}/u";
 
     private decimal _m_average_price_per_weight;
     public decimal m_average_price_per_weight
@@ -242,7 +243,7 @@ public class ResumeController : ABaseController
             }
         }
     }
-    public string m_average_price_per_weight_ui => $"{m_average_price_per_weight:F2} CHF/kg";
+    public string m_average_price_per_weight_ui => $"{m_average_price_per_weight:F2} {Loc.Currency}/kg";
 
     private SolidColorBrush _m_total_fee_color = SGlobalView.DEFAULT_TEXT_COLOR;
     public SolidColorBrush m_total_fee_color

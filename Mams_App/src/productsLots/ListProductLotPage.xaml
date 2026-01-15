@@ -1,17 +1,18 @@
 ﻿<Page   
-    x:Class="Mams_App.src.productsLots.ListProductLotPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:local="clr-namespace:Mams_App.src.productsLots"
-    xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
-    xmlns:commands="clr-namespace:Mams_App.src.commands"
-    xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
-    mc:Ignorable="d" 
-    d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
-    d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
-    Title="ListProductLotPage">
+x:Class="Mams_App.src.productsLots.ListProductLotPage"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+xmlns:local="clr-namespace:Mams_App.src.productsLots"
+xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
+xmlns:commands="clr-namespace:Mams_App.src.commands"
+xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
+xmlns:loc="clr-namespace:Mams_App.src.localizations"
+mc:Ignorable="d" 
+d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
+d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
+Title="ListProductLotPage">
 
     <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}"
           d:Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
@@ -24,7 +25,7 @@
         <!--Header-->
         <userControls:UCHeader 
             Grid.Row="0"
-            title="Liste Lots">
+            title="{loc:Translate Page.ListProductLots}">
 
         </userControls:UCHeader>
 
@@ -71,7 +72,7 @@
                     <!--CheckBox Archived-->
                     <CheckBox 
                         Grid.Row="0"
-                        Content="Archives"
+                        Content="{loc:Translate Common.ShowArchived}"
                         IsChecked="{Binding m_is_show_archived_checked, UpdateSourceTrigger=PropertyChanged}"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
@@ -101,12 +102,12 @@
                             SelectedItem="{Binding m_selected_item}"
                             commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command}">
                             <ListView.View>
-                                <GridView>
+                            <GridView>
                                     <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_lot_id}"/>-->
-                                    <GridViewColumn Header="Nom" DisplayMemberBinding="{Binding product_lot_name}"/>
-                                    <GridViewColumn Header="Année" DisplayMemberBinding="{Binding product_lot_year}"/>
-                                    <GridViewColumn Header="Rucher" DisplayMemberBinding="{Binding beehive_name}"/>
-                                    <GridViewColumn Header="Archivé" DisplayMemberBinding="{Binding product_lot_archive}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Name}" DisplayMemberBinding="{Binding product_lot_name}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Year}" DisplayMemberBinding="{Binding product_lot_year}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Beehive}" DisplayMemberBinding="{Binding beehive_name}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Archived}" DisplayMemberBinding="{Binding product_lot_archive}"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
@@ -129,7 +130,7 @@
                     <!--Modifiy Buttons-->
                     <Button 
                         Grid.Row="2"
-                        Content="Modifier"
+                        Content="{loc:Translate Common.Edit}"
                         Command="{Binding m_modify_item_command}"
                         Height="30" Width="130"
                         MaxHeight="30" MaxWidth="130"
@@ -144,7 +145,7 @@
                     <!--Add new Broduct Buttons-->
                     <Button 
                         Grid.Row="2"
-                        Content="Nouveau lot"
+                        Content="{loc:Translate Button.NewProductLot}"
                         Command="{Binding m_add_new_item_command}"
                         Height="30" Width="130"
                         MaxHeight="30" MaxWidth="130"

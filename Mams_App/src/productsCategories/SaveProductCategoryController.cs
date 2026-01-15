@@ -1,6 +1,7 @@
-using Mams_App.src.commands;
+﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
 using Mams_App.src.errors;
+using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using System.Windows;
 using System.Windows.Input;
@@ -70,7 +71,7 @@ public class SaveProductCategoryController : ABaseController, ICompareState
         {
             string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error, m_product_category.product_category_name);
             string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
-            MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(fullMessage, Loc.Get("Common.Error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

@@ -1,15 +1,16 @@
 ﻿<Page x:Class="Mams_App.src.entities.SaveEntityPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Mams_App.src.entities"
-      xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
-      xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
-      mc:Ignorable="d" 
-      d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
-      d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
-      Title="SaveEntityPage">
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+xmlns:local="clr-namespace:Mams_App.src.entities"
+xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
+xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
+xmlns:loc="clr-namespace:Mams_App.src.localizations"
+mc:Ignorable="d" 
+d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
+d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
+Title="SaveEntityPage">
     
     <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
         <Grid.RowDefinitions>
@@ -21,7 +22,7 @@
         <!--Header-->
         <userControls:UCHeader 
             Grid.Row="0"
-            title="Contact">
+            title="{loc:Translate Entity.Title}">
 
         </userControls:UCHeader>
 
@@ -92,7 +93,7 @@
                             <!--Name-->
                             <userControls:UCLabelTextBox
                                 Grid.Row="0"
-                                label="Nom*"
+                                label="{loc:Translate Form.Name}"
                                 text="{Binding m_entity.entity_name, UpdateSourceTrigger=PropertyChanged}"
 
                             ></userControls:UCLabelTextBox>
@@ -100,7 +101,7 @@
                             <!--Address-->
                             <userControls:UCLabelTextBox
                                 Grid.Row="1"
-                                label="Adresse"
+                                label="{loc:Translate Form.Address}"
                                 text="{Binding m_entity.entity_address, UpdateSourceTrigger=PropertyChanged}"
                                 
                             ></userControls:UCLabelTextBox>
@@ -108,7 +109,7 @@
                             <!--City-->
                             <userControls:UCLabelTextBox
                                 Grid.Row="2"
-                                label="Ville"
+                                label="{loc:Translate Form.City}"
                                 text="{Binding m_entity.entity_city, UpdateSourceTrigger=PropertyChanged}"
                             ></userControls:UCLabelTextBox>
 
@@ -131,7 +132,7 @@
                             <!--Phone-->
                             <userControls:UCLabelTextBox
                                 Grid.Row="0"
-                                label="N° Téléphone"
+                                label="{loc:Translate Form.Phone}"
                                 text="{Binding m_entity.entity_phone, UpdateSourceTrigger=PropertyChanged}"
                                 
                             ></userControls:UCLabelTextBox>
@@ -139,7 +140,7 @@
                             <!--Email-->
                             <userControls:UCLabelTextBox
                                 Grid.Row="1"
-                                label="Email"
+                                label="{loc:Translate Form.Email}"
                                 text="{Binding m_entity.entity_email, UpdateSourceTrigger=PropertyChanged}"
                             ></userControls:UCLabelTextBox>
                             
@@ -157,7 +158,7 @@
                     <!--Abort Save Buttons-->
                     <Button 
                         Grid.Row="2"
-                        Content="Enregistrer"
+                        Content="{loc:Translate Common.Save}"
                         Command="{Binding m_save_command}"
                         Height="30" Width="130"
                         MaxHeight="30" MaxWidth="130"
@@ -170,7 +171,7 @@
 
                     <Button 
                         Grid.Row="2"
-                        Content="Annuler"
+                        Content="{loc:Translate Common.Cancel}"
                         Command="{Binding m_abort_command}"
                         Height="30" Width="130"
                         MaxHeight="30" MaxWidth="130"

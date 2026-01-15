@@ -1,17 +1,18 @@
 ﻿<Page 
-    x:Class="Mams_App.src.resumes.ResumePage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-    xmlns:local="clr-namespace:Mams_App.src.resumes"
-    xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
-    xmlns:commands="clr-namespace:Mams_App.src.commands"
-    xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
-    mc:Ignorable="d" 
-    d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
-    d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
-    Title="ResumePage">
+x:Class="Mams_App.src.resumes.ResumePage"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+xmlns:local="clr-namespace:Mams_App.src.resumes"
+xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
+xmlns:commands="clr-namespace:Mams_App.src.commands"
+xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
+xmlns:loc="clr-namespace:Mams_App.src.localizations"
+mc:Ignorable="d" 
+d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
+d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
+Title="ResumePage">
 
     <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
         <Grid.RowDefinitions>
@@ -21,7 +22,7 @@
         </Grid.RowDefinitions>
 
         <!--Header-->
-        <userControls:UCHeader Grid.Row="0" title="Résumé"/>
+        <userControls:UCHeader Grid.Row="0" title="{loc:Translate Resume.Title}"/>
 
         <!--Body-->
         <Grid Grid.Row="1">
@@ -55,7 +56,7 @@
                     </Grid.ColumnDefinitions>
 
                     <Label Grid.Column="0"
-                       Content="Rechercher par :"
+                       Content="{loc:Translate Resume.SearchBy}"
                        FontSize="16" 
                        VerticalAlignment="Center" 
                        HorizontalAlignment="Right"/>
@@ -89,7 +90,7 @@
                     </ComboBox>
 
                     <Label Grid.Column="3"
-                       Content="Pour l'année :"
+                       Content="{loc:Translate Resume.ForYear}"
                        FontSize="16" 
                        VerticalAlignment="Center" 
                        HorizontalAlignment="Center"/>
@@ -134,7 +135,7 @@
                     </Grid.ColumnDefinitions>
 
                     <Label Grid.Column="0"
-                       Content="Profits" 
+                       Content="{loc:Translate Profit.Title}" 
                        FontSize="20"
                        HorizontalAlignment="Center" 
                        VerticalAlignment="Center"/>
@@ -151,16 +152,16 @@
                        commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command_profit}">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
-                                <GridViewColumn Header="Client" DisplayMemberBinding="{Binding entity.entity_name}"/>
-                                <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
-                                <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
+                                <GridViewColumn Header="{loc:Translate Common.Number}" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
+                                <GridViewColumn Header="{loc:Translate Common.Client}" DisplayMemberBinding="{Binding entity.entity_name}"/>
+                                <GridViewColumn Header="{loc:Translate Common.Date}" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                <GridViewColumn Header="{loc:Translate Common.TotalPrice}" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
 
                     <Label Grid.Column="1"
-                       Content="Frais" 
+                       Content="{loc:Translate Fee.Title}" 
                        FontSize="20"
                        HorizontalAlignment="Center" 
                        VerticalAlignment="Center"/>
@@ -177,10 +178,10 @@
                        commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command_fee}">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="N°" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
-                                <GridViewColumn Header="Fournisseur" DisplayMemberBinding="{Binding entity.entity_name}"/>
-                                <GridViewColumn Header="Date" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
-                                <GridViewColumn Header="Prix Total" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
+                                <GridViewColumn Header="{loc:Translate Common.Number}" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
+                                <GridViewColumn Header="{loc:Translate Common.Supplier}" DisplayMemberBinding="{Binding entity.entity_name}"/>
+                                <GridViewColumn Header="{loc:Translate Common.Date}" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                <GridViewColumn Header="{loc:Translate Common.TotalPrice}" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
@@ -209,7 +210,7 @@
                         <Label Grid.Column="0" Grid.Row="0"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
-                           Content="Poids Total (profit) :"/>
+                           Content="{loc:Translate Resume.TotalWeightProfit}"/>
                         <Label Grid.Column="1" Grid.Row="0"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
@@ -219,7 +220,7 @@
                         <Label Grid.Column="0" Grid.Row="1"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
-                           Content="Quantité Total (profit) :"/>
+                           Content="{loc:Translate Resume.TotalQuantityProfit}"/>
                         <Label Grid.Column="1" Grid.Row="1"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
@@ -229,7 +230,7 @@
                         <Label Grid.Column="0" Grid.Row="2"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
-                           Content="Prix Moyen par Unité (profit) :"/>
+                           Content="{loc:Translate Resume.AveragePricePerUnit}"/>
                         <Label Grid.Column="1" Grid.Row="2"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
@@ -239,7 +240,7 @@
                         <Label Grid.Column="0" Grid.Row="3"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
-                           Content="Prix Moyen par kg (profit) :"/>
+                           Content="{loc:Translate Resume.AveragePricePerKg}"/>
                         <Label Grid.Column="1" Grid.Row="3"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
@@ -263,7 +264,7 @@
                         <Label Grid.Column="0" Grid.Row="0"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
-                           Content="Total Profits :"/>
+                           Content="{loc:Translate Resume.TotalProfits}"/>
                         <Label Grid.Column="1" Grid.Row="0"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
@@ -273,7 +274,7 @@
                         <Label Grid.Column="0" Grid.Row="1"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
-                           Content="Total Frais :"/>
+                           Content="{loc:Translate Resume.TotalFees}"/>
                         <Label Grid.Column="1" Grid.Row="1"
                            HorizontalContentAlignment="Left"
                            FontSize="16"
@@ -284,7 +285,7 @@
                         <Label Grid.Column="0" Grid.Row="2"
                            HorizontalContentAlignment="Right"
                            FontSize="16"
-                           Content="Total :"/>
+                           Content="{loc:Translate Resume.Total}"/>
                         <Label Grid.Column="1" Grid.Row="2"
                            HorizontalContentAlignment="Left"
                            FontSize="16"

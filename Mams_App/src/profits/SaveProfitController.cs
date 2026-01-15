@@ -3,6 +3,7 @@ using Mams_App.src.controllers;
 using Mams_App.src.entities;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
+using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.products;
 using Mams_App.src.productsLots;
@@ -269,7 +270,7 @@ public class SaveProfitController : ABaseController, ICompareState
         {
             string userMessage = SErrorMessageHelper.GetSaveErrorMessage(result.error);
             string fullMessage = SErrorMessageHelper.BuildFullMessage(userMessage, result.error_message_detail);
-            MessageBox.Show(fullMessage, "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(fullMessage, Loc.Get("Common.Error"), MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 

@@ -1,8 +1,9 @@
-using Mams_App.src.beehives;
+ï»¿using Mams_App.src.beehives;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.entities;
 using Mams_App.src.fees;
 using Mams_App.src.helpers;
+using Mams_App.src.localizations;
 using Mams_App.src.products;
 using Mams_App.src.productsCategories;
 using Mams_App.src.productsLots;
@@ -84,13 +85,13 @@ public class ResumeModel
     /// </summary>
     public readonly ObservableCollection<DatabaseTablesNameItem> m_search_tables = [
         new(){ m_name_in_database = EDatabaseTableName.NONE, m_name_to_display = string.Empty }, // Search all
-        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_CATEGORY, m_name_to_display = "Catégorie" },
-        new(){ m_name_in_database = EDatabaseTableName.ENTITY, m_name_to_display = "Client/Fournisseur" },
-        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_SHAPE, m_name_to_display = "Forme" },
-        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_LOT, m_name_to_display = "Lot" },
-        new(){ m_name_in_database = EDatabaseTableName.PRODUCT, m_name_to_display = "Produit" },
-        new(){ m_name_in_database = EDatabaseTableName.BEEHIVE, m_name_to_display = "Rucher" },
-        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_TYPE, m_name_to_display = "Type" }
+        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_CATEGORY, m_name_to_display = Loc.Get("Search.Category") },
+        new(){ m_name_in_database = EDatabaseTableName.ENTITY, m_name_to_display = Loc.Get("Search.ClientSupplier") },
+        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_SHAPE, m_name_to_display = Loc.Get("Search.Shape") },
+        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_LOT, m_name_to_display = Loc.Get("Search.Lot") },
+        new(){ m_name_in_database = EDatabaseTableName.PRODUCT, m_name_to_display = Loc.Get("Search.Product") },
+        new(){ m_name_in_database = EDatabaseTableName.BEEHIVE, m_name_to_display = Loc.Get("Search.Beehive") },
+        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_TYPE, m_name_to_display = Loc.Get("Search.Type") }
     ];
 
     /// <summary>

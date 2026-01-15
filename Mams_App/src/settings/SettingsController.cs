@@ -1,6 +1,7 @@
-using Mams_App.src.commands;
+ï»¿using Mams_App.src.commands;
 using Mams_App.src.configurations;
 using Mams_App.src.databaseOperations;
+using Mams_App.src.localizations;
 using Mams_App.src.services;
 using Mams_App.src.users;
 using MySqlConnector;
@@ -148,13 +149,13 @@ public class SettingsController : INotifyPropertyChanged
     /// </summary>
     public ObservableCollection<CultureItem> AvailableCultures { get; } =
     [
-        new CultureItem("fr-CH", "Suisse (CHF)", "CHF"),
-        new CultureItem("fr-FR", "France (EUR)", "€"),
-        new CultureItem("de-DE", "Deutschland (EUR)", "€"),
-        new CultureItem("de-CH", "Schweiz (CHF)", "CHF"),
-        new CultureItem("it-CH", "Svizzera (CHF)", "CHF"),
-        new CultureItem("en-US", "United States (USD)", "$"),
-        new CultureItem("en-GB", "United Kingdom (GBP)", "£")
+        new CultureItem("fr-CH", Loc.Get("Culture.frCH"), Loc.Get("Currency.CHF")),
+        new CultureItem("fr-FR", Loc.Get("Culture.frFR"), Loc.Get("Currency.EUR")),
+        new CultureItem("de-DE", Loc.Get("Culture.deDE"), Loc.Get("Currency.EUR")),
+        new CultureItem("de-CH", Loc.Get("Culture.deCH"), Loc.Get("Currency.CHF")),
+        new CultureItem("it-CH", Loc.Get("Culture.itCH"), Loc.Get("Currency.CHF")),
+        new CultureItem("en-US", Loc.Get("Culture.enUS"), Loc.Get("Currency.USD")),
+        new CultureItem("en-GB", Loc.Get("Culture.enGB"), Loc.Get("Currency.GBP"))
     ];
 
     /// <summary>
@@ -242,16 +243,16 @@ public class SettingsController : INotifyPropertyChanged
         if (result.is_success)
         {
             MessageBox.Show(
-                "Les informations de l'utilisateur ont été enregistrées avec succès.",
-                "Enregistrement réussi",
+                Loc.Get("Message.UserSaveSuccess"),
+                Loc.Get("Message.UserSaveSuccessTitle"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }
         else
         {
             MessageBox.Show(
-                $"Erreur lors de l'enregistrement:\n{result.error_message_detail}",
-                "Erreur",
+                Loc.Get("Message.UserSaveError", result.error_message_detail ?? string.Empty),
+                Loc.Get("Common.Error"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
@@ -280,9 +281,8 @@ public class SettingsController : INotifyPropertyChanged
         SAppConfigService.saveConfig(config);
 
         MessageBox.Show(
-            "Les paramètres de localisation ont été enregistrés.\n\n" +
-            "Veuillez redémarrer l'application pour appliquer les changements.",
-            "Enregistrement réussi",
+            Loc.Get("Message.LocalizationSaveSuccess"),
+            Loc.Get("Message.UserSaveSuccessTitle"),
             MessageBoxButton.OK,
             MessageBoxImage.Information);
     }
@@ -319,8 +319,8 @@ public class SettingsController : INotifyPropertyChanged
         catch (Exception ex)
         {
             MessageBox.Show(
-                $"Could not open backup folder:\n{ex.Message}",
-                "Error",
+                Loc.Get("Message.OpenFolderError", ex.Message),
+                Loc.Get("Common.Error"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
@@ -354,8 +354,8 @@ public class SettingsController : INotifyPropertyChanged
         catch (Exception ex)
         {
             MessageBox.Show(
-                $"Could not open settings folder:\n{ex.Message}",
-                "Error",
+                Loc.Get("Message.OpenFolderError", ex.Message),
+                Loc.Get("Common.Error"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
@@ -373,12 +373,8 @@ public class SettingsController : INotifyPropertyChanged
 
         // Confirmation dialog
         var result = MessageBox.Show(
-            $"Are you sure you want to restore the backup?\n\n" +
-            $"Backup: {SelectedBackup.Name}\n" +
-            $"Date: {SelectedBackup.LastWriteTime:dd/MM/yyyy HH:mm}\n\n" +
-            "WARNING: This will replace all current data with the backup data.\n" +
-            "This action cannot be undone!",
-            "Confirm Restore",
+            Loc.Get("Message.BackupRestoreConfirm", SelectedBackup.Name, SelectedBackup.LastWriteTime.ToString("dd/MM/yyyy HH:mm")),
+            Loc.Get("Message.BackupRestoreConfirmTitle"),
             MessageBoxButton.YesNo,
             MessageBoxImage.Warning);
 
@@ -393,8 +389,8 @@ public class SettingsController : INotifyPropertyChanged
             if (!SMariaDbPortableService.isRunning())
             {
                 MessageBox.Show(
-                    "Database server is not running.\nPlease restart the application.",
-                    "Error",
+                    Loc.Get("Message.DatabaseNotRunning"),
+                    Loc.Get("Common.Error"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 return;
@@ -407,10 +403,8 @@ public class SettingsController : INotifyPropertyChanged
             SDatabaseBackup.restoreBackup(connection, SelectedBackup.FullName);
 
             MessageBox.Show(
-                $"Backup restored successfully!\n\n" +
-                $"The database has been restored from:\n{SelectedBackup.Name}\n\n" +
-                "Please restart the application for changes to take effect.",
-                "Restore Complete",
+                Loc.Get("Message.BackupRestoreSuccess", SelectedBackup.Name),
+                Loc.Get("Message.BackupRestoreSuccessTitle"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
 
@@ -420,8 +414,8 @@ public class SettingsController : INotifyPropertyChanged
         catch (Exception ex)
         {
             MessageBox.Show(
-                $"Failed to restore backup:\n\n{ex.Message}",
-                "Restore Error",
+                Loc.Get("Message.BackupRestoreError", ex.Message),
+                Loc.Get("Message.BackupRestoreErrorTitle"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
@@ -451,3 +445,4 @@ public class CultureItem
 
     public override string ToString() => DisplayName;
 }
+

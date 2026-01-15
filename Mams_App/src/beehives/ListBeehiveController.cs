@@ -1,6 +1,7 @@
 ﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
 using Mams_App.src.databaseOperations;
+using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
@@ -142,7 +143,7 @@ public class ListBeehiveController : ABaseController
     {
         if (_m_is_show_archived_checked)
         {
-            m_delete_button_text = "Restaurer";
+            m_delete_button_text = Loc.Get("Common.Restore");
         }
         else if (_m_selected_item != null)
         {
@@ -151,12 +152,12 @@ public class ListBeehiveController : ABaseController
             
             if (_m_selected_item?.beehive_id == selectedId)
             {
-                m_delete_button_text = canHardDelete ? "Supprimer" : "Archiver";
+                m_delete_button_text = canHardDelete ? Loc.Get("Common.Delete") : Loc.Get("Common.Archive");
             }
         }
         else
         {
-            m_delete_button_text = "Supprimer";
+            m_delete_button_text = Loc.Get("Common.Delete");
         }
     }
 
@@ -198,8 +199,8 @@ public class ListBeehiveController : ABaseController
 
             if (!result.is_success)
             {
-                MessageBox.Show("Une erreur s'est produite lors de la suppression.",
-                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Loc.Get("Message.DeleteErrorOccurred"),
+                    Loc.Get("Common.Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             updateListItems();

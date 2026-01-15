@@ -1,5 +1,6 @@
 ﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
+using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
@@ -14,7 +15,7 @@ public class ListFeeController : ABaseController
 
     public SolidColorBrush m_delete_button_color { get; } = SGlobalView.DELETE_BUTTON_COLOR;
     public SolidColorBrush m_delete_button_text_color { get; } = SGlobalView.DELETE_BUTTON_TEXT_COLOR;
-    public string m_delete_button_text { get; } = "Supprimer";
+    public string m_delete_button_text => Loc.Get("Common.Delete");
 
 
     private readonly ReceiptFeeDetailedModel _m_item_model = new();
@@ -91,8 +92,8 @@ public class ListFeeController : ABaseController
     {
         if (_m_selected_item != null)
         {
-            MessageBoxResult result = MessageBox.Show("Supprimer cette facture définitivement?",
-                "Suppression", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            MessageBoxResult result = MessageBox.Show(Loc.Get("Message.DeleteInvoiceConfirm"),
+                Loc.Get("Message.DeleteTitle"), MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.No)
             {
                 return;
@@ -100,8 +101,8 @@ public class ListFeeController : ABaseController
             var deleteResult = _m_item_model.deleteItem(_m_selected_item.receipt.receipt_id.ToString());
             if (!deleteResult.is_success)
             {
-                MessageBox.Show("Une erreur s'est produite lors de la suppression.",
-                    "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Loc.Get("Message.DeleteErrorOccurred"),
+                    Loc.Get("Common.Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
             updateListItems();
         }

@@ -25,6 +25,9 @@
     <Content Include="ressources\app_icon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="ressources\localization\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -50,10 +53,6 @@
     <Compile Update="src\productsTypes\SaveProductTypePage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="src\localizations\" />
   </ItemGroup>
 
   <ItemGroup>

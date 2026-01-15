@@ -1,4 +1,6 @@
-﻿namespace Mams_App.src.errors;
+﻿using Mams_App.src.localizations;
+
+namespace Mams_App.src.errors;
 
 /// <summary>
 /// Provides user-friendly French error messages based on error types.
@@ -20,22 +22,22 @@ public static class SErrorMessageHelper
         return error switch
         {
             EErrors.NONE => string.Empty,
-            EErrors.UNKNOWN => "Une erreur inconnue est survenue.",
-            EErrors.INVALID_INPUT => "Les données saisies sont invalides.",
-            EErrors.MISSING_PARAMETER => "Un paramètre requis est manquant.",
-            EErrors.NOT_FOUND => "L'élément demandé n'a pas été trouvé.",
-            EErrors.ALREADY_EXISTS => "Un élément avec les mêmes informations existe déjà.",
-            EErrors.NULL_VALUE => "Une valeur requise n'a pas été fournie.",
-            EErrors.DATABASE_CONNECTION => "Impossible de se connecter à la base de données.",
-            EErrors.DATABASE_QUERY => "Une erreur est survenue lors de l'accès à la base de données.",
-            EErrors.FOREIGN_KEY_VIOLATION => "Cet élément est utilisé par d'autres données et ne peut pas être modifié.",
-            EErrors.UNIQUE_CONSTRAINT_VIOLATION => "Cette valeur existe déjà et doit être unique.",
-            EErrors.UNAUTHORIZED => "Vous n'avez pas les droits nécessaires pour effectuer cette action.",
-            EErrors.TIMEOUT => "L'opération a pris trop de temps et a été annulée.",
-            EErrors.CANCELLED => "L'opération a été annulée.",
-            EErrors.INVALID_OPERATION => "Cette opération n'est pas autorisée.",
-            EErrors.MISSING_ARCHIVE_FIELD => "Impossible d'archiver cet élément.",
-            _ => "Une erreur est survenue."
+            EErrors.UNKNOWN => Loc.Get("Error.Unknown"),
+            EErrors.INVALID_INPUT => Loc.Get("Error.InvalidInput"),
+            EErrors.MISSING_PARAMETER => Loc.Get("Error.MissingParameter"),
+            EErrors.NOT_FOUND => Loc.Get("Error.NotFound"),
+            EErrors.ALREADY_EXISTS => Loc.Get("Error.AlreadyExists"),
+            EErrors.NULL_VALUE => Loc.Get("Error.NullValue"),
+            EErrors.DATABASE_CONNECTION => Loc.Get("Error.DatabaseConnection"),
+            EErrors.DATABASE_QUERY => Loc.Get("Error.DatabaseQuery"),
+            EErrors.FOREIGN_KEY_VIOLATION => Loc.Get("Error.ForeignKeyViolation"),
+            EErrors.UNIQUE_CONSTRAINT_VIOLATION => Loc.Get("Error.UniqueConstraintViolation"),
+            EErrors.UNAUTHORIZED => Loc.Get("Error.Unauthorized"),
+            EErrors.TIMEOUT => Loc.Get("Error.Timeout"),
+            EErrors.CANCELLED => Loc.Get("Error.Cancelled"),
+            EErrors.INVALID_OPERATION => Loc.Get("Error.InvalidOperation"),
+            EErrors.MISSING_ARCHIVE_FIELD => Loc.Get("Error.MissingArchiveField"),
+            _ => Loc.Get("Error.Default")
         };
     }
 
@@ -50,17 +52,17 @@ public static class SErrorMessageHelper
         return error switch
         {
             EErrors.ALREADY_EXISTS when !string.IsNullOrEmpty(itemName)
-                => $"Un élément avec le nom '{itemName}' existe déjà.",
+                => Loc.Get("Error.AlreadyExistsWithName", itemName),
             EErrors.ALREADY_EXISTS
-                => "Un élément avec les mêmes informations existe déjà.",
+                => Loc.Get("Error.AlreadyExists"),
             EErrors.NULL_VALUE
-                => "Les données à enregistrer sont invalides.",
+                => Loc.Get("Error.Save.NullValue"),
             EErrors.INVALID_INPUT
-                => "Les informations saisies sont incorrectes.",
+                => Loc.Get("Error.Save.InvalidInput"),
             EErrors.DATABASE_CONNECTION
-                => "Impossible de se connecter à la base de données. Vérifiez votre connexion.",
+                => Loc.Get("Error.Save.DatabaseConnection"),
             EErrors.DATABASE_QUERY
-                => "Une erreur est survenue lors de l'enregistrement.",
+                => Loc.Get("Error.Save.DatabaseQuery"),
             _ => GetUserMessage(error)
         };
     }
@@ -75,13 +77,13 @@ public static class SErrorMessageHelper
         return error switch
         {
             EErrors.NOT_FOUND
-                => "L'élément à supprimer n'a pas été trouvé.",
+                => Loc.Get("Error.Delete.NotFound"),
             EErrors.FOREIGN_KEY_VIOLATION
-                => "Cet élément est utilisé par d'autres données et ne peut pas être supprimé.",
+                => Loc.Get("Error.Delete.ForeignKeyViolation"),
             EErrors.INVALID_INPUT
-                => "Impossible de supprimer cet élément.",
+                => Loc.Get("Error.Delete.InvalidInput"),
             EErrors.DATABASE_QUERY
-                => "Une erreur est survenue lors de la suppression.",
+                => Loc.Get("Error.Delete.DatabaseQuery"),
             _ => GetUserMessage(error)
         };
     }
@@ -96,13 +98,13 @@ public static class SErrorMessageHelper
         return error switch
         {
             EErrors.NOT_FOUND
-                => "L'élément demandé n'a pas été trouvé.",
+                => Loc.Get("Error.Load.NotFound"),
             EErrors.INVALID_INPUT
-                => "L'identifiant fourni est invalide.",
+                => Loc.Get("Error.Load.InvalidInput"),
             EErrors.DATABASE_CONNECTION
-                => "Impossible de se connecter à la base de données.",
+                => Loc.Get("Error.Load.DatabaseConnection"),
             EErrors.DATABASE_QUERY
-                => "Une erreur est survenue lors du chargement des données.",
+                => Loc.Get("Error.Load.DatabaseQuery"),
             _ => GetUserMessage(error)
         };
     }
@@ -119,6 +121,6 @@ public static class SErrorMessageHelper
         {
             return userMessage;
         }
-        return $"{userMessage}\n\nDétails techniques:\n{errorDetail}";
+        return $"{userMessage}\n\n{Loc.Get("Message.TechnicalDetails")}\n{errorDetail}";
     }
 }

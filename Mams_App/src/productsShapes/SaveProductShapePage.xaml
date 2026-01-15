@@ -1,13 +1,14 @@
 ﻿<Page x:Class="Mams_App.src.productsShapes.SaveProductShapePage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Mams_App.src.productsShapes"
-      xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
-      mc:Ignorable="d" 
-      d:DesignHeight="800" d:DesignWidth="1224"
-      Title="SaveProductShapePage">
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+xmlns:local="clr-namespace:Mams_App.src.productsShapes"
+xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
+xmlns:loc="clr-namespace:Mams_App.src.localizations"
+mc:Ignorable="d" 
+d:DesignHeight="800" d:DesignWidth="1224"
+Title="SaveProductShapePage">
 
     <Grid Background="{Binding m_page_background_color}">
         <!--Page is 12* per 12*-->
@@ -24,7 +25,7 @@
             <!--Header-->
             <userControls:UCHeader 
                 Grid.Row="0"
-                title="Forme du produit"
+                title="{loc:Translate ProductShape.Title}"
 
             ></userControls:UCHeader>
 
@@ -92,7 +93,7 @@
                                 <!--Name-->
                                 <userControls:UCLabelTextBox
                                     Grid.Row="0"
-                                    label="Nom de la forme*"
+                                    label="{loc:Translate ProductShape.Name}"
                                     text="{Binding m_product_shape.product_shape_name, UpdateSourceTrigger=PropertyChanged}"
                                 
                                 ></userControls:UCLabelTextBox>
@@ -125,7 +126,7 @@
                         <!--Abort Save Buttons-->
                         <Button 
                             Grid.Row="2"
-                            Content="Enregistrer"
+                            Content="{loc:Translate Common.Save}"
                             Command="{Binding m_save_command}"
                             Height="30" Width="130"
                             MaxHeight="30" MaxWidth="130"
@@ -138,7 +139,7 @@
 
                         <Button 
                             Grid.Row="2"
-                            Content="Annuler"
+                            Content="{loc:Translate Common.Cancel}"
                             Command="{Binding m_abort_command}"
                             Height="30" Width="130"
                             MaxHeight="30" MaxWidth="130"
