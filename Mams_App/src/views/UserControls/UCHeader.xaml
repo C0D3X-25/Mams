@@ -19,16 +19,19 @@
 
         <!--Home Button-->
         <Button 
-            Content="Home" 
             Grid.Column="0" 
             Margin="10,5,10,5" 
             VerticalAlignment="Center" 
             HorizontalAlignment="Left" 
             MinHeight="40" MinWidth="40"
-            FontSize="12" FontWeight="Bold"
             Background="{x:Static globalView:SGlobalView.HEADER_BUTTON_BACKGROUND_COLOR}"
-            Foreground="{x:Static globalView:SGlobalView.HEADER_BUTTON_TEXT_COLOR}"
-            Command="{Binding m_navigate_homepage_command}">
+            Command="{Binding m_navigate_homepage_command}"
+            ToolTip="Home">
+            <Path 
+                Data="M10,20 L10,14 L14,14 L14,20 L19,20 L19,12 L22,12 L12,3 L2,12 L5,12 L5,20 Z" 
+                Fill="{x:Static globalView:SGlobalView.HEADER_BUTTON_TEXT_COLOR}"
+                Stretch="Uniform"
+                Width="20" Height="20"/>
         </Button>
 
         <!--Title-->
