@@ -1,4 +1,4 @@
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace Mams_App.src.productsLots;
 
@@ -13,5 +13,10 @@ public partial class SaveProductLotPage : Page
 
         InitializeComponent();
         DataContext = new SaveProductLotController(id_to_load);
+    }
+
+    private void UCLabelTextBox_Loaded(object sender, System.Windows.RoutedEventArgs e)
+    {
+
     }
 }

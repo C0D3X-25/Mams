@@ -14,8 +14,7 @@ d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}"
 d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
 Title="ListProductLotPage">
 
-    <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}"
-          d:Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
+    <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" MaxHeight="80"/>
             <RowDefinition Height="10*"/>
