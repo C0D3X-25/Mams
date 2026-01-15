@@ -1,4 +1,4 @@
-using Mams_App.src.clients;
+﻿using Mams_App.src.clients;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.entities;
 using Mams_App.src.errors;
@@ -276,7 +276,7 @@ public class ReceiptProfitDetailedModel : ABaseModel,
                     LEFT JOIN {_m_TBL_PRODUCTS_LOTS} pl ON rp.fk_product_lot_id = pl.product_lot_id
                     LEFT JOIN {_m_TBL_BEEHIVES} b ON pl.fk_beehive_id = b.beehive_id
                     WHERE rs.fk_supplier_id IS NULL
-                    ORDER BY r.receipt_id, rp.receipt_product_id;";
+                    ORDER BY r.receipt_date_created DESC, r.receipt_id, rp.receipt_product_id;";
 
                 using MySqlCommand cmd = new(query, connection);
                 using MySqlDataReader reader = cmd.ExecuteReader();

@@ -1,4 +1,4 @@
-using Mams_App.src.databaseOperations;
+﻿using Mams_App.src.databaseOperations;
 using Mams_App.src.entities;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
@@ -247,7 +247,7 @@ public class ReceiptFeeDetailedModel : ABaseModel,
                     LEFT JOIN {_m_TBL_PRODUCTS_CATEGORIES} pc ON p.fk_product_category_id = pc.product_category_id
                     LEFT JOIN {_m_TBL_PRODUCTS_SHAPES} ps ON p.fk_product_shape_id = ps.product_shape_id
                     WHERE rc.fk_client_id IS NULL
-                    ORDER BY r.receipt_id, rp.receipt_product_id;";
+                    ORDER BY r.receipt_date_created DESC, r.receipt_id, rp.receipt_product_id;";
 
                 using MySqlCommand cmd = new(query, connection);
                 using MySqlDataReader reader = cmd.ExecuteReader();
