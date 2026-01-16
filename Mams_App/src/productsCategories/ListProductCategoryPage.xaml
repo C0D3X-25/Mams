@@ -8,10 +8,16 @@ xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
 xmlns:commands="clr-namespace:Mams_App.src.commands"
 xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
 xmlns:loc="clr-namespace:Mams_App.src.localizations"
+xmlns:converters="clr-namespace:Mams_App.src.converters"
 mc:Ignorable="d" 
 d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
 d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
 Title="ListCategoryPage">
+
+    <Page.Resources>
+        <converters:SortArrowConverter x:Key="SortArrowConverter"/>
+        <converters:BooleanToColumnWidthConverter x:Key="BooleanToColumnWidthConverter"/>
+    </Page.Resources>
 
     <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
         <Grid.RowDefinitions>
@@ -98,11 +104,32 @@ Title="ListCategoryPage">
                             ItemsSource="{Binding m_list_items}"
                             SelectedItem="{Binding m_selected_item}"
                             commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command}">
+                            <ListView.Resources>
+                                <Style TargetType="GridViewColumnHeader">
+                                    <Setter Property="Command" Value="{Binding DataContext.m_sort_command, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column.DisplayMemberBinding.Path.Path}"/>
+                                </Style>
+                                
+                                <DataTemplate x:Key="HeaderTemplateWithArrow">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding}"/>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource SortArrowConverter}">
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.DisplayMemberBinding.Path.Path"/>
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sorted_column"/>
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sort_direction"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.Resources>
                             <ListView.View>
                             <GridView>
                                     <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding product_category_id}"/>-->
-                                    <GridViewColumn Header="{loc:Translate Column.Name}" DisplayMemberBinding="{Binding product_category_name}"/>
-                                    <GridViewColumn Header="{loc:Translate Column.Archived}" DisplayMemberBinding="{Binding product_category_archive}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Name}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_category_name}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Archived}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_category_archive}" Width="{Binding DataContext.m_is_show_archived_checked, RelativeSource={RelativeSource AncestorType=ListView}, Converter={StaticResource BooleanToColumnWidthConverter}}"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>

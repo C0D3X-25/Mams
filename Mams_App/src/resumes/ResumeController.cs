@@ -8,6 +8,8 @@ using Mams_App.src.profits;
 using Mams_App.src.search;
 using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -19,6 +21,8 @@ public class ResumeController : ABaseController
     public ICommand m_clear_search_command { get; }
     public ICommand m_double_click_command_profit { get; }
     public ICommand m_double_click_command_fee { get; }
+    public ICommand m_sort_profit_command { get; }
+    public ICommand m_sort_fee_command { get; }
 
     private readonly ResumeModel _m_resume_model = new();
 
@@ -319,14 +323,104 @@ public class ResumeController : ABaseController
         }
     }
 
+    private string _m_profit_sorted_column = string.Empty;
+    public string m_profit_sorted_column
+    {
+        get { return _m_profit_sorted_column; }
+        set
+        {
+            _m_profit_sorted_column = value;
+            onPropertyChanged();
+        }
+    }
+
+    private ListSortDirection _m_profit_sort_direction = ListSortDirection.Ascending;
+    public ListSortDirection m_profit_sort_direction
+    {
+        get { return _m_profit_sort_direction; }
+        set
+        {
+            _m_profit_sort_direction = value;
+            onPropertyChanged();
+        }
+    }
+
+    private string _m_fee_sorted_column = string.Empty;
+    public string m_fee_sorted_column
+    {
+        get { return _m_fee_sorted_column; }
+        set
+        {
+            _m_fee_sorted_column = value;
+            onPropertyChanged();
+        }
+    }
+
+    private ListSortDirection _m_fee_sort_direction = ListSortDirection.Ascending;
+    public ListSortDirection m_fee_sort_direction
+    {
+        get { return _m_fee_sort_direction; }
+        set
+        {
+            _m_fee_sort_direction = value;
+            onPropertyChanged();
+        }
+    }
+
     public ResumeController()
     {
         m_clear_search_command = new RelayCommand(clearSelectedItems);
         m_double_click_command_profit = new RelayCommand(navigateToProfitDetails, isProfitItemSelected);
         m_double_click_command_fee = new RelayCommand(navigateToFeeDetails, isFeeItemSelected);
+        m_sort_profit_command = new RelayCommand(sortProfitByColumn);
+        m_sort_fee_command = new RelayCommand(sortFeeByColumn);
 
         loadStaticSearchData();
         updateDisplayedProfitsAndFeesLists();
+    }
+
+    private void sortProfitByColumn(object? parameter)
+    {
+        if (parameter is not string columnName || m_list_profit_item == null)
+            return;
+
+        ListSortDirection direction = ListSortDirection.Ascending;
+
+        if (_m_profit_sorted_column == columnName)
+        {
+            direction = _m_profit_sort_direction == ListSortDirection.Ascending
+                ? ListSortDirection.Descending
+                : ListSortDirection.Ascending;
+        }
+
+        ICollectionView view = CollectionViewSource.GetDefaultView(m_list_profit_item);
+        view.SortDescriptions.Clear();
+        view.SortDescriptions.Add(new SortDescription(columnName, direction));
+
+        m_profit_sorted_column = columnName;
+        m_profit_sort_direction = direction;
+    }
+
+    private void sortFeeByColumn(object? parameter)
+    {
+        if (parameter is not string columnName || m_list_fee_item == null)
+            return;
+
+        ListSortDirection direction = ListSortDirection.Ascending;
+
+        if (_m_fee_sorted_column == columnName)
+        {
+            direction = _m_fee_sort_direction == ListSortDirection.Ascending
+                ? ListSortDirection.Descending
+                : ListSortDirection.Ascending;
+        }
+
+        ICollectionView view = CollectionViewSource.GetDefaultView(m_list_fee_item);
+        view.SortDescriptions.Clear();
+        view.SortDescriptions.Add(new SortDescription(columnName, direction));
+
+        m_fee_sorted_column = columnName;
+        m_fee_sort_direction = direction;
     }
 
     public void navigateToProfitDetails(object? obj)

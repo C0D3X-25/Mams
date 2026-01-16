@@ -5,7 +5,9 @@ using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -49,6 +51,7 @@ public class ListProductLotController : ABaseController
     public ICommand m_modify_item_command { get; set; }
     public ICommand m_delete_item_command { get; set; }
     public ICommand m_double_click_command { get; set; }
+    public ICommand m_sort_command { get; set; }
 
 
     private bool _m_is_show_archived_checked = false;
@@ -98,6 +101,29 @@ public class ListProductLotController : ABaseController
     }
 
 
+    private string _m_sorted_column = string.Empty;
+    public string m_sorted_column
+    {
+        get { return _m_sorted_column; }
+        set
+        {
+            _m_sorted_column = value;
+            onPropertyChanged();
+        }
+    }
+
+    private ListSortDirection _m_sort_direction = ListSortDirection.Ascending;
+    public ListSortDirection m_sort_direction
+    {
+        get { return _m_sort_direction; }
+        set
+        {
+            _m_sort_direction = value;
+            onPropertyChanged();
+        }
+    }
+
+
     public ListProductLotController()
     {
         _m_delete_button_text = string.Empty;
@@ -106,6 +132,30 @@ public class ListProductLotController : ABaseController
         m_modify_item_command = new RelayCommand(navigateToModifyPage, isItemSelected);
         m_delete_item_command = new RelayCommand(deleteOrRestoreItem, isItemSelected);
         m_double_click_command = new RelayCommand(navigateToModifyPage, isItemSelected);
+        m_sort_command = new RelayCommand(sortByColumn);
+    }
+
+
+    private void sortByColumn(object? parameter)
+    {
+        if (parameter is not string columnName || m_list_items == null)
+            return;
+
+        ListSortDirection direction = ListSortDirection.Ascending;
+
+        if (_m_sorted_column == columnName)
+        {
+            direction = _m_sort_direction == ListSortDirection.Ascending
+                ? ListSortDirection.Descending
+                : ListSortDirection.Ascending;
+        }
+
+        ICollectionView view = CollectionViewSource.GetDefaultView(m_list_items);
+        view.SortDescriptions.Clear();
+        view.SortDescriptions.Add(new SortDescription(columnName, direction));
+
+        m_sorted_column = columnName;
+        m_sort_direction = direction;
     }
 
 
