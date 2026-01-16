@@ -8,10 +8,15 @@ xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
 xmlns:commands="clr-namespace:Mams_App.src.commands"
 xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
 xmlns:loc="clr-namespace:Mams_App.src.localizations"
+xmlns:converters="clr-namespace:Mams_App.src.converters"
 mc:Ignorable="d" 
 d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
 d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
 Title="ListEntityPage">
+
+    <Page.Resources>
+        <converters:SortArrowConverter x:Key="SortArrowConverter"/>
+    </Page.Resources>
 
     <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
         <Grid.RowDefinitions>
@@ -97,15 +102,36 @@ Title="ListEntityPage">
                             ItemsSource="{Binding m_list_items}"
                             SelectedItem="{Binding m_selected_item}"
                             commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command}">
+                            <ListView.Resources>
+                                <Style TargetType="GridViewColumnHeader">
+                                    <Setter Property="Command" Value="{Binding DataContext.m_sort_command, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column.DisplayMemberBinding.Path.Path}"/>
+                                </Style>
+                                
+                                <DataTemplate x:Key="HeaderTemplateWithArrow">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding}"/>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource SortArrowConverter}">
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.DisplayMemberBinding.Path.Path"/>
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sorted_column"/>
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sort_direction"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.Resources>
                             <ListView.View>
                             <GridView>
                                     <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding entity_id}"/>-->
-                                    <GridViewColumn Header="{loc:Translate Column.Name}" DisplayMemberBinding="{Binding entity_name}"/>
-                                    <GridViewColumn Header="{loc:Translate Column.Phone}" DisplayMemberBinding="{Binding entity_phone}"/>
-                                    <GridViewColumn Header="{loc:Translate Column.Email}" DisplayMemberBinding="{Binding entity_email}"/>
-                                    <GridViewColumn Header="{loc:Translate Column.City}" DisplayMemberBinding="{Binding entity_city}"/>
-                                    <GridViewColumn Header="{loc:Translate Column.Address}" DisplayMemberBinding="{Binding entity_address}"/>
-                                    <GridViewColumn Header="{loc:Translate Column.Archived}" DisplayMemberBinding="{Binding entity_archive}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Name}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity_name}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Phone}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity_phone}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Email}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity_email}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.City}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity_city}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Address}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity_address}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Archived}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity_archive}"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
