@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-    <ApplicationIcon>ressources\app_icon.ico</ApplicationIcon>
+<PropertyGroup>
+  <OutputType>WinExe</OutputType>
+  <TargetFramework>net9.0-windows</TargetFramework>
+  <Nullable>enable</Nullable>
+  <ImplicitUsings>enable</ImplicitUsings>
+  <UseWPF>true</UseWPF>
+  <ApplicationIcon>ressources\app_icon.ico</ApplicationIcon>
     
-    <!-- Application Info -->
-    <Product>Mams</Product>
-    <Company>ThJo</Company>
-    <Authors>ThJo</Authors>
-  </PropertyGroup>
+  <!-- Application Info -->
+  <Product>Mams</Product>
+  <Company>ThJo</Company>
+  <Authors>ThJo</Authors>
+</PropertyGroup>
 
   <ItemGroup>
     <Compile Remove=".github\**" />

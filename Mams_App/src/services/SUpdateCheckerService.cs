@@ -383,12 +383,38 @@ while ($waited -lt $maxWait) {{
     $waited++
 }}
 
-# Files and folders to skip during update (preserve user data)
-$skipPatterns = @(
-    'mariadb\*'
+# Folders to preserve during update (user data and runtime)
+$preserveFolders = @(
+    'mariadb',
+    'ressources',
+    'logs',
+    'backups',
+    'runtimes'
 )
 
-# Copy all files from source to target (overwrite)
+# Clean up old application files before copying new ones
+Write-Host 'Cleaning old application files...'
+$existingItems = Get-ChildItem -Path $targetPath -ErrorAction SilentlyContinue
+foreach ($item in $existingItems) {{
+    $itemName = $item.Name
+    
+    # Check if this folder should be preserved
+    $preserve = $false
+    foreach ($folder in $preserveFolders) {{
+        if ($itemName -eq $folder) {{
+            $preserve = $true
+            Write-Host ""Preserving: $itemName""
+            break
+        }}
+    }}
+    
+    if (-not $preserve) {{
+        Write-Host ""Removing: $itemName""
+        Remove-Item -Path $item.FullName -Recurse -Force -ErrorAction SilentlyContinue
+    }}
+}}
+
+# Copy all files from source to target
 Write-Host 'Copying update files...'
 $files = Get-ChildItem -Path $sourcePath -Recurse -File
 foreach ($file in $files) {{
@@ -396,10 +422,10 @@ foreach ($file in $files) {{
     $destPath = Join-Path $targetPath $relativePath
     $destDir = Split-Path $destPath -Parent
     
-    # Check if this file should be skipped
+    # Check if this file is in a preserved folder (skip copying to avoid overwriting user data)
     $skip = $false
-    foreach ($pattern in $skipPatterns) {{
-        if ($relativePath -like $pattern) {{
+    foreach ($folder in $preserveFolders) {{
+        if ($relativePath -like ""$folder\*"") {{
             $skip = $true
             Write-Host ""Skipping: $relativePath""
             break
