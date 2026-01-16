@@ -1,5 +1,4 @@
 using Mams_App.src.helpers;
-using Mams_App.src.invoices;
 using Mams_App.src.localizations;
 using Mams_App.src.receipts;
 using QuestPDF.Fluent;
@@ -7,32 +6,31 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 
-namespace Mams_App.src.services;
+namespace Mams_App.src.invoices;
 
 /// <summary>
 /// Service class for generating and managing PDF invoices.
 /// Handles the creation, saving, and opening of invoice PDFs based on receipt data.
 /// </summary>
-public class ServicePDF
+public static class SInvoicePdfService
 {
-    private readonly string _m_invoice_directory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-    private string _m_invoice_folder_name => Loc.Get("Pdf.FolderName");
-    private string _m_invoice_filename = "Facture.pdf";
+    private static readonly string _m_invoice_directory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+    private static string _m_invoice_folder_name => Loc.Get("Pdf.FolderName");
 
     /// <summary>
-    /// The full file path where the invoice PDF will be saved.
-    /// Combines the user's Pictures folder, the invoice folder name, and the current invoice filename.
+    /// Gets the full file path where the invoice PDF will be saved.
+    /// Combines the user's Pictures folder, the invoice folder name, and the specified filename.
     /// </summary>
-    private string _m_invoice_save_path => Path.Combine(
+    private static string getInvoiceSavePath(string filename) => Path.Combine(
         _m_invoice_directory,
         _m_invoice_folder_name,
-        _m_invoice_filename
+        filename
     );
 
     /// <summary>
     /// Ensures the invoice directory exists.
     /// </summary>
-    private void ensureDirectoryExists()
+    private static void ensureDirectoryExists()
     {
         string directoryPath = Path.Combine(_m_invoice_directory, _m_invoice_folder_name);
         if (!Directory.Exists(directoryPath))
@@ -46,7 +44,7 @@ public class ServicePDF
     /// In this invoice, the User (app owner) is the seller and the Entity is the client.
     /// </summary>
     /// <param name="receipt_id">The ID of the receipt for which to generate an invoice.</param>
-    public void generateAndOpenProfitInvoice(string receipt_id)
+    public static void generateAndOpenProfitInvoice(string receipt_id)
     {
 
         if (!SDataValidation.isIdValid(receipt_id))
@@ -65,13 +63,14 @@ public class ServicePDF
         }
 
         var item = result.returned_item;
-        _m_invoice_filename = Loc.Get("Pdf.Filename", item.receipt_item.receipt_number);
+        string invoiceFilename = Loc.Get("Pdf.Filename", item.receipt_item.receipt_number);
+        string invoiceSavePath = getInvoiceSavePath(invoiceFilename);
 
         ensureDirectoryExists();
 
         InvoiceProfitTemplate document = new(item);
-        document.GeneratePdf(_m_invoice_save_path);
-        openInvoice();
+        document.GeneratePdf(invoiceSavePath);
+        openInvoice(invoiceSavePath);
     }
 
     /// <summary>
@@ -79,7 +78,7 @@ public class ServicePDF
     /// In this invoice, the Entity (supplier) is the seller and the User (app owner) is the client.
     /// </summary>
     /// <param name="receipt_id">The ID of the receipt for which to generate an invoice.</param>
-    public void generateAndOpenFeeInvoice(string receipt_id)
+    public static void generateAndOpenFeeInvoice(string receipt_id)
     {
 
         if (!SDataValidation.isIdValid(receipt_id))
@@ -98,23 +97,24 @@ public class ServicePDF
         }
 
         var item = result.returned_item;
-        _m_invoice_filename = Loc.Get("Pdf.Filename", item.receipt_item.receipt_number);
+        string invoiceFilename = Loc.Get("Pdf.Filename", item.receipt_item.receipt_number);
+        string invoiceSavePath = getInvoiceSavePath(invoiceFilename);
 
         ensureDirectoryExists();
 
         InvoiceFeeTemplate document = new(item);
-        document.GeneratePdf(_m_invoice_save_path);
-        openInvoice();
+        document.GeneratePdf(invoiceSavePath);
+        openInvoice(invoiceSavePath);
     }
 
     /// <summary>
     /// Opens the generated invoice PDF file using the default PDF viewer.
     /// </summary>
-    private void openInvoice()
+    private static void openInvoice(string invoicePath)
     {
         var p = new Process
         {
-            StartInfo = new ProcessStartInfo(_m_invoice_save_path)
+            StartInfo = new ProcessStartInfo(invoicePath)
             {
                 UseShellExecute = true
             }

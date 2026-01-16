@@ -3,12 +3,12 @@ using Mams_App.src.controllers;
 using Mams_App.src.entities;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
+using Mams_App.src.invoices;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.products;
 using Mams_App.src.productsLots;
 using Mams_App.src.receipts;
-using Mams_App.src.services;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -300,8 +300,6 @@ public class SaveFeeController : ABaseController, ICompareState
 
     private void exportInvoicePdf(object? obj)
     {
-
-        ServicePDF service_pdf = new();
-        service_pdf.generateAndOpenFeeInvoice(m_fee_receipt_detail.receipt.receipt_id.ToString());
+        SInvoicePdfService.generateAndOpenFeeInvoice(m_fee_receipt_detail.receipt.receipt_id.ToString());
     }
 }
