@@ -6,7 +6,7 @@
   <Nullable>enable</Nullable>
   <ImplicitUsings>enable</ImplicitUsings>
   <UseWPF>true</UseWPF>
-  <ApplicationIcon>ressources\app_icon.ico</ApplicationIcon>
+  <ApplicationIcon>resources\app_icon.ico</ApplicationIcon>
     
   <!-- Application Info -->
   <Product>Mams</Product>
@@ -22,10 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="ressources\app_icon.ico">
+    <Content Include="resources\app_icon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="ressources\localization\*.json">
+    <Content Include="resources\localization\*.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -56,19 +56,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="ressources\invoice_pdf_logo.jpg">
+    <None Update="resources\invoice_pdf_logo.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="ressources\version.json">
+    <None Update="resources\version.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
-  <!-- Copy init.sql to ressources folder in output -->
+  <!-- Copy init.sql to resources folder in output -->
   <ItemGroup>
     <None Update="database\init.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Link>ressources\init.sql</Link>
+      <Link>resources\init.sql</Link>
     </None>
   </ItemGroup>
 

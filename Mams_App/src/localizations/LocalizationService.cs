@@ -11,7 +11,7 @@ namespace Mams_App.src.localizations;
 public class LocalizationService : ILocalizationService
 {
     private const string DefaultCulture = "fr";
-    private const string LocalizationFolder = "ressources/localization";
+    private const string LocalizationFolder = "resources/localization";
     
     private Dictionary<string, string> _strings = [];
     private string _currentCulture = DefaultCulture;

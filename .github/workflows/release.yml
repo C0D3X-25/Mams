@@ -49,7 +49,7 @@ jobs:
     - name: Update version in version.json
       shell: pwsh
       run: |
-        $versionPath = "Mams_App/ressources/version.json"
+        $versionPath = "Mams_App/resources/version.json"
         $versionContent = @{
           version = "${{ steps.version.outputs.VERSION }}"
         }

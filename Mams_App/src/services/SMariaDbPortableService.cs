@@ -44,7 +44,7 @@ public static class SMariaDbPortableService
     /// <summary>
     /// Gets the path to the init.sql file in resources.
     /// </summary>
-    public static string InitSqlPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ressources", INIT_SQL_FILENAME);
+    public static string InitSqlPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "resources", INIT_SQL_FILENAME);
 
     /// <summary>
     /// Gets the connection string for the portable MariaDB instance.

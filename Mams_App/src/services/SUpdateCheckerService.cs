@@ -342,7 +342,7 @@ $targetPath = '{targetPath.Replace("'", "''")}'
 $newVersion = '{newVersion}'
 
 $appExe = Join-Path $targetPath 'Mams_App.exe'
-$versionPath = Join-Path $targetPath 'ressources\version.json'
+$versionPath = Join-Path $targetPath 'resources\version.json'
 
 # Wait for the application to close
 Write-Host 'Waiting for application to close...'
@@ -386,7 +386,7 @@ while ($waited -lt $maxWait) {{
 # Folders to preserve during update (user data and runtime)
 $preserveFolders = @(
     'mariadb',
-    'ressources',
+    'resources',
     'logs',
     'backups',
     'runtimes'

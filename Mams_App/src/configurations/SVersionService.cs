@@ -12,7 +12,7 @@ namespace Mams_App.src.configurations;
 public static class SVersionService
 {
     private static readonly string _versionFilePath = Path.Combine(
-        AppDomain.CurrentDomain.BaseDirectory, "ressources", "version.json");
+        AppDomain.CurrentDomain.BaseDirectory, "resources", "version.json");
 
     private static string? _cachedVersion;
 

@@ -21,7 +21,7 @@ public class InvoiceTemplate : IDocument
 
     private static string _m_company_logo_path => Path.Combine(
         AppDomain.CurrentDomain.BaseDirectory,
-        "ressources",
+        "resources",
         "invoice_pdf_logo.jpg"
     );
 
