@@ -286,7 +286,7 @@
     "Message.BackupRestoreConfirm": "Êtes-vous sûr de vouloir restaurer la sauvegarde?\n\nSauvegarde: {0}\nDate: {1}\n\nATTENTION: Cela remplacera toutes les données actuelles par les données de la sauvegarde.\nCette action ne peut pas être annulée!",
     "Message.BackupRestoreConfirmTitle": "Confirmer la restauration",
     "Message.DatabaseNotRunning": "Le serveur de base de données n'est pas en cours d'exécution.\nVeuillez redémarrer l'application.",
-    "Message.BackupRestoreSuccess": "Sauvegarde restaurée avec succès!\n\nLa base de données a été restaurée depuis:\n{0}\n\nVeuillez redémarrer l'application pour que les changements prennent effet.",
+    "Message.BackupRestoreSuccess": "Sauvegarde restaurée avec succès!\n\nLa base de données a été restaurée depuis:\n{0}",
     "Message.BackupRestoreSuccessTitle": "Restauration terminée",
     "Message.BackupRestoreError": "Échec de la restauration de la sauvegarde:\n\n{0}",
     "Message.BackupRestoreErrorTitle": "Erreur de restauration",

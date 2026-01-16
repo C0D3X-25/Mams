@@ -115,4 +115,32 @@ public static class SPageNavigationController
 
         navigateTo(new_page, compare_original);
     }
+
+    /// <summary>
+    /// Refreshes the current page by creating a new instance of it, reloading all data.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown if the frame is not initialized or no current page exists.</exception>
+    public static void refreshCurrentPage()
+    {
+        if (_m_frame == null)
+        {
+            throw new InvalidOperationException("Frame is not initialized. Call initialize() first.");
+        }
+        if (_m_current_page == null)
+        {
+            throw new InvalidOperationException("No current page to refresh.");
+        }
+
+        // Create a new instance of the current page type to ensure latest data is loaded
+        Type current_page_type = _m_current_page.GetType();
+        Page? new_page = (Page?)Activator.CreateInstance(current_page_type);
+        if (new_page == null)
+        {
+            throw new InvalidOperationException($"Failed to create an instance of the current page type: {current_page_type.FullName}");
+        }
+
+        // Reset current page to allow navigation to same type
+        _m_current_page = null;
+        navigateTo(new_page);
+    }
 }

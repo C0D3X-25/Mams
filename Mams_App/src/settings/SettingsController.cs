@@ -2,6 +2,7 @@
 using Mams_App.src.configurations;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.localizations;
+using Mams_App.src.navigations;
 using Mams_App.src.services;
 using Mams_App.src.users;
 using MySqlConnector;
@@ -402,14 +403,16 @@ public class SettingsController : INotifyPropertyChanged
 
             SDatabaseBackup.restoreBackup(connection, SelectedBackup.FullName);
 
+            // Show success message
             MessageBox.Show(
                 Loc.Get("Message.BackupRestoreSuccess", SelectedBackup.Name),
                 Loc.Get("Message.BackupRestoreSuccessTitle"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
 
-            // Close the settings window
+            // Close the settings window and refresh the current page to reload data
             m_window.Close();
+            SPageNavigationController.refreshCurrentPage();
         }
         catch (Exception ex)
         {
