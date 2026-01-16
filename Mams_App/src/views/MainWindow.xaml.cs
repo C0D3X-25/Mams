@@ -5,6 +5,8 @@ using Mams_App.src.search;
 using Mams_App.src.services;
 using Mams_App.src.settings;
 using System.Windows;
+using System.Windows.Input;
+using System.Windows.Navigation;
 
 namespace Mams_App.src.views;
 
@@ -21,6 +23,9 @@ public partial class MainWindow : Window
         SSearchModel.initialize();
 
         loadWindowSettings();
+
+        // Disable default navigation commands on the Frame
+        MainFrame.Navigating += MainFrame_Navigating;
 
         Closing += MainWindow_Closing;
         Loaded += MainWindow_Loaded;
@@ -136,5 +141,40 @@ public partial class MainWindow : Window
         }
 
         SAppConfigService.saveConfig(config);
+    }
+
+    /// <summary>
+    /// Cancels Back and Forward navigation initiated by WPF's built-in navigation system.
+    /// </summary>
+    private void MainFrame_Navigating(object sender, NavigatingCancelEventArgs e)
+    {
+        // Cancel navigation initiated by Back/Forward commands (not from our controller)
+        if (e.NavigationMode == NavigationMode.Back || e.NavigationMode == NavigationMode.Forward)
+        {
+            e.Cancel = true;
+        }
+    }
+
+    /// <summary>
+    /// Handles mouse button 4 (back) and mouse button 5 (forward) for navigation.
+    /// </summary>
+    private void Window_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.XButton1) // Mouse back button
+        {
+            e.Handled = true; // Always handle to prevent WPF default navigation
+            if (SPageNavigationController.canNavigateBack())
+            {
+                SPageNavigationController.navigateBack(compare_original: true);
+            }
+        }
+        else if (e.ChangedButton == MouseButton.XButton2) // Mouse forward button
+        {
+            e.Handled = true; // Always handle to prevent WPF default navigation
+            if (SPageNavigationController.canNavigateForward())
+            {
+                SPageNavigationController.navigateForward(compare_original: true);
+            }
+        }
     }
 }

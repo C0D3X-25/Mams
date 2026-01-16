@@ -8,10 +8,12 @@ namespace Mams_App.src.navigations;
 
 public static class SPageNavigationController
 {
+    private const int MAX_NAVIGATION_HISTORY = 20;
 
     private static Frame? _m_frame;
     private static Page? _m_current_page;
-    private static Page? _m_previous_page;
+    private static readonly Stack<Page> _m_back_stack = new();
+    private static readonly Stack<Page> _m_forward_stack = new();
 
     /// <summary>
     /// Initializes the application with the specified frame and navigates to the home page.
@@ -81,10 +83,28 @@ public static class SPageNavigationController
             }
         }
 
-        _m_previous_page = _m_current_page;
+        // Push current page to back stack before navigating
+        if (_m_current_page != null)
+        {
+            pushToStack(_m_back_stack, _m_current_page);
+        }
+
+        // Clear forward stack when navigating to a new page
+        _m_forward_stack.Clear();
+
         _m_current_page = page;
         _m_frame?.Navigate(page);
     }
+
+    /// <summary>
+    /// Indicates whether there is a previous page to navigate back to.
+    /// </summary>
+    public static bool canNavigateBack() => _m_back_stack.Count > 0;
+
+    /// <summary>
+    /// Indicates whether there is a forward page to navigate to.
+    /// </summary>
+    public static bool canNavigateForward() => _m_forward_stack.Count > 0;
 
     /// <summary>
     /// Navigates to the previous page in the navigation stack.
@@ -96,24 +116,88 @@ public static class SPageNavigationController
         {
             throw new InvalidOperationException("Frame is not initialized. Call initialize() first.");
         }
-        if (_m_previous_page == null)
+        if (_m_back_stack.Count == 0)
         {
-            throw new InvalidOperationException("No previous page to navigate back to.");
+            return; // No previous page to navigate back to
         }
 
-        // Create a new instance of the previous page type to ensure latest data is loaded
-        Type previous_page_type = _m_previous_page.GetType();
-        if (previous_page_type == null)
+        // Check for unsaved changes before navigating
+        if (compare_original)
         {
-            throw new InvalidOperationException("Previous page type is null.");
-        }
-        Page? new_page = (Page?)Activator.CreateInstance(previous_page_type);
-        if (new_page == null)
-        {
-            throw new InvalidOperationException($"Failed to create an instance of the previous page type: {previous_page_type.FullName}");
+            if (_m_current_page?.DataContext is ICompareState compareState && !compareState.isStateOriginal())
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    Loc.Get("Common.UnsavedChangesMessage"),
+                    Loc.Get("Common.Cancel"),
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning
+                );
+
+                if (result == MessageBoxResult.No)
+                {
+                    return; // Cancel navigation
+                }
+            }
         }
 
-        navigateTo(new_page, compare_original);
+        // Push current page to forward stack
+        if (_m_current_page != null)
+        {
+            pushToStack(_m_forward_stack, _m_current_page);
+        }
+
+        // Pop and navigate to previous page
+        Page previous_page = _m_back_stack.Pop();
+
+        _m_current_page = previous_page;
+        _m_frame?.Navigate(previous_page);
+    }
+
+    /// <summary>
+    /// Navigates to the next page in the forward navigation stack.
+    /// </summary>
+    /// <exception cref="InvalidOperationException"></exception>
+    public static void navigateForward(bool compare_original = false)
+    {
+        if (_m_frame == null)
+        {
+            throw new InvalidOperationException("Frame is not initialized. Call initialize() first.");
+        }
+        if (_m_forward_stack.Count == 0)
+        {
+            return; // No forward page to navigate to
+        }
+
+        // Check for unsaved changes before navigating
+        if (compare_original)
+        {
+            if (_m_current_page?.DataContext is ICompareState compareState && !compareState.isStateOriginal())
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    Loc.Get("Common.UnsavedChangesMessage"),
+                    Loc.Get("Common.Cancel"),
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning
+                );
+
+                if (result == MessageBoxResult.No)
+                {
+                    return; // Cancel navigation
+                }
+            }
+        }
+
+        // Push current page to back stack
+        if (_m_current_page != null)
+        {
+            pushToStack(_m_back_stack, _m_current_page);
+        }
+
+        // Pop and navigate to forward page
+        Page forward_page = _m_forward_stack.Pop();
+
+        _m_current_page = forward_page;
+        _m_frame?.Navigate(forward_page);
     }
 
     /// <summary>
@@ -142,5 +226,24 @@ public static class SPageNavigationController
         // Reset current page to allow navigation to same type
         _m_current_page = null;
         navigateTo(new_page);
+    }
+
+    /// <summary>
+    /// Pushes a page to the specified stack, removing the oldest entry if the stack exceeds the maximum size.
+    /// </summary>
+    private static void pushToStack(Stack<Page> stack, Page page)
+    {
+        if (stack.Count >= MAX_NAVIGATION_HISTORY)
+        {
+            // Remove oldest entries to make room
+            var tempList = stack.ToList();
+            tempList.RemoveAt(tempList.Count - 1); // Remove oldest (bottom of stack)
+            stack.Clear();
+            for (int i = tempList.Count - 1; i >= 0; i--)
+            {
+                stack.Push(tempList[i]);
+            }
+        }
+        stack.Push(page);
     }
 }

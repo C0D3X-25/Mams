@@ -1,18 +1,19 @@
 ﻿<Window x:Class="Mams_App.src.views.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Mams_App.src.views"
-        xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
-        xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
-        xmlns:loc="clr-namespace:Mams_App.src.localizations"
-        mc:Ignorable="d"
-        Title="{loc:Translate App.Title}" 
-        Height="{x:Static globalView:SGlobalView.MAIN_WINDOW_HEIGHT}" 
-        Width="{x:Static globalView:SGlobalView.MAIN_WINDOW_WIDTH}" 
-        MinHeight="{x:Static globalView:SGlobalView.MAIN_WINDOW_MIN_HEIGHT}" 
-        MinWidth="{x:Static globalView:SGlobalView.MAIN_WINDOW_MIN_WIDTH}">
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+xmlns:local="clr-namespace:Mams_App.src.views"
+xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
+xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
+xmlns:loc="clr-namespace:Mams_App.src.localizations"
+mc:Ignorable="d"
+Title="{loc:Translate App.Title}" 
+Height="{x:Static globalView:SGlobalView.MAIN_WINDOW_HEIGHT}" 
+Width="{x:Static globalView:SGlobalView.MAIN_WINDOW_WIDTH}" 
+MinHeight="{x:Static globalView:SGlobalView.MAIN_WINDOW_MIN_HEIGHT}" 
+MinWidth="{x:Static globalView:SGlobalView.MAIN_WINDOW_MIN_WIDTH}"
+PreviewMouseDown="Window_PreviewMouseDown">
 
     <DockPanel>
         <!-- Menu Bar -->
@@ -28,6 +29,6 @@
         </Menu>
 
         <!-- Main Content -->
-        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
+        <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" JournalOwnership="OwnsJournal"/>
     </DockPanel>
 </Window>
