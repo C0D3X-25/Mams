@@ -300,7 +300,7 @@ public class SaveProfitController : ABaseController, ICompareState
     {
 
         ServicePDF service_pdf = new();
-        service_pdf.generateAndOpenInvoice(m_profit_receipt_detail.receipt.receipt_id.ToString());
+        service_pdf.generateAndOpenProfitInvoice(m_profit_receipt_detail.receipt.receipt_id.ToString());
     }
 }
 

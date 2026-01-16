@@ -1,3 +1,4 @@
+using Mams_App.src.localizations;
 using MySqlConnector;
 using System.Diagnostics;
 using System.IO;
@@ -121,12 +122,13 @@ public static class SMariaDbPortableService
             if (!isInstalled())
             {
                 var installResult = MessageBox.Show(
+                    Loc.Get("MariaDb.SetupRequired.Message") ?? 
                     "MariaDB database server is not installed.\n\n" +
                     "This application requires MariaDB to store data.\n" +
                     "MariaDB Portable will be downloaded and installed automatically.\n\n" +
                     "Download size: ~100 MB\n\n" +
                     "Would you like to proceed with the installation?",
-                    "Database Setup Required",
+                    Loc.Get("MariaDb.SetupRequired.Title") ?? "Database Setup Required",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Question);
 
@@ -138,9 +140,10 @@ public static class SMariaDbPortableService
                 if (!await downloadAndExtractMariaDbAsync())
                 {
                     MessageBox.Show(
+                        Loc.Get("MariaDb.InstallFailed.Message") ??
                         "Failed to download MariaDB.\n\n" +
                         "Please check your internet connection and try again.",
-                        "Installation Failed",
+                        Loc.Get("MariaDb.InstallFailed.Title") ?? "Installation Failed",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                     return false;
@@ -154,9 +157,10 @@ public static class SMariaDbPortableService
                 if (!initializeDataDirectory())
                 {
                     MessageBox.Show(
+                        Loc.Get("MariaDb.InitFailed.Message") ??
                         "Failed to initialize MariaDB data directory.\n\n" +
                         "Please try restarting the application.",
-                        "Initialization Failed",
+                        Loc.Get("MariaDb.InitFailed.Title") ?? "Initialization Failed",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                     return false;
@@ -170,9 +174,10 @@ public static class SMariaDbPortableService
                 if (!startMariaDb())
                 {
                     MessageBox.Show(
+                        Loc.Get("MariaDb.StartFailed.Message") ??
                         "Failed to start MariaDB server.\n\n" +
                         "Please try restarting the application.",
-                        "Startup Failed",
+                        Loc.Get("MariaDb.StartFailed.Title") ?? "Startup Failed",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                     return false;
@@ -182,9 +187,10 @@ public static class SMariaDbPortableService
                 if (!await waitForMariaDbReadyAsync(30))
                 {
                     MessageBox.Show(
+                        Loc.Get("MariaDb.ConnectionFailed.Message") ??
                         "MariaDB server started but is not responding.\n\n" +
                         "Please try restarting the application.",
-                        "Connection Failed",
+                        Loc.Get("MariaDb.ConnectionFailed.Title") ?? "Connection Failed",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                     return false;
@@ -198,9 +204,10 @@ public static class SMariaDbPortableService
                 if (!await initializeDatabaseAsync())
                 {
                     MessageBox.Show(
+                        Loc.Get("MariaDb.DatabaseCreationFailed.Message") ??
                         "Failed to create the application database.\n\n" +
                         "Please try restarting the application.",
-                        "Database Creation Failed",
+                        Loc.Get("MariaDb.DatabaseCreationFailed.Title") ?? "Database Creation Failed",
                         MessageBoxButton.OK,
                         MessageBoxImage.Error);
                     return false;
@@ -214,8 +221,9 @@ public static class SMariaDbPortableService
         {
             Debug.WriteLine($"[MariaDbPortable] Setup failed: {ex.Message}");
             MessageBox.Show(
+                Loc.Get("MariaDb.SetupError.Message", ex.Message) ??
                 $"An error occurred during database setup:\n\n{ex.Message}",
-                "Setup Error",
+                Loc.Get("MariaDb.SetupError.Title") ?? "Setup Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             return false;
@@ -238,7 +246,7 @@ public static class SMariaDbPortableService
         // Create progress window
         var progressWindow = new Window
         {
-            Title = "Downloading MariaDB...",
+            Title = Loc.Get("MariaDb.Downloading.Title") ?? "Downloading MariaDB...",
             Width = 450,
             Height = 180,
             WindowStartupLocation = WindowStartupLocation.CenterScreen,
@@ -254,7 +262,7 @@ public static class SMariaDbPortableService
 
         var statusText = new TextBlock
         {
-            Text = "Connecting to server...",
+            Text = Loc.Get("MariaDb.Connecting") ?? "Connecting to server...",
             FontSize = 14,
             Margin = new Thickness(0, 0, 0, 10)
         };
@@ -278,7 +286,7 @@ public static class SMariaDbPortableService
 
         var cancelButton = new Button
         {
-            Content = "Cancel",
+            Content = Loc.Get("Common.Cancel") ?? "Cancel",
             Width = 80,
             Height = 28,
             Margin = new Thickness(0, 10, 0, 0),
@@ -314,7 +322,7 @@ public static class SMariaDbPortableService
         {
             // Download MariaDB
             Debug.WriteLine($"[MariaDbPortable] Downloading from: {MARIADB_DOWNLOAD_URL}");
-            statusText.Text = "Downloading MariaDB...";
+            statusText.Text = Loc.Get("MariaDb.Downloading") ?? "Downloading MariaDB...";
 
             using (var response = await s_httpClient.GetAsync(MARIADB_DOWNLOAD_URL, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
             {
@@ -377,9 +385,9 @@ public static class SMariaDbPortableService
             cancellationToken.ThrowIfCancellationRequested();
 
             // Extract phase - file stream is now closed
-            statusText.Text = "Extracting MariaDB...";
+            statusText.Text = Loc.Get("MariaDb.Extracting") ?? "Extracting MariaDB...";
             progressBar.IsIndeterminate = true;
-            progressText.Text = "Please wait...";
+            progressText.Text = Loc.Get("MariaDb.PleaseWait") ?? "Please wait...";
             await Task.Delay(100, cancellationToken);
 
             // Extract to temp location first

@@ -1,4 +1,5 @@
 using Mams_App.src.configurations;
+using Mams_App.src.localizations;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -49,12 +50,13 @@ public static class SUpdateCheckerService
                 if (showNoUpdateMessage)
                 {
                     MessageBox.Show(
+                        Loc.Get("Update.CheckFailed.Message") ??
                         "Unable to check for updates.\n\n" +
                         "This may be because:\n" +
                         "• No internet connection\n" +
                         "• No releases published yet\n" +
                         "• Repository is private (requires authentication)",
-                        "Update Check",
+                        Loc.Get("Update.CheckFailed.Title") ?? "Update Check",
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
                 }
@@ -72,11 +74,12 @@ public static class SUpdateCheckerService
             {
                 Debug.WriteLine("[UpdateChecker] Update available!");
                 var result = MessageBox.Show(
+                    Loc.Get("Update.Available.Message", latestRelease.TagName ?? "", currentVersion) ??
                     $"A new version ({latestRelease.TagName}) is available!\n\n" +
                     $"Current version: v{currentVersion}\n\n" +
                     $"Would you like to download and install the update?\n\n" +
                     $"The application will restart after the update.",
-                    "Update Available",
+                    Loc.Get("Update.Available.Title") ?? "Update Available",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Information);
 
@@ -91,8 +94,9 @@ public static class SUpdateCheckerService
                 if (showNoUpdateMessage)
                 {
                     MessageBox.Show(
+                        Loc.Get("Update.NoUpdate.Message", currentVersion) ??
                         $"You are using the latest version (v{currentVersion}).",
-                        "No Update Available",
+                        Loc.Get("Update.NoUpdate.Title") ?? "No Update Available",
                         MessageBoxButton.OK,
                         MessageBoxImage.Information);
                 }
@@ -105,8 +109,9 @@ public static class SUpdateCheckerService
             if (showNoUpdateMessage)
             {
                 MessageBox.Show(
+                    Loc.Get("Update.CheckError.Message", ex.Message) ??
                     $"Failed to check for updates: {ex.Message}",
-                    "Update Check Error",
+                    Loc.Get("Update.Error.Title") ?? "Update Check Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
@@ -131,8 +136,9 @@ public static class SUpdateCheckerService
             {
                 Debug.WriteLine("[UpdateChecker] No Portable ZIP found in release assets");
                 MessageBox.Show(
+                    Loc.Get("Update.PackageNotFound.Message") ??
                     "Could not find the update package. Please download manually from GitHub.",
-                    "Update Error",
+                    Loc.Get("Update.Error.Title") ?? "Update Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
                 openReleasePage();
@@ -155,7 +161,7 @@ public static class SUpdateCheckerService
             // Create progress window with progress bar
             var progressWindow = new Window
             {
-                Title = "Downloading Update...",
+                Title = Loc.Get("Update.Downloading.Title") ?? "Downloading Update...",
                 Width = 450,
                 Height = 150,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
@@ -171,7 +177,7 @@ public static class SUpdateCheckerService
 
             var statusText = new TextBlock
             {
-                Text = "Connecting to server...",
+                Text = Loc.Get("Update.Connecting") ?? "Connecting to server...",
                 FontSize = 14,
                 Margin = new Thickness(0, 0, 0, 10)
             };
@@ -203,7 +209,7 @@ public static class SUpdateCheckerService
             {
                 // Download the ZIP file with progress
                 Debug.WriteLine($"[UpdateChecker] Downloading from: {zipAsset.DownloadUrl}");
-                statusText.Text = $"Downloading {zipAsset.Name}...";
+                statusText.Text = Loc.Get("Update.Downloading", zipAsset.Name ?? "update") ?? $"Downloading {zipAsset.Name}...";
 
                 using var response = await s_httpClient.GetAsync(zipAsset.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();
@@ -258,9 +264,9 @@ public static class SUpdateCheckerService
                 Debug.WriteLine($"[UpdateChecker] Download complete: {downloadedBytes} bytes");
 
                 // Extract phase
-                statusText.Text = "Extracting update...";
+                statusText.Text = Loc.Get("Update.Extracting") ?? "Extracting update...";
                 progressBar.IsIndeterminate = true;
-                progressText.Text = "Please wait...";
+                progressText.Text = Loc.Get("Update.PleaseWait") ?? "Please wait...";
                 await Task.Delay(100); // Allow UI to update
             }
             finally
@@ -302,8 +308,9 @@ public static class SUpdateCheckerService
         {
             Debug.WriteLine($"[UpdateChecker] Update download failed: {ex.Message}");
             MessageBox.Show(
+                Loc.Get("Update.DownloadFailed.Message", ex.Message) ??
                 $"Failed to download update: {ex.Message}\n\nPlease download manually from GitHub.",
-                "Update Error",
+                Loc.Get("Update.Error.Title") ?? "Update Error",
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             openReleasePage();

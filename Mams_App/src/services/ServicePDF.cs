@@ -1,5 +1,6 @@
 using Mams_App.src.helpers;
 using Mams_App.src.invoices;
+using Mams_App.src.localizations;
 using Mams_App.src.receipts;
 using QuestPDF.Fluent;
 using System.Diagnostics;
@@ -14,9 +15,8 @@ namespace Mams_App.src.services;
 /// </summary>
 public class ServicePDF
 {
-
     private readonly string _m_invoice_directory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-    private readonly string _m_invoice_folder_name = "Factures Miel";
+    private string _m_invoice_folder_name => Loc.Get("Pdf.FolderName");
     private string _m_invoice_filename = "Facture.pdf";
 
     /// <summary>
@@ -30,15 +30,28 @@ public class ServicePDF
     );
 
     /// <summary>
-    /// Generates an invoice PDF for the specified receipt ID and opens it using the default PDF viewer.
+    /// Ensures the invoice directory exists.
+    /// </summary>
+    private void ensureDirectoryExists()
+    {
+        string directoryPath = Path.Combine(_m_invoice_directory, _m_invoice_folder_name);
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+    }
+
+    /// <summary>
+    /// Generates a profit invoice PDF for the specified receipt ID and opens it using the default PDF viewer.
+    /// In this invoice, the User (app owner) is the seller and the Entity is the client.
     /// </summary>
     /// <param name="receipt_id">The ID of the receipt for which to generate an invoice.</param>
-    public void generateAndOpenInvoice(string receipt_id)
+    public void generateAndOpenProfitInvoice(string receipt_id)
     {
 
         if (!SDataValidation.isIdValid(receipt_id))
         {
-            MessageBox.Show("Invalid receipt ID.");
+            MessageBox.Show(Loc.Get("Pdf.InvalidReceiptId"));
             return;
         }
 
@@ -47,21 +60,49 @@ public class ServicePDF
 
         if (!result.is_found || result.returned_item is null)
         {
-            MessageBox.Show("Receipt not found.");
+            MessageBox.Show(Loc.Get("Pdf.ReceiptNotFound"));
             return;
         }
 
         var item = result.returned_item;
-        _m_invoice_filename = $"Facture {item.receipt_item.receipt_number}.pdf";
+        _m_invoice_filename = Loc.Get("Pdf.Filename", item.receipt_item.receipt_number);
 
-        // Ensure the directory exists before generating the PDF
-        string directoryPath = Path.Combine(_m_invoice_directory, _m_invoice_folder_name);
-        if (!Directory.Exists(directoryPath))
+        ensureDirectoryExists();
+
+        InvoiceProfitTemplate document = new(item);
+        document.GeneratePdf(_m_invoice_save_path);
+        openInvoice();
+    }
+
+    /// <summary>
+    /// Generates a fee invoice PDF for the specified receipt ID and opens it using the default PDF viewer.
+    /// In this invoice, the Entity (supplier) is the seller and the User (app owner) is the client.
+    /// </summary>
+    /// <param name="receipt_id">The ID of the receipt for which to generate an invoice.</param>
+    public void generateAndOpenFeeInvoice(string receipt_id)
+    {
+
+        if (!SDataValidation.isIdValid(receipt_id))
         {
-            Directory.CreateDirectory(directoryPath);
+            MessageBox.Show(Loc.Get("Pdf.InvalidReceiptId"));
+            return;
         }
 
-        InvoiceTemplate document = new(item);
+        ReceiptHandlerModel receipt_handler_model = new();
+        var result = receipt_handler_model.getItemByID(receipt_id);
+
+        if (!result.is_found || result.returned_item is null)
+        {
+            MessageBox.Show(Loc.Get("Pdf.ReceiptNotFound"));
+            return;
+        }
+
+        var item = result.returned_item;
+        _m_invoice_filename = Loc.Get("Pdf.Filename", item.receipt_item.receipt_number);
+
+        ensureDirectoryExists();
+
+        InvoiceFeeTemplate document = new(item);
         document.GeneratePdf(_m_invoice_save_path);
         openInvoice();
     }

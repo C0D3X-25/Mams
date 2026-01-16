@@ -8,6 +8,7 @@ using Mams_App.src.navigations;
 using Mams_App.src.products;
 using Mams_App.src.productsLots;
 using Mams_App.src.receipts;
+using Mams_App.src.services;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -26,6 +27,7 @@ public class SaveFeeController : ABaseController, ICompareState
     public ICommand m_abort_command { get; set; }
     public ICommand m_add_fee_item_command { get; set; }
     public ICommand m_delete_fee_item_command { get; set; }
+    public ICommand m_generate_invoice_pdf_command { get; set; }
 
     private ReceiptFeeDetailedItem _m_original_fee_receipt_detail = new();
     // Hold the receipt ID, supplier, date of all the items in m_list_receipt_product
@@ -139,6 +141,7 @@ public class SaveFeeController : ABaseController, ICompareState
         m_abort_command = new RelayCommand(abortFee);
         m_add_fee_item_command = new RelayCommand(addFeeItem);
         m_delete_fee_item_command = new RelayCommand(DeleteFeeItem);
+        m_generate_invoice_pdf_command = new RelayCommand(exportInvoicePdf);
     }
 
     /// <summary>
@@ -292,5 +295,13 @@ public class SaveFeeController : ABaseController, ICompareState
         {
             m_list_receipt_product.Remove(item);
         }
+    }
+
+
+    private void exportInvoicePdf(object? obj)
+    {
+
+        ServicePDF service_pdf = new();
+        service_pdf.generateAndOpenFeeInvoice(m_fee_receipt_detail.receipt.receipt_id.ToString());
     }
 }
