@@ -1,4 +1,5 @@
 using Mams_App.src.controllers;
+using Mams_App.src.localizations;
 using Mams_App.src.resumes;
 using System.Windows;
 using System.Windows.Controls;
@@ -67,8 +68,8 @@ public static class SPageNavigationController
             if (_m_current_page?.DataContext is ICompareState compareState && !compareState.isStateOriginal())
             {
                 MessageBoxResult result = MessageBox.Show(
-                    "En quittant la page, toutes les données modifiées seront perdues. Voulez-vous continuer?",
-                    "Annuler",
+                    Loc.Get("Common.UnsavedChangesMessage"),
+                    Loc.Get("Common.Cancel"),
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning
                 );
