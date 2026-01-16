@@ -1,6 +1,6 @@
 using Mams_App.src.productsTypes;
 
-namespace MamsTest.productsTypes;
+namespace Mams_Test.productsTypes;
 
 public class ProductTypeItemTests
 {

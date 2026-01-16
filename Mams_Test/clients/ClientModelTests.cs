@@ -1,7 +1,7 @@
 using Mams_App.src.clients;
 using Mams_App.src.errors;
 
-namespace MamsTest.clients;
+namespace Mams_Test.clients;
 
 public class ClientModelTests
 {

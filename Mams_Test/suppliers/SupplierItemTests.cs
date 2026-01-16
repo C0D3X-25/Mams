@@ -1,6 +1,6 @@
 using Mams_App.src.suppliers;
 
-namespace MamsTest.suppliers;
+namespace Mams_Test.suppliers;
 
 public class SupplierItemTests
 {

@@ -1,7 +1,7 @@
 using Mams_App.src.productsLots;
 using Mams_App.src.errors;
 
-namespace MamsTest.productsLots;
+namespace Mams_Test.productsLots;
 
 public class ProductLotModelTests
 {

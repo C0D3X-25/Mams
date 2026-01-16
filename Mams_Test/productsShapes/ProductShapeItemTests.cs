@@ -1,6 +1,6 @@
 using Mams_App.src.productsShapes;
 
-namespace MamsTest.productsShapes;
+namespace Mams_Test.productsShapes;
 
 public class ProductShapeItemTests
 {

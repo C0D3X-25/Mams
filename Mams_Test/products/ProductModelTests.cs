@@ -1,7 +1,7 @@
 using Mams_App.src.products;
 using Mams_App.src.errors;
 
-namespace MamsTest.products;
+namespace Mams_Test.products;
 
 public class ProductModelTests
 {

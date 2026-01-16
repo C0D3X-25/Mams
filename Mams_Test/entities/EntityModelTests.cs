@@ -1,7 +1,7 @@
 using Mams_App.src.entities;
 using Mams_App.src.errors;
 
-namespace MamsTest.entities;
+namespace Mams_Test.entities;
 
 public class EntityModelTests
 {

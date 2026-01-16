@@ -1,6 +1,6 @@
 using Mams_App.src.productsCategories;
 
-namespace MamsTest.productsCategories;
+namespace Mams_Test.productsCategories;
 
 public class ProductCategoryItemTests
 {

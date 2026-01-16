@@ -1,6 +1,6 @@
 using Mams_App.src.clients;
 
-namespace MamsTest.clients;
+namespace Mams_Test.clients;
 
 public class ClientItemTests
 {

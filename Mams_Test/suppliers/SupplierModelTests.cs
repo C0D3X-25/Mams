@@ -1,7 +1,7 @@
 using Mams_App.src.suppliers;
 using Mams_App.src.errors;
 
-namespace MamsTest.suppliers;
+namespace Mams_Test.suppliers;
 
 public class SupplierModelTests
 {

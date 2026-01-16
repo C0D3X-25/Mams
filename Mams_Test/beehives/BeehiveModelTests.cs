@@ -1,7 +1,7 @@
 using Mams_App.src.beehives;
 using Mams_App.src.errors;
 
-namespace MamsTest.beehives;
+namespace Mams_Test.beehives;
 
 public class BeehiveModelTests
 {

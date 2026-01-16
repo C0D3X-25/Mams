@@ -1,6 +1,6 @@
 using Mams_App.src.entities;
 
-namespace MamsTest.entities;
+namespace Mams_Test.entities;
 
 public class EntityItemTests
 {

@@ -1,6 +1,6 @@
 using Mams_App.src.productsLots;
 
-namespace MamsTest.productsLots;
+namespace Mams_Test.productsLots;
 
 public class ProductLotItemTests
 {

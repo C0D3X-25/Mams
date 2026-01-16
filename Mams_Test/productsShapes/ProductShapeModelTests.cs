@@ -1,7 +1,7 @@
 using Mams_App.src.productsShapes;
 using Mams_App.src.errors;
 
-namespace MamsTest.productsShapes;
+namespace Mams_Test.productsShapes;
 
 public class ProductShapeModelTests
 {

@@ -1,6 +1,6 @@
 using Mams_App.src.beehives;
 
-namespace MamsTest.beehives;
+namespace Mams_Test.beehives;
 
 public class BeehiveItemTests
 {
