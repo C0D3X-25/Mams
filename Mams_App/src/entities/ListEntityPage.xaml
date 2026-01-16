@@ -16,6 +16,7 @@ Title="ListEntityPage">
 
     <Page.Resources>
         <converters:SortArrowConverter x:Key="SortArrowConverter"/>
+        <converters:BooleanToColumnWidthConverter x:Key="BooleanToColumnWidthConverter"/>
     </Page.Resources>
 
     <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
@@ -131,7 +132,7 @@ Title="ListEntityPage">
                                     <GridViewColumn Header="{loc:Translate Column.Email}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity_email}"/>
                                     <GridViewColumn Header="{loc:Translate Column.City}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity_city}"/>
                                     <GridViewColumn Header="{loc:Translate Column.Address}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity_address}"/>
-                                    <GridViewColumn Header="{loc:Translate Column.Archived}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity_archive}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Archived}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity_archive}" Width="{Binding DataContext.m_is_show_archived_checked, RelativeSource={RelativeSource AncestorType=ListView}, Converter={StaticResource BooleanToColumnWidthConverter}}"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>
