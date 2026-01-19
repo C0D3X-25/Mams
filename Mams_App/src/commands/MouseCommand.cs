@@ -1,6 +1,7 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Mams_App.src.commands;
 
@@ -65,11 +66,31 @@ public static class MouseCommand
         {
             return;
         }
+
+        // Check if the click originated from a GridViewColumnHeader
+        if (e.OriginalSource is DependencyObject source && IsClickOnHeader(source))
+        {
+            return;
+        }
+
         var command = GetMouseDoubleClickCommand(element);
 
         if (command != null && command.CanExecute(null))
         {
             command.Execute(null);
         }
+    }
+
+    private static bool IsClickOnHeader(DependencyObject source)
+    {
+        while (source != null)
+        {
+            if (source is GridViewColumnHeader)
+            {
+                return true;
+            }
+            source = VisualTreeHelper.GetParent(source);
+        }
+        return false;
     }
 }
