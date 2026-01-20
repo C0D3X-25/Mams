@@ -51,7 +51,23 @@ public class ResumeController : ABaseController
                 updateListSearchItems();
                 updateDisplayedProfitsAndFeesLists();
                 onPropertyChanged();
+                onPropertyChanged(nameof(m_is_search_item_enabled));
             }
+        }
+    }
+
+    /// <summary>
+    /// Returns true if the search item combobox should be enabled.
+    /// Disabled when the first table item (index 0) is selected.
+    /// </summary>
+    public bool m_is_search_item_enabled
+    {
+        get
+        {
+            if (m_list_table == null || m_list_table.Count == 0)
+                return false;
+
+            return m_selected_table != m_list_table[0];
         }
     }
 
@@ -481,12 +497,29 @@ public class ResumeController : ABaseController
             SSearchModel.m_list_year = _m_resume_model.getListYears();
         }
 
+        // Set default selections to element 0 if not already set
+        if (SSearchModel.m_selected_table == null && SSearchModel.m_list_table?.Count > 0)
+        {
+            SSearchModel.m_selected_table = SSearchModel.m_list_table[0];
+        }
+
+        if (SSearchModel.m_selected_search_item == null && SSearchModel.m_list_search_item?.Count > 0)
+        {
+            SSearchModel.m_selected_search_item = SSearchModel.m_list_search_item[0];
+        }
+
+        if (SSearchModel.m_selected_year == null && SSearchModel.m_list_year?.Count > 0)
+        {
+            SSearchModel.m_selected_year = SSearchModel.m_list_year[0];
+        }
+
         onPropertyChanged(nameof(m_list_table));
         onPropertyChanged(nameof(m_selected_table));
         onPropertyChanged(nameof(m_list_search_item));
         onPropertyChanged(nameof(m_selected_search_item));
         onPropertyChanged(nameof(m_list_year));
         onPropertyChanged(nameof(m_selected_year));
+        onPropertyChanged(nameof(m_is_search_item_enabled));
     }
 
     private void updateDisplayedProfitsAndFeesLists()

@@ -85,6 +85,7 @@ Title="ResumePage">
                        Margin="5,0,5,0" 
                        FontSize="16" 
                        VerticalAlignment="Center"
+                       IsEnabled="{Binding m_is_search_item_enabled}"
                        ItemsSource="{Binding m_list_search_item}"
                        SelectedItem="{Binding m_selected_search_item}">
                         <ComboBox.ItemTemplate>
