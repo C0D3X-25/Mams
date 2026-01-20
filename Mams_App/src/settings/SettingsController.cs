@@ -34,8 +34,10 @@ public class SettingsController : INotifyPropertyChanged
     private string m_userAddress = string.Empty;
 
     // Localization properties
-    private string m_selectedCulture = "fr-CH";
-    private CultureItem? m_selectedCultureItem;
+    private string m_selectedLanguage = "fr";
+    private string m_selectedCurrency = "fr-CH";
+    private LanguageItem? m_selectedLanguageItem;
+    private CurrencyItem? m_selectedCurrencyItem;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -146,31 +148,56 @@ public class SettingsController : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Gets the list of available cultures for currency formatting.
+    /// Gets the list of available languages.
     /// </summary>
-    public ObservableCollection<CultureItem> AvailableCultures { get; } =
+    public ObservableCollection<LanguageItem> AvailableLanguages { get; } =
     [
-        new CultureItem("fr-CH", Loc.Get("Culture.frCH"), Loc.Get("Currency.CHF")),
-        new CultureItem("fr-FR", Loc.Get("Culture.frFR"), Loc.Get("Currency.EUR")),
-        new CultureItem("de-DE", Loc.Get("Culture.deDE"), Loc.Get("Currency.EUR")),
-        new CultureItem("de-CH", Loc.Get("Culture.deCH"), Loc.Get("Currency.CHF")),
-        new CultureItem("it-CH", Loc.Get("Culture.itCH"), Loc.Get("Currency.CHF")),
-        new CultureItem("en-US", Loc.Get("Culture.enUS"), Loc.Get("Currency.USD")),
-        new CultureItem("en-GB", Loc.Get("Culture.enGB"), Loc.Get("Currency.GBP"))
+        new LanguageItem("fr", Loc.Get("Language.French")),
+        new LanguageItem("en", Loc.Get("Language.English")),
+        new LanguageItem("de", Loc.Get("Language.German")),
+        new LanguageItem("it", Loc.Get("Language.Italian"))
     ];
 
     /// <summary>
-    /// Gets or sets the selected culture item.
+    /// Gets the list of available currencies.
     /// </summary>
-    public CultureItem? SelectedCultureItem
+    public ObservableCollection<CurrencyItem> AvailableCurrencies { get; } =
+    [
+        new CurrencyItem("fr-CH", Loc.Get("Currency.CHF"), "CHF"),
+        new CurrencyItem("fr-FR", Loc.Get("Currency.EUR"), "€"),
+        new CurrencyItem("en-US", Loc.Get("Currency.USD"), "$"),
+        new CurrencyItem("en-GB", Loc.Get("Currency.GBP"), "£")
+    ];
+
+    /// <summary>
+    /// Gets or sets the selected language item.
+    /// </summary>
+    public LanguageItem? SelectedLanguageItem
     {
-        get => m_selectedCultureItem;
+        get => m_selectedLanguageItem;
         set
         {
-            m_selectedCultureItem = value;
+            m_selectedLanguageItem = value;
             if (value != null)
             {
-                m_selectedCulture = value.CultureCode;
+                m_selectedLanguage = value.LanguageCode;
+            }
+            onPropertyChanged();
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the selected currency item.
+    /// </summary>
+    public CurrencyItem? SelectedCurrencyItem
+    {
+        get => m_selectedCurrencyItem;
+        set
+        {
+            m_selectedCurrencyItem = value;
+            if (value != null)
+            {
+                m_selectedCurrency = value.CultureCode;
             }
             onPropertyChanged();
         }
@@ -265,27 +292,41 @@ public class SettingsController : INotifyPropertyChanged
     private void loadLocalization()
     {
         var config = SAppConfigService.loadConfig();
-        m_selectedCulture = config.m_localization.m_culture;
+        m_selectedLanguage = config.m_localization.m_language;
+        m_selectedCurrency = config.m_localization.m_culture;
 
-        // Find the matching culture item
-        SelectedCultureItem = AvailableCultures.FirstOrDefault(c => c.CultureCode == m_selectedCulture)
-            ?? AvailableCultures.First();
+        // Find the matching language item
+        SelectedLanguageItem = AvailableLanguages.FirstOrDefault(l => l.LanguageCode == m_selectedLanguage)
+            ?? AvailableLanguages.First();
+
+        // Find the matching currency item
+        SelectedCurrencyItem = AvailableCurrencies.FirstOrDefault(c => c.CultureCode == m_selectedCurrency)
+            ?? AvailableCurrencies.First();
     }
 
     /// <summary>
-    /// Saves the localization settings to the configuration.
+    /// Saves the localization settings to the configuration and restarts the application.
     /// </summary>
     private void saveLocalization()
     {
         var config = SAppConfigService.loadConfig();
-        config.m_localization.m_culture = m_selectedCulture;
+        config.m_localization.m_language = m_selectedLanguage;
+        config.m_localization.m_culture = m_selectedCurrency;
         SAppConfigService.saveConfig(config);
 
         MessageBox.Show(
-            Loc.Get("Message.LocalizationSaveSuccess"),
+            Loc.Get("Message.LocalizationRestartRequired"),
             Loc.Get("Message.UserSaveSuccessTitle"),
             MessageBoxButton.OK,
             MessageBoxImage.Information);
+
+        // Restart the application
+        var exePath = Environment.ProcessPath;
+        if (!string.IsNullOrEmpty(exePath))
+        {
+            Process.Start(exePath);
+            Application.Current.Shutdown();
+        }
     }
 
     /// <summary>
@@ -431,21 +472,38 @@ public class SettingsController : INotifyPropertyChanged
 }
 
 /// <summary>
-/// Represents a culture option for the localization settings.
+/// Represents a language option for the localization settings.
 /// </summary>
-public class CultureItem
+public class LanguageItem
 {
-    public string CultureCode { get; }
+    public string LanguageCode { get; }
     public string DisplayName { get; }
-    public string CurrencySymbol { get; }
 
-    public CultureItem(string cultureCode, string displayName, string currencySymbol)
+    public LanguageItem(string languageCode, string displayName)
     {
-        CultureCode = cultureCode;
+        LanguageCode = languageCode;
         DisplayName = displayName;
-        CurrencySymbol = currencySymbol;
     }
 
     public override string ToString() => DisplayName;
+}
+
+/// <summary>
+/// Represents a currency option for the localization settings.
+/// </summary>
+public class CurrencyItem
+{
+    public string CultureCode { get; }
+    public string DisplayName { get; }
+    public string Symbol { get; }
+
+    public CurrencyItem(string cultureCode, string displayName, string symbol)
+    {
+        CultureCode = cultureCode;
+        DisplayName = displayName;
+        Symbol = symbol;
+    }
+
+    public override string ToString() => $"{DisplayName} ({Symbol})";
 }
 
