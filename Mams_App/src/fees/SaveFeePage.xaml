@@ -157,13 +157,33 @@ Title="SaveFeePage">
                                     </Border>
                                 </ControlTemplate>
                             </ListView.Template>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Margin" Value="0,0,0,5"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid 
-                                        MaxHeight="75" MinHeight="50"
-                                        Margin="0,0,0,5"
-                                        HorizontalAlignment="Stretch">
-                                        <Grid.ColumnDefinitions>
+                                    <Border BorderThickness="2">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                                <Setter Property="Background" Value="Transparent"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMouseOver, ElementName=DeleteButton}" Value="True">
+                                                        <Setter Property="Background" Value="{x:Static globalView:SGlobalView.DELETE_ROW_HIGHLIGHT_COLOR}"/>
+                                                        <Setter Property="BorderBrush" Value="{x:Static globalView:SGlobalView.DELETE_ROW_BORDER_COLOR}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Grid 
+                                            MinHeight="50"
+                                            HorizontalAlignment="Stretch">
+                                            <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="4*"/>
                                             <ColumnDefinition Width="4*"/>
                                             <ColumnDefinition Width="2*"/>
@@ -270,6 +290,7 @@ Title="SaveFeePage">
 
                                         <!--Delete Product Fee Button-->
                                         <Button 
+                                            x:Name="DeleteButton"
                                             Grid.Column="6"
                                             Content="X"
                                             Command="{Binding DataContext.m_delete_fee_item_command, 
@@ -281,6 +302,7 @@ Title="SaveFeePage">
                                             Foreground="{x:Static globalView:SGlobalView.DELETE_BUTTON_TEXT_COLOR}">
                                         </Button>
                                     </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>

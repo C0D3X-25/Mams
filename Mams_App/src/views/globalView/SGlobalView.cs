@@ -110,6 +110,8 @@ public static class SGlobalView
     // Action button colors
     public static SolidColorBrush DELETE_BUTTON_COLOR { get; set; } = CreateBrush(0xdc, 0x6f, 0xb8);      // #DC6FB8 - Pink
     public static SolidColorBrush DELETE_BUTTON_TEXT_COLOR { get; set; } = CreateBrush(0x00, 0x00, 0x00); // #000000 - Black
+    public static SolidColorBrush DELETE_ROW_HIGHLIGHT_COLOR { get; set; } = CreateBrush(0xff, 0xcd, 0xd2); // #FFCDD2 - Light Red
+    public static SolidColorBrush DELETE_ROW_BORDER_COLOR { get; set; } = CreateBrush(0xef, 0x53, 0x50);   // #EF5350 - Red
     public static SolidColorBrush RESTORE_BUTTON_COLOR { get; set; } = CreateBrush(0xdc, 0x6f, 0xb8);     // #DC6FB8 - Pink
 
     #endregion
