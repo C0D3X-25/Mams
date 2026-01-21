@@ -2,6 +2,7 @@
 using Mams_App.src.controllers;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.fees;
+using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.profits;
@@ -9,6 +10,7 @@ using Mams_App.src.search;
 using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -397,46 +399,22 @@ public class ResumeController : ABaseController
 
     private void sortProfitByColumn(object? parameter)
     {
-        if (parameter is not string columnName || m_list_profit_item == null)
-            return;
-
-        ListSortDirection direction = ListSortDirection.Ascending;
-
-        if (_m_profit_sorted_column == columnName)
+        var result = SortHelper.sortByColumn(parameter, m_list_profit_item, _m_profit_sorted_column, _m_profit_sort_direction);
+        if (result.HasValue)
         {
-            direction = _m_profit_sort_direction == ListSortDirection.Ascending
-                ? ListSortDirection.Descending
-                : ListSortDirection.Ascending;
+            m_profit_sorted_column = result.Value.ColumnName;
+            m_profit_sort_direction = result.Value.Direction;
         }
-
-        ICollectionView view = CollectionViewSource.GetDefaultView(m_list_profit_item);
-        view.SortDescriptions.Clear();
-        view.SortDescriptions.Add(new SortDescription(columnName, direction));
-
-        m_profit_sorted_column = columnName;
-        m_profit_sort_direction = direction;
     }
 
     private void sortFeeByColumn(object? parameter)
     {
-        if (parameter is not string columnName || m_list_fee_item == null)
-            return;
-
-        ListSortDirection direction = ListSortDirection.Ascending;
-
-        if (_m_fee_sorted_column == columnName)
+        var result = SortHelper.sortByColumn(parameter, m_list_fee_item, _m_fee_sorted_column, _m_fee_sort_direction);
+        if (result.HasValue)
         {
-            direction = _m_fee_sort_direction == ListSortDirection.Ascending
-                ? ListSortDirection.Descending
-                : ListSortDirection.Ascending;
+            m_fee_sorted_column = result.Value.ColumnName;
+            m_fee_sort_direction = result.Value.Direction;
         }
-
-        ICollectionView view = CollectionViewSource.GetDefaultView(m_list_fee_item);
-        view.SortDescriptions.Clear();
-        view.SortDescriptions.Add(new SortDescription(columnName, direction));
-
-        m_fee_sorted_column = columnName;
-        m_fee_sort_direction = direction;
     }
 
     public void navigateToProfitDetails(object? obj)

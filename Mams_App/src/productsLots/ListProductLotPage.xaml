@@ -10,6 +10,7 @@ xmlns:commands="clr-namespace:Mams_App.src.commands"
 xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
 xmlns:loc="clr-namespace:Mams_App.src.localizations"
 xmlns:converters="clr-namespace:Mams_App.src.converters"
+xmlns:helpers="clr-namespace:Mams_App.src.helpers"
 mc:Ignorable="d" 
 d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
 d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
@@ -109,7 +110,7 @@ Title="ListProductLotPage">
                             <ListView.Resources>
                                 <Style TargetType="GridViewColumnHeader">
                                     <Setter Property="Command" Value="{Binding DataContext.m_sort_command, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column.DisplayMemberBinding.Path.Path}"/>
+                                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column}"/>
                                 </Style>
                                 
                                 <DataTemplate x:Key="HeaderTemplateWithArrow">
@@ -121,6 +122,7 @@ Title="ListProductLotPage">
                                                     <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.DisplayMemberBinding.Path.Path"/>
                                                     <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sorted_column"/>
                                                     <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sort_direction"/>
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.(helpers:SortPathAttached.SortPath)"/>
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>

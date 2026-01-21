@@ -10,6 +10,7 @@ xmlns:commands="clr-namespace:Mams_App.src.commands"
 xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
 xmlns:loc="clr-namespace:Mams_App.src.localizations"
 xmlns:converters="clr-namespace:Mams_App.src.converters"
+xmlns:helpers="clr-namespace:Mams_App.src.helpers"
 mc:Ignorable="d" 
 d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
 d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
@@ -159,7 +160,7 @@ Title="ResumePage">
                         <ListView.Resources>
                             <Style TargetType="GridViewColumnHeader">
                                 <Setter Property="Command" Value="{Binding DataContext.m_sort_profit_command, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column.DisplayMemberBinding.Path.Path}"/>
+                                <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column}"/>
                             </Style>
                             
                             <DataTemplate x:Key="ProfitHeaderTemplateWithArrow">
@@ -171,6 +172,7 @@ Title="ResumePage">
                                                 <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.DisplayMemberBinding.Path.Path"/>
                                                 <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_profit_sorted_column"/>
                                                 <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_profit_sort_direction"/>
+                                                <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.(helpers:SortPathAttached.SortPath)"/>
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
@@ -181,7 +183,7 @@ Title="ResumePage">
                             <GridView>
                                 <GridViewColumn Header="{loc:Translate Common.Number}" HeaderTemplate="{StaticResource ProfitHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
                                 <GridViewColumn Header="{loc:Translate Common.Client}" HeaderTemplate="{StaticResource ProfitHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity.entity_name}"/>
-                                <GridViewColumn Header="{loc:Translate Common.Date}" HeaderTemplate="{StaticResource ProfitHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                <GridViewColumn Header="{loc:Translate Common.Date}" HeaderTemplate="{StaticResource ProfitHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_date_created}" helpers:SortPathAttached.SortPath="receipt.receipt_date_created_value"/>
                                 <GridViewColumn Header="{loc:Translate Common.TotalPrice}" HeaderTemplate="{StaticResource ProfitHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
                             </GridView>
                         </ListView.View>
@@ -206,7 +208,7 @@ Title="ResumePage">
                         <ListView.Resources>
                             <Style TargetType="GridViewColumnHeader">
                                 <Setter Property="Command" Value="{Binding DataContext.m_sort_fee_command, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column.DisplayMemberBinding.Path.Path}"/>
+                                <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column}"/>
                             </Style>
                             
                             <DataTemplate x:Key="FeeHeaderTemplateWithArrow">
@@ -218,6 +220,7 @@ Title="ResumePage">
                                                 <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.DisplayMemberBinding.Path.Path"/>
                                                 <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_fee_sorted_column"/>
                                                 <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_fee_sort_direction"/>
+                                                <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.(helpers:SortPathAttached.SortPath)"/>
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
@@ -228,7 +231,7 @@ Title="ResumePage">
                             <GridView>
                                 <GridViewColumn Header="{loc:Translate Common.Number}" HeaderTemplate="{StaticResource FeeHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
                                 <GridViewColumn Header="{loc:Translate Common.Supplier}" HeaderTemplate="{StaticResource FeeHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity.entity_name}"/>
-                                <GridViewColumn Header="{loc:Translate Common.Date}" HeaderTemplate="{StaticResource FeeHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                <GridViewColumn Header="{loc:Translate Common.Date}" HeaderTemplate="{StaticResource FeeHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_date_created}" helpers:SortPathAttached.SortPath="receipt.receipt_date_created_value"/>
                                 <GridViewColumn Header="{loc:Translate Common.TotalPrice}" HeaderTemplate="{StaticResource FeeHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
                             </GridView>
                         </ListView.View>

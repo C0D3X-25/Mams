@@ -9,6 +9,7 @@ xmlns:commands="clr-namespace:Mams_App.src.commands"
 xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
 xmlns:loc="clr-namespace:Mams_App.src.localizations"
 xmlns:converters="clr-namespace:Mams_App.src.converters"
+xmlns:helpers="clr-namespace:Mams_App.src.helpers"
 mc:Ignorable="d" 
 d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
 d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
@@ -93,7 +94,7 @@ Title="ListProfitPage">
                             <ListView.Resources>
                                 <Style TargetType="GridViewColumnHeader">
                                     <Setter Property="Command" Value="{Binding DataContext.m_sort_command, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column.DisplayMemberBinding.Path.Path}"/>
+                                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column}"/>
                                 </Style>
                                 
                                 <DataTemplate x:Key="HeaderTemplateWithArrow">
@@ -105,6 +106,7 @@ Title="ListProfitPage">
                                                     <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.DisplayMemberBinding.Path.Path"/>
                                                     <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sorted_column"/>
                                                     <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sort_direction"/>
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.(helpers:SortPathAttached.SortPath)"/>
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
@@ -115,7 +117,7 @@ Title="ListProfitPage">
                             <GridView>
                                     <GridViewColumn Header="{loc:Translate Common.Number}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
                                     <GridViewColumn Header="{loc:Translate Common.Client}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity.entity_name}"/>
-                                    <GridViewColumn Header="{loc:Translate Common.Date}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                    <GridViewColumn Header="{loc:Translate Common.Date}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_date_created}" helpers:SortPathAttached.SortPath="receipt.receipt_date_created_value"/>
                                     <GridViewColumn Header="{loc:Translate Common.TotalPrice}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
                                 </GridView>
                             </ListView.View>
