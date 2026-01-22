@@ -131,7 +131,7 @@ Title="ListSearchPage">
                                             <DataTemplate>
                                                 <TextBlock 
                                                     helpers:HighlightTextBehavior.Text="{Binding item_name}"
-                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text_trimmed, RelativeSource={RelativeSource AncestorType=ListView}}"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -140,7 +140,7 @@ Title="ListSearchPage">
                                             <DataTemplate>
                                                 <TextBlock 
                                                     helpers:HighlightTextBehavior.Text="{Binding item_custom_id}"
-                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text_trimmed, RelativeSource={RelativeSource AncestorType=ListView}}"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -149,7 +149,7 @@ Title="ListSearchPage">
                                             <DataTemplate>
                                                 <TextBlock 
                                                     helpers:HighlightTextBehavior.Text="{Binding item_date}"
-                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text_trimmed, RelativeSource={RelativeSource AncestorType=ListView}}"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>
@@ -158,7 +158,7 @@ Title="ListSearchPage">
                                             <DataTemplate>
                                                 <TextBlock 
                                                     helpers:HighlightTextBehavior.Text="{Binding item_details}"
-                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text_trimmed, RelativeSource={RelativeSource AncestorType=ListView}}"/>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
                                     </GridViewColumn>

@@ -72,9 +72,16 @@ public class SearchController : ABaseController
         {
             SSearchModel.m_search_text = value;
             onPropertyChanged();
+            onPropertyChanged(nameof(m_search_text_trimmed));
             onSearchTextChanged();
         }
     }
+
+    /// <summary>
+    /// The trimmed search text used for highlighting matches in results.
+    /// Removes leading and trailing spaces while preserving spaces between words.
+    /// </summary>
+    public string m_search_text_trimmed => m_search_text?.Trim() ?? string.Empty;
 
     /// <summary>
     /// Collection of search result items displayed in the list.
@@ -171,7 +178,7 @@ public class SearchController : ABaseController
         // Stop and restart the debounce timer
         _m_debounce_timer.Stop();
         
-        if (string.IsNullOrWhiteSpace(m_search_text) || m_search_text.Length < MIN_SEARCH_LENGTH)
+        if (string.IsNullOrWhiteSpace(m_search_text) || m_search_text.Trim().Length < MIN_SEARCH_LENGTH)
         {
             // Clear results if text is too short
             m_list_items = [];
@@ -196,7 +203,7 @@ public class SearchController : ABaseController
     /// </summary>
     private async Task executeSearchAsync()
     {
-        if (string.IsNullOrWhiteSpace(m_search_text) || m_search_text.Length < MIN_SEARCH_LENGTH)
+        if (string.IsNullOrWhiteSpace(m_search_text) || m_search_text.Trim().Length < MIN_SEARCH_LENGTH)
         {
             m_list_items = [];
             m_results_count = 0;
@@ -214,7 +221,7 @@ public class SearchController : ABaseController
         
         try
         {
-            var searchText = m_search_text;
+            var searchText = m_search_text.Trim();
             
             // Execute search asynchronously with progressive updates
             await _m_search_model.searchAllItemsAsync(
@@ -309,7 +316,7 @@ public class SearchController : ABaseController
         // Stop debounce timer and trigger immediate search
         _m_debounce_timer.Stop();
         
-        if (string.IsNullOrWhiteSpace(m_search_text))
+        if (string.IsNullOrWhiteSpace(m_search_text?.Trim()))
         {
             m_list_items = [];
             m_results_count = 0;
