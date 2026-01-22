@@ -73,33 +73,13 @@ Title="ListSearchPage">
 
                     <!--Search Input Area-->
                     <Grid Grid.Row="0" Margin="50,10,50,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
                         <TextBox 
-                            Grid.Column="0"
                             Text="{Binding m_search_text, UpdateSourceTrigger=PropertyChanged}"
                             Height="35"
                             FontSize="16"
                             VerticalContentAlignment="Center"
                             Padding="10,0,10,0"
-                            Margin="0,0,10,0">
-                            <TextBox.InputBindings>
-                                <KeyBinding Key="Return" Command="{Binding m_search_command}"/>
-                            </TextBox.InputBindings>
-                        </TextBox>
-
-                        <Button 
-                            Grid.Column="1"
-                            Content="{loc:Translate Button.Search}"
-                            Command="{Binding m_search_command}"
-                            Height="35" Width="130"
-                            FontSize="16"
-                            Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
-                            Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}">
-                        </Button>
+                            helpers:AutoFocusBehavior.AutoFocus="True"/>
                     </Grid>
 
                     <!--List of Search Results-->

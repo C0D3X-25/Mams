@@ -14,6 +14,7 @@ using Mams_App.src.profits;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace Mams_App.src.searches;
 
@@ -24,6 +25,26 @@ namespace Mams_App.src.searches;
 public class SearchController : ABaseController
 {
     private readonly SearchModel _m_search_model = new();
+    
+    /// <summary>
+    /// Timer for debouncing search input to avoid excessive searches while typing.
+    /// </summary>
+    private readonly DispatcherTimer _m_debounce_timer;
+    
+    /// <summary>
+    /// Cancellation token source to cancel in-flight searches when new input arrives.
+    /// </summary>
+    private CancellationTokenSource? _m_search_cts;
+    
+    /// <summary>
+    /// Minimum number of characters required to trigger automatic search.
+    /// </summary>
+    private const int MIN_SEARCH_LENGTH = 2;
+    
+    /// <summary>
+    /// Debounce delay in milliseconds before triggering search after typing stops.
+    /// </summary>
+    private const int DEBOUNCE_DELAY_MS = 250;
 
     /// <summary>
     /// Command to execute the search operation.
@@ -42,6 +63,7 @@ public class SearchController : ABaseController
 
     /// <summary>
     /// The text entered by the user for searching.
+    /// Automatically triggers debounced search when at least 2 characters are entered.
     /// </summary>
     public string m_search_text
     {
@@ -50,6 +72,7 @@ public class SearchController : ABaseController
         {
             SSearchModel.m_search_text = value;
             onPropertyChanged();
+            onSearchTextChanged();
         }
     }
 
@@ -128,6 +151,96 @@ public class SearchController : ABaseController
         m_search_command = new RelayCommand(executeSearch);
         m_sort_command = new RelayCommand(sortByColumn);
         m_double_click_command = new RelayCommand(navigateToItemPage, isItemSelected);
+        
+        // Initialize debounce timer
+        _m_debounce_timer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(DEBOUNCE_DELAY_MS)
+        };
+        _m_debounce_timer.Tick += onDebounceTimerTick;
+    }
+    
+    /// <summary>
+    /// Called when the search text changes. Restarts the debounce timer.
+    /// </summary>
+    private void onSearchTextChanged()
+    {
+        // Cancel any pending search
+        _m_search_cts?.Cancel();
+        
+        // Stop and restart the debounce timer
+        _m_debounce_timer.Stop();
+        
+        if (string.IsNullOrWhiteSpace(m_search_text) || m_search_text.Length < MIN_SEARCH_LENGTH)
+        {
+            // Clear results if text is too short
+            m_list_items = [];
+            m_results_count = 0;
+            return;
+        }
+        
+        _m_debounce_timer.Start();
+    }
+    
+    /// <summary>
+    /// Called when the debounce timer elapses. Triggers the async search.
+    /// </summary>
+    private void onDebounceTimerTick(object? sender, EventArgs e)
+    {
+        _m_debounce_timer.Stop();
+        _ = executeSearchAsync();
+    }
+    
+    /// <summary>
+    /// Executes the search asynchronously with cancellation support.
+    /// </summary>
+    private async Task executeSearchAsync()
+    {
+        if (string.IsNullOrWhiteSpace(m_search_text) || m_search_text.Length < MIN_SEARCH_LENGTH)
+        {
+            m_list_items = [];
+            m_results_count = 0;
+            return;
+        }
+        
+        // Cancel previous search and create new cancellation token
+        _m_search_cts?.Cancel();
+        _m_search_cts = new CancellationTokenSource();
+        var cancellationToken = _m_search_cts.Token;
+        
+        // Clear current results
+        m_list_items = [];
+        m_results_count = 0;
+        
+        try
+        {
+            var searchText = m_search_text;
+            
+            // Execute search asynchronously with progressive updates
+            await _m_search_model.searchAllItemsAsync(
+                searchText, 
+                cancellationToken,
+                onBatchCompleted: (items) =>
+                {
+                    if (cancellationToken.IsCancellationRequested) return;
+                    
+                    // Update UI on dispatcher thread
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        if (cancellationToken.IsCancellationRequested) return;
+                        
+                        foreach (var item in items)
+                        {
+                            m_list_items?.Add(item);
+                        }
+                        m_results_count = m_list_items?.Count ?? 0;
+                    });
+                });
+        }
+        catch (OperationCanceledException)
+        {
+            // Search was cancelled, ignore
+        }
     }
 
     /// <summary>
@@ -188,10 +301,14 @@ public class SearchController : ABaseController
     /// <summary>
     /// Executes the search operation using the current search text.
     /// Searches across all relevant database tables (products, entities, beehives, etc.).
+    /// Called when button is clicked or Enter is pressed (bypasses debounce).
     /// </summary>
     /// <param name="parameter">Command parameter (not used).</param>
     private void executeSearch(object? parameter)
     {
+        // Stop debounce timer and trigger immediate search
+        _m_debounce_timer.Stop();
+        
         if (string.IsNullOrWhiteSpace(m_search_text))
         {
             m_list_items = [];
@@ -199,18 +316,7 @@ public class SearchController : ABaseController
             return;
         }
 
-        var response = _m_search_model.searchAllItems(m_search_text);
-
-        if (response.is_success && response.returned_items != null)
-        {
-            m_list_items = response.returned_items;
-            m_results_count = response.returned_items.Count;
-        }
-        else
-        {
-            m_list_items = [];
-            m_results_count = 0;
-        }
+        _ = executeSearchAsync();
     }
 
     /// <summary>
