@@ -146,10 +146,42 @@ Title="ListSearchPage">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="{loc:Translate Column.ItemType}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding item_type, Converter={StaticResource ItemTypeToLocalizedStringConverter}}" Width="120"/>
-                                    <GridViewColumn Header="{loc:Translate Column.ItemName}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding item_name}" Width="200"/>
-                                    <GridViewColumn Header="{loc:Translate Column.ItemCustomId}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding item_custom_id}" Width="120"/>
-                                    <GridViewColumn Header="{loc:Translate Column.ItemDate}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding item_date}" Width="100"/>
-                                    <GridViewColumn Header="{loc:Translate Column.ItemDetails}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding item_details}" Width="200"/>
+                                    <GridViewColumn Header="{loc:Translate Column.ItemName}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" Width="200" helpers:SortPathAttached.SortPath="item_name">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock 
+                                                    helpers:HighlightTextBehavior.Text="{Binding item_name}"
+                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="{loc:Translate Column.ItemCustomId}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" Width="120" helpers:SortPathAttached.SortPath="item_custom_id">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock 
+                                                    helpers:HighlightTextBehavior.Text="{Binding item_custom_id}"
+                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="{loc:Translate Column.ItemDate}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" Width="100" helpers:SortPathAttached.SortPath="item_date">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock 
+                                                    helpers:HighlightTextBehavior.Text="{Binding item_date}"
+                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="{loc:Translate Column.ItemDetails}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" Width="200" helpers:SortPathAttached.SortPath="item_details">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock 
+                                                    helpers:HighlightTextBehavior.Text="{Binding item_details}"
+                                                    helpers:HighlightTextBehavior.HighlightText="{Binding DataContext.m_search_text, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
                                 </GridView>
                             </ListView.View>
                         </ListView>

@@ -94,7 +94,7 @@ public class SearchModel : ABaseModel
                 item_id = reader.getSafeValue<int>("product_id"),
                 item_type = "Product",
                 item_name = reader.getSafeValue("product_name", string.Empty),
-                item_details = "Product"
+                item_details = string.Empty
             });
         }
     }
@@ -155,7 +155,7 @@ public class SearchModel : ABaseModel
                 item_id = reader.getSafeValue<int>("beehive_id"),
                 item_type = "Beehive",
                 item_name = reader.getSafeValue("beehive_name", string.Empty),
-                item_details = "Beehive"
+                item_details = string.Empty
             });
         }
     }
@@ -219,7 +219,7 @@ public class SearchModel : ABaseModel
                 item_id = reader.getSafeValue<int>("product_type_id"),
                 item_type = "ProductType",
                 item_name = reader.getSafeValue("product_type_name", string.Empty),
-                item_details = "Product Type"
+                item_details = string.Empty
             });
         }
     }
@@ -249,7 +249,7 @@ public class SearchModel : ABaseModel
                 item_id = reader.getSafeValue<int>("product_category_id"),
                 item_type = "ProductCategory",
                 item_name = reader.getSafeValue("product_category_name", string.Empty),
-                item_details = "Product Category"
+                item_details = string.Empty
             });
         }
     }
@@ -279,7 +279,7 @@ public class SearchModel : ABaseModel
                 item_id = reader.getSafeValue<int>("product_shape_id"),
                 item_type = "ProductShape",
                 item_name = reader.getSafeValue("product_shape_name", string.Empty),
-                item_details = "Product Shape"
+                item_details = string.Empty
             });
         }
     }
