@@ -1,5 +1,6 @@
 ﻿using Mams_App.src.databaseOperations;
 using Mams_App.src.helpers;
+using Mams_App.src.localizations;
 using Mams_App.src.models;
 using MySqlConnector;
 using System.Collections.ObjectModel;
@@ -81,7 +82,7 @@ public class SearchModel : ABaseModel
             SELECT product_id, product_name, product_archive
             FROM products
             WHERE product_name LIKE @search
-            AND (product_archive IS NULL OR product_archive = '1901-01-01')";
+            AND (product_archive IS NULL OR product_archive != '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -89,12 +90,13 @@ public class SearchModel : ABaseModel
         using MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            var archiveDate = reader.getSafeValue<DateOnly?>("product_archive");
             results.Add(new SearchItem
             {
                 item_id = reader.getSafeValue<int>("product_id"),
                 item_type = "Product",
                 item_name = reader.getSafeValue("product_name", string.Empty),
-                item_details = string.Empty
+                item_details = getArchiveDetails(archiveDate)
             });
         }
     }
@@ -112,7 +114,7 @@ public class SearchModel : ABaseModel
             SELECT entity_id, entity_name, entity_city, entity_archive
             FROM entities
             WHERE (entity_name LIKE @search OR entity_city LIKE @search)
-            AND (entity_archive IS NULL OR entity_archive = '1901-01-01')";
+            AND (entity_archive IS NULL OR entity_archive != '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -120,12 +122,17 @@ public class SearchModel : ABaseModel
         using MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            var city = reader.getSafeValue("entity_city", string.Empty);
+            var archiveDate = reader.getSafeValue<DateOnly?>("entity_archive");
+            var archiveDetails = getArchiveDetails(archiveDate);
+            var details = string.IsNullOrEmpty(archiveDetails) ? city : $"{city} - {archiveDetails}";
+            
             results.Add(new SearchItem
             {
                 item_id = reader.getSafeValue<int>("entity_id"),
                 item_type = "Entity",
                 item_name = reader.getSafeValue("entity_name", string.Empty),
-                item_details = reader.getSafeValue("entity_city", string.Empty)
+                item_details = details.TrimStart(' ', '-', ' ')
             });
         }
     }
@@ -142,7 +149,7 @@ public class SearchModel : ABaseModel
             SELECT beehive_id, beehive_name, beehive_archive
             FROM beehives
             WHERE beehive_name LIKE @search
-            AND (beehive_archive IS NULL OR beehive_archive = '1901-01-01')";
+            AND (beehive_archive IS NULL OR beehive_archive != '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -150,12 +157,13 @@ public class SearchModel : ABaseModel
         using MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            var archiveDate = reader.getSafeValue<DateOnly?>("beehive_archive");
             results.Add(new SearchItem
             {
                 item_id = reader.getSafeValue<int>("beehive_id"),
                 item_type = "Beehive",
                 item_name = reader.getSafeValue("beehive_name", string.Empty),
-                item_details = string.Empty
+                item_details = getArchiveDetails(archiveDate)
             });
         }
     }
@@ -174,7 +182,7 @@ public class SearchModel : ABaseModel
             FROM products_lots pl
             LEFT JOIN beehives b ON pl.fk_beehive_id = b.beehive_id
             WHERE pl.product_lot_name LIKE @search
-            AND (pl.product_lot_archive IS NULL OR pl.product_lot_archive = '1901-01-01')";
+            AND (pl.product_lot_archive IS NULL OR pl.product_lot_archive != '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -184,12 +192,20 @@ public class SearchModel : ABaseModel
         {
             var year = reader.getSafeValue("product_lot_year", 0);
             var beehive = reader.getSafeValue("beehive_name", string.Empty);
+            var archiveDate = reader.getSafeValue<DateOnly?>("product_lot_archive");
+            var archiveDetails = getArchiveDetails(archiveDate);
+            var details = $"{year} - {beehive}";
+            if (!string.IsNullOrEmpty(archiveDetails))
+            {
+                details += $" - {archiveDetails}";
+            }
+            
             results.Add(new SearchItem
             {
                 item_id = reader.getSafeValue<int>("product_lot_id"),
                 item_type = "ProductLot",
                 item_name = reader.getSafeValue("product_lot_name", string.Empty),
-                item_details = $"{year} - {beehive}"
+                item_details = details
             });
         }
     }
@@ -206,7 +222,7 @@ public class SearchModel : ABaseModel
             SELECT product_type_id, product_type_name, product_type_archive
             FROM products_types
             WHERE product_type_name LIKE @search
-            AND (product_type_archive IS NULL OR product_type_archive = '1901-01-01')";
+            AND (product_type_archive IS NULL OR product_type_archive != '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -214,12 +230,13 @@ public class SearchModel : ABaseModel
         using MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            var archiveDate = reader.getSafeValue<DateOnly?>("product_type_archive");
             results.Add(new SearchItem
             {
                 item_id = reader.getSafeValue<int>("product_type_id"),
                 item_type = "ProductType",
                 item_name = reader.getSafeValue("product_type_name", string.Empty),
-                item_details = string.Empty
+                item_details = getArchiveDetails(archiveDate)
             });
         }
     }
@@ -236,7 +253,7 @@ public class SearchModel : ABaseModel
             SELECT product_category_id, product_category_name, product_category_archive
             FROM products_categories
             WHERE product_category_name LIKE @search
-            AND (product_category_archive IS NULL OR product_category_archive = '1901-01-01')";
+            AND (product_category_archive IS NULL OR product_category_archive != '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -244,12 +261,13 @@ public class SearchModel : ABaseModel
         using MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            var archiveDate = reader.getSafeValue<DateOnly?>("product_category_archive");
             results.Add(new SearchItem
             {
                 item_id = reader.getSafeValue<int>("product_category_id"),
                 item_type = "ProductCategory",
                 item_name = reader.getSafeValue("product_category_name", string.Empty),
-                item_details = string.Empty
+                item_details = getArchiveDetails(archiveDate)
             });
         }
     }
@@ -266,7 +284,7 @@ public class SearchModel : ABaseModel
             SELECT product_shape_id, product_shape_name, product_shape_archive
             FROM products_shapes
             WHERE product_shape_name LIKE @search
-            AND (product_shape_archive IS NULL OR product_shape_archive = '1901-01-01')";
+            AND (product_shape_archive IS NULL OR product_shape_archive != '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -274,12 +292,13 @@ public class SearchModel : ABaseModel
         using MySqlDataReader reader = cmd.ExecuteReader();
         while (reader.Read())
         {
+            var archiveDate = reader.getSafeValue<DateOnly?>("product_shape_archive");
             results.Add(new SearchItem
             {
                 item_id = reader.getSafeValue<int>("product_shape_id"),
                 item_type = "ProductShape",
                 item_name = reader.getSafeValue("product_shape_name", string.Empty),
-                item_details = string.Empty
+                item_details = getArchiveDetails(archiveDate)
             });
         }
     }
@@ -364,5 +383,20 @@ public class SearchModel : ABaseModel
                 item_details = $"Total: {total:C}"
             });
         }
+    }
+
+    /// <summary>
+    /// Returns a localized "Archived: {date}" string if the item is archived, otherwise returns empty string.
+    /// </summary>
+    /// <param name="archiveDate">The archive date, or null if not archived.</param>
+    /// <returns>A formatted archive details string, or empty string if not archived.</returns>
+    private static string getArchiveDetails(DateOnly? archiveDate)
+    {
+        if (archiveDate == null || archiveDate == DateOnly.MinValue || archiveDate == new DateOnly(1901, 1, 1))
+        {
+            return string.Empty;
+        }
+
+        return $"{Loc.Get("Label.Archived")}: {archiveDate:d}";
     }
 }

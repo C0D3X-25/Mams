@@ -43,13 +43,12 @@ public class SearchController : ABaseController
     /// <summary>
     /// The text entered by the user for searching.
     /// </summary>
-    private string _m_search_text = string.Empty;
     public string m_search_text
     {
-        get { return _m_search_text; }
+        get { return SSearchModel.m_search_text; }
         set
         {
-            _m_search_text = value;
+            SSearchModel.m_search_text = value;
             onPropertyChanged();
         }
     }
@@ -57,13 +56,12 @@ public class SearchController : ABaseController
     /// <summary>
     /// Collection of search result items displayed in the list.
     /// </summary>
-    private ObservableCollection<SearchItem>? _m_list_items;
     public ObservableCollection<SearchItem>? m_list_items
     {
-        get { return _m_list_items; }
+        get { return SSearchModel.m_list_items; }
         set
         {
-            _m_list_items = value;
+            SSearchModel.m_list_items = value;
             onPropertyChanged();
         }
     }
@@ -71,13 +69,12 @@ public class SearchController : ABaseController
     /// <summary>
     /// The currently selected item in the search results list.
     /// </summary>
-    private SearchItem? _m_selected_item;
     public SearchItem? m_selected_item
     {
-        get { return _m_selected_item; }
+        get { return SSearchModel.m_selected_item; }
         set
         {
-            _m_selected_item = value;
+            SSearchModel.m_selected_item = value;
             onPropertyChanged();
         }
     }
@@ -85,13 +82,12 @@ public class SearchController : ABaseController
     /// <summary>
     /// The name of the column currently used for sorting.
     /// </summary>
-    private string _m_sorted_column = string.Empty;
     public string m_sorted_column
     {
-        get { return _m_sorted_column; }
+        get { return SSearchModel.m_sorted_column; }
         set
         {
-            _m_sorted_column = value;
+            SSearchModel.m_sorted_column = value;
             onPropertyChanged();
         }
     }
@@ -99,13 +95,12 @@ public class SearchController : ABaseController
     /// <summary>
     /// The current sort direction (ascending or descending).
     /// </summary>
-    private ListSortDirection _m_sort_direction = ListSortDirection.Ascending;
     public ListSortDirection m_sort_direction
     {
-        get { return _m_sort_direction; }
+        get { return SSearchModel.m_sort_direction; }
         set
         {
-            _m_sort_direction = value;
+            SSearchModel.m_sort_direction = value;
             onPropertyChanged();
         }
     }
@@ -113,13 +108,12 @@ public class SearchController : ABaseController
     /// <summary>
     /// The total number of search results found.
     /// </summary>
-    private int _m_results_count = 0;
     public int m_results_count
     {
-        get { return _m_results_count; }
+        get { return SSearchModel.m_results_count; }
         set
         {
-            _m_results_count = value;
+            SSearchModel.m_results_count = value;
             onPropertyChanged();
         }
     }
@@ -130,7 +124,7 @@ public class SearchController : ABaseController
     /// </summary>
     public SearchController()
     {
-        m_list_items = [];
+        SSearchModel.initialize();
         m_search_command = new RelayCommand(executeSearch);
         m_sort_command = new RelayCommand(sortByColumn);
         m_double_click_command = new RelayCommand(navigateToItemPage, isItemSelected);
@@ -226,7 +220,7 @@ public class SearchController : ABaseController
     /// <param name="parameter">The column name to sort by.</param>
     private void sortByColumn(object? parameter)
     {
-        var result = SortHelper.sortByColumn(parameter, m_list_items, _m_sorted_column, _m_sort_direction);
+        var result = SortHelper.sortByColumn(parameter, m_list_items, m_sorted_column, m_sort_direction);
         if (result.HasValue)
         {
             m_sorted_column = result.Value.ColumnName;

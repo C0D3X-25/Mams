@@ -407,6 +407,7 @@
     "Search.ResultsCount": "{0} résultat(s) trouvé(s)",
     "Search.Tooltip": "Recherche",
     "Label.ResultsCount": "Résultats :",
+    "Label.Archived": "Archivé",
     "Column.ItemType": "Type",
     "Column.ItemName": "Nom",
     "Column.ItemDetails": "Détails",
