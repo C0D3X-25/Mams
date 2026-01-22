@@ -95,7 +95,7 @@ public class SearchModel : ABaseModel
             SELECT product_id, product_name, product_archive
             FROM products
             WHERE product_name LIKE @search
-            AND (product_archive IS NULL OR product_archive != '1901-01-01')";
+            AND (product_archive IS NULL OR product_archive > '1901-01-01')";
 
         using var cmd = new MySqlCommand(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -122,7 +122,7 @@ public class SearchModel : ABaseModel
             SELECT entity_id, entity_name, entity_city, entity_archive
             FROM entities
             WHERE (entity_name LIKE @search OR entity_city LIKE @search)
-            AND (entity_archive IS NULL OR entity_archive != '1901-01-01')";
+            AND (entity_archive IS NULL OR entity_archive > '1901-01-01')";
 
         using var cmd = new MySqlCommand(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -153,7 +153,7 @@ public class SearchModel : ABaseModel
             SELECT beehive_id, beehive_name, beehive_archive
             FROM beehives
             WHERE beehive_name LIKE @search
-            AND (beehive_archive IS NULL OR beehive_archive != '1901-01-01')";
+            AND (beehive_archive IS NULL OR beehive_archive > '1901-01-01')";
 
         using var cmd = new MySqlCommand(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -181,7 +181,7 @@ public class SearchModel : ABaseModel
             FROM products_lots pl
             LEFT JOIN beehives b ON pl.fk_beehive_id = b.beehive_id
             WHERE pl.product_lot_name LIKE @search
-            AND (pl.product_lot_archive IS NULL OR pl.product_lot_archive != '1901-01-01')";
+            AND (pl.product_lot_archive IS NULL OR pl.product_lot_archive > '1901-01-01')";
 
         using var cmd = new MySqlCommand(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -217,7 +217,7 @@ public class SearchModel : ABaseModel
             SELECT product_type_id, product_type_name, product_type_archive
             FROM products_types
             WHERE product_type_name LIKE @search
-            AND (product_type_archive IS NULL OR product_type_archive != '1901-01-01')";
+            AND (product_type_archive IS NULL OR product_type_archive > '1901-01-01')";
 
         using var cmd = new MySqlCommand(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -244,7 +244,7 @@ public class SearchModel : ABaseModel
             SELECT product_category_id, product_category_name, product_category_archive
             FROM products_categories
             WHERE product_category_name LIKE @search
-            AND (product_category_archive IS NULL OR product_category_archive != '1901-01-01')";
+            AND (product_category_archive IS NULL OR product_category_archive > '1901-01-01')";
 
         using var cmd = new MySqlCommand(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -271,7 +271,7 @@ public class SearchModel : ABaseModel
             SELECT product_shape_id, product_shape_name, product_shape_archive
             FROM products_shapes
             WHERE product_shape_name LIKE @search
-            AND (product_shape_archive IS NULL OR product_shape_archive != '1901-01-01')";
+            AND (product_shape_archive IS NULL OR product_shape_archive > '1901-01-01')";
 
         using var cmd = new MySqlCommand(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -433,7 +433,7 @@ public class SearchModel : ABaseModel
             SELECT product_id, product_name, product_archive
             FROM products
             WHERE product_name LIKE @search
-            AND (product_archive IS NULL OR product_archive != '1901-01-01')";
+            AND (product_archive IS NULL OR product_archive > '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -465,7 +465,7 @@ public class SearchModel : ABaseModel
             SELECT entity_id, entity_name, entity_city, entity_archive
             FROM entities
             WHERE (entity_name LIKE @search OR entity_city LIKE @search)
-            AND (entity_archive IS NULL OR entity_archive != '1901-01-01')";
+            AND (entity_archive IS NULL OR entity_archive > '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -500,7 +500,7 @@ public class SearchModel : ABaseModel
             SELECT beehive_id, beehive_name, beehive_archive
             FROM beehives
             WHERE beehive_name LIKE @search
-            AND (beehive_archive IS NULL OR beehive_archive != '1901-01-01')";
+            AND (beehive_archive IS NULL OR beehive_archive > '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -533,7 +533,7 @@ public class SearchModel : ABaseModel
             FROM products_lots pl
             LEFT JOIN beehives b ON pl.fk_beehive_id = b.beehive_id
             WHERE pl.product_lot_name LIKE @search
-            AND (pl.product_lot_archive IS NULL OR pl.product_lot_archive != '1901-01-01')";
+            AND (pl.product_lot_archive IS NULL OR pl.product_lot_archive > '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -573,7 +573,7 @@ public class SearchModel : ABaseModel
             SELECT product_type_id, product_type_name, product_type_archive
             FROM products_types
             WHERE product_type_name LIKE @search
-            AND (product_type_archive IS NULL OR product_type_archive != '1901-01-01')";
+            AND (product_type_archive IS NULL OR product_type_archive > '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -604,7 +604,7 @@ public class SearchModel : ABaseModel
             SELECT product_category_id, product_category_name, product_category_archive
             FROM products_categories
             WHERE product_category_name LIKE @search
-            AND (product_category_archive IS NULL OR product_category_archive != '1901-01-01')";
+            AND (product_category_archive IS NULL OR product_category_archive > '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
@@ -635,7 +635,7 @@ public class SearchModel : ABaseModel
             SELECT product_shape_id, product_shape_name, product_shape_archive
             FROM products_shapes
             WHERE product_shape_name LIKE @search
-            AND (product_shape_archive IS NULL OR product_shape_archive != '1901-01-01')";
+            AND (product_shape_archive IS NULL OR product_shape_archive > '1901-01-01')";
 
         using MySqlCommand cmd = new(query, connection);
         cmd.Parameters.AddWithValue("@search", search_pattern);
