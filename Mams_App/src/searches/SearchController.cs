@@ -1,6 +1,16 @@
-﻿using Mams_App.src.commands;
+﻿using Mams_App.src.beehives;
+using Mams_App.src.commands;
 using Mams_App.src.controllers;
+using Mams_App.src.entities;
+using Mams_App.src.fees;
 using Mams_App.src.helpers;
+using Mams_App.src.navigations;
+using Mams_App.src.products;
+using Mams_App.src.productsCategories;
+using Mams_App.src.productsLots;
+using Mams_App.src.productsShapes;
+using Mams_App.src.productsTypes;
+using Mams_App.src.profits;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
@@ -24,6 +34,11 @@ public class SearchController : ABaseController
     /// Command to sort the search results by a specific column.
     /// </summary>
     public ICommand m_sort_command { get; set; }
+
+    /// <summary>
+    /// Command to navigate to the selected item's detail page on double-click.
+    /// </summary>
+    public ICommand m_double_click_command { get; set; }
 
     /// <summary>
     /// The text entered by the user for searching.
@@ -111,13 +126,69 @@ public class SearchController : ABaseController
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SearchController"/> class.
-    /// Sets up the search and sort commands.
+    /// Sets up the search, sort, and double-click commands.
     /// </summary>
     public SearchController()
     {
         m_list_items = [];
         m_search_command = new RelayCommand(executeSearch);
         m_sort_command = new RelayCommand(sortByColumn);
+        m_double_click_command = new RelayCommand(navigateToItemPage, isItemSelected);
+    }
+
+    /// <summary>
+    /// Determines whether an item is currently selected in the search results.
+    /// </summary>
+    /// <param name="parameter">Command parameter (not used).</param>
+    /// <returns>True if an item is selected; otherwise, false.</returns>
+    private bool isItemSelected(object? parameter)
+    {
+        return m_selected_item != null;
+    }
+
+    /// <summary>
+    /// Navigates to the appropriate detail/edit page based on the selected item's type.
+    /// </summary>
+    /// <param name="parameter">Command parameter (not used).</param>
+    private void navigateToItemPage(object? parameter)
+    {
+        if (m_selected_item == null)
+        {
+            return;
+        }
+
+        int itemId = m_selected_item.item_id;
+
+        switch (m_selected_item.item_type)
+        {
+            case "Product":
+                SPageNavigationController.navigateTo(new SaveProductPage(itemId));
+                break;
+            case "Entity":
+                SPageNavigationController.navigateTo(new SaveEntityPage(itemId));
+                break;
+            case "Beehive":
+                SPageNavigationController.navigateTo(new SaveBeehivePage(itemId));
+                break;
+            case "ProductLot":
+                SPageNavigationController.navigateTo(new SaveProductLotPage(itemId));
+                break;
+            case "ProductType":
+                SPageNavigationController.navigateTo(new SaveProductTypePage(itemId));
+                break;
+            case "ProductCategory":
+                SPageNavigationController.navigateTo(new SaveProductCategoryPage(itemId));
+                break;
+            case "ProductShape":
+                SPageNavigationController.navigateTo(new SaveProductShapePage(itemId));
+                break;
+            case "Fee":
+                SPageNavigationController.navigateTo(new SaveFeePage(itemId));
+                break;
+            case "Profit":
+                SPageNavigationController.navigateTo(new SaveProfitPage(itemId));
+                break;
+        }
     }
 
     /// <summary>

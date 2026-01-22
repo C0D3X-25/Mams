@@ -1,18 +1,19 @@
 ﻿<Page x:Class="Mams_App.src.searches.ListSearchPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Mams_App.src.searches"
-      xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
-      xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
-      xmlns:loc="clr-namespace:Mams_App.src.localizations"
-      xmlns:converters="clr-namespace:Mams_App.src.converters"
-      xmlns:helpers="clr-namespace:Mams_App.src.helpers"
-      mc:Ignorable="d" 
-      d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
-      d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
-      Title="ListSearchPage">
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+xmlns:local="clr-namespace:Mams_App.src.searches"
+xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
+xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
+xmlns:loc="clr-namespace:Mams_App.src.localizations"
+xmlns:converters="clr-namespace:Mams_App.src.converters"
+xmlns:helpers="clr-namespace:Mams_App.src.helpers"
+xmlns:commands="clr-namespace:Mams_App.src.commands"
+mc:Ignorable="d" 
+d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
+d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
+Title="ListSearchPage">
 
     <Page.Resources>
         <converters:SortArrowConverter x:Key="SortArrowConverter"/>
@@ -118,7 +119,8 @@
                             MinWidth="500"
                             FontSize="14"
                             ItemsSource="{Binding m_list_items}"
-                            SelectedItem="{Binding m_selected_item}">
+                            SelectedItem="{Binding m_selected_item}"
+                            commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command}">
                             <ListView.Resources>
                                 <Style TargetType="GridViewColumnHeader">
                                     <Setter Property="Command" Value="{Binding DataContext.m_sort_command, RelativeSource={RelativeSource AncestorType=ListView}}"/>
