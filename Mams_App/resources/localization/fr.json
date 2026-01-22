@@ -397,5 +397,30 @@
     "Invoice.Column.Lot": "Lot",
     "Invoice.Column.UnitPrice": "Prix unité",
     "Invoice.Column.Quantity": "Quantité",
-    "Invoice.Column.Total": "Total"
+    "Invoice.Column.Total": "Total",
+    
+    "_comment_search_page": "Search Page - Search functionality labels",
+    "Page.Search": "Recherche Globale",
+    "Button.Search": "Rechercher",
+    "Search.Placeholder": "Rechercher...",
+    "Search.NoResults": "Aucun résultat trouvé",
+    "Search.ResultsCount": "{0} résultat(s) trouvé(s)",
+    "Search.Tooltip": "Recherche",
+    "Label.ResultsCount": "Résultats :",
+    "Column.ItemType": "Type",
+    "Column.ItemName": "Nom",
+    "Column.ItemDetails": "Détails",
+    "Column.ItemCustomId": "N° Référence",
+    "Column.ItemDate": "Date",
+    
+    "_comment_search_item_types": "Search Item Types - Localized type names for search results",
+    "ItemType.Product": "Produit",
+    "ItemType.Entity": "Contact",
+    "ItemType.Beehive": "Rucher",
+    "ItemType.ProductLot": "Lot",
+    "ItemType.ProductType": "Type de Produit",
+    "ItemType.ProductCategory": "Catégorie",
+    "ItemType.ProductShape": "Forme",
+    "ItemType.Fee": "Frais",
+    "ItemType.Profit": "Profit"
 }
