@@ -71,5 +71,8 @@
       <Link>resources\init.sql</Link>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\search\filters\" />
+  </ItemGroup>
 
 </Project>

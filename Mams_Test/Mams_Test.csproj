@@ -28,4 +28,8 @@
     <ProjectReference Include="..\Mams_App\Mams_App.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="search\filters\" />
+  </ItemGroup>
+
 </Project>

@@ -11,7 +11,7 @@ using Mams_App.src.productsShapes;
 using Mams_App.src.productsTypes;
 using Mams_App.src.profits;
 using Mams_App.src.receipts;
-using Mams_App.src.search;
+using Mams_App.src.filters;
 using System.Collections.ObjectModel;
 
 namespace Mams_App.src.resumes;
@@ -83,8 +83,8 @@ public class ResumeModel
     /// <summary>
     /// Represents a predefined collection of database table names and their corresponding display names.
     /// </summary>
-    public readonly ObservableCollection<DatabaseTablesNameItem> m_search_tables = [
-        new(){ m_name_in_database = EDatabaseTableName.NONE, m_name_to_display = string.Empty }, // Search all
+    public readonly ObservableCollection<DatabaseTablesNameItem> m_filter_tables = [
+        new(){ m_name_in_database = EDatabaseTableName.NONE, m_name_to_display = string.Empty }, // Filter all
         new(){ m_name_in_database = EDatabaseTableName.PRODUCT_CATEGORY, m_name_to_display = Loc.Get("Search.Category") },
         new(){ m_name_in_database = EDatabaseTableName.ENTITY, m_name_to_display = Loc.Get("Search.ClientSupplier") },
         new(){ m_name_in_database = EDatabaseTableName.PRODUCT_SHAPE, m_name_to_display = Loc.Get("Search.Shape") },
@@ -95,19 +95,19 @@ public class ResumeModel
     ];
 
     /// <summary>
-    /// Retrieves a filtered and sorted resume item based on the specified search criteria.
+    /// Retrieves a filtered and sorted resume item based on the specified filter criteria.
     /// Filtering and sorting are performed directly in SQL for optimal performance.
     /// </summary>
-    /// <param name="search">The search criteria used to filter and sort the resume item. Can be null.</param>
-    /// <returns>A <see cref="ResumeItem"/> object that matches the specified search criteria, sorted by date descending.</returns>
-    public ResumeItem getFilteredResume(SearchItem? search)
+    /// <param name="filter">The filter criteria used to filter and sort the resume item. Can be null.</param>
+    /// <returns>A <see cref="ResumeItem"/> object that matches the specified filter criteria, sorted by date descending.</returns>
+    public ResumeItem getFilteredResume(FilterItem? filter)
     {
         var resume_item = new ResumeItem();
 
         // Extract filter parameters
-        var filterTable = search?.search_table ?? EDatabaseTableName.NONE;
-        var filterId = search?.search_id ?? 0;
-        var yearFilter = extractYear(search?.search_year);
+        var filterTable = filter?.filter_table ?? EDatabaseTableName.NONE;
+        var filterId = filter?.filter_id ?? 0;
+        var yearFilter = extractYear(filter?.filter_year);
 
         // Return empty if filter is selected but no ID provided (except for NONE which means no filter)
         if (filterId == 0 && filterTable != EDatabaseTableName.NONE)
@@ -147,97 +147,97 @@ public class ResumeModel
     }
 
     /// <summary>
-    /// Retrieves a collection of search items based on the specified database table.
+    /// Retrieves a collection of filter items based on the specified database table.
     /// </summary>
-    /// <param name="selected_table">The database table from which to retrieve search items.</param>
-    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="SearchItem"/> objects.</returns>
-    public ObservableCollection<SearchItem> getListSearchItems(DatabaseTablesNameItem selected_table)
+    /// <param name="selected_table">The database table from which to retrieve filter items.</param>
+    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="FilterItem"/> objects.</returns>
+    public ObservableCollection<FilterItem> getListFilterItems(DatabaseTablesNameItem selected_table)
     {
 
-        ObservableCollection<SearchItem> list_search_item = [];
+        ObservableCollection<FilterItem> list_filter_item = [];
 
         switch (selected_table.m_name_in_database)
         {
             case EDatabaseTableName.ENTITY:
                 foreach (var item in _m_lazy_entity_not_archived.Value)
                 {
-                    list_search_item.Add(new SearchItem
+                    list_filter_item.Add(new FilterItem
                     {
-                        search_id = item.entity_id,
-                        search_item_to_display = item.entity_name
+                        filter_id = item.entity_id,
+                        filter_item_to_display = item.entity_name
                     });
                 }
                 break;
             case EDatabaseTableName.BEEHIVE:
                 foreach (var item in _m_lazy_beehive_not_archived.Value)
                 {
-                    list_search_item.Add(new SearchItem
+                    list_filter_item.Add(new FilterItem
                     {
-                        search_id = item.beehive_id,
-                        search_item_to_display = item.beehive_name
+                        filter_id = item.beehive_id,
+                        filter_item_to_display = item.beehive_name
                     });
                 }
                 break;
             case EDatabaseTableName.PRODUCT:
                 foreach (var item in _m_lazy_product_not_archived.Value)
                 {
-                    list_search_item.Add(new SearchItem
+                    list_filter_item.Add(new FilterItem
                     {
-                        search_id = item.product_id,
-                        search_item_to_display = item.product_name
+                        filter_id = item.product_id,
+                        filter_item_to_display = item.product_name
                     });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_SHAPE:
                 foreach (var item in _m_lazy_product_shape_not_archived.Value)
                 {
-                    list_search_item.Add(new SearchItem
+                    list_filter_item.Add(new FilterItem
                     {
-                        search_id = item.product_shape_id,
-                        search_item_to_display = item.product_shape_name
+                        filter_id = item.product_shape_id,
+                        filter_item_to_display = item.product_shape_name
                     });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_CATEGORY:
                 foreach (var item in _m_lazy_product_category_not_archived.Value)
                 {
-                    list_search_item.Add(new SearchItem
+                    list_filter_item.Add(new FilterItem
                     {
-                        search_id = item.product_category_id,
-                        search_item_to_display = item.product_category_name
+                        filter_id = item.product_category_id,
+                        filter_item_to_display = item.product_category_name
                     });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_TYPE:
                 foreach (var item in _m_lazy_product_type_not_archived.Value)
                 {
-                    list_search_item.Add(new SearchItem
+                    list_filter_item.Add(new FilterItem
                     {
-                        search_id = item.product_type_id,
-                        search_item_to_display = item.product_type_name
+                        filter_id = item.product_type_id,
+                        filter_item_to_display = item.product_type_name
                     });
                 }
                 break;
             case EDatabaseTableName.PRODUCT_LOT:
                 foreach (var item in _m_lazy_product_lot_not_archived.Value)
                 {
-                    list_search_item.Add(new SearchItem
+                    list_filter_item.Add(new FilterItem
                     {
-                        search_id = item.product_lot_id,
-                        search_item_to_display = item.product_lot_name
+                        filter_id = item.product_lot_id,
+                        filter_item_to_display = item.product_lot_name
                     });
                 }
                 break;
         }
 
-        return list_search_item;
+        return list_filter_item;
     }
 
     /// <summary>
-    /// Retrieves a collection of search items representing available years.
+    /// Retrieves a collection of filter items representing available years.
     /// </summary>
-    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="SearchItem"/> objects.</returns>
-    public ObservableCollection<SearchItem> getListYears()
+    /// <returns>An <see cref="ObservableCollection{T}"/> of <see cref="FilterItem"/> objects.</returns>
+    public ObservableCollection<FilterItem> getListYears()
     {
         var years = _m_receipt_model.getExistingYear();
 
@@ -246,23 +246,23 @@ public class ResumeModel
             return [];
         }
 
-        var list_search_year = new ObservableCollection<SearchItem> {
+        var list_filter_year = new ObservableCollection<FilterItem> {
             new() {
-                search_year = string.Empty,
-                search_item_to_display = string.Empty
+                filter_year = string.Empty,
+                filter_item_to_display = string.Empty
             }
         };
 
         foreach (string year in years)
         {
-            list_search_year.Add(new SearchItem
+            list_filter_year.Add(new FilterItem
             {
-                search_year = year,
-                search_item_to_display = string.Empty
+                filter_year = year,
+                filter_item_to_display = string.Empty
             });
         }
 
-        return list_search_year;
+        return list_filter_year;
     }
 
     /// <summary>
@@ -302,18 +302,18 @@ public class ResumeModel
     /// Calculates detailed transaction metrics from profit items.
     /// </summary>
     /// <param name="profit_items">Collection of profit items to calculate from.</param>
-    /// <param name="search_item">Current search item for validation.</param>
+    /// <param name="filter_item">Current filter item for validation.</param>
     /// <param name="total_profit">Total profit value for average calculation.</param>
     /// <param name="includeFreeItems">If true, includes items with price of 0 (gifts/free) in average calculations.</param>
     /// <returns>Tuple containing (total_weight_kg, total_quantity, average_price_per_unit, average_price_per_weight).</returns>
     public (decimal total_weight_kg, int total_quantity, decimal average_price_per_unit, decimal average_price_per_weight) calculateDetailTransactions(
         ObservableCollection<ReceiptProfitDetailedItem>? profit_items,
-        SearchItem? search_item,
+        FilterItem? filter_item,
         decimal total_profit,
         bool includeFreeItems = false)
     {
-        // Reset values for invalid search criteria
-        if (search_item == null || search_item.search_id == 0)
+        // Reset values for invalid filter criteria
+        if (filter_item == null || filter_item.filter_id == 0)
         {
             return (0.00M, 0, 0.00M, 0.00M);
         }

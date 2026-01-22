@@ -1,7 +1,7 @@
 ﻿using Mams_App.src.configurations;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
-using Mams_App.src.search;
+using Mams_App.src.filters;
 using Mams_App.src.services;
 using Mams_App.src.settings;
 using System.Windows;
@@ -20,7 +20,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         SPageNavigationController.initialize(MainFrame);
-        SSearchModel.initialize();
+        SFilterModel.initialize();
 
         loadWindowSettings();
 

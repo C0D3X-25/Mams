@@ -6,7 +6,7 @@ using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.profits;
-using Mams_App.src.search;
+using Mams_App.src.filters;
 using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -28,15 +28,15 @@ public class ResumeController : ABaseController
 
     private readonly ResumeModel _m_resume_model = new();
 
-    // Bind directly to SSearchModel instead of local backing fields
+    // Bind directly to SFilterModel instead of local backing fields
     public ObservableCollection<DatabaseTablesNameItem>? m_list_table
     {
-        get => SSearchModel.m_list_table;
+        get => SFilterModel.m_list_table;
         set
         {
-            if (SSearchModel.m_list_table != value)
+            if (SFilterModel.m_list_table != value)
             {
-                SSearchModel.m_list_table = value;
+                SFilterModel.m_list_table = value;
                 onPropertyChanged();
             }
         }
@@ -44,13 +44,13 @@ public class ResumeController : ABaseController
 
     public DatabaseTablesNameItem? m_selected_table
     {
-        get => SSearchModel.m_selected_table;
+        get => SFilterModel.m_selected_table;
         set
         {
-            if (SSearchModel.m_selected_table != value)
+            if (SFilterModel.m_selected_table != value)
             {
-                SSearchModel.m_selected_table = value;
-                updateListSearchItems();
+                SFilterModel.m_selected_table = value;
+                updateListFilterItems();
                 updateDisplayedProfitsAndFeesLists();
                 onPropertyChanged();
                 onPropertyChanged(nameof(m_is_search_item_enabled));
@@ -73,54 +73,54 @@ public class ResumeController : ABaseController
         }
     }
 
-    public ObservableCollection<SearchItem>? m_list_search_item
+    public ObservableCollection<FilterItem>? m_list_filter_item
     {
-        get => SSearchModel.m_list_search_item;
+        get => SFilterModel.m_list_filter_item;
         set
         {
-            if (SSearchModel.m_list_search_item != value)
+            if (SFilterModel.m_list_filter_item != value)
             {
-                SSearchModel.m_list_search_item = value;
+                SFilterModel.m_list_filter_item = value;
                 onPropertyChanged();
             }
         }
     }
 
-    public SearchItem? m_selected_search_item
+    public FilterItem? m_selected_filter_item
     {
-        get => SSearchModel.m_selected_search_item;
+        get => SFilterModel.m_selected_filter_item;
         set
         {
-            if (SSearchModel.m_selected_search_item != value)
+            if (SFilterModel.m_selected_filter_item != value)
             {
-                SSearchModel.m_selected_search_item = value;
+                SFilterModel.m_selected_filter_item = value;
                 updateDisplayedProfitsAndFeesLists();
                 onPropertyChanged();
             }
         }
     }
 
-    public ObservableCollection<SearchItem>? m_list_year
+    public ObservableCollection<FilterItem>? m_list_year
     {
-        get => SSearchModel.m_list_year;
+        get => SFilterModel.m_list_year;
         set
         {
-            if (SSearchModel.m_list_year != value)
+            if (SFilterModel.m_list_year != value)
             {
-                SSearchModel.m_list_year = value;
+                SFilterModel.m_list_year = value;
                 onPropertyChanged();
             }
         }
     }
 
-    public SearchItem? m_selected_year
+    public FilterItem? m_selected_year
     {
-        get => SSearchModel.m_selected_year;
+        get => SFilterModel.m_selected_year;
         set
         {
-            if (SSearchModel.m_selected_year != value)
+            if (SFilterModel.m_selected_year != value)
             {
-                SSearchModel.m_selected_year = value;
+                SFilterModel.m_selected_year = value;
                 updateDisplayedProfitsAndFeesLists();
                 onPropertyChanged();
             }
@@ -393,7 +393,7 @@ public class ResumeController : ABaseController
         m_sort_profit_command = new RelayCommand(sortProfitByColumn);
         m_sort_fee_command = new RelayCommand(sortFeeByColumn);
 
-        loadStaticSearchData();
+        loadStaticFilterData();
         updateDisplayedProfitsAndFeesLists();
     }
 
@@ -440,9 +440,9 @@ public class ResumeController : ABaseController
             m_selected_table = m_list_table[0];
         }
 
-        if (m_list_search_item?.Count > 0)
+        if (m_list_filter_item?.Count > 0)
         {
-            m_selected_search_item = m_list_search_item[0];
+            m_selected_filter_item = m_list_filter_item[0];
         }
 
         if (m_list_year?.Count > 0)
@@ -458,43 +458,43 @@ public class ResumeController : ABaseController
 
     private bool isFeeItemSelected(object? arg) => m_selected_fee_item != null;
 
-    private void loadStaticSearchData()
+    private void loadStaticFilterData()
     {
-        if (SSearchModel.m_list_table == null)
+        if (SFilterModel.m_list_table == null)
         {
-            SSearchModel.m_list_table = _m_resume_model.m_search_tables;
+            SFilterModel.m_list_table = _m_resume_model.m_filter_tables;
         }
 
-        if (SSearchModel.m_list_search_item == null)
+        if (SFilterModel.m_list_filter_item == null)
         {
-            updateListSearchItems();
+            updateListFilterItems();
         }
 
-        if (SSearchModel.m_list_year == null)
+        if (SFilterModel.m_list_year == null)
         {
-            SSearchModel.m_list_year = _m_resume_model.getListYears();
+            SFilterModel.m_list_year = _m_resume_model.getListYears();
         }
 
         // Set default selections to element 0 if not already set
-        if (SSearchModel.m_selected_table == null && SSearchModel.m_list_table?.Count > 0)
+        if (SFilterModel.m_selected_table == null && SFilterModel.m_list_table?.Count > 0)
         {
-            SSearchModel.m_selected_table = SSearchModel.m_list_table[0];
+            SFilterModel.m_selected_table = SFilterModel.m_list_table[0];
         }
 
-        if (SSearchModel.m_selected_search_item == null && SSearchModel.m_list_search_item?.Count > 0)
+        if (SFilterModel.m_selected_filter_item == null && SFilterModel.m_list_filter_item?.Count > 0)
         {
-            SSearchModel.m_selected_search_item = SSearchModel.m_list_search_item[0];
+            SFilterModel.m_selected_filter_item = SFilterModel.m_list_filter_item[0];
         }
 
-        if (SSearchModel.m_selected_year == null && SSearchModel.m_list_year?.Count > 0)
+        if (SFilterModel.m_selected_year == null && SFilterModel.m_list_year?.Count > 0)
         {
-            SSearchModel.m_selected_year = SSearchModel.m_list_year[0];
+            SFilterModel.m_selected_year = SFilterModel.m_list_year[0];
         }
 
         onPropertyChanged(nameof(m_list_table));
         onPropertyChanged(nameof(m_selected_table));
-        onPropertyChanged(nameof(m_list_search_item));
-        onPropertyChanged(nameof(m_selected_search_item));
+        onPropertyChanged(nameof(m_list_filter_item));
+        onPropertyChanged(nameof(m_selected_filter_item));
         onPropertyChanged(nameof(m_list_year));
         onPropertyChanged(nameof(m_selected_year));
         onPropertyChanged(nameof(m_is_search_item_enabled));
@@ -502,14 +502,14 @@ public class ResumeController : ABaseController
 
     private void updateDisplayedProfitsAndFeesLists()
     {
-        var search_item = m_selected_search_item ?? new SearchItem();
+        var filter_item = m_selected_filter_item ?? new FilterItem();
         var table_item = m_selected_table ?? new DatabaseTablesNameItem();
-        var year_item = m_selected_year ?? new SearchItem();
+        var year_item = m_selected_year ?? new FilterItem();
 
-        search_item.search_table = table_item.m_name_in_database;
-        search_item.search_year = year_item.search_year;
+        filter_item.filter_table = table_item.m_name_in_database;
+        filter_item.filter_year = year_item.filter_year;
 
-        var resume_item = _m_resume_model.getFilteredResume(search_item);
+        var resume_item = _m_resume_model.getFilteredResume(filter_item);
 
         m_list_profit_item = resume_item.profit_items;
         m_list_fee_item = resume_item.fee_items;
@@ -535,7 +535,7 @@ public class ResumeController : ABaseController
     {
         var transaction_details = _m_resume_model.calculateDetailTransactions(
             m_list_profit_item,
-            m_selected_search_item,
+            m_selected_filter_item,
             m_total_profit,
             m_include_free_items);
 
@@ -545,13 +545,13 @@ public class ResumeController : ABaseController
         m_average_price_per_weight = transaction_details.average_price_per_weight;
     }
 
-    private void updateListSearchItems()
+    private void updateListFilterItems()
     {
         if (m_selected_table != null)
         {
-            SSearchModel.m_list_search_item = _m_resume_model.getListSearchItems(m_selected_table);
-            SSearchModel.m_list_year = _m_resume_model.getListYears();
-            onPropertyChanged(nameof(m_list_search_item));
+            SFilterModel.m_list_filter_item = _m_resume_model.getListFilterItems(m_selected_table);
+            SFilterModel.m_list_year = _m_resume_model.getListYears();
+            onPropertyChanged(nameof(m_list_filter_item));
             onPropertyChanged(nameof(m_list_year));
         }
     }
