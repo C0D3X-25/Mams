@@ -17,8 +17,10 @@ namespace Mams_App.src.databaseOperations;
 /// </summary>
 public abstract class SDatabaseModel : ABaseModel
 {
-
     private const string DEFAULT_ARCHIVE_DATE = "1901-01-01";
+
+    // Cache for property info to avoid repeated reflection lookups
+    private static readonly Dictionary<Type, Dictionary<string, PropertyInfo>> s_property_cache = [];
 
     /// <summary>
     /// Retrieves all records from a specified database table and converts them into a collection of typed objects.
@@ -89,9 +91,6 @@ public abstract class SDatabaseModel : ABaseModel
         return deleteOperation(id, field_id, string.Empty, table, delete_type);
     }
 
-    // Cache for property info to avoid repeated reflection lookups
-    private static readonly Dictionary<Type, Dictionary<string, PropertyInfo>> s_property_cache = [];
-
     /// <summary>
     /// Converts data from a DataTable to a collection of typed objects by mapping column names to object properties.
     /// </summary>
@@ -142,7 +141,7 @@ public abstract class SDatabaseModel : ABaseModel
         catch (Exception ex)
         {
             MessageBox.Show($"Error converting data: {ex.Message}");
-            return new ObservableCollection<T>();
+            return [];
         }
     }
 
@@ -162,44 +161,37 @@ public abstract class SDatabaseModel : ABaseModel
         string table,
         EDeleteItemOperation delete_type)
     {
-        string query;
-
-        switch (delete_type)
+        // Validate archive field for operations that require it
+        if (delete_type is EDeleteItemOperation.SOFT_DELETE or EDeleteItemOperation.SAFE_DELETE or EDeleteItemOperation.RESTORE)
         {
-            // Archive the record
-            case EDeleteItemOperation.SOFT_DELETE:
-                if (!isArchiveFieldProvided(field_archive))
-                {
-                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD,
-                        $"SDatabaseModel.deleteOperation: Archive field is required for SOFT_DELETE on table '{table}'");
-                }
-                query = $"UPDATE {table} SET {field_archive} = CURDATE() WHERE {field_id} = @id";
-                break;
-            // Complete delete of the record
-            case EDeleteItemOperation.HARD_DELETE:
-                query = $"DELETE FROM {table} WHERE {field_id} = @id";
-                break;
-            // Check if the record is linked in another table, then SOFT_DELETE or HARD_DELETE
-            case EDeleteItemOperation.SAFE_DELETE:
-                if (!isArchiveFieldProvided(field_archive))
-                {
-                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD,
-                        $"SDatabaseModel.deleteOperation: Archive field is required for SAFE_DELETE on table '{table}'");
-                }
-                query = $"DELETE FROM {table} WHERE {field_id} = @id";
-                break;
-            // Restore the record from the archive
-            case EDeleteItemOperation.RESTORE:
-                if (!isArchiveFieldProvided(field_archive))
-                {
-                    return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD,
-                        $"SDatabaseModel.deleteOperation: Archive field is required for RESTORE on table '{table}'");
-                }
-                query = $"UPDATE {table} SET {field_archive} = NULL WHERE {field_id} = @id";
-                break;
-            default:
-                return ResponseDeleteItem.Failure(EErrors.INVALID_OPERATION,
-                    $"SDatabaseModel.deleteOperation: Invalid delete operation type '{delete_type}' on table '{table}'");
+            if (!isArchiveFieldProvided(field_archive))
+            {
+                return ResponseDeleteItem.Failure(EErrors.MISSING_ARCHIVE_FIELD,
+                    $"SDatabaseModel.deleteOperation: Archive field is required for {delete_type} on table '{table}'");
+            }
+        }
+
+        // For SAFE_DELETE, check references first and decide which operation to perform
+        if (delete_type == EDeleteItemOperation.SAFE_DELETE)
+        {
+            bool is_referenced = isReferencedByOtherTables(table, field_id, id);
+            return is_referenced
+                ? deleteOperation(id, field_id, field_archive, table, EDeleteItemOperation.SOFT_DELETE)
+                : deleteOperation(id, field_id, field_archive, table, EDeleteItemOperation.HARD_DELETE);
+        }
+
+        string? query = delete_type switch
+        {
+            EDeleteItemOperation.SOFT_DELETE => $"UPDATE {table} SET {field_archive} = CURDATE() WHERE {field_id} = @id",
+            EDeleteItemOperation.HARD_DELETE => $"DELETE FROM {table} WHERE {field_id} = @id",
+            EDeleteItemOperation.RESTORE => $"UPDATE {table} SET {field_archive} = NULL WHERE {field_id} = @id",
+            _ => null
+        };
+
+        if (query == null)
+        {
+            return ResponseDeleteItem.Failure(EErrors.INVALID_OPERATION,
+                $"SDatabaseModel.deleteOperation: Invalid delete operation type '{delete_type}' on table '{table}'");
         }
 
         bool need_transaction = !isTransactionActive();
@@ -210,7 +202,6 @@ public abstract class SDatabaseModel : ABaseModel
 
         try
         {
-            // Use transaction connection directly since we already have a transaction started
             executeWithConnection(connection =>
             {
                 using var cmd = new MySqlCommand(query, connection, m_transaction);
@@ -226,24 +217,19 @@ public abstract class SDatabaseModel : ABaseModel
         }
         catch (MySqlException ex)
         {
-            // In case of a foreign key constraint violation, try soft delete if archive field is provided
-            if ((ex.ErrorCode == MySqlErrorCode.RowIsReferenced2 ||
-                 ex.ErrorCode == MySqlErrorCode.RowIsReferenced) &&
-                isArchiveFieldProvided(field_archive))
-            {
-                clearTransaction();
-                return deleteOperation(
-                    id,
-                    field_id,
-                    field_archive,
-                    table,
-                    EDeleteItemOperation.SOFT_DELETE
-                );
-            }
             if (need_transaction)
             {
                 rollbackTransaction();
             }
+
+            // In case of a foreign key constraint violation during HARD_DELETE, fall back to soft delete
+            if ((ex.ErrorCode == MySqlErrorCode.RowIsReferenced2 || ex.ErrorCode == MySqlErrorCode.RowIsReferenced) &&
+                delete_type == EDeleteItemOperation.HARD_DELETE &&
+                isArchiveFieldProvided(field_archive))
+            {
+                return deleteOperation(id, field_id, field_archive, table, EDeleteItemOperation.SOFT_DELETE);
+            }
+
             return ResponseDeleteItem.MySqlFailure(ex.ErrorCode, ex.Message);
         }
     }
@@ -276,8 +262,7 @@ public abstract class SDatabaseModel : ABaseModel
         if (!SDataValidation.isIdValid(id)
             || string.IsNullOrWhiteSpace(field_id)
             || string.IsNullOrWhiteSpace(table)
-            || delete_type == EDeleteItemOperation.NONE
-            )
+            || delete_type == EDeleteItemOperation.NONE)
         {
             MessageBox.Show("Invalid parameters provided for delete operation.");
             return false;
@@ -316,13 +301,12 @@ public abstract class SDatabaseModel : ABaseModel
 
         string query = query_builder.ToString();
 
-        // Use ExecuteWithConnection to get a connection from the pool
         return executeWithConnection<DataTable?>(connection =>
         {
             try
             {
                 DataTable data_table = new();
-                using var cmd = new MySqlCommand(query, connection);
+                using var cmd = new MySqlCommand(query, connection, m_transaction);
                 using var reader = cmd.ExecuteReader();
                 data_table.Load(reader);
 
