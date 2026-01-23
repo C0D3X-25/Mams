@@ -423,5 +423,27 @@
     "ItemType.ProductCategory": "Catégorie",
     "ItemType.ProductShape": "Forme",
     "ItemType.Fee": "Frais",
-    "ItemType.Profit": "Profit"
+    "ItemType.Profit": "Profit",
+    
+    "_comment_launcher": "Launcher - Startup launcher window messages",
+    "Launcher.CheckingMariaDb": "Vérification de l'installation de la base de données...",
+    "Launcher.InstallingMariaDb": "Installation de la base de données...",
+    "Launcher.InitializingDatabase": "Initialisation de la base de données...",
+    "Launcher.StartingMariaDb": "Démarrage du serveur de base de données...",
+    "Launcher.CreatingDatabase": "Création de la base de données...",
+    "Launcher.CheckingUpdates": "Vérification des mises à jour...",
+    "Launcher.Starting": "Démarrage de l'application...",
+    "Launcher.DownloadingMariaDb": "Téléchargement de MariaDB...",
+    "Launcher.ExtractingMariaDb": "Extraction de MariaDB...",
+    "Launcher.DownloadingUpdate": "Téléchargement de la mise à jour...",
+    "Launcher.ExtractingUpdate": "Extraction de la mise à jour...",
+    "Launcher.MariaDbSetupRequired.Message": "Le serveur de base de données n'est pas installé.\n\nCette application nécessite MariaDB pour stocker les données.\nMariaDB Portable sera téléchargé et installé automatiquement.\n\nTaille du téléchargement: ~100 Mo\n\nVoulez-vous procéder à l'installation?",
+    "Launcher.MariaDbInstallFailed": "Échec du téléchargement de MariaDB.\nVeuillez vérifier votre connexion Internet et réessayer.",
+    "Launcher.MariaDbInitFailed": "Échec de l'initialisation de la base de données.\nVeuillez essayer de redémarrer l'application.",
+    "Launcher.MariaDbStartFailed": "Échec du démarrage du serveur de base de données.\nVeuillez essayer de redémarrer l'application.",
+    "Launcher.MariaDbConnectionFailed": "Le serveur de base de données a démarré mais ne répond pas.\nVeuillez essayer de redémarrer l'application.",
+    "Launcher.DatabaseCreationFailed": "Échec de la création de la base de données.\nVeuillez essayer de redémarrer l'application.",
+    "Launcher.UpdateAvailable.Message": "Une nouvelle version ({0}) est disponible!\n\nVersion actuelle: v{1}\n\nVoulez-vous télécharger et installer la mise à jour?\nL'application redémarrera après la mise à jour.",
+    "Launcher.Error.Title": "Erreur de démarrage",
+    "Launcher.Error.Message": "Échec du démarrage de l'application:"
 }

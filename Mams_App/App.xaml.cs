@@ -1,6 +1,7 @@
 using Mams_App.src.configurations;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.services;
+using Mams_App.src.views;
 using MySqlConnector;
 using System.Globalization;
 using System.Windows;
@@ -12,6 +13,8 @@ namespace Mams_App;
 /// </summary>
 public partial class App : Application
 {
+    private LauncherWindow? _launcherWindow;
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -20,11 +23,11 @@ public partial class App : Application
         var config = SAppConfigService.loadConfig();
         setCultureFromConfig(config);
 
-        // Prevent the MainWindow from showing automatically
+        // Prevent automatic shutdown when launcher closes
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
-        // Start initialization
-        initializeApplicationAsync();
+        // Show launcher window and start initialization
+        showLauncherAndInitialize();
     }
 
     /// <summary>
@@ -59,47 +62,56 @@ public partial class App : Application
     }
 
     /// <summary>
-    /// Initializes the application asynchronously.
+    /// Shows the launcher window and starts the initialization process.
     /// </summary>
-    private async void initializeApplicationAsync()
+    private void showLauncherAndInitialize()
     {
-        try
+        _launcherWindow = new LauncherWindow();
+
+        _launcherWindow.InitializationCompleted += (s, e) =>
         {
-            // Ensure MariaDB Portable is installed, running, and database is ready
-            bool mariaDbReady = await SMariaDbPortableService.ensureMariaDbReadyAsync();
-
-            if (!mariaDbReady)
-            {
-                // MariaDB setup failed, exit the application
-                Dispatcher.Invoke(() => Shutdown(1));
-                return;
-            }
-
-            // Perform startup backup
-            performBackup("Startup");
-
-            // MariaDB is ready, now show the main window on the UI thread
             Dispatcher.Invoke(() =>
             {
-                ShutdownMode = ShutdownMode.OnMainWindowClose;
+                // Perform startup backup
+                performBackup("Startup");
 
-                var mainWindow = new Mams_App.src.views.MainWindow();
+                // Show main window
+                ShutdownMode = ShutdownMode.OnMainWindowClose;
+                var mainWindow = new MainWindow();
                 MainWindow = mainWindow;
                 mainWindow.Show();
+
+                // Close launcher
+                _launcherWindow?.Close();
             });
-        }
-        catch (Exception ex)
+        };
+
+        _launcherWindow.InitializationFailed += (s, e) =>
         {
             Dispatcher.Invoke(() =>
             {
-                MessageBox.Show(
-                    $"Failed to start application:\n\n{ex.Message}",
-                    "Startup Error",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                _launcherWindow?.Close();
                 Shutdown(1);
             });
-        }
+        };
+
+        // Subscribe to ContentRendered before showing the window
+        // ContentRendered fires after the window is fully rendered and ready
+        _launcherWindow.ContentRendered += async (s, e) =>
+        {
+            try
+            {
+                await _launcherWindow.startInitializationAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[App] Initialization error: {ex.Message}");
+                _launcherWindow?.Close();
+                Shutdown(1);
+            }
+        };
+
+        _launcherWindow.Show();
     }
 
     /// <summary>

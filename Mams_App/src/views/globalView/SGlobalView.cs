@@ -40,6 +40,16 @@ public static class SGlobalView
 
     #endregion
 
+    #region Size - Launcher Window
+
+    /// <summary>Default width for the launcher window.</summary>
+    public const double LAUNCHER_WINDOW_WIDTH = 450;
+
+    /// <summary>Default height for the launcher window.</summary>
+    public const double LAUNCHER_WINDOW_HEIGHT = 320;
+
+    #endregion
+
     #region Size - Pages (Designer dimensions)
 
     /// <summary>Default design width for pages (matches main window content area).</summary>

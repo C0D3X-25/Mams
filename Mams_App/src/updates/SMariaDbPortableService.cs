@@ -110,287 +110,73 @@ public static class SMariaDbPortableService
     }
 
     /// <summary>
-    /// Ensures MariaDB Portable is installed, running, and database is initialized.
-    /// Shows progress dialogs to the user.
+    /// Downloads and installs MariaDB Portable with progress reporting.
     /// </summary>
-    /// <returns>True if MariaDB is ready to use, false if setup failed.</returns>
-    public static async Task<bool> ensureMariaDbReadyAsync()
-    {
-        try
-        {
-            // Step 1: Check if our portable MariaDB is installed
-            if (!isInstalled())
-            {
-                var installResult = MessageBox.Show(
-                    Loc.Get("MariaDb.SetupRequired.Message") ?? 
-                    "MariaDB database server is not installed.\n\n" +
-                    "This application requires MariaDB to store data.\n" +
-                    "MariaDB Portable will be downloaded and installed automatically.\n\n" +
-                    "Download size: ~100 MB\n\n" +
-                    "Would you like to proceed with the installation?",
-                    Loc.Get("MariaDb.SetupRequired.Title") ?? "Database Setup Required",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
-
-                if (installResult != MessageBoxResult.Yes)
-                {
-                    return false;
-                }
-
-                if (!await downloadAndExtractMariaDbAsync())
-                {
-                    MessageBox.Show(
-                        Loc.Get("MariaDb.InstallFailed.Message") ??
-                        "Failed to download MariaDB.\n\n" +
-                        "Please check your internet connection and try again.",
-                        Loc.Get("MariaDb.InstallFailed.Title") ?? "Installation Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return false;
-                }
-            }
-
-            // Step 2: Initialize data directory if needed
-            if (!isDataInitialized())
-            {
-                Debug.WriteLine("[MariaDbPortable] Initializing data directory...");
-                if (!initializeDataDirectory())
-                {
-                    MessageBox.Show(
-                        Loc.Get("MariaDb.InitFailed.Message") ??
-                        "Failed to initialize MariaDB data directory.\n\n" +
-                        "Please try restarting the application.",
-                        Loc.Get("MariaDb.InitFailed.Title") ?? "Initialization Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return false;
-                }
-            }
-
-            // Step 3: Start MariaDB if not running on our port
-            if (!isRunning())
-            {
-                Debug.WriteLine("[MariaDbPortable] Starting MariaDB...");
-                if (!startMariaDb())
-                {
-                    MessageBox.Show(
-                        Loc.Get("MariaDb.StartFailed.Message") ??
-                        "Failed to start MariaDB server.\n\n" +
-                        "Please try restarting the application.",
-                        Loc.Get("MariaDb.StartFailed.Title") ?? "Startup Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return false;
-                }
-
-                // Wait for MariaDB to be ready
-                if (!await waitForMariaDbReadyAsync(30))
-                {
-                    MessageBox.Show(
-                        Loc.Get("MariaDb.ConnectionFailed.Message") ??
-                        "MariaDB server started but is not responding.\n\n" +
-                        "Please try restarting the application.",
-                        Loc.Get("MariaDb.ConnectionFailed.Title") ?? "Connection Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return false;
-                }
-            }
-
-            // Step 4: Create database and run init.sql if needed
-            if (!isDatabaseCreated())
-            {
-                Debug.WriteLine("[MariaDbPortable] Creating database...");
-                if (!await initializeDatabaseAsync())
-                {
-                    MessageBox.Show(
-                        Loc.Get("MariaDb.DatabaseCreationFailed.Message") ??
-                        "Failed to create the application database.\n\n" +
-                        "Please try restarting the application.",
-                        Loc.Get("MariaDb.DatabaseCreationFailed.Title") ?? "Database Creation Failed",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                    return false;
-                }
-            }
-
-            Debug.WriteLine("[MariaDbPortable] MariaDB is ready!");
-            return true;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"[MariaDbPortable] Setup failed: {ex.Message}");
-            MessageBox.Show(
-                Loc.Get("MariaDb.SetupError.Message", ex.Message) ??
-                $"An error occurred during database setup:\n\n{ex.Message}",
-                Loc.Get("MariaDb.SetupError.Title") ?? "Setup Error",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// Downloads and extracts MariaDB Portable.
-    /// </summary>
-    private static async Task<bool> downloadAndExtractMariaDbAsync()
+    /// <param name="progressCallback">Callback for progress updates (status message, percentage 0-100 or null for indeterminate)</param>
+    /// <returns>True if installation succeeded, false otherwise.</returns>
+    public static async Task<bool> downloadAndInstallMariaDbAsync(Action<string, double?>? progressCallback = null)
     {
         var tempZipPath = Path.Combine(Path.GetTempPath(), $"mariadb-portable-{Guid.NewGuid()}.zip");
-
-        // Create cancellation token source for this download
-        s_downloadCancellationTokenSource?.Cancel();
-        s_downloadCancellationTokenSource?.Dispose();
-        s_downloadCancellationTokenSource = new CancellationTokenSource();
-        var cancellationToken = s_downloadCancellationTokenSource.Token;
-
-        // Create progress window
-        var progressWindow = new Window
-        {
-            Title = Loc.Get("MariaDb.Downloading.Title") ?? "Downloading MariaDB...",
-            Width = 450,
-            Height = 180,
-            WindowStartupLocation = WindowStartupLocation.CenterScreen,
-            ResizeMode = ResizeMode.NoResize,
-            WindowStyle = WindowStyle.ToolWindow
-        };
-
-        var stackPanel = new StackPanel
-        {
-            Margin = new Thickness(20),
-            VerticalAlignment = VerticalAlignment.Center
-        };
-
-        var statusText = new TextBlock
-        {
-            Text = Loc.Get("MariaDb.Connecting") ?? "Connecting to server...",
-            FontSize = 14,
-            Margin = new Thickness(0, 0, 0, 10)
-        };
-
-        var progressBar = new ProgressBar
-        {
-            Height = 25,
-            Minimum = 0,
-            Maximum = 100,
-            Value = 0
-        };
-
-        var progressText = new TextBlock
-        {
-            Text = "0%",
-            FontSize = 12,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            Margin = new Thickness(0, 5, 0, 0),
-            Foreground = System.Windows.Media.Brushes.Gray
-        };
-
-        var cancelButton = new Button
-        {
-            Content = Loc.Get("Common.Cancel") ?? "Cancel",
-            Width = 80,
-            Height = 28,
-            Margin = new Thickness(0, 10, 0, 0),
-            HorizontalAlignment = HorizontalAlignment.Center
-        };
-
-        bool userCancelled = false;
-        cancelButton.Click += (s, e) =>
-        {
-            userCancelled = true;
-            s_downloadCancellationTokenSource?.Cancel();
-            progressWindow.Close();
-        };
-
-        // Also handle window closing (X button)
-        progressWindow.Closing += (s, e) =>
-        {
-            if (!userCancelled && !cancellationToken.IsCancellationRequested)
-            {
-                userCancelled = true;
-                s_downloadCancellationTokenSource?.Cancel();
-            }
-        };
-
-        stackPanel.Children.Add(statusText);
-        stackPanel.Children.Add(progressBar);
-        stackPanel.Children.Add(progressText);
-        stackPanel.Children.Add(cancelButton);
-        progressWindow.Content = stackPanel;
-        progressWindow.Show();
 
         try
         {
             // Download MariaDB
             Debug.WriteLine($"[MariaDbPortable] Downloading from: {MARIADB_DOWNLOAD_URL}");
-            statusText.Text = Loc.Get("MariaDb.Downloading") ?? "Downloading MariaDB...";
+            progressCallback?.Invoke(Loc.Get("Launcher.DownloadingMariaDb") ?? "Downloading MariaDB...", null);
 
-            using (var response = await s_httpClient.GetAsync(MARIADB_DOWNLOAD_URL, HttpCompletionOption.ResponseHeadersRead, cancellationToken))
+            using (var response = await s_httpClient.GetAsync(MARIADB_DOWNLOAD_URL, HttpCompletionOption.ResponseHeadersRead))
             {
                 response.EnsureSuccessStatusCode();
 
                 var totalBytes = response.Content.Headers.ContentLength ?? -1;
                 var canReportProgress = totalBytes > 0;
 
-                using (var contentStream = await response.Content.ReadAsStreamAsync(cancellationToken))
+                using (var contentStream = await response.Content.ReadAsStreamAsync())
                 using (var fileStream = new FileStream(tempZipPath, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true))
                 {
-                    // Use larger buffer for better download performance
-                    var buffer = new byte[65536]; // 64KB buffer instead of 8KB
+                    var buffer = new byte[65536];
                     long downloadedBytes = 0;
                     long lastReportedBytes = 0;
-                    const long progressReportInterval = 102400; // Update UI every 100KB
+                    const long progressReportInterval = 102400;
                     int bytesRead;
 
-                    while ((bytesRead = await contentStream.ReadAsync(buffer, cancellationToken)) > 0)
+                    while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
                     {
-                        cancellationToken.ThrowIfCancellationRequested();
-
-                        await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
+                        await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
                         downloadedBytes += bytesRead;
 
-                        // Only update UI periodically to avoid slowing down the download
                         if (downloadedBytes - lastReportedBytes >= progressReportInterval)
                         {
                             lastReportedBytes = downloadedBytes;
-                            
+
                             if (canReportProgress)
                             {
                                 var percentage = (double)downloadedBytes / totalBytes * 100;
-                                progressBar.Value = percentage;
-                                progressText.Text = $"{percentage:F1}% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
+                                var statusText = $"{Loc.Get("Launcher.DownloadingMariaDb") ?? "Downloading MariaDB..."}\n{percentage:F1}% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
+                                progressCallback?.Invoke(statusText, percentage);
                             }
                             else
                             {
-                                progressText.Text = $"Downloaded: {formatBytes(downloadedBytes)}";
-                                progressBar.IsIndeterminate = true;
+                                progressCallback?.Invoke($"{Loc.Get("Launcher.DownloadingMariaDb") ?? "Downloading MariaDB..."}\n{formatBytes(downloadedBytes)}", null);
                             }
 
-                            // Yield to allow UI to update, but don't add artificial delay
                             await Task.Yield();
                         }
                     }
 
-                    // Final progress update
                     if (canReportProgress)
                     {
-                        progressBar.Value = 100;
-                        progressText.Text = $"100% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
+                        progressCallback?.Invoke($"{Loc.Get("Launcher.DownloadingMariaDb") ?? "Downloading MariaDB..."}\n100%", 100);
                     }
                 }
 
                 Debug.WriteLine($"[MariaDbPortable] Download complete");
             }
 
-            // Check cancellation before extraction
-            cancellationToken.ThrowIfCancellationRequested();
+            // Extract phase
+            progressCallback?.Invoke(Loc.Get("Launcher.ExtractingMariaDb") ?? "Extracting MariaDB...", null);
+            await Task.Delay(100);
 
-            // Extract phase - file stream is now closed
-            statusText.Text = Loc.Get("MariaDb.Extracting") ?? "Extracting MariaDB...";
-            progressBar.IsIndeterminate = true;
-            progressText.Text = Loc.Get("MariaDb.PleaseWait") ?? "Please wait...";
-            await Task.Delay(100, cancellationToken);
-
-            // Extract to temp location first
             var tempExtractPath = Path.Combine(Path.GetTempPath(), $"mariadb-extract-{Guid.NewGuid()}");
             if (Directory.Exists(tempExtractPath))
             {
@@ -400,10 +186,6 @@ public static class SMariaDbPortableService
             Debug.WriteLine($"[MariaDbPortable] Extracting to: {tempExtractPath}");
             ZipFile.ExtractToDirectory(tempZipPath, tempExtractPath);
 
-            // Check cancellation after extraction
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Find the extracted folder (it's usually named mariadb-version-winx64)
             var extractedFolders = Directory.GetDirectories(tempExtractPath);
             if (extractedFolders.Length == 0)
             {
@@ -412,7 +194,6 @@ public static class SMariaDbPortableService
 
             var sourcePath = extractedFolders[0];
 
-            // Move to final location
             if (Directory.Exists(MariaDbPath))
             {
                 Directory.Delete(MariaDbPath, true);
@@ -435,25 +216,10 @@ public static class SMariaDbPortableService
             Debug.WriteLine("[MariaDbPortable] Installation complete");
             return true;
         }
-        catch (OperationCanceledException)
-        {
-            Debug.WriteLine("[MariaDbPortable] Download cancelled by user");
-
-            // Cleanup partial download
-            try
-            {
-                if (File.Exists(tempZipPath))
-                    File.Delete(tempZipPath);
-            }
-            catch { }
-
-            return false;
-        }
         catch (Exception ex)
         {
             Debug.WriteLine($"[MariaDbPortable] Download/extract failed: {ex.Message}");
 
-            // Try to cleanup on failure
             try
             {
                 if (File.Exists(tempZipPath))
@@ -462,23 +228,13 @@ public static class SMariaDbPortableService
             catch { }
 
             return false;
-        }
-        finally
-        {
-            if (progressWindow.IsLoaded)
-            {
-                progressWindow.Close();
-            }
-
-            s_downloadCancellationTokenSource?.Dispose();
-            s_downloadCancellationTokenSource = null;
         }
     }
 
     /// <summary>
     /// Initializes the MariaDB data directory.
     /// </summary>
-    private static bool initializeDataDirectory()
+    public static bool initializeDataDirectory()
     {
         try
         {
@@ -686,7 +442,7 @@ public static class SMariaDbPortableService
     /// <summary>
     /// Waits for MariaDB to be ready to accept connections.
     /// </summary>
-    private static async Task<bool> waitForMariaDbReadyAsync(int timeoutSeconds)
+    public static async Task<bool> waitForMariaDbReadyAsync(int timeoutSeconds)
     {
         var stopwatch = Stopwatch.StartNew();
         while (stopwatch.Elapsed.TotalSeconds < timeoutSeconds)
@@ -706,7 +462,7 @@ public static class SMariaDbPortableService
     /// <summary>
     /// Initializes the application database by running init.sql.
     /// </summary>
-    private static async Task<bool> initializeDatabaseAsync()
+    public static async Task<bool> initializeDatabaseAsync()
     {
         try
         {

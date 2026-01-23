@@ -2,7 +2,6 @@
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.filters;
-using Mams_App.src.services;
 using Mams_App.src.settings;
 using System.Windows;
 using System.Windows.Input;
@@ -28,16 +27,6 @@ public partial class MainWindow : Window
         MainFrame.Navigating += MainFrame_Navigating;
 
         Closing += MainWindow_Closing;
-        Loaded += MainWindow_Loaded;
-    }
-
-    /// <summary>
-    /// Checks for updates when the window is loaded.
-    /// </summary>
-    private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
-    {
-        // Check for updates silently (no message if already up to date)
-        await SUpdateCheckerService.checkForUpdatesAsync(showNoUpdateMessage: false);
     }
 
     #region Menu Event Handlers
