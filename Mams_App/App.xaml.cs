@@ -102,7 +102,7 @@ public partial class App : Application
         {
             try
             {
-                await _launcherWindow.startInitializationAsync();
+                await _launcherWindow.StartInitializationAsync();
             }
             catch (Exception ex)
             {

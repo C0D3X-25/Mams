@@ -1,15 +1,21 @@
+using Mams_App.src.commands;
 using Mams_App.src.configurations;
+using Mams_App.src.controllers;
 using Mams_App.src.localizations;
 using Mams_App.src.services;
 using System.Diagnostics;
+using System.Windows;
+using System.Windows.Input;
 
 namespace Mams_App.src.launcher;
 
 /// <summary>
 /// Controller for the launcher window that handles the application initialization process.
 /// </summary>
-public class LauncherWindowController
+public class LauncherWindowController : ABaseController
 {
+    private TaskCompletionSource<bool>? _userResponseTcs;
+
     /// <summary>
     /// Event raised when initialization is complete and successful.
     /// </summary>
@@ -20,35 +26,150 @@ public class LauncherWindowController
     /// </summary>
     public event EventHandler? InitializationFailed;
 
-    /// <summary>
-    /// Event raised when the status message should be updated.
-    /// </summary>
-    public event Action<string>? StatusChanged;
+    #region Bindable Properties
 
-    /// <summary>
-    /// Event raised when progress should be updated (status, percentage or null for indeterminate).
-    /// </summary>
-    public event Action<string, double?>? ProgressChanged;
+    private string _statusText = "Initializing...";
+    public string StatusText
+    {
+        get => _statusText;
+        set
+        {
+            _statusText = value;
+            onPropertyChanged();
+        }
+    }
 
-    /// <summary>
-    /// Event raised when the progress bar visibility should change.
-    /// </summary>
-    public event Action<bool>? ProgressBarVisibilityChanged;
+    private double _progressValue;
+    public double ProgressValue
+    {
+        get => _progressValue;
+        set
+        {
+            _progressValue = value;
+            onPropertyChanged();
+        }
+    }
 
-    /// <summary>
-    /// Delegate for prompting the user with Yes/No options.
-    /// </summary>
-    public Func<string, string, string, Task<bool>>? PromptUserAsync { get; set; }
+    private bool _isProgressIndeterminate = true;
+    public bool IsProgressIndeterminate
+    {
+        get => _isProgressIndeterminate;
+        set
+        {
+            _isProgressIndeterminate = value;
+            onPropertyChanged();
+        }
+    }
 
-    /// <summary>
-    /// Delegate for hiding the prompt UI.
-    /// </summary>
-    public Action? HidePrompt { get; set; }
+    private Visibility _progressBarVisibility = Visibility.Visible;
+    public Visibility ProgressBarVisibility
+    {
+        get => _progressBarVisibility;
+        set
+        {
+            _progressBarVisibility = value;
+            onPropertyChanged();
+        }
+    }
+
+    private Visibility _actionButtonsVisibility = Visibility.Collapsed;
+    public Visibility ActionButtonsVisibility
+    {
+        get => _actionButtonsVisibility;
+        set
+        {
+            _actionButtonsVisibility = value;
+            onPropertyChanged();
+        }
+    }
+
+    private string _yesButtonText = "Yes";
+    public string YesButtonText
+    {
+        get => _yesButtonText;
+        set
+        {
+            _yesButtonText = value;
+            onPropertyChanged();
+        }
+    }
+
+    private string _noButtonText = "No";
+    public string NoButtonText
+    {
+        get => _noButtonText;
+        set
+        {
+            _noButtonText = value;
+            onPropertyChanged();
+        }
+    }
+
+    private bool _isStartButtonEnabled;
+    public bool IsStartButtonEnabled
+    {
+        get => _isStartButtonEnabled;
+        set
+        {
+            _isStartButtonEnabled = value;
+            onPropertyChanged();
+        }
+    }
+
+    private bool _startWhenReady;
+    public bool StartWhenReady
+    {
+        get => _startWhenReady;
+        set
+        {
+            _startWhenReady = value;
+            onPropertyChanged();
+        }
+    }
+
+    #endregion
+
+    #region Commands
+
+    public ICommand YesCommand { get; }
+    public ICommand NoCommand { get; }
+    public ICommand CloseAppCommand { get; }
+    public ICommand StartAppCommand { get; }
+
+    #endregion
 
     /// <summary>
     /// Gets the current application version.
     /// </summary>
-    public string Version => SVersionService.GetVersion();
+    public string Version => $"v{SVersionService.GetVersion()}";
+
+    public LauncherWindowController()
+    {
+        YesCommand = new RelayCommand(_ => OnYesClicked());
+        NoCommand = new RelayCommand(_ => OnNoClicked());
+        CloseAppCommand = new RelayCommand(_ => OnCloseAppClicked());
+        StartAppCommand = new RelayCommand(_ => OnStartAppClicked(), _ => IsStartButtonEnabled);
+    }
+
+    private void OnYesClicked()
+    {
+        _userResponseTcs?.TrySetResult(true);
+    }
+
+    private void OnNoClicked()
+    {
+        _userResponseTcs?.TrySetResult(false);
+    }
+
+    private void OnCloseAppClicked()
+    {
+        Application.Current.Shutdown();
+    }
+
+    private void OnStartAppClicked()
+    {
+        InitializationCompleted?.Invoke(this, EventArgs.Empty);
+    }
 
     /// <summary>
     /// Starts the initialization process.
@@ -90,7 +211,7 @@ public class LauncherWindowController
                 }
 
                 Debug.WriteLine("[Launcher] User accepted, starting MariaDB download...");
-                HidePrompt?.Invoke();
+                HidePrompt();
                 ShowProgressBar(true);
                 UpdateStatus(Loc.Get("Launcher.InstallingMariaDb") ?? "Installing database...");
 
@@ -216,14 +337,14 @@ public class LauncherWindowController
                 if (userWantsUpdate)
                 {
                     Debug.WriteLine("[Launcher] User accepted update, downloading...");
-                    HidePrompt?.Invoke();
+                    HidePrompt();
                     UpdateStatus(Loc.Get("Launcher.DownloadingUpdate") ?? "Downloading update...");
                     await SUpdateCheckerService.downloadAndInstallUpdateAsync(updateInfo, OnProgressChanged);
                     return; // App will restart
                 }
 
                 Debug.WriteLine("[Launcher] User declined update");
-                HidePrompt?.Invoke();
+                HidePrompt();
             }
             else
             {
@@ -237,7 +358,7 @@ public class LauncherWindowController
             await Task.Delay(300);
 
             Debug.WriteLine("[Launcher] Initialization completed successfully");
-            OnInitializationCompleted();
+            EnableStartButton();
         }
         catch (Exception ex)
         {
@@ -249,13 +370,34 @@ public class LauncherWindowController
         }
     }
 
+    private void EnableStartButton()
+    {
+        IsStartButtonEnabled = true;
+        System.Windows.Input.CommandManager.InvalidateRequerySuggested();
+        
+        if (StartWhenReady)
+        {
+            InitializationCompleted?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
     private async Task<bool> PromptUserForConfirmationAsync(string message, string yesText, string noText)
     {
-        if (PromptUserAsync != null)
-        {
-            return await PromptUserAsync(message, yesText, noText);
-        }
-        return false;
+        _userResponseTcs = new TaskCompletionSource<bool>();
+
+        StatusText = message;
+        YesButtonText = yesText;
+        NoButtonText = noText;
+        ActionButtonsVisibility = Visibility.Visible;
+        ProgressBarVisibility = Visibility.Collapsed;
+
+        return await _userResponseTcs.Task;
+    }
+
+    private void HidePrompt()
+    {
+        ActionButtonsVisibility = Visibility.Collapsed;
+        ProgressBarVisibility = Visibility.Visible;
     }
 
     private async Task ShowErrorAndFailAsync(string errorMessage)
@@ -268,22 +410,27 @@ public class LauncherWindowController
 
     private void UpdateStatus(string status)
     {
-        StatusChanged?.Invoke(status);
+        StatusText = status;
     }
 
     private void ShowProgressBar(bool show)
     {
-        ProgressBarVisibilityChanged?.Invoke(show);
+        ProgressBarVisibility = show ? Visibility.Visible : Visibility.Collapsed;
+        IsProgressIndeterminate = true;
     }
 
     private void OnProgressChanged(string status, double? percentage)
     {
-        ProgressChanged?.Invoke(status, percentage);
-    }
-
-    private void OnInitializationCompleted()
-    {
-        InitializationCompleted?.Invoke(this, EventArgs.Empty);
+        StatusText = status;
+        if (percentage.HasValue)
+        {
+            IsProgressIndeterminate = false;
+            ProgressValue = percentage.Value;
+        }
+        else
+        {
+            IsProgressIndeterminate = true;
+        }
     }
 
     private void OnInitializationFailed()

@@ -42,8 +42,7 @@
 
             <!-- Status Text -->
             <TextBlock Grid.Row="1"
-                       x:Name="StatusText"
-                       Text="Initializing..."
+                       Text="{Binding StatusText}"
                        FontSize="14"
                        Foreground="{x:Static globalView:SGlobalView.DEFAULT_TEXT_COLOR}"
                        HorizontalAlignment="Center"
@@ -54,37 +53,35 @@
 
             <!-- Action Buttons Panel (hidden by default) -->
             <StackPanel Grid.Row="2"
-                        x:Name="ActionButtonsPanel"
                         Orientation="Horizontal"
                         HorizontalAlignment="Center"
                         Margin="0,15,0,0"
-                        Visibility="Collapsed">
-                <Button x:Name="YesButton"
-                        Content="Yes"
+                        Visibility="{Binding ActionButtonsVisibility}">
+                <Button Content="{Binding YesButtonText}"
+                        Command="{Binding YesCommand}"
                         Width="100"
                         Height="32"
                         Margin="0,0,10,0"
                         Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
                         Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"
                         BorderThickness="0"
-                        Cursor="Hand"
-                        Click="YesButton_Click"/>
-                <Button x:Name="NoButton"
-                        Content="No"
+                        Cursor="Hand"/>
+                <Button Content="{Binding NoButtonText}"
+                        Command="{Binding NoCommand}"
                         Width="100"
                         Height="32"
                         Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_2}"
                         Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"
                         BorderThickness="0"
-                        Cursor="Hand"
-                        Click="NoButton_Click"/>
+                        Cursor="Hand"/>
             </StackPanel>
 
             <!-- Progress Bar -->
             <ProgressBar Grid.Row="3"
-                         x:Name="ProgressBar"
                          Height="6"
-                         IsIndeterminate="True"
+                         IsIndeterminate="{Binding IsProgressIndeterminate}"
+                         Value="{Binding ProgressValue}"
+                         Visibility="{Binding ProgressBarVisibility}"
                          Margin="0,15,0,10"
                          Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}"
                          Foreground="{x:Static globalView:SGlobalView.HEADER_TOP_COLOR}"/>
@@ -98,9 +95,9 @@
             </Grid.ColumnDefinitions>
             
             <!-- Close App Button (Left) -->
-            <Button x:Name="CloseAppButton"
-                    Grid.Column="0"
+            <Button Grid.Column="0"
                     Content="Close App"
+                    Command="{Binding CloseAppCommand}"
                     Width="120"
                     Height="35"
                     HorizontalAlignment="Left"
@@ -109,13 +106,11 @@
                     Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"
                     BorderThickness="0"
                     FontSize="14"
-                    Cursor="Hand"
-                    Click="CloseAppButton_Click"/>
+                    Cursor="Hand"/>
             
             <!-- Version Text (Center) -->
-            <TextBlock x:Name="VersionText"
-                       Grid.ColumnSpan="2"
-                       Text=""
+            <TextBlock Grid.ColumnSpan="2"
+                       Text="{Binding Version}"
                        FontSize="10"
                        Foreground="{x:Static globalView:SGlobalView.DEFAULT_TEXT_COLOR}"
                        HorizontalAlignment="Center"
@@ -125,14 +120,13 @@
             <StackPanel Grid.Column="1"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom">
-                <CheckBox x:Name="StartWhenReadyCheckBox"
-                          Content="Start when ready"
-                          IsChecked="False"
+                <CheckBox Content="Start when ready"
+                          IsChecked="{Binding StartWhenReady}"
                           Foreground="{x:Static globalView:SGlobalView.DEFAULT_TEXT_COLOR}"
                           Margin="0,0,0,8"
                           HorizontalAlignment="Right"/>
-                <Button x:Name="StartAppButton"
-                        Content="Start App"
+                <Button Content="Start App"
+                        Command="{Binding StartAppCommand}"
                         Width="120"
                         Height="35"
                         HorizontalAlignment="Right"
@@ -141,8 +135,7 @@
                         BorderThickness="0"
                         FontSize="14"
                         Cursor="Hand"
-                        IsEnabled="False"
-                        Click="StartAppButton_Click"/>
+                        IsEnabled="{Binding IsStartButtonEnabled}"/>
             </StackPanel>
         </Grid>
     </Grid>

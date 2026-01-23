@@ -46,7 +46,7 @@ public static class SGlobalView
     public const double LAUNCHER_WINDOW_WIDTH = 450;
 
     /// <summary>Default height for the launcher window.</summary>
-    public const double LAUNCHER_WINDOW_HEIGHT = 320;
+    public const double LAUNCHER_WINDOW_HEIGHT = 500;
 
     #endregion
 
