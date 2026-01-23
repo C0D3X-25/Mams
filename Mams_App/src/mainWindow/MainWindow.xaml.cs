@@ -1,4 +1,4 @@
-﻿using Mams_App.src.configurations;
+using Mams_App.src.configurations;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.filters;
@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Navigation;
 
-namespace Mams_App.src.views;
+namespace Mams_App.src.mainWindow;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml

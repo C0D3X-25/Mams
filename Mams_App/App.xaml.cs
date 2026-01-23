@@ -1,8 +1,8 @@
 using Mams_App.src.configurations;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.launcher;
+using Mams_App.src.mainWindow;
 using Mams_App.src.services;
-using Mams_App.src.views;
 using MySqlConnector;
 using System.Globalization;
 using System.Windows;

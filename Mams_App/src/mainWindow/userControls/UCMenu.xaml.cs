@@ -1,7 +1,7 @@
 using Mams_App.src.navigations;
 using System.Windows.Controls;
 
-namespace Mams_App.src.views.UserControls;
+namespace Mams_App.src.mainWindow.UserControls;
 
 /// <summary>
 /// Interaction logic for UCMenu.xaml

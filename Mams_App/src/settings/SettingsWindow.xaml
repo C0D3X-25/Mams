@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mams_App.src.settings"
-        xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
+        xmlns:globalView="clr-namespace:Mams_App.src.globals"
         xmlns:loc="clr-namespace:Mams_App.src.localizations"
         mc:Ignorable="d"
         Title="{loc:Translate Settings.Title}"

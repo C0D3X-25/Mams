@@ -4,7 +4,7 @@ using Mams_App.src.databaseOperations;
 using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
-using Mams_App.src.views.globalView;
+using Mams_App.src.globals;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;

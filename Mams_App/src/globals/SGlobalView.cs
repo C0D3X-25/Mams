@@ -1,6 +1,6 @@
-﻿using System.Windows.Media;
+using System.Windows.Media;
 
-namespace Mams_App.src.views.globalView;
+namespace Mams_App.src.globals;
 
 /// <summary>
 /// Static class containing all global view configurations including sizes and colors.
@@ -126,4 +126,3 @@ public static class SGlobalView
 
     #endregion
 }
-
