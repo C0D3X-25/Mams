@@ -1,8 +1,9 @@
 <Window x:Class="Mams_App.src.launcher.LauncherWindow"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
-    Title="Mams"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
+xmlns:loc="clr-namespace:Mams_App.src.localizations"
+Title="{loc:Translate App.Title}"
     Width="{x:Static globalView:SGlobalView.LAUNCHER_WINDOW_WIDTH}"
     Height="{x:Static globalView:SGlobalView.LAUNCHER_WINDOW_HEIGHT}"
     WindowStartupLocation="CenterScreen"
@@ -96,7 +97,7 @@
             
             <!-- Close App Button (Left) -->
             <Button Grid.Column="0"
-                    Content="Close App"
+                    Content="{loc:Translate Launcher.CloseApp}"
                     Command="{Binding CloseAppCommand}"
                     Width="120"
                     Height="35"
@@ -120,12 +121,12 @@
             <StackPanel Grid.Column="1"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom">
-                <CheckBox Content="Start when ready"
+                <CheckBox Content="{loc:Translate Launcher.StartWhenReady}"
                           IsChecked="{Binding StartWhenReady}"
                           Foreground="{x:Static globalView:SGlobalView.DEFAULT_TEXT_COLOR}"
                           Margin="0,0,0,8"
                           HorizontalAlignment="Right"/>
-                <Button Content="Start App"
+                <Button Content="{loc:Translate Launcher.StartApp}"
                         Command="{Binding StartAppCommand}"
                         Width="120"
                         Height="35"

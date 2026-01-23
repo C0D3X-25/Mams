@@ -426,6 +426,9 @@
     "ItemType.Profit": "Profit",
     
     "_comment_launcher": "Launcher - Startup launcher window messages",
+    "Launcher.CloseApp": "Fermer",
+    "Launcher.StartApp": "Démarrer",
+    "Launcher.StartWhenReady": "Démarrer automatiquement",
     "Launcher.CheckingMariaDb": "Vérification de l'installation de la base de données...",
     "Launcher.InstallingMariaDb": "Installation de la base de données...",
     "Launcher.InitializingDatabase": "Initialisation de la base de données...",
