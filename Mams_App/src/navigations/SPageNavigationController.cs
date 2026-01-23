@@ -16,6 +16,11 @@ public static class SPageNavigationController
     private static readonly Stack<Page> _m_forward_stack = new();
 
     /// <summary>
+    /// Event raised when the current page changes. Provides the Type of the new page.
+    /// </summary>
+    public static event Action<Type?>? PageChanged;
+
+    /// <summary>
     /// Initializes the application with the specified frame and navigates to the home page.
     /// </summary>
     /// <param name="frame">The <see cref="Frame"/> object used for navigation and rendering within the application.</param>
@@ -94,6 +99,7 @@ public static class SPageNavigationController
 
         _m_current_page = page;
         _m_frame?.Navigate(page);
+        PageChanged?.Invoke(page.GetType());
     }
 
     /// <summary>
@@ -151,6 +157,7 @@ public static class SPageNavigationController
 
         _m_current_page = previous_page;
         _m_frame?.Navigate(previous_page);
+        PageChanged?.Invoke(previous_page.GetType());
     }
 
     /// <summary>
@@ -198,6 +205,7 @@ public static class SPageNavigationController
 
         _m_current_page = forward_page;
         _m_frame?.Navigate(forward_page);
+        PageChanged?.Invoke(forward_page.GetType());
     }
 
     /// <summary>

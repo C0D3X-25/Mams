@@ -4,7 +4,7 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 xmlns:local="clr-namespace:Mams_App.src.products"
-xmlns:userControls="clr-namespace:Mams_App.src.mainWindow.UserControls"
+xmlns:userControls="clr-namespace:Mams_App.src.mainWindow.userControls"
 xmlns:globalView="clr-namespace:Mams_App.src.globals"
 xmlns:loc="clr-namespace:Mams_App.src.localizations"
 mc:Ignorable="d" 
@@ -244,27 +244,17 @@ Title="SaveProductPage">
                         Grid.Row="2"
                         Content="{loc:Translate Common.Save}"
                         Command="{Binding m_save_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
+                        Style="{StaticResource PrimaryButtonStyle}"
                         HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Margin="0,0,50,0"
-                        FontSize="16"
-                        Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
-                        Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"                            
-                    ></Button>
+                        Margin="0,0,50,0"/>
 
                     <Button 
                         Grid.Row="2"
                         Content="{loc:Translate Common.Cancel}"
                         Command="{Binding m_abort_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
+                        Style="{StaticResource SecondaryButtonStyle}"
                         HorizontalAlignment="Left" VerticalAlignment="Center"
-                        Margin="50,0,0,0"
-                        FontSize="16"
-                        Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
-                        Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"                            
-                    ></Button>
+                        Margin="50,0,0,0"/>
                 </Grid>
             </Grid>
         </Grid>

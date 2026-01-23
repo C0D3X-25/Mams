@@ -4,7 +4,7 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 xmlns:local="clr-namespace:Mams_App.src.mainWindow"
-xmlns:userControls="clr-namespace:Mams_App.src.mainWindow.UserControls"
+xmlns:userControls="clr-namespace:Mams_App.src.mainWindow.userControls"
 xmlns:globalView="clr-namespace:Mams_App.src.globals"
 xmlns:loc="clr-namespace:Mams_App.src.localizations"
 mc:Ignorable="d"
@@ -15,20 +15,8 @@ MinHeight="{x:Static globalView:SGlobalView.MAIN_WINDOW_MIN_HEIGHT}"
 MinWidth="{x:Static globalView:SGlobalView.MAIN_WINDOW_MIN_WIDTH}"
 PreviewMouseDown="Window_PreviewMouseDown">
 
-    <DockPanel>
-        <!-- Menu Bar -->
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="{loc:Translate Menu.File}">
-                <MenuItem Header="{loc:Translate Menu.Settings}" Click="MenuItem_Settings_Click"/>
-                <Separator/>
-                <MenuItem Header="{loc:Translate Menu.Exit}" Click="MenuItem_Exit_Click"/>
-            </MenuItem>
-            <MenuItem Header="{loc:Translate Menu.Help}">
-                <MenuItem Header="{loc:Translate Menu.About}" Click="MenuItem_About_Click"/>
-            </MenuItem>
-        </Menu>
-
+    <Grid>
         <!-- Main Content -->
         <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden" JournalOwnership="OwnsJournal"/>
-    </DockPanel>
+    </Grid>
 </Window>

@@ -25,22 +25,22 @@ namespace Mams_App.src.searches;
 public class SearchController : ABaseController
 {
     private readonly SearchModel _m_search_model = new();
-    
+
     /// <summary>
     /// Timer for debouncing search input to avoid excessive searches while typing.
     /// </summary>
     private readonly DispatcherTimer _m_debounce_timer;
-    
+
     /// <summary>
     /// Cancellation token source to cancel in-flight searches when new input arrives.
     /// </summary>
     private CancellationTokenSource? _m_search_cts;
-    
+
     /// <summary>
     /// Minimum number of characters required to trigger automatic search.
     /// </summary>
     private const int MIN_SEARCH_LENGTH = 2;
-    
+
     /// <summary>
     /// Debounce delay in milliseconds before triggering search after typing stops.
     /// </summary>
@@ -158,7 +158,7 @@ public class SearchController : ABaseController
         m_search_command = new RelayCommand(executeSearch);
         m_sort_command = new RelayCommand(sortByColumn);
         m_double_click_command = new RelayCommand(navigateToItemPage, isItemSelected);
-        
+
         // Initialize debounce timer
         _m_debounce_timer = new DispatcherTimer
         {
@@ -166,7 +166,7 @@ public class SearchController : ABaseController
         };
         _m_debounce_timer.Tick += onDebounceTimerTick;
     }
-    
+
     /// <summary>
     /// Called when the search text changes. Restarts the debounce timer.
     /// </summary>
@@ -174,10 +174,10 @@ public class SearchController : ABaseController
     {
         // Cancel any pending search
         _m_search_cts?.Cancel();
-        
+
         // Stop and restart the debounce timer
         _m_debounce_timer.Stop();
-        
+
         if (string.IsNullOrWhiteSpace(m_search_text) || m_search_text.Trim().Length < MIN_SEARCH_LENGTH)
         {
             // Clear results if text is too short
@@ -185,10 +185,10 @@ public class SearchController : ABaseController
             m_results_count = 0;
             return;
         }
-        
+
         _m_debounce_timer.Start();
     }
-    
+
     /// <summary>
     /// Called when the debounce timer elapses. Triggers the async search.
     /// </summary>
@@ -197,7 +197,7 @@ public class SearchController : ABaseController
         _m_debounce_timer.Stop();
         _ = executeSearchAsync();
     }
-    
+
     /// <summary>
     /// Executes the search asynchronously with cancellation support.
     /// </summary>
@@ -209,33 +209,33 @@ public class SearchController : ABaseController
             m_results_count = 0;
             return;
         }
-        
+
         // Cancel previous search and create new cancellation token
         _m_search_cts?.Cancel();
         _m_search_cts = new CancellationTokenSource();
         var cancellationToken = _m_search_cts.Token;
-        
+
         // Clear current results
         m_list_items = [];
         m_results_count = 0;
-        
+
         try
         {
             var searchText = m_search_text.Trim();
-            
+
             // Execute search asynchronously with progressive updates
             await _m_search_model.searchAllItemsAsync(
-                searchText, 
+                searchText,
                 cancellationToken,
                 onBatchCompleted: (items) =>
                 {
                     if (cancellationToken.IsCancellationRequested) return;
-                    
+
                     // Update UI on dispatcher thread
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
                         if (cancellationToken.IsCancellationRequested) return;
-                        
+
                         foreach (var item in items)
                         {
                             m_list_items?.Add(item);
@@ -315,7 +315,7 @@ public class SearchController : ABaseController
     {
         // Stop debounce timer and trigger immediate search
         _m_debounce_timer.Stop();
-        
+
         if (string.IsNullOrWhiteSpace(m_search_text?.Trim()))
         {
             m_list_items = [];

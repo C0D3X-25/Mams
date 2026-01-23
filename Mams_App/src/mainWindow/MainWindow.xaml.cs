@@ -1,7 +1,7 @@
 using Mams_App.src.configurations;
+using Mams_App.src.filters;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
-using Mams_App.src.filters;
 using Mams_App.src.settings;
 using System.Windows;
 using System.Windows.Input;
@@ -55,7 +55,7 @@ public partial class MainWindow : Window
         var version = SVersionService.GetVersion();
         var message = $"{Loc.Get("Settings.AppName")}\n\n{Loc.Get("Settings.Version")} {version}\n\n{Loc.Get("Settings.AppDescription")}";
         var title = Loc.Get("Menu.About");
-        
+
         MessageBox.Show(
             message,
             title,

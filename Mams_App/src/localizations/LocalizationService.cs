@@ -12,7 +12,7 @@ public class LocalizationService : ILocalizationService
 {
     private const string DefaultCulture = "fr";
     private const string LocalizationFolder = "resources/localization";
-    
+
     private Dictionary<string, string> _strings = [];
     private string _currentCulture = DefaultCulture;
 
@@ -36,7 +36,7 @@ public class LocalizationService : ILocalizationService
         {
             return value;
         }
-        
+
         // Return the key itself if not found (helps identify missing translations)
         return $"[{key}]";
     }
@@ -69,7 +69,7 @@ public class LocalizationService : ILocalizationService
         _strings = [];
 
         var filePath = GetLocalizationFilePath(cultureCode);
-        
+
         if (!File.Exists(filePath))
         {
             // Fallback to default culture if requested culture file doesn't exist
@@ -89,7 +89,7 @@ public class LocalizationService : ILocalizationService
                     PropertyNameCaseInsensitive = true,
                     ReadCommentHandling = JsonCommentHandling.Skip
                 };
-                
+
                 _strings = JsonSerializer.Deserialize<Dictionary<string, string>>(json, options) ?? [];
             }
             catch (JsonException ex)

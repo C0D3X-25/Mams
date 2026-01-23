@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
-using System.Windows;
-using System.Windows.Controls;
 
 namespace Mams_App.src.services;
 
@@ -209,7 +207,7 @@ public static class SMariaDbPortableService
             await Task.Delay(100, linkedToken);
 
             var tempExtractPath = Path.Combine(Path.GetTempPath(), $"mariadb-extract-{Guid.NewGuid()}");
-            
+
             await Task.Run(() =>
             {
                 linkedToken.ThrowIfCancellationRequested();

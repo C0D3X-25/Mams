@@ -80,8 +80,6 @@ public class LauncherStepManager : IDisposable
 
                 var userWantsUpdate = await RequestUserConfirmationAsync(
                     updateMessage,
-                    Loc.Get("Common.Yes") ?? "Yes",
-                    Loc.Get("Common.No") ?? "No",
                     cancellationToken);
 
                 if (userWantsUpdate)
@@ -245,13 +243,13 @@ public class LauncherStepManager : IDisposable
         await Task.Delay(100, cancellationToken);
     }
 
-    private async Task<bool> RequestUserConfirmationAsync(string message, string yesText, string noText, CancellationToken cancellationToken)
+    private async Task<bool> RequestUserConfirmationAsync(string message, CancellationToken cancellationToken)
     {
         var tcs = new TaskCompletionSource<bool>();
 
         await using var registration = cancellationToken.Register(() => tcs.TrySetCanceled());
 
-        UserConfirmationRequested?.Invoke(this, new UserConfirmationRequestedEventArgs(message, yesText, noText, tcs));
+        UserConfirmationRequested?.Invoke(this, new UserConfirmationRequestedEventArgs(message, tcs));
 
         return await tcs.Task;
     }

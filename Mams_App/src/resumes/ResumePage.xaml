@@ -5,7 +5,7 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 xmlns:local="clr-namespace:Mams_App.src.resumes"
-xmlns:userControls="clr-namespace:Mams_App.src.mainWindow.UserControls"
+xmlns:userControls="clr-namespace:Mams_App.src.mainWindow.userControls"
 xmlns:commands="clr-namespace:Mams_App.src.commands"
 xmlns:globalView="clr-namespace:Mams_App.src.globals"
 xmlns:loc="clr-namespace:Mams_App.src.localizations"
@@ -119,15 +119,12 @@ Title="ResumePage">
                     <!--Clear Search Button-->
                     <Button Grid.Column="5"
                        Margin="5,0,5,0" 
-                       FontSize="16" 
                        VerticalAlignment="Center" 
                        HorizontalAlignment="Center"
                        Width="25" Height="25"
-                       MaxWidth="25" MaxHeight="25"
                        Content="X"
                        Command="{Binding m_clear_search_command}"
-                       Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
-                       Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"/>
+                       Style="{StaticResource SecondaryButtonStyle}"/>
                 </Grid>
 
                 <!--Resume Views-->

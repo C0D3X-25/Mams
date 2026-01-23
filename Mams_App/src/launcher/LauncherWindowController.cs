@@ -2,7 +2,6 @@ using Mams_App.src.commands;
 using Mams_App.src.configurations;
 using Mams_App.src.controllers;
 using Mams_App.src.launcher.userControls;
-using Mams_App.src.services;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -102,28 +101,6 @@ public class LauncherWindowController : ABaseController, IDisposable
         }
     }
 
-    private string _yesButtonText = "Yes";
-    public string YesButtonText
-    {
-        get => _yesButtonText;
-        set
-        {
-            _yesButtonText = value;
-            onPropertyChanged();
-        }
-    }
-
-    private string _noButtonText = "No";
-    public string NoButtonText
-    {
-        get => _noButtonText;
-        set
-        {
-            _noButtonText = value;
-            onPropertyChanged();
-        }
-    }
-
     private bool _isStartButtonEnabled;
     public bool IsStartButtonEnabled
     {
@@ -195,7 +172,7 @@ public class LauncherWindowController : ABaseController, IDisposable
     {
         CurrentView = LauncherViewFactory.CreateViewForStep(e.CurrentStep);
         StatusText = e.StatusMessage;
-        
+
         // Show progress bar for most steps, hide for prompts
         if (e.CurrentStep == ELauncherStep.PromptUpdate)
         {
@@ -226,8 +203,6 @@ public class LauncherWindowController : ABaseController, IDisposable
     {
         _userResponseTcs = e.ResponseSource;
         StatusText = e.Message;
-        YesButtonText = e.YesText;
-        NoButtonText = e.NoText;
         ActionButtonsVisibility = Visibility.Visible;
         ProgressBarVisibility = Visibility.Collapsed;
     }
@@ -264,10 +239,10 @@ public class LauncherWindowController : ABaseController, IDisposable
     public void CancelAllOperations()
     {
         Debug.WriteLine("[Launcher] Cancelling all operations...");
-        
+
         // Cancel any pending user response
         _userResponseTcs?.TrySetCanceled();
-        
+
         // Delegate cancellation to the step manager
         _stepManager.CancelAllOperations();
     }
@@ -296,7 +271,7 @@ public class LauncherWindowController : ABaseController, IDisposable
         IsStartButtonEnabled = true;
         CurrentView = LauncherViewFactory.CreateViewForStep(ELauncherStep.Ready);
         System.Windows.Input.CommandManager.InvalidateRequerySuggested();
-        
+
         if (StartWhenReady)
         {
             InitializationCompleted?.Invoke(this, EventArgs.Empty);
@@ -321,19 +296,19 @@ public class LauncherWindowController : ABaseController, IDisposable
     public void Dispose()
     {
         if (_disposed) return;
-        
+
         CancelAllOperations();
-        
+
         // Unsubscribe from events
         _stepManager.StepChanged -= OnStepChanged;
         _stepManager.ProgressUpdated -= OnProgressUpdated;
         _stepManager.UserConfirmationRequested -= OnUserConfirmationRequested;
         _stepManager.InitializationCompleted -= OnStepManagerInitializationCompleted;
         _stepManager.InitializationFailed -= OnStepManagerInitializationFailed;
-        
+
         _stepManager.Dispose();
         _disposed = true;
-        
+
         GC.SuppressFinalize(this);
     }
 }

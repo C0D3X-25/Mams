@@ -2,16 +2,14 @@
 using Mams_App.src.controllers;
 using Mams_App.src.databaseOperations;
 using Mams_App.src.fees;
+using Mams_App.src.filters;
+using Mams_App.src.globals;
 using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.profits;
-using Mams_App.src.filters;
-using Mams_App.src.globals;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 

@@ -125,4 +125,34 @@ public static class SGlobalView
     public static SolidColorBrush RESTORE_BUTTON_COLOR { get; set; } = CreateBrush(0xdc, 0x6f, 0xb8);     // #DC6FB8 - Pink
 
     #endregion
+
+    #region Button Styles Colors
+
+    // Primary Button (Main action - Pink)
+    public static SolidColorBrush BUTTON_PRIMARY_BACKGROUND { get; set; } = CreateBrush(0xdc, 0x6f, 0xb8);         // #DC6FB8 - Pink
+    public static SolidColorBrush BUTTON_PRIMARY_BACKGROUND_HOVER { get; set; } = CreateBrush(0xe8, 0x8f, 0xc8);   // #E88FC8 - Light Pink
+    public static SolidColorBrush BUTTON_PRIMARY_BACKGROUND_PRESSED { get; set; } = CreateBrush(0xc5, 0x5a, 0xa0); // #C55AA0 - Dark Pink
+    public static SolidColorBrush BUTTON_PRIMARY_FOREGROUND { get; set; } = CreateBrush(0x00, 0x00, 0x00);         // #000000 - Black
+
+    // Secondary Button (Cancel, neutral actions - Hot Pink)
+    public static SolidColorBrush BUTTON_SECONDARY_BACKGROUND { get; set; } = CreateBrush(0xdd, 0x58, 0xb1);         // #DD58B1 - Hot Pink
+    public static SolidColorBrush BUTTON_SECONDARY_BACKGROUND_HOVER { get; set; } = CreateBrush(0xe5, 0x7c, 0xc4);   // #E57CC4 - Light Hot Pink
+    public static SolidColorBrush BUTTON_SECONDARY_BACKGROUND_PRESSED { get; set; } = CreateBrush(0xc4, 0x45, 0x9a); // #C4459A - Dark Hot Pink
+    public static SolidColorBrush BUTTON_SECONDARY_FOREGROUND { get; set; } = CreateBrush(0x00, 0x00, 0x00);         // #000000 - Black
+
+    // Danger Button (Delete, destructive actions - Red)
+    public static SolidColorBrush BUTTON_DANGER_BACKGROUND { get; set; } = CreateBrush(0xef, 0x53, 0x50);         // #EF5350 - Red
+    public static SolidColorBrush BUTTON_DANGER_BACKGROUND_HOVER { get; set; } = CreateBrush(0xf4, 0x7b, 0x79);   // #F47B79 - Light Red
+    public static SolidColorBrush BUTTON_DANGER_BACKGROUND_PRESSED { get; set; } = CreateBrush(0xd3, 0x3a, 0x37); // #D33A37 - Dark Red
+    public static SolidColorBrush BUTTON_DANGER_FOREGROUND { get; set; } = CreateBrush(0xff, 0xff, 0xff);         // #FFFFFF - White
+
+    // Navigation Button Active State (Current page - Golden/Yellow)
+    public static SolidColorBrush BUTTON_NAV_ACTIVE_BACKGROUND { get; set; } = CreateBrush(0xff, 0xc1, 0x07);         // #FFC107 - Amber/Gold
+    public static SolidColorBrush BUTTON_NAV_ACTIVE_BACKGROUND_HOVER { get; set; } = CreateBrush(0xff, 0xd5, 0x4f);   // #FFD54F - Light Amber
+    public static SolidColorBrush BUTTON_NAV_ACTIVE_BACKGROUND_PRESSED { get; set; } = CreateBrush(0xff, 0xa0, 0x00); // #FFA000 - Dark Amber
+    public static SolidColorBrush BUTTON_NAV_ACTIVE_FOREGROUND { get; set; } = CreateBrush(0x00, 0x00, 0x00);         // #000000 - Black
+    public static SolidColorBrush BEE_ICON_COLOR { get; set; } = CreateBrush(0x00, 0x00, 0x00);                       // #000000 - Black (inactive bee)
+    public static SolidColorBrush BEE_ICON_ACTIVE_COLOR { get; set; } = CreateBrush(0xff, 0xeb, 0x3b);                // #FFEB3B - Yellow (active bee)
+
+    #endregion
 }

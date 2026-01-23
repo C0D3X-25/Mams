@@ -4,6 +4,7 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 xmlns:globalView="clr-namespace:Mams_App.src.globals"
+xmlns:loc="clr-namespace:Mams_App.src.localizations"
 mc:Ignorable="d" 
 d:DesignHeight="200" d:DesignWidth="400"
 d:Background="{x:Static globalView:SGlobalView.PAGE_BODY_COLOR}">
@@ -31,23 +32,12 @@ d:Background="{x:Static globalView:SGlobalView.PAGE_BODY_COLOR}">
                     HorizontalAlignment="Center"
                     Margin="0,15,0,0"
                     Visibility="{Binding ActionButtonsVisibility}">
-            <Button Content="{Binding NoButtonText}"
+            <Button Content="{loc:Translate Common.No}"
                     Command="{Binding NoCommand}"
-                    Width="100"
-                    Height="32"
-                    Margin="0,0,10,0"
-                    Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_2}"
-                    Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"
-                    BorderThickness="0"
-                    Cursor="Hand"/>
-            <Button Content="{Binding YesButtonText}"
+                    Style="{StaticResource SecondaryButtonStyle}"/>
+            <Button Content="{loc:Translate Common.Yes}"
                     Command="{Binding YesCommand}"
-                    Width="100"
-                    Height="32"
-                    Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
-                    Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"
-                    BorderThickness="0"
-                    Cursor="Hand"/>
+                    Style="{StaticResource PrimaryButtonStyle}"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -57,15 +57,11 @@ Title="{loc:Translate App.Title}"
             <Button Grid.Column="0"
                     Content="{loc:Translate Launcher.CloseApp}"
                     Command="{Binding CloseAppCommand}"
+                    Style="{StaticResource SecondaryButtonStyle}"
                     Width="120"
                     Height="35"
                     HorizontalAlignment="Left"
-                    VerticalAlignment="Bottom"
-                    Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_2}"
-                    Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"
-                    BorderThickness="0"
-                    FontSize="14"
-                    Cursor="Hand"/>
+                    VerticalAlignment="Bottom"/>
             
             <!-- Version Text (Center) -->
             <TextBlock Grid.ColumnSpan="2"
@@ -86,14 +82,10 @@ Title="{loc:Translate App.Title}"
                           HorizontalAlignment="Right"/>
                 <Button Content="{loc:Translate Launcher.StartApp}"
                         Command="{Binding StartAppCommand}"
+                        Style="{StaticResource PrimaryButtonStyle}"
                         Width="120"
                         Height="35"
                         HorizontalAlignment="Right"
-                        Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
-                        Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"
-                        BorderThickness="0"
-                        FontSize="14"
-                        Cursor="Hand"
                         IsEnabled="{Binding IsStartButtonEnabled}"/>
             </StackPanel>
         </Grid>

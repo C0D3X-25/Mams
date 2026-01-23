@@ -8,13 +8,79 @@ using Mams_App.src.productsLots;
 using Mams_App.src.productsShapes;
 using Mams_App.src.productsTypes;
 using Mams_App.src.profits;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
 
 namespace Mams_App.src.navigations;
 
-public class UCMenuController
+public class UCMenuController : INotifyPropertyChanged
 {
+    public event PropertyChangedEventHandler? PropertyChanged;
 
+    private bool _m_is_profit_page_active;
+    private bool _m_is_fee_page_active;
+    private bool _m_is_entity_page_active;
+    private bool _m_is_product_page_active;
+    private bool _m_is_lot_page_active;
+    private bool _m_is_beehive_page_active;
+    private bool _m_is_product_category_page_active;
+    private bool _m_is_product_type_page_active;
+    private bool _m_is_product_shape_page_active;
+
+    public bool m_is_profit_page_active
+    {
+        get => _m_is_profit_page_active;
+        set { _m_is_profit_page_active = value; OnPropertyChanged(); }
+    }
+
+    public bool m_is_fee_page_active
+    {
+        get => _m_is_fee_page_active;
+        set { _m_is_fee_page_active = value; OnPropertyChanged(); }
+    }
+
+    public bool m_is_entity_page_active
+    {
+        get => _m_is_entity_page_active;
+        set { _m_is_entity_page_active = value; OnPropertyChanged(); }
+    }
+
+    public bool m_is_product_page_active
+    {
+        get => _m_is_product_page_active;
+        set { _m_is_product_page_active = value; OnPropertyChanged(); }
+    }
+
+    public bool m_is_lot_page_active
+    {
+        get => _m_is_lot_page_active;
+        set { _m_is_lot_page_active = value; OnPropertyChanged(); }
+    }
+
+    public bool m_is_beehive_page_active
+    {
+        get => _m_is_beehive_page_active;
+        set { _m_is_beehive_page_active = value; OnPropertyChanged(); }
+    }
+
+    public bool m_is_product_category_page_active
+    {
+        get => _m_is_product_category_page_active;
+        set { _m_is_product_category_page_active = value; OnPropertyChanged(); }
+    }
+
+    public bool m_is_product_type_page_active
+    {
+        get => _m_is_product_type_page_active;
+        set { _m_is_product_type_page_active = value; OnPropertyChanged(); }
+    }
+
+    public bool m_is_product_shape_page_active
+    {
+        get => _m_is_product_shape_page_active;
+        set { _m_is_product_shape_page_active = value; OnPropertyChanged(); }
+    }
 
     public ICommand m_navigate_list_fee_command { get; set; }
     public ICommand m_navigate_list_profit_command { get; set; }
@@ -37,6 +103,26 @@ public class UCMenuController
         m_navigate_list_product_category_command = new RelayCommand(navigateToListProductCategory);
         m_navigate_list_product_type_command = new RelayCommand(navigateToListProductType);
         m_navigate_list_product_shape_command = new RelayCommand(navigateToListProductShape);
+
+        SPageNavigationController.PageChanged += OnPageChanged;
+    }
+
+    private void OnPageChanged(Type? pageType)
+    {
+        m_is_profit_page_active = pageType == typeof(ListProfitPage);
+        m_is_fee_page_active = pageType == typeof(ListFeePage);
+        m_is_entity_page_active = pageType == typeof(ListEntityPage);
+        m_is_product_page_active = pageType == typeof(ListProductPage);
+        m_is_lot_page_active = pageType == typeof(ListProductLotPage);
+        m_is_beehive_page_active = pageType == typeof(ListBeehivePage);
+        m_is_product_category_page_active = pageType == typeof(ListProductCategoryPage);
+        m_is_product_type_page_active = pageType == typeof(ListProductTypePage);
+        m_is_product_shape_page_active = pageType == typeof(ListProductShapePage);
+    }
+
+    protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
     private void navigateToListFee(object? obj)

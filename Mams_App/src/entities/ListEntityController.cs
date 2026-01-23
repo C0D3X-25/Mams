@@ -1,15 +1,13 @@
 ﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
 using Mams_App.src.databaseOperations;
+using Mams_App.src.globals;
 using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
-using Mams_App.src.globals;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -200,7 +198,7 @@ public class ListEntityController : ABaseController
         {
             var selectedId = _m_selected_item.entity_id;
             bool canHardDelete = await Task.Run(() => _m_item_model.canBeHardDeleted(selectedId.ToString()));
-            
+
             // Verify the selection hasn't changed while we were checking
             if (_m_selected_item?.entity_id == selectedId)
             {

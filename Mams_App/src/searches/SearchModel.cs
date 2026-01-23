@@ -1,5 +1,4 @@
 ﻿using Mams_App.src.databaseConnections;
-using Mams_App.src.databaseOperations;
 using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.models;
@@ -65,11 +64,11 @@ public class SearchModel : ABaseModel
         cancellationToken.ThrowIfCancellationRequested();
 
         using var connection = SQLConnectionModel.GetConnection();
-        
+
         try
         {
             var results = await queryFunc(connection, search_pattern, cancellationToken);
-            
+
             if (results.Count > 0 && !cancellationToken.IsCancellationRequested)
             {
                 onBatchCompleted(results);

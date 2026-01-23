@@ -1,14 +1,12 @@
 ﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
+using Mams_App.src.globals;
 using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
-using Mams_App.src.globals;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 

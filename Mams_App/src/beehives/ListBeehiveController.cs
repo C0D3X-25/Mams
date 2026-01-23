@@ -1,15 +1,13 @@
 ﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
 using Mams_App.src.databaseOperations;
+using Mams_App.src.globals;
 using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
-using Mams_App.src.globals;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -189,7 +187,7 @@ public class ListBeehiveController : ABaseController
         {
             var selectedId = _m_selected_item.beehive_id;
             bool canHardDelete = await Task.Run(() => _m_item_model.canBeHardDeleted(selectedId.ToString()));
-            
+
             if (_m_selected_item?.beehive_id == selectedId)
             {
                 m_delete_button_text = canHardDelete ? Loc.Get("Common.Delete") : Loc.Get("Common.Archive");

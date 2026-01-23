@@ -2,6 +2,7 @@
 using Mams_App.src.databaseOperations;
 using Mams_App.src.entities;
 using Mams_App.src.fees;
+using Mams_App.src.filters;
 using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.products;
@@ -11,7 +12,6 @@ using Mams_App.src.productsShapes;
 using Mams_App.src.productsTypes;
 using Mams_App.src.profits;
 using Mams_App.src.receipts;
-using Mams_App.src.filters;
 using System.Collections.ObjectModel;
 
 namespace Mams_App.src.resumes;
