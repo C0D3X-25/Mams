@@ -1,8 +1,7 @@
-using Mams_App.src.launcher;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Mams_App.src.views;
+namespace Mams_App.src.launcher;
 
 /// <summary>
 /// Launcher window that displays startup progress while initializing the application.
