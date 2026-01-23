@@ -12,9 +12,11 @@ namespace Mams_App.src.launcher;
 /// <summary>
 /// Controller for the launcher window that handles the application initialization process.
 /// </summary>
-public class LauncherWindowController : ABaseController
+public class LauncherWindowController : ABaseController, IDisposable
 {
     private TaskCompletionSource<bool>? _userResponseTcs;
+    private CancellationTokenSource? _cancellationTokenSource;
+    private bool _disposed;
 
     /// <summary>
     /// Event raised when initialization is complete and successful.
@@ -163,7 +165,26 @@ public class LauncherWindowController : ABaseController
 
     private void OnCloseAppClicked()
     {
+        CancelAllOperations();
         Application.Current.Shutdown();
+    }
+
+    /// <summary>
+    /// Cancels all ongoing operations and cleans up resources.
+    /// </summary>
+    public void CancelAllOperations()
+    {
+        Debug.WriteLine("[Launcher] Cancelling all operations...");
+        
+        // Cancel any pending user response
+        _userResponseTcs?.TrySetCanceled();
+        
+        // Cancel all async operations
+        _cancellationTokenSource?.Cancel();
+        
+        // Cancel any ongoing downloads in services
+        SMariaDbPortableService.cancelDownload();
+        SUpdateCheckerService.cancelDownload();
     }
 
     private void OnStartAppClicked()
@@ -176,6 +197,9 @@ public class LauncherWindowController : ABaseController
     /// </summary>
     public async Task StartInitializationAsync()
     {
+        _cancellationTokenSource = new CancellationTokenSource();
+        var cancellationToken = _cancellationTokenSource.Token;
+
         try
         {
             Debug.WriteLine("[Launcher] Starting initialization...");
@@ -186,7 +210,7 @@ public class LauncherWindowController : ABaseController
             // Step 1: Check MariaDB installation
             Debug.WriteLine("[Launcher] Step 1: Checking MariaDB installation...");
             UpdateStatus(Loc.Get("Launcher.CheckingMariaDb") ?? "Checking database installation...");
-            await Task.Delay(100);
+            await Task.Delay(100, cancellationToken);
 
             if (!SMariaDbPortableService.isInstalled())
             {
@@ -201,7 +225,8 @@ public class LauncherWindowController : ABaseController
                 var userWantsInstall = await PromptUserForConfirmationAsync(
                     installMessage,
                     Loc.Get("Common.Yes") ?? "Yes",
-                    Loc.Get("Common.No") ?? "No");
+                    Loc.Get("Common.No") ?? "No",
+                    cancellationToken);
 
                 if (!userWantsInstall)
                 {
@@ -215,12 +240,18 @@ public class LauncherWindowController : ABaseController
                 ShowProgressBar(true);
                 UpdateStatus(Loc.Get("Launcher.InstallingMariaDb") ?? "Installing database...");
 
-                if (!await SMariaDbPortableService.downloadAndInstallMariaDbAsync(OnProgressChanged))
+                if (!await SMariaDbPortableService.downloadAndInstallMariaDbAsync(OnProgressChanged, cancellationToken))
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Debug.WriteLine("[Launcher] MariaDB download cancelled");
+                        return;
+                    }
                     Debug.WriteLine("[Launcher] MariaDB download/install failed");
                     await ShowErrorAndFailAsync(
                         Loc.Get("Launcher.MariaDbInstallFailed") ??
-                        "Failed to download MariaDB.\nPlease check your internet connection and try again.");
+                        "Failed to download MariaDB.\nPlease check your internet connection and try again.",
+                        cancellationToken);
                     return;
                 }
                 Debug.WriteLine("[Launcher] MariaDB installed successfully");
@@ -230,6 +261,8 @@ public class LauncherWindowController : ABaseController
                 Debug.WriteLine("[Launcher] MariaDB already installed");
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Step 2: Initialize data directory if needed
             Debug.WriteLine("[Launcher] Step 2: Checking data directory...");
             if (!SMariaDbPortableService.isDataInitialized())
@@ -237,14 +270,20 @@ public class LauncherWindowController : ABaseController
                 Debug.WriteLine("[Launcher] Initializing data directory...");
                 UpdateStatus(Loc.Get("Launcher.InitializingDatabase") ?? "Initializing database...");
                 ShowProgressBar(true);
-                await Task.Delay(100);
+                await Task.Delay(100, cancellationToken);
 
-                if (!SMariaDbPortableService.initializeDataDirectory())
+                if (!await SMariaDbPortableService.initializeDataDirectoryAsync(cancellationToken))
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Debug.WriteLine("[Launcher] Data directory initialization cancelled");
+                        return;
+                    }
                     Debug.WriteLine("[Launcher] Data directory initialization failed");
                     await ShowErrorAndFailAsync(
                         Loc.Get("Launcher.MariaDbInitFailed") ??
-                        "Failed to initialize the database.\nPlease try restarting the application.");
+                        "Failed to initialize the database.\nPlease try restarting the application.",
+                        cancellationToken);
                     return;
                 }
                 Debug.WriteLine("[Launcher] Data directory initialized");
@@ -254,31 +293,40 @@ public class LauncherWindowController : ABaseController
                 Debug.WriteLine("[Launcher] Data directory already initialized");
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Step 3: Start MariaDB if not running
             Debug.WriteLine("[Launcher] Step 3: Checking if MariaDB is running...");
-            if (!SMariaDbPortableService.isRunning())
+            if (!await SMariaDbPortableService.isRunningAsync(cancellationToken))
             {
                 Debug.WriteLine("[Launcher] Starting MariaDB server...");
                 UpdateStatus(Loc.Get("Launcher.StartingMariaDb") ?? "Starting database server...");
                 ShowProgressBar(true);
-                await Task.Delay(100);
+                await Task.Delay(100, cancellationToken);
 
-                if (!SMariaDbPortableService.startMariaDb())
+                if (!await SMariaDbPortableService.startMariaDbAsync())
                 {
                     Debug.WriteLine("[Launcher] Failed to start MariaDB");
                     await ShowErrorAndFailAsync(
                         Loc.Get("Launcher.MariaDbStartFailed") ??
-                        "Failed to start the database server.\nPlease try restarting the application.");
+                        "Failed to start the database server.\nPlease try restarting the application.",
+                        cancellationToken);
                     return;
                 }
 
                 Debug.WriteLine("[Launcher] Waiting for MariaDB to be ready...");
-                if (!await SMariaDbPortableService.waitForMariaDbReadyAsync(30))
+                if (!await SMariaDbPortableService.waitForMariaDbReadyAsync(30, cancellationToken))
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Debug.WriteLine("[Launcher] MariaDB wait cancelled");
+                        return;
+                    }
                     Debug.WriteLine("[Launcher] MariaDB not responding");
                     await ShowErrorAndFailAsync(
                         Loc.Get("Launcher.MariaDbConnectionFailed") ??
-                        "Database server started but is not responding.\nPlease try restarting the application.");
+                        "Database server started but is not responding.\nPlease try restarting the application.",
+                        cancellationToken);
                     return;
                 }
                 Debug.WriteLine("[Launcher] MariaDB is ready");
@@ -288,6 +336,8 @@ public class LauncherWindowController : ABaseController
                 Debug.WriteLine("[Launcher] MariaDB already running");
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Step 4: Create database if needed
             Debug.WriteLine("[Launcher] Step 4: Checking application database...");
             if (!SMariaDbPortableService.isDatabaseCreated())
@@ -295,14 +345,20 @@ public class LauncherWindowController : ABaseController
                 Debug.WriteLine("[Launcher] Creating application database...");
                 UpdateStatus(Loc.Get("Launcher.CreatingDatabase") ?? "Creating database...");
                 ShowProgressBar(true);
-                await Task.Delay(100);
+                await Task.Delay(100, cancellationToken);
 
-                if (!await SMariaDbPortableService.initializeDatabaseAsync())
+                if (!await SMariaDbPortableService.initializeDatabaseAsync(cancellationToken))
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Debug.WriteLine("[Launcher] Database creation cancelled");
+                        return;
+                    }
                     Debug.WriteLine("[Launcher] Database creation failed");
                     await ShowErrorAndFailAsync(
                         Loc.Get("Launcher.DatabaseCreationFailed") ??
-                        "Failed to create the application database.\nPlease try restarting the application.");
+                        "Failed to create the application database.\nPlease try restarting the application.",
+                        cancellationToken);
                     return;
                 }
                 Debug.WriteLine("[Launcher] Database created");
@@ -312,13 +368,15 @@ public class LauncherWindowController : ABaseController
                 Debug.WriteLine("[Launcher] Database already exists");
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Step 5: Check for updates
             Debug.WriteLine("[Launcher] Step 5: Checking for updates...");
             UpdateStatus(Loc.Get("Launcher.CheckingUpdates") ?? "Checking for updates...");
             ShowProgressBar(true);
-            await Task.Delay(100);
+            await Task.Delay(100, cancellationToken);
 
-            var updateInfo = await SUpdateCheckerService.checkForUpdateInfoAsync();
+            var updateInfo = await SUpdateCheckerService.checkForUpdateInfoAsync(cancellationToken);
             if (updateInfo != null && updateInfo.IsUpdateAvailable)
             {
                 Debug.WriteLine($"[Launcher] Update available: {updateInfo.LatestVersion}");
@@ -332,14 +390,15 @@ public class LauncherWindowController : ABaseController
                 var userWantsUpdate = await PromptUserForConfirmationAsync(
                     updateMessage,
                     Loc.Get("Common.Yes") ?? "Yes",
-                    Loc.Get("Common.No") ?? "No");
+                    Loc.Get("Common.No") ?? "No",
+                    cancellationToken);
 
                 if (userWantsUpdate)
                 {
                     Debug.WriteLine("[Launcher] User accepted update, downloading...");
                     HidePrompt();
                     UpdateStatus(Loc.Get("Launcher.DownloadingUpdate") ?? "Downloading update...");
-                    await SUpdateCheckerService.downloadAndInstallUpdateAsync(updateInfo, OnProgressChanged);
+                    await SUpdateCheckerService.downloadAndInstallUpdateAsync(updateInfo, OnProgressChanged, cancellationToken);
                     return; // App will restart
                 }
 
@@ -351,21 +410,35 @@ public class LauncherWindowController : ABaseController
                 Debug.WriteLine("[Launcher] No updates available");
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             // Step 6: Finalizing
             Debug.WriteLine("[Launcher] Step 6: Finalizing...");
             UpdateStatus(Loc.Get("Launcher.Starting") ?? "Starting application...");
             ShowProgressBar(true);
-            await Task.Delay(300);
+            await Task.Delay(300, cancellationToken);
 
             Debug.WriteLine("[Launcher] Initialization completed successfully");
             EnableStartButton();
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.WriteLine("[Launcher] Initialization was cancelled");
+            // Don't show error, just exit silently
         }
         catch (Exception ex)
         {
             Debug.WriteLine($"[Launcher] Initialization failed with exception: {ex}");
             UpdateStatus($"{Loc.Get("Launcher.Error.Message") ?? "Failed to start application:"}\n\n{ex.Message}");
             ShowProgressBar(false);
-            await Task.Delay(3000);
+            try
+            {
+                await Task.Delay(3000, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Ignore cancellation during error display
+            }
             OnInitializationFailed();
         }
     }
@@ -381,9 +454,12 @@ public class LauncherWindowController : ABaseController
         }
     }
 
-    private async Task<bool> PromptUserForConfirmationAsync(string message, string yesText, string noText)
+    private async Task<bool> PromptUserForConfirmationAsync(string message, string yesText, string noText, CancellationToken cancellationToken = default)
     {
         _userResponseTcs = new TaskCompletionSource<bool>();
+
+        // Register cancellation
+        await using var registration = cancellationToken.Register(() => _userResponseTcs.TrySetCanceled());
 
         StatusText = message;
         YesButtonText = yesText;
@@ -400,11 +476,18 @@ public class LauncherWindowController : ABaseController
         ProgressBarVisibility = Visibility.Visible;
     }
 
-    private async Task ShowErrorAndFailAsync(string errorMessage)
+    private async Task ShowErrorAndFailAsync(string errorMessage, CancellationToken cancellationToken = default)
     {
         UpdateStatus(errorMessage);
         ShowProgressBar(false);
-        await Task.Delay(3000);
+        try
+        {
+            await Task.Delay(3000, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            // Ignore cancellation during error display
+        }
         OnInitializationFailed();
     }
 
@@ -436,5 +519,19 @@ public class LauncherWindowController : ABaseController
     private void OnInitializationFailed()
     {
         InitializationFailed?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Disposes the controller and releases all resources.
+    /// </summary>
+    public void Dispose()
+    {
+        if (_disposed) return;
+        
+        CancelAllOperations();
+        _cancellationTokenSource?.Dispose();
+        _disposed = true;
+        
+        GC.SuppressFinalize(this);
     }
 }

@@ -29,6 +29,9 @@ public partial class LauncherWindow : Window
 
         _controller.InitializationCompleted += (s, e) => InitializationCompleted?.Invoke(this, EventArgs.Empty);
         _controller.InitializationFailed += (s, e) => InitializationFailed?.Invoke(this, EventArgs.Empty);
+
+        // Clean up when window is closing
+        Closing += (s, e) => _controller.Dispose();
     }
 
     /// <summary>

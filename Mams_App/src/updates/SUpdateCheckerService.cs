@@ -130,19 +130,29 @@ public static class SUpdateCheckerService
         }
     }
 
+    private static CancellationTokenSource? s_downloadCancellationTokenSource;
+
+    /// <summary>
+    /// Cancels any ongoing download operation.
+    /// </summary>
+    public static void cancelDownload()
+    {
+        s_downloadCancellationTokenSource?.Cancel();
+    }
+
     /// <summary>
     /// Checks for updates and returns information about any available update.
     /// Does not show any UI - caller is responsible for prompting user.
     /// </summary>
     /// <returns>UpdateInfo with IsUpdateAvailable=true if an update exists, null if check failed.</returns>
-    public static async Task<UpdateInfo?> checkForUpdateInfoAsync()
+    public static async Task<UpdateInfo?> checkForUpdateInfoAsync(CancellationToken cancellationToken = default)
     {
         try
         {
             Debug.WriteLine($"[UpdateChecker] Checking for updates at: {GITHUB_API_URL}");
             Debug.WriteLine($"[UpdateChecker] Current version: {getCurrentVersion()}");
 
-            var latestRelease = await getLatestReleaseAsync();
+            var latestRelease = await getLatestReleaseAsync(cancellationToken);
             if (latestRelease == null)
             {
                 Debug.WriteLine("[UpdateChecker] No release found or API request failed");
@@ -169,6 +179,11 @@ public static class SUpdateCheckerService
                 Release = latestRelease
             };
         }
+        catch (OperationCanceledException)
+        {
+            Debug.WriteLine("[UpdateChecker] Update check cancelled");
+            return null;
+        }
         catch (Exception ex)
         {
             Debug.WriteLine($"[UpdateChecker] Update check failed: {ex.Message}");
@@ -181,13 +196,17 @@ public static class SUpdateCheckerService
     /// </summary>
     /// <param name="updateInfo">Update information from checkForUpdateInfoAsync</param>
     /// <param name="progressCallback">Callback for progress updates (status message, percentage 0-100 or null for indeterminate)</param>
-    public static async Task downloadAndInstallUpdateAsync(UpdateInfo updateInfo, Action<string, double?>? progressCallback = null)
+    /// <param name="cancellationToken">Cancellation token to cancel the operation</param>
+    public static async Task downloadAndInstallUpdateAsync(UpdateInfo updateInfo, Action<string, double?>? progressCallback = null, CancellationToken cancellationToken = default)
     {
         if (updateInfo.Release == null || string.IsNullOrEmpty(updateInfo.DownloadUrl))
         {
             Debug.WriteLine("[UpdateChecker] No valid update info provided");
             return;
         }
+
+        s_downloadCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        var linkedToken = s_downloadCancellationTokenSource.Token;
 
         try
         {
@@ -210,13 +229,13 @@ public static class SUpdateCheckerService
             Debug.WriteLine($"[UpdateChecker] Downloading from: {updateInfo.DownloadUrl}");
             progressCallback?.Invoke(Loc.Get("Launcher.DownloadingUpdate") ?? "Downloading update...", null);
 
-            using var response = await s_httpClient.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
+            using var response = await s_httpClient.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead, linkedToken);
             response.EnsureSuccessStatusCode();
 
             var totalBytes = response.Content.Headers.ContentLength ?? -1;
             var canReportProgress = totalBytes > 0;
 
-            await using var contentStream = await response.Content.ReadAsStreamAsync();
+            await using var contentStream = await response.Content.ReadAsStreamAsync(linkedToken);
             await using var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true);
 
             var buffer = new byte[65536];
@@ -225,9 +244,10 @@ public static class SUpdateCheckerService
             const long progressReportInterval = 102400;
             int bytesRead;
 
-            while ((bytesRead = await contentStream.ReadAsync(buffer)) > 0)
+            while ((bytesRead = await contentStream.ReadAsync(buffer, linkedToken)) > 0)
             {
-                await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead));
+                linkedToken.ThrowIfCancellationRequested();
+                await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead), linkedToken);
                 downloadedBytes += bytesRead;
 
                 if (downloadedBytes - lastReportedBytes >= progressReportInterval)
@@ -251,16 +271,20 @@ public static class SUpdateCheckerService
 
             Debug.WriteLine($"[UpdateChecker] Download complete: {downloadedBytes} bytes");
 
+            linkedToken.ThrowIfCancellationRequested();
+
             // Extract phase
             progressCallback?.Invoke(Loc.Get("Launcher.ExtractingUpdate") ?? "Extracting update...", null);
-            await Task.Delay(100);
+            await Task.Delay(100, linkedToken);
 
             // Close file stream before extracting
             await fileStream.DisposeAsync();
 
             // Extract the ZIP - run on background thread to keep UI responsive
             Debug.WriteLine($"[UpdateChecker] Extracting to: {extractPath}");
-            await Task.Run(() => ZipFile.ExtractToDirectory(zipPath, extractPath, true));
+            await Task.Run(() => ZipFile.ExtractToDirectory(zipPath, extractPath, true), linkedToken);
+
+            linkedToken.ThrowIfCancellationRequested();
 
             // Get the new version from the release tag
             var newVersion = release.TagName?.TrimStart('v', 'V') ?? "1.0.0";
@@ -269,7 +293,7 @@ public static class SUpdateCheckerService
             var appDir = AppDomain.CurrentDomain.BaseDirectory;
             var scriptPath = Path.Combine(tempDir, UPDATER_SCRIPT_NAME);
             var scriptContent = generateUpdaterScript(extractPath, appDir, newVersion);
-            await File.WriteAllTextAsync(scriptPath, scriptContent);
+            await File.WriteAllTextAsync(scriptPath, scriptContent, linkedToken);
 
             Debug.WriteLine($"[UpdateChecker] Launching updater script: {scriptPath}");
 
@@ -288,10 +312,19 @@ public static class SUpdateCheckerService
             // Close the application to allow update
             Application.Current.Shutdown();
         }
+        catch (OperationCanceledException)
+        {
+            Debug.WriteLine("[UpdateChecker] Update download cancelled");
+        }
         catch (Exception ex)
         {
             Debug.WriteLine($"[UpdateChecker] Update download failed: {ex.Message}");
             throw;
+        }
+        finally
+        {
+            s_downloadCancellationTokenSource?.Dispose();
+            s_downloadCancellationTokenSource = null;
         }
     }
 
@@ -451,9 +484,9 @@ public static class SUpdateCheckerService
                 progressWindow.Close();
             }
 
-            // Extract the ZIP
+            // Extract the ZIP - run on background thread to keep UI responsive
             Debug.WriteLine($"[UpdateChecker] Extracting to: {extractPath}");
-            ZipFile.ExtractToDirectory(zipPath, extractPath, true);
+            await Task.Run(() => ZipFile.ExtractToDirectory(zipPath, extractPath, true));
 
             // Get the new version from the release tag
             var newVersion = release.TagName?.TrimStart('v', 'V') ?? "1.0.0";
@@ -655,25 +688,31 @@ Write-Host 'Update complete!'
 ";
     }
 
+
     /// <summary>
     /// Gets the latest release information from GitHub.
     /// </summary>
-    private static async Task<GitHubRelease?> getLatestReleaseAsync()
+    private static async Task<GitHubRelease?> getLatestReleaseAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await s_httpClient.GetAsync(GITHUB_API_URL);
+            var response = await s_httpClient.GetAsync(GITHUB_API_URL, cancellationToken);
 
             Debug.WriteLine($"[UpdateChecker] GitHub API response: {response.StatusCode}");
 
             if (!response.IsSuccessStatusCode)
             {
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
                 Debug.WriteLine($"[UpdateChecker] GitHub API error: {content}");
                 return null;
             }
 
-            return await response.Content.ReadFromJsonAsync<GitHubRelease>();
+            return await response.Content.ReadFromJsonAsync<GitHubRelease>(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.WriteLine("[UpdateChecker] API request cancelled");
+            return null;
         }
         catch (Exception ex)
         {
