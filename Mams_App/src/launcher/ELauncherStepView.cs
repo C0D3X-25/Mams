@@ -1,9 +1,9 @@
-namespace Mams_App.src.launcher.Views;
+namespace Mams_App.src.launcher;
 
 /// <summary>
 /// Defines the different view types available in the launcher window.
 /// </summary>
-public enum ELauncherViewType
+public enum ELauncherStepView
 {
     /// <summary>
     /// View for MariaDB installation process.
@@ -16,9 +16,14 @@ public enum ELauncherViewType
     AppStarting,
 
     /// <summary>
-    /// View for new update available notification.
+    /// View for prompting the user about an available update.
     /// </summary>
-    NewUpdate,
+    CheckForUpdate,
+
+    /// <summary>
+    /// View for downloading and installing an update.
+    /// </summary>
+    DownloadUpdate,
 
     /// <summary>
     /// View when the application is ready to start.

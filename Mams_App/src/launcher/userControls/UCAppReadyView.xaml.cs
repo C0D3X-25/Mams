@@ -1,6 +1,6 @@
 using System.Windows.Controls;
 
-namespace Mams_App.src.launcher.Views;
+namespace Mams_App.src.launcher.userControls;
 
 /// <summary>
 /// Interaction logic for UCAppReadyView.xaml

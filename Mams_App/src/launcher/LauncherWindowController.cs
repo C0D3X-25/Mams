@@ -1,22 +1,23 @@
 using Mams_App.src.commands;
 using Mams_App.src.configurations;
 using Mams_App.src.controllers;
-using Mams_App.src.launcher.Views;
-using Mams_App.src.localizations;
+using Mams_App.src.launcher.userControls;
 using Mams_App.src.services;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Mams_App.src.launcher;
 
 /// <summary>
-/// Controller for the launcher window that handles the application initialization process.
+/// Controller for the launcher window that handles the UI binding and delegates
+/// the initialization process to the LauncherStepManager.
 /// </summary>
 public class LauncherWindowController : ABaseController, IDisposable
 {
+    private readonly LauncherStepManager _stepManager;
     private TaskCompletionSource<bool>? _userResponseTcs;
-    private CancellationTokenSource? _cancellationTokenSource;
     private bool _disposed;
 
     /// <summary>
@@ -31,13 +32,17 @@ public class LauncherWindowController : ABaseController, IDisposable
 
     #region Bindable Properties
 
-    private ELauncherViewType _currentViewType = ELauncherViewType.AppStarting;
-    public ELauncherViewType CurrentViewType
+    private UserControl _currentView = new UCAppStartingView();
+    /// <summary>
+    /// Gets or sets the current view displayed in the launcher.
+    /// </summary>
+    public UserControl CurrentView
     {
-        get => _currentViewType;
+        get => _currentView;
         set
         {
-            _currentViewType = value;
+            _currentView = value;
+            _currentView.DataContext = this;
             onPropertyChanged();
         }
     }
@@ -172,10 +177,69 @@ public class LauncherWindowController : ABaseController, IDisposable
         // Load saved StartWhenReady preference
         _startWhenReady = SVersionService.GetStartWhenReady();
 
+        // Initialize step manager
+        _stepManager = new LauncherStepManager();
+        _stepManager.StepChanged += OnStepChanged;
+        _stepManager.ProgressUpdated += OnProgressUpdated;
+        _stepManager.UserConfirmationRequested += OnUserConfirmationRequested;
+        _stepManager.InitializationCompleted += OnStepManagerInitializationCompleted;
+        _stepManager.InitializationFailed += OnStepManagerInitializationFailed;
+
         YesCommand = new RelayCommand(_ => OnYesClicked());
         NoCommand = new RelayCommand(_ => OnNoClicked());
         CloseAppCommand = new RelayCommand(_ => OnCloseAppClicked());
         StartAppCommand = new RelayCommand(_ => OnStartAppClicked(), _ => IsStartButtonEnabled);
+    }
+
+    private void OnStepChanged(object? sender, StepChangedEventArgs e)
+    {
+        CurrentView = LauncherViewFactory.CreateViewForStep(e.CurrentStep);
+        StatusText = e.StatusMessage;
+        
+        // Show progress bar for most steps, hide for prompts
+        if (e.CurrentStep == ELauncherStep.PromptUpdate)
+        {
+            ProgressBarVisibility = Visibility.Collapsed;
+        }
+        else if (e.CurrentStep != ELauncherStep.Failed)
+        {
+            ProgressBarVisibility = Visibility.Visible;
+            IsProgressIndeterminate = true;
+        }
+    }
+
+    private void OnProgressUpdated(object? sender, ProgressChangedEventArgs e)
+    {
+        StatusText = e.StatusMessage;
+        if (e.Percentage.HasValue)
+        {
+            IsProgressIndeterminate = false;
+            ProgressValue = e.Percentage.Value;
+        }
+        else
+        {
+            IsProgressIndeterminate = true;
+        }
+    }
+
+    private void OnUserConfirmationRequested(object? sender, UserConfirmationRequestedEventArgs e)
+    {
+        _userResponseTcs = e.ResponseSource;
+        StatusText = e.Message;
+        YesButtonText = e.YesText;
+        NoButtonText = e.NoText;
+        ActionButtonsVisibility = Visibility.Visible;
+        ProgressBarVisibility = Visibility.Collapsed;
+    }
+
+    private void OnStepManagerInitializationCompleted(object? sender, EventArgs e)
+    {
+        EnableStartButton();
+    }
+
+    private void OnStepManagerInitializationFailed(object? sender, EventArgs e)
+    {
+        InitializationFailed?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnYesClicked()
@@ -204,12 +268,8 @@ public class LauncherWindowController : ABaseController, IDisposable
         // Cancel any pending user response
         _userResponseTcs?.TrySetCanceled();
         
-        // Cancel all async operations
-        _cancellationTokenSource?.Cancel();
-        
-        // Cancel any ongoing downloads in services
-        SMariaDbPortableService.cancelDownload();
-        SUpdateCheckerService.cancelDownload();
+        // Delegate cancellation to the step manager
+        _stepManager.CancelAllOperations();
     }
 
     private void OnStartAppClicked()
@@ -222,239 +282,19 @@ public class LauncherWindowController : ABaseController, IDisposable
     /// </summary>
     public async Task StartInitializationAsync()
     {
-        _cancellationTokenSource = new CancellationTokenSource();
-        var cancellationToken = _cancellationTokenSource.Token;
+        Debug.WriteLine("[Launcher] Starting initialization via StepManager...");
 
-        try
-        {
-            Debug.WriteLine("[Launcher] Starting initialization...");
+        // Show progress bar at the start
+        ShowProgressBar(true);
+        CurrentView = LauncherViewFactory.CreateViewForStep(ELauncherStep.CheckMariaDbInstallation);
 
-            // Show progress bar at the start
-            ShowProgressBar(true);
-            CurrentViewType = ELauncherViewType.AppStarting;
-
-            // Step 1: Check MariaDB installation
-            Debug.WriteLine("[Launcher] Step 1: Checking MariaDB installation...");
-            UpdateStatus(Loc.Get("Launcher.CheckingMariaDb") ?? "Checking database installation...");
-            await Task.Delay(100, cancellationToken);
-
-            if (!SMariaDbPortableService.isInstalled())
-            {
-                Debug.WriteLine("[Launcher] MariaDB not installed, starting installation...");
-                CurrentViewType = ELauncherViewType.MariaDbInstallation;
-                
-                ShowProgressBar(true);
-                UpdateStatus(Loc.Get("Launcher.InstallingMariaDb") ?? "Installing database...");
-
-                if (!await SMariaDbPortableService.downloadAndInstallMariaDbAsync(OnProgressChanged, cancellationToken))
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        Debug.WriteLine("[Launcher] MariaDB download cancelled");
-                        return;
-                    }
-                    Debug.WriteLine("[Launcher] MariaDB download/install failed");
-                    await ShowErrorAndFailAsync(
-                        Loc.Get("Launcher.MariaDbInstallFailed") ??
-                        "Failed to download MariaDB.\nPlease check your internet connection and try again.",
-                        cancellationToken);
-                    return;
-                }
-                Debug.WriteLine("[Launcher] MariaDB installed successfully");
-            }
-            else
-            {
-                Debug.WriteLine("[Launcher] MariaDB already installed");
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Step 2: Initialize data directory if needed
-            Debug.WriteLine("[Launcher] Step 2: Checking data directory...");
-            if (!SMariaDbPortableService.isDataInitialized())
-            {
-                Debug.WriteLine("[Launcher] Initializing data directory...");
-                UpdateStatus(Loc.Get("Launcher.InitializingDatabase") ?? "Initializing database...");
-                ShowProgressBar(true);
-                await Task.Delay(100, cancellationToken);
-
-                if (!await SMariaDbPortableService.initializeDataDirectoryAsync(cancellationToken))
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        Debug.WriteLine("[Launcher] Data directory initialization cancelled");
-                        return;
-                    }
-                    Debug.WriteLine("[Launcher] Data directory initialization failed");
-                    await ShowErrorAndFailAsync(
-                        Loc.Get("Launcher.MariaDbInitFailed") ??
-                        "Failed to initialize the database.\nPlease try restarting the application.",
-                        cancellationToken);
-                    return;
-                }
-                Debug.WriteLine("[Launcher] Data directory initialized");
-            }
-            else
-            {
-                Debug.WriteLine("[Launcher] Data directory already initialized");
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Step 3: Start MariaDB if not running
-            Debug.WriteLine("[Launcher] Step 3: Checking if MariaDB is running...");
-            if (!await SMariaDbPortableService.isRunningAsync(cancellationToken))
-            {
-                Debug.WriteLine("[Launcher] Starting MariaDB server...");
-                UpdateStatus(Loc.Get("Launcher.StartingMariaDb") ?? "Starting database server...");
-                ShowProgressBar(true);
-                await Task.Delay(100, cancellationToken);
-
-                if (!await SMariaDbPortableService.startMariaDbAsync())
-                {
-                    Debug.WriteLine("[Launcher] Failed to start MariaDB");
-                    await ShowErrorAndFailAsync(
-                        Loc.Get("Launcher.MariaDbStartFailed") ??
-                        "Failed to start the database server.\nPlease try restarting the application.",
-                        cancellationToken);
-                    return;
-                }
-
-                Debug.WriteLine("[Launcher] Waiting for MariaDB to be ready...");
-                if (!await SMariaDbPortableService.waitForMariaDbReadyAsync(30, cancellationToken))
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        Debug.WriteLine("[Launcher] MariaDB wait cancelled");
-                        return;
-                    }
-                    Debug.WriteLine("[Launcher] MariaDB not responding");
-                    await ShowErrorAndFailAsync(
-                        Loc.Get("Launcher.MariaDbConnectionFailed") ??
-                        "Database server started but is not responding.\nPlease try restarting the application.",
-                        cancellationToken);
-                    return;
-                }
-                Debug.WriteLine("[Launcher] MariaDB is ready");
-            }
-            else
-            {
-                Debug.WriteLine("[Launcher] MariaDB already running");
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Step 4: Create database if needed
-            Debug.WriteLine("[Launcher] Step 4: Checking application database...");
-            if (!SMariaDbPortableService.isDatabaseCreated())
-            {
-                Debug.WriteLine("[Launcher] Creating application database...");
-                UpdateStatus(Loc.Get("Launcher.CreatingDatabase") ?? "Creating database...");
-                ShowProgressBar(true);
-                await Task.Delay(100, cancellationToken);
-
-                if (!await SMariaDbPortableService.initializeDatabaseAsync(cancellationToken))
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        Debug.WriteLine("[Launcher] Database creation cancelled");
-                        return;
-                    }
-                    Debug.WriteLine("[Launcher] Database creation failed");
-                    await ShowErrorAndFailAsync(
-                        Loc.Get("Launcher.DatabaseCreationFailed") ??
-                        "Failed to create the application database.\nPlease try restarting the application.",
-                        cancellationToken);
-                    return;
-                }
-                Debug.WriteLine("[Launcher] Database created");
-            }
-            else
-            {
-                Debug.WriteLine("[Launcher] Database already exists");
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Step 5: Check for updates
-            Debug.WriteLine("[Launcher] Step 5: Checking for updates...");
-            UpdateStatus(Loc.Get("Launcher.CheckingUpdates") ?? "Checking for updates...");
-            ShowProgressBar(true);
-            await Task.Delay(100, cancellationToken);
-
-            var updateInfo = await SUpdateCheckerService.checkForUpdateInfoAsync(cancellationToken);
-            if (updateInfo != null && updateInfo.IsUpdateAvailable)
-            {
-                Debug.WriteLine($"[Launcher] Update available: {updateInfo.LatestVersion}");
-                CurrentViewType = ELauncherViewType.NewUpdate;
-                var currentVersion = SVersionService.GetVersion();
-                var updateMessage = Loc.Get("Launcher.UpdateAvailable.Message", updateInfo.LatestVersion ?? "", currentVersion) ??
-                    $"A new version ({updateInfo.LatestVersion}) is available!\n\n" +
-                    $"Current version: v{currentVersion}\n\n" +
-                    "Would you like to download and install the update?\n" +
-                    "The application will restart after the update.";
-
-                var userWantsUpdate = await PromptUserForConfirmationAsync(
-                    updateMessage,
-                    Loc.Get("Common.Yes") ?? "Yes",
-                    Loc.Get("Common.No") ?? "No",
-                    cancellationToken);
-
-                if (userWantsUpdate)
-                {
-                    Debug.WriteLine("[Launcher] User accepted update, downloading...");
-                    HidePrompt();
-                    UpdateStatus(Loc.Get("Launcher.DownloadingUpdate") ?? "Downloading update...");
-                    await SUpdateCheckerService.downloadAndInstallUpdateAsync(updateInfo, OnProgressChanged, cancellationToken);
-                    return; // App will restart
-                }
-
-                Debug.WriteLine("[Launcher] User declined update");
-                HidePrompt();
-                CurrentViewType = ELauncherViewType.AppStarting;
-            }
-            else
-            {
-                Debug.WriteLine("[Launcher] No updates available");
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Step 6: Finalizing
-            Debug.WriteLine("[Launcher] Step 6: Finalizing...");
-            UpdateStatus(Loc.Get("Launcher.Starting") ?? "Starting application...");
-            ShowProgressBar(true);
-            await Task.Delay(300, cancellationToken);
-
-            Debug.WriteLine("[Launcher] Initialization completed successfully");
-            EnableStartButton();
-        }
-        catch (OperationCanceledException)
-        {
-            Debug.WriteLine("[Launcher] Initialization was cancelled");
-            // Don't show error, just exit silently
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"[Launcher] Initialization failed with exception: {ex}");
-            UpdateStatus($"{Loc.Get("Launcher.Error.Message") ?? "Failed to start application:"}\n\n{ex.Message}");
-            ShowProgressBar(false);
-            try
-            {
-                await Task.Delay(3000, cancellationToken);
-            }
-            catch (OperationCanceledException)
-            {
-                // Ignore cancellation during error display
-            }
-            OnInitializationFailed();
-        }
+        await _stepManager.StartAsync();
     }
 
     private void EnableStartButton()
     {
         IsStartButtonEnabled = true;
-        CurrentViewType = ELauncherViewType.AppReady;
+        CurrentView = LauncherViewFactory.CreateViewForStep(ELauncherStep.Ready);
         System.Windows.Input.CommandManager.InvalidateRequerySuggested();
         
         if (StartWhenReady)
@@ -463,71 +303,16 @@ public class LauncherWindowController : ABaseController, IDisposable
         }
     }
 
-    private async Task<bool> PromptUserForConfirmationAsync(string message, string yesText, string noText, CancellationToken cancellationToken = default)
-    {
-        _userResponseTcs = new TaskCompletionSource<bool>();
-
-        // Register cancellation
-        await using var registration = cancellationToken.Register(() => _userResponseTcs.TrySetCanceled());
-
-        StatusText = message;
-        YesButtonText = yesText;
-        NoButtonText = noText;
-        ActionButtonsVisibility = Visibility.Visible;
-        ProgressBarVisibility = Visibility.Collapsed;
-
-        return await _userResponseTcs.Task;
-    }
-
     private void HidePrompt()
     {
         ActionButtonsVisibility = Visibility.Collapsed;
         ProgressBarVisibility = Visibility.Visible;
     }
 
-    private async Task ShowErrorAndFailAsync(string errorMessage, CancellationToken cancellationToken = default)
-    {
-        UpdateStatus(errorMessage);
-        ShowProgressBar(false);
-        try
-        {
-            await Task.Delay(3000, cancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-            // Ignore cancellation during error display
-        }
-        OnInitializationFailed();
-    }
-
-    private void UpdateStatus(string status)
-    {
-        StatusText = status;
-    }
-
     private void ShowProgressBar(bool show)
     {
         ProgressBarVisibility = show ? Visibility.Visible : Visibility.Collapsed;
         IsProgressIndeterminate = true;
-    }
-
-    private void OnProgressChanged(string status, double? percentage)
-    {
-        StatusText = status;
-        if (percentage.HasValue)
-        {
-            IsProgressIndeterminate = false;
-            ProgressValue = percentage.Value;
-        }
-        else
-        {
-            IsProgressIndeterminate = true;
-        }
-    }
-
-    private void OnInitializationFailed()
-    {
-        InitializationFailed?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -538,7 +323,15 @@ public class LauncherWindowController : ABaseController, IDisposable
         if (_disposed) return;
         
         CancelAllOperations();
-        _cancellationTokenSource?.Dispose();
+        
+        // Unsubscribe from events
+        _stepManager.StepChanged -= OnStepChanged;
+        _stepManager.ProgressUpdated -= OnProgressUpdated;
+        _stepManager.UserConfirmationRequested -= OnUserConfirmationRequested;
+        _stepManager.InitializationCompleted -= OnStepManagerInitializationCompleted;
+        _stepManager.InitializationFailed -= OnStepManagerInitializationFailed;
+        
+        _stepManager.Dispose();
         _disposed = true;
         
         GC.SuppressFinalize(this);

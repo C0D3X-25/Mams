@@ -3,11 +3,11 @@ using System.Windows.Controls;
 namespace Mams_App.src.launcher.userControls;
 
 /// <summary>
-/// Interaction logic for UCAppStartingView.xaml
+/// Interaction logic for UCCheckForUpdateView.xaml
 /// </summary>
-public partial class UCAppStartingView : UserControl
+public partial class UCCheckForUpdateView : UserControl
 {
-    public UCAppStartingView()
+    public UCCheckForUpdateView()
     {
         InitializeComponent();
     }

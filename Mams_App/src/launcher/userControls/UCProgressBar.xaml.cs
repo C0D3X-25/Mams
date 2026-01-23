@@ -3,11 +3,11 @@ using System.Windows.Controls;
 namespace Mams_App.src.launcher.userControls;
 
 /// <summary>
-/// Interaction logic for UCAppStartingView.xaml
+/// Interaction logic for UCProgressBar.xaml
 /// </summary>
-public partial class UCAppStartingView : UserControl
+public partial class UCProgressBar : UserControl
 {
-    public UCAppStartingView()
+    public UCProgressBar()
     {
         InitializeComponent();
     }
