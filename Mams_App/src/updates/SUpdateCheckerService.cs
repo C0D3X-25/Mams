@@ -258,9 +258,9 @@ public static class SUpdateCheckerService
             // Close file stream before extracting
             await fileStream.DisposeAsync();
 
-            // Extract the ZIP
+            // Extract the ZIP - run on background thread to keep UI responsive
             Debug.WriteLine($"[UpdateChecker] Extracting to: {extractPath}");
-            ZipFile.ExtractToDirectory(zipPath, extractPath, true);
+            await Task.Run(() => ZipFile.ExtractToDirectory(zipPath, extractPath, true));
 
             // Get the new version from the release tag
             var newVersion = release.TagName?.TrimStart('v', 'V') ?? "1.0.0";

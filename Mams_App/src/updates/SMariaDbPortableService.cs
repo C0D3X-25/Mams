@@ -173,18 +173,22 @@ public static class SMariaDbPortableService
                 Debug.WriteLine($"[MariaDbPortable] Download complete");
             }
 
-            // Extract phase
+            // Extract phase - run on background thread to keep UI responsive
             progressCallback?.Invoke(Loc.Get("Launcher.ExtractingMariaDb") ?? "Extracting MariaDB...", null);
             await Task.Delay(100);
 
             var tempExtractPath = Path.Combine(Path.GetTempPath(), $"mariadb-extract-{Guid.NewGuid()}");
-            if (Directory.Exists(tempExtractPath))
+            
+            await Task.Run(() =>
             {
-                Directory.Delete(tempExtractPath, true);
-            }
+                if (Directory.Exists(tempExtractPath))
+                {
+                    Directory.Delete(tempExtractPath, true);
+                }
 
-            Debug.WriteLine($"[MariaDbPortable] Extracting to: {tempExtractPath}");
-            ZipFile.ExtractToDirectory(tempZipPath, tempExtractPath);
+                Debug.WriteLine($"[MariaDbPortable] Extracting to: {tempExtractPath}");
+                ZipFile.ExtractToDirectory(tempZipPath, tempExtractPath);
+            });
 
             var extractedFolders = Directory.GetDirectories(tempExtractPath);
             if (extractedFolders.Length == 0)
@@ -194,13 +198,16 @@ public static class SMariaDbPortableService
 
             var sourcePath = extractedFolders[0];
 
-            if (Directory.Exists(MariaDbPath))
+            await Task.Run(() =>
             {
-                Directory.Delete(MariaDbPath, true);
-            }
+                if (Directory.Exists(MariaDbPath))
+                {
+                    Directory.Delete(MariaDbPath, true);
+                }
 
-            Debug.WriteLine($"[MariaDbPortable] Moving to: {MariaDbPath}");
-            Directory.Move(sourcePath, MariaDbPath);
+                Debug.WriteLine($"[MariaDbPortable] Moving to: {MariaDbPath}");
+                Directory.Move(sourcePath, MariaDbPath);
+            });
 
             // Cleanup
             try
