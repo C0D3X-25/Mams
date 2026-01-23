@@ -1,6 +1,7 @@
 using Mams_App.src.commands;
 using Mams_App.src.configurations;
 using Mams_App.src.controllers;
+using Mams_App.src.launcher.Views;
 using Mams_App.src.localizations;
 using Mams_App.src.services;
 using System.Diagnostics;
@@ -29,6 +30,17 @@ public class LauncherWindowController : ABaseController, IDisposable
     public event EventHandler? InitializationFailed;
 
     #region Bindable Properties
+
+    private ELauncherViewType _currentViewType = ELauncherViewType.AppStarting;
+    public ELauncherViewType CurrentViewType
+    {
+        get => _currentViewType;
+        set
+        {
+            _currentViewType = value;
+            onPropertyChanged();
+        }
+    }
 
     private string _statusText = "Initializing...";
     public string StatusText
@@ -206,6 +218,7 @@ public class LauncherWindowController : ABaseController, IDisposable
 
             // Show progress bar at the start
             ShowProgressBar(true);
+            CurrentViewType = ELauncherViewType.AppStarting;
 
             // Step 1: Check MariaDB installation
             Debug.WriteLine("[Launcher] Step 1: Checking MariaDB installation...");
@@ -214,29 +227,9 @@ public class LauncherWindowController : ABaseController, IDisposable
 
             if (!SMariaDbPortableService.isInstalled())
             {
-                Debug.WriteLine("[Launcher] MariaDB not installed, prompting user...");
-                var installMessage = Loc.Get("Launcher.MariaDbSetupRequired.Message") ??
-                    "The database server is not installed.\n\n" +
-                    "This application requires MariaDB to store data.\n" +
-                    "MariaDB Portable will be downloaded and installed automatically.\n\n" +
-                    "Download size: ~100 MB\n\n" +
-                    "Would you like to proceed with the installation?";
-
-                var userWantsInstall = await PromptUserForConfirmationAsync(
-                    installMessage,
-                    Loc.Get("Common.Yes") ?? "Yes",
-                    Loc.Get("Common.No") ?? "No",
-                    cancellationToken);
-
-                if (!userWantsInstall)
-                {
-                    Debug.WriteLine("[Launcher] User declined MariaDB installation");
-                    OnInitializationFailed();
-                    return;
-                }
-
-                Debug.WriteLine("[Launcher] User accepted, starting MariaDB download...");
-                HidePrompt();
+                Debug.WriteLine("[Launcher] MariaDB not installed, starting installation...");
+                CurrentViewType = ELauncherViewType.MariaDbInstallation;
+                
                 ShowProgressBar(true);
                 UpdateStatus(Loc.Get("Launcher.InstallingMariaDb") ?? "Installing database...");
 
@@ -380,6 +373,7 @@ public class LauncherWindowController : ABaseController, IDisposable
             if (updateInfo != null && updateInfo.IsUpdateAvailable)
             {
                 Debug.WriteLine($"[Launcher] Update available: {updateInfo.LatestVersion}");
+                CurrentViewType = ELauncherViewType.NewUpdate;
                 var currentVersion = SVersionService.GetVersion();
                 var updateMessage = Loc.Get("Launcher.UpdateAvailable.Message", updateInfo.LatestVersion ?? "", currentVersion) ??
                     $"A new version ({updateInfo.LatestVersion}) is available!\n\n" +
@@ -404,6 +398,7 @@ public class LauncherWindowController : ABaseController, IDisposable
 
                 Debug.WriteLine("[Launcher] User declined update");
                 HidePrompt();
+                CurrentViewType = ELauncherViewType.AppStarting;
             }
             else
             {
@@ -446,6 +441,7 @@ public class LauncherWindowController : ABaseController, IDisposable
     private void EnableStartButton()
     {
         IsStartButtonEnabled = true;
+        CurrentViewType = ELauncherViewType.AppReady;
         System.Windows.Input.CommandManager.InvalidateRequerySuggested();
         
         if (StartWhenReady)

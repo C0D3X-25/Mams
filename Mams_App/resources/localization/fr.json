@@ -448,5 +448,6 @@
     "Launcher.DatabaseCreationFailed": "Échec de la création de la base de données.\nVeuillez essayer de redémarrer l'application.",
     "Launcher.UpdateAvailable.Message": "Une nouvelle version ({0}) est disponible!\n\nVersion actuelle: v{1}\n\nVoulez-vous télécharger et installer la mise à jour?\nL'application redémarrera après la mise à jour.",
     "Launcher.Error.Title": "Erreur de démarrage",
-    "Launcher.Error.Message": "Échec du démarrage de l'application:"
+    "Launcher.Error.Message": "Échec du démarrage de l'application:",
+    "Launcher.AppReady": "L'application est prête à être démarrée.\n\nCliquez sur 'Démarrer' pour continuer."
 }
