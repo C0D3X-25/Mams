@@ -16,6 +16,15 @@ public static class SVersionService
     private static VersionInfo? _cachedVersionInfo;
 
     /// <summary>
+    /// Clears the cached version info, forcing the next read to load from disk.
+    /// This should be called at app startup to ensure fresh data after an update.
+    /// </summary>
+    public static void ClearCache()
+    {
+        _cachedVersionInfo = null;
+    }
+
+    /// <summary>
     /// Gets the application version from the version.json file.
     /// </summary>
     /// <returns>The application version string, or "1.0.0" if not found.</returns>

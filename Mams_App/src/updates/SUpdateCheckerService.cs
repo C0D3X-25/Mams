@@ -309,7 +309,7 @@ public static class SUpdateCheckerService
 
             Process.Start(startInfo);
 
-            // Close the application to allow update
+            // Close the application to allow update - the Launcher will be shown first after restart
             Application.Current.Shutdown();
         }
         catch (OperationCanceledException)
@@ -511,7 +511,7 @@ public static class SUpdateCheckerService
 
             Process.Start(startInfo);
 
-            // Close the application to allow update
+            // Close the application to allow update - the Launcher will be shown first after restart
             Application.Current.Shutdown();
         }
         catch (Exception ex)
@@ -660,10 +660,12 @@ foreach ($file in $files) {{
     Copy-Item -Path $file.FullName -Destination $destPath -Force
 }}
 
-# Update version in version.json file
-Write-Host 'Updating version...'
+# Update version in version.json file and reset startWhenReady to default (false)
+# This ensures the Launcher will be shown after update restart
+Write-Host 'Updating version.json...'
 $versionContent = @{{
     version = $newVersion
+    startWhenReady = $false
 }}
 
 $versionDir = Split-Path $versionPath -Parent
@@ -673,7 +675,7 @@ if (-not (Test-Path $versionDir)) {{
 
 $versionContent | ConvertTo-Json -Depth 10 | Set-Content $versionPath -Encoding UTF8
 
-# Start the updated application
+# Start the updated application (Launcher will be shown first)
 Write-Host 'Starting updated application...'
 Start-Process -FilePath $appExe
 

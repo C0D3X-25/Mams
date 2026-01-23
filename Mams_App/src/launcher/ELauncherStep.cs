@@ -5,14 +5,14 @@ namespace Mams_App.src.launcher;
 /// </summary>
 public enum ELauncherStep
 {
+    CheckUpdates,
+    PromptUpdate,
+    DownloadUpdate,
     CheckMariaDbInstallation,
     InstallMariaDb,
     InitializeDataDirectory,
     StartMariaDb,
     CreateDatabase,
-    CheckUpdates,
-    PromptUpdate,
-    DownloadUpdate,
     Finalize,
     Ready,
     Failed

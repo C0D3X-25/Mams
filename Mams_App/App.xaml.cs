@@ -20,6 +20,9 @@ public partial class App : Application
     {
         base.OnStartup(e);
 
+        // Clear version service cache to ensure fresh data after an update
+        SVersionService.ClearCache();
+
         // Load configuration and set culture
         var config = SAppConfigService.loadConfig();
         setCultureFromConfig(config);

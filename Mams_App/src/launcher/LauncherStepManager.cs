@@ -11,7 +11,7 @@ namespace Mams_App.src.launcher;
 /// </summary>
 public class LauncherStepManager : IDisposable
 {
-    private ELauncherStep _currentStep = ELauncherStep.CheckMariaDbInstallation;
+    private ELauncherStep _currentStep = ELauncherStep.CheckUpdates;
     private CancellationTokenSource? _cancellationTokenSource;
     private bool _disposed;
 
@@ -62,107 +62,7 @@ public class LauncherStepManager : IDisposable
         {
             Debug.WriteLine("[LauncherStepManager] Starting initialization...");
 
-            // Step 1: Check MariaDB installation
-            await ExecuteStepAsync(ELauncherStep.CheckMariaDbInstallation, cancellationToken);
-
-            if (!SMariaDbPortableService.isInstalled())
-            {
-                // Step 2: Install MariaDB
-                await ExecuteStepAsync(ELauncherStep.InstallMariaDb, cancellationToken);
-
-                if (!await SMariaDbPortableService.downloadAndInstallMariaDbAsync(OnProgressChanged, cancellationToken))
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        Debug.WriteLine("[LauncherStepManager] MariaDB download cancelled");
-                        return;
-                    }
-                    await FailWithErrorAsync(
-                        Loc.Get("Launcher.MariaDbInstallFailed") ??
-                        "Failed to download MariaDB.\nPlease check your internet connection and try again.",
-                        cancellationToken);
-                    return;
-                }
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Step 3: Initialize data directory
-            await ExecuteStepAsync(ELauncherStep.InitializeDataDirectory, cancellationToken);
-
-            if (!SMariaDbPortableService.isDataInitialized())
-            {
-                if (!await SMariaDbPortableService.initializeDataDirectoryAsync(cancellationToken))
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        Debug.WriteLine("[LauncherStepManager] Data directory initialization cancelled");
-                        return;
-                    }
-                    await FailWithErrorAsync(
-                        Loc.Get("Launcher.MariaDbInitFailed") ??
-                        "Failed to initialize the database.\nPlease try restarting the application.",
-                        cancellationToken);
-                    return;
-                }
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Step 4: Start MariaDB
-            await ExecuteStepAsync(ELauncherStep.StartMariaDb, cancellationToken);
-
-            if (!await SMariaDbPortableService.isRunningAsync(cancellationToken))
-            {
-                if (!await SMariaDbPortableService.startMariaDbAsync())
-                {
-                    await FailWithErrorAsync(
-                        Loc.Get("Launcher.MariaDbStartFailed") ??
-                        "Failed to start the database server.\nPlease try restarting the application.",
-                        cancellationToken);
-                    return;
-                }
-
-                if (!await SMariaDbPortableService.waitForMariaDbReadyAsync(30, cancellationToken))
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        Debug.WriteLine("[LauncherStepManager] MariaDB wait cancelled");
-                        return;
-                    }
-                    await FailWithErrorAsync(
-                        Loc.Get("Launcher.MariaDbConnectionFailed") ??
-                        "Database server started but is not responding.\nPlease try restarting the application.",
-                        cancellationToken);
-                    return;
-                }
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Step 5: Create database
-            await ExecuteStepAsync(ELauncherStep.CreateDatabase, cancellationToken);
-
-            if (!SMariaDbPortableService.isDatabaseCreated())
-            {
-                if (!await SMariaDbPortableService.initializeDatabaseAsync(cancellationToken))
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        Debug.WriteLine("[LauncherStepManager] Database creation cancelled");
-                        return;
-                    }
-                    await FailWithErrorAsync(
-                        Loc.Get("Launcher.DatabaseCreationFailed") ??
-                        "Failed to create the application database.\nPlease try restarting the application.",
-                        cancellationToken);
-                    return;
-                }
-            }
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Step 6: Check for updates
+            // Step 1: Check for updates (do this first, before MariaDB, in case update changes MariaDB installation)
             await ExecuteStepAsync(ELauncherStep.CheckUpdates, cancellationToken);
 
             var updateInfo = await SUpdateCheckerService.checkForUpdateInfoAsync(cancellationToken);
@@ -193,6 +93,106 @@ public class LauncherStepManager : IDisposable
                 }
 
                 Debug.WriteLine("[LauncherStepManager] User declined update");
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Step 2: Check MariaDB installation
+            await ExecuteStepAsync(ELauncherStep.CheckMariaDbInstallation, cancellationToken);
+
+            if (!SMariaDbPortableService.isInstalled())
+            {
+                // Step 3: Install MariaDB
+                await ExecuteStepAsync(ELauncherStep.InstallMariaDb, cancellationToken);
+
+                if (!await SMariaDbPortableService.downloadAndInstallMariaDbAsync(OnProgressChanged, cancellationToken))
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Debug.WriteLine("[LauncherStepManager] MariaDB download cancelled");
+                        return;
+                    }
+                    await FailWithErrorAsync(
+                        Loc.Get("Launcher.MariaDbInstallFailed") ??
+                        "Failed to download MariaDB.\nPlease check your internet connection and try again.",
+                        cancellationToken);
+                    return;
+                }
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Step 4: Initialize data directory
+            await ExecuteStepAsync(ELauncherStep.InitializeDataDirectory, cancellationToken);
+
+            if (!SMariaDbPortableService.isDataInitialized())
+            {
+                if (!await SMariaDbPortableService.initializeDataDirectoryAsync(cancellationToken))
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Debug.WriteLine("[LauncherStepManager] Data directory initialization cancelled");
+                        return;
+                    }
+                    await FailWithErrorAsync(
+                        Loc.Get("Launcher.MariaDbInitFailed") ??
+                        "Failed to initialize the database.\nPlease try restarting the application.",
+                        cancellationToken);
+                    return;
+                }
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Step 5: Start MariaDB
+            await ExecuteStepAsync(ELauncherStep.StartMariaDb, cancellationToken);
+
+            if (!await SMariaDbPortableService.isRunningAsync(cancellationToken))
+            {
+                if (!await SMariaDbPortableService.startMariaDbAsync())
+                {
+                    await FailWithErrorAsync(
+                        Loc.Get("Launcher.MariaDbStartFailed") ??
+                        "Failed to start the database server.\nPlease try restarting the application.",
+                        cancellationToken);
+                    return;
+                }
+
+                if (!await SMariaDbPortableService.waitForMariaDbReadyAsync(30, cancellationToken))
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Debug.WriteLine("[LauncherStepManager] MariaDB wait cancelled");
+                        return;
+                    }
+                    await FailWithErrorAsync(
+                        Loc.Get("Launcher.MariaDbConnectionFailed") ??
+                        "Database server started but is not responding.\nPlease try restarting the application.",
+                        cancellationToken);
+                    return;
+                }
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Step 6: Create database
+            await ExecuteStepAsync(ELauncherStep.CreateDatabase, cancellationToken);
+
+            if (!SMariaDbPortableService.isDatabaseCreated())
+            {
+                if (!await SMariaDbPortableService.initializeDatabaseAsync(cancellationToken))
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        Debug.WriteLine("[LauncherStepManager] Database creation cancelled");
+                        return;
+                    }
+                    await FailWithErrorAsync(
+                        Loc.Get("Launcher.DatabaseCreationFailed") ??
+                        "Failed to create the application database.\nPlease try restarting the application.",
+                        cancellationToken);
+                    return;
+                }
             }
 
             cancellationToken.ThrowIfCancellationRequested();
