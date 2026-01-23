@@ -6,15 +6,14 @@ using System.Text.Json.Serialization;
 namespace Mams_App.src.configurations;
 
 /// <summary>
-/// Static service class for reading the application version.
-/// Version is stored in the resources folder and is read-only.
+/// Static service class for reading and writing application settings from version.json.
 /// </summary>
 public static class SVersionService
 {
     private static readonly string _versionFilePath = Path.Combine(
         AppDomain.CurrentDomain.BaseDirectory, "resources", "version.json");
 
-    private static string? _cachedVersion;
+    private static VersionInfo? _cachedVersionInfo;
 
     /// <summary>
     /// Gets the application version from the version.json file.
@@ -22,29 +21,72 @@ public static class SVersionService
     /// <returns>The application version string, or "1.0.0" if not found.</returns>
     public static string GetVersion()
     {
-        if (_cachedVersion != null)
+        return GetVersionInfo().Version;
+    }
+
+    /// <summary>
+    /// Gets the StartWhenReady setting from the version.json file.
+    /// </summary>
+    /// <returns>True if the app should start automatically when ready, false otherwise.</returns>
+    public static bool GetStartWhenReady()
+    {
+        return GetVersionInfo().StartWhenReady;
+    }
+
+    /// <summary>
+    /// Sets and saves the StartWhenReady setting to the version.json file.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public static void SetStartWhenReady(bool value)
+    {
+        var versionInfo = GetVersionInfo();
+        if (versionInfo.StartWhenReady != value)
         {
-            return _cachedVersion;
+            versionInfo.StartWhenReady = value;
+            SaveVersionInfo(versionInfo);
+        }
+    }
+
+    private static VersionInfo GetVersionInfo()
+    {
+        if (_cachedVersionInfo != null)
+        {
+            return _cachedVersionInfo;
         }
 
         try
         {
             if (!File.Exists(_versionFilePath))
             {
-                _cachedVersion = "1.0.0";
-                return _cachedVersion;
+                _cachedVersionInfo = new VersionInfo();
+                return _cachedVersionInfo;
             }
 
             string json = File.ReadAllText(_versionFilePath, Encoding.UTF8);
-            var versionInfo = JsonSerializer.Deserialize<VersionInfo>(json);
-
-            _cachedVersion = versionInfo?.Version ?? "1.0.0";
-            return _cachedVersion;
+            _cachedVersionInfo = JsonSerializer.Deserialize<VersionInfo>(json) ?? new VersionInfo();
+            return _cachedVersionInfo;
         }
         catch
         {
-            _cachedVersion = "1.0.0";
-            return _cachedVersion;
+            _cachedVersionInfo = new VersionInfo();
+            return _cachedVersionInfo;
+        }
+    }
+
+    private static void SaveVersionInfo(VersionInfo versionInfo)
+    {
+        try
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            string json = JsonSerializer.Serialize(versionInfo, options);
+            File.WriteAllText(_versionFilePath, json, Encoding.UTF8);
+        }
+        catch
+        {
+            // Silently fail if we can't save the settings
         }
     }
 }
@@ -56,4 +98,7 @@ internal class VersionInfo
 {
     [JsonPropertyName("version")]
     public string Version { get; set; } = "1.0.0";
+
+    [JsonPropertyName("startWhenReady")]
+    public bool StartWhenReady { get; set; } = false;
 }

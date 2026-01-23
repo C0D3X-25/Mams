@@ -136,8 +136,18 @@ public class LauncherWindowController : ABaseController, IDisposable
         get => _startWhenReady;
         set
         {
-            _startWhenReady = value;
-            onPropertyChanged();
+            if (_startWhenReady != value)
+            {
+                _startWhenReady = value;
+                SVersionService.SetStartWhenReady(value);
+                onPropertyChanged();
+
+                // If the app is already ready and user checks the checkbox, start the app
+                if (value && IsStartButtonEnabled)
+                {
+                    InitializationCompleted?.Invoke(this, EventArgs.Empty);
+                }
+            }
         }
     }
 
@@ -159,6 +169,9 @@ public class LauncherWindowController : ABaseController, IDisposable
 
     public LauncherWindowController()
     {
+        // Load saved StartWhenReady preference
+        _startWhenReady = SVersionService.GetStartWhenReady();
+
         YesCommand = new RelayCommand(_ => OnYesClicked());
         NoCommand = new RelayCommand(_ => OnNoClicked());
         CloseAppCommand = new RelayCommand(_ => OnCloseAppClicked());
