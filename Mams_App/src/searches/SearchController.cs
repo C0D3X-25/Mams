@@ -44,7 +44,7 @@ public class SearchController : ABaseController
     /// <summary>
     /// Debounce delay in milliseconds before triggering search after typing stops.
     /// </summary>
-    private const int DEBOUNCE_DELAY_MS = 250;
+    private const int DEBOUNCE_DELAY_MS = 200;
 
     /// <summary>
     /// Command to execute the search operation.
