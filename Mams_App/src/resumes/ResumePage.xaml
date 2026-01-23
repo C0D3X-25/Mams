@@ -86,12 +86,12 @@ Title="ResumePage">
                        Margin="5,0,5,0" 
                        FontSize="16" 
                        VerticalAlignment="Center"
-                       IsEnabled="{Binding m_is_search_item_enabled}"
-                       ItemsSource="{Binding m_list_search_item}"
-                       SelectedItem="{Binding m_selected_search_item}">
+                       IsEnabled="{Binding m_is_filter_item_enabled}"
+                       ItemsSource="{Binding m_list_filter_item}"
+                       SelectedItem="{Binding m_selected_filter_item}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding search_item_to_display}"/>
+                                <TextBlock Text="{Binding filter_item_to_display}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
@@ -111,7 +111,7 @@ Title="ResumePage">
                        SelectedItem="{Binding m_selected_year}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding search_year}"/>
+                                <TextBlock Text="{Binding filter_year}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>

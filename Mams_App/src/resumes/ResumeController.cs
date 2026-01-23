@@ -53,16 +53,16 @@ public class ResumeController : ABaseController
                 updateListFilterItems();
                 updateDisplayedProfitsAndFeesLists();
                 onPropertyChanged();
-                onPropertyChanged(nameof(m_is_search_item_enabled));
+                onPropertyChanged(nameof(m_is_filter_item_enabled));
             }
         }
     }
 
     /// <summary>
-    /// Returns true if the search item combobox should be enabled.
+    /// Returns true if the filter item combobox should be enabled.
     /// Disabled when the first table item (index 0) is selected.
     /// </summary>
-    public bool m_is_search_item_enabled
+    public bool m_is_filter_item_enabled
     {
         get
         {
@@ -497,7 +497,7 @@ public class ResumeController : ABaseController
         onPropertyChanged(nameof(m_selected_filter_item));
         onPropertyChanged(nameof(m_list_year));
         onPropertyChanged(nameof(m_selected_year));
-        onPropertyChanged(nameof(m_is_search_item_enabled));
+        onPropertyChanged(nameof(m_is_filter_item_enabled));
     }
 
     private void updateDisplayedProfitsAndFeesLists()
@@ -551,7 +551,9 @@ public class ResumeController : ABaseController
         {
             SFilterModel.m_list_filter_item = _m_resume_model.getListFilterItems(m_selected_table);
             SFilterModel.m_list_year = _m_resume_model.getListYears();
+
             onPropertyChanged(nameof(m_list_filter_item));
+            onPropertyChanged(nameof(m_selected_filter_item));
             onPropertyChanged(nameof(m_list_year));
         }
     }
