@@ -1,5 +1,6 @@
 using Mams_App.src.services;
 using MySqlConnector;
+using System.Diagnostics;
 using System.Windows;
 
 namespace Mams_App.src.databaseConnections;
@@ -22,16 +23,9 @@ public class SQLConnectionModel
         }
         catch (MySqlException e)
         {
-            MessageBox.Show("Failed to connect to the database.\n" +
-                $"Code:   {e.ErrorCode}\n" +
-                $"Number: {e.Number}\n" +
-                $"Data:   {e.Data}\n" +
-                $"State:  {e.SqlState}\n" +
-                $"Source: {e.Source}"
-            );
+            Debug.WriteLine($"[SQLConnectionModel] Failed to connect to the database: {e.Message}");
             connection.Dispose();
-            Environment.Exit(1);
-            return null;
+            throw; // Re-throw to let callers handle the exception
         }
     }
 

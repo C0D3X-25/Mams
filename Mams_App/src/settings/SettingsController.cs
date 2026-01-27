@@ -163,24 +163,12 @@ public class SettingsController : INotifyPropertyChanged
     /// <summary>
     /// Gets the list of available languages.
     /// </summary>
-    public ObservableCollection<LanguageItem> AvailableLanguages { get; } =
-    [
-        new LanguageItem("fr", Loc.Get("Language.French")),
-        new LanguageItem("en", Loc.Get("Language.English")),
-        new LanguageItem("de", Loc.Get("Language.German")),
-        new LanguageItem("it", Loc.Get("Language.Italian"))
-    ];
+    public ObservableCollection<LanguageItem> AvailableLanguages { get; }
 
     /// <summary>
     /// Gets the list of available currencies.
     /// </summary>
-    public ObservableCollection<CurrencyItem> AvailableCurrencies { get; } =
-    [
-        new CurrencyItem("fr-CH", Loc.Get("Currency.CHF"), "CHF"),
-        new CurrencyItem("fr-FR", Loc.Get("Currency.EUR"), "€"),
-        new CurrencyItem("en-US", Loc.Get("Currency.USD"), "$"),
-        new CurrencyItem("en-GB", Loc.Get("Currency.GBP"), "£")
-    ];
+    public ObservableCollection<CurrencyItem> AvailableCurrencies { get; }
 
     /// <summary>
     /// Gets or sets the selected language item.
@@ -329,6 +317,23 @@ public class SettingsController : INotifyPropertyChanged
         m_backups = [];
         m_userModel = new UserModel();
 
+        // Initialize language and currency collections
+        AvailableLanguages =
+        [
+            new LanguageItem("fr", Loc.Get("Language.French")),
+            new LanguageItem("en", Loc.Get("Language.English")),
+            new LanguageItem("de", Loc.Get("Language.German")),
+            new LanguageItem("it", Loc.Get("Language.Italian"))
+        ];
+
+        AvailableCurrencies =
+        [
+            new CurrencyItem("fr-CH", Loc.Get("Currency.CHF"), "CHF"),
+            new CurrencyItem("fr-FR", Loc.Get("Currency.EUR"), "€"),
+            new CurrencyItem("en-US", Loc.Get("Currency.USD"), "$"),
+            new CurrencyItem("en-GB", Loc.Get("Currency.GBP"), "£")
+        ];
+
         RestoreBackupCommand = new RelayCommand(restoreBackup, _ => CanRestoreBackup);
         RefreshBackupsCommand = new RelayCommand(_ => refreshBackups());
         OpenBackupFolderCommand = new RelayCommand(_ => openBackupFolder());
@@ -349,14 +354,22 @@ public class SettingsController : INotifyPropertyChanged
     /// </summary>
     private void loadUser()
     {
-        var result = m_userModel.getUser();
-        if (result.is_found && result.returned_item != null)
+        try
         {
-            UserName = result.returned_item.user_name;
-            UserPhone = result.returned_item.user_phone;
-            UserEmail = result.returned_item.user_email;
-            UserCity = result.returned_item.user_city;
-            UserAddress = result.returned_item.user_address;
+            var result = m_userModel.getUser();
+            if (result.is_found && result.returned_item != null)
+            {
+                UserName = result.returned_item.user_name;
+                UserPhone = result.returned_item.user_phone;
+                UserEmail = result.returned_item.user_email;
+                UserCity = result.returned_item.user_city;
+                UserAddress = result.returned_item.user_address;
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[SettingsController] Error loading user data: {ex.Message}");
+            // User data will remain empty - user can still use other settings
         }
     }
 
@@ -442,9 +455,18 @@ public class SettingsController : INotifyPropertyChanged
     /// </summary>
     private void refreshBackups()
     {
-        var backups = SDatabaseBackup.getAvailableBackups();
-        Backups = new ObservableCollection<FileInfo>(backups);
-        SelectedBackup = null;
+        try
+        {
+            var backups = SDatabaseBackup.getAvailableBackups();
+            Backups = new ObservableCollection<FileInfo>(backups);
+            SelectedBackup = null;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[SettingsController] Error refreshing backups: {ex.Message}");
+            Backups = [];
+            SelectedBackup = null;
+        }
     }
 
     /// <summary>

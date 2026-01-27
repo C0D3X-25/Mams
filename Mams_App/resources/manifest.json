@@ -1,5 +1,5 @@
 {
-    "manifestVersion": "1.0",
+    "manifestVersion": "1.2.4",
     "description": "Application resource manifest for integrity verification",
     "files": {
         "frLocalization": {
@@ -69,7 +69,7 @@
             "isAppFile": true
         },
         "mySqlBackup": {
-            "path": "MySqlBackup.dll",
+            "path": "MySqlBackupNet.MySqlConnector.dll",
             "required": true,
             "description": "MySQL Backup library",
             "isAppFile": true
