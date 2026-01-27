@@ -12,6 +12,9 @@ using System.Windows.Media;
 
 namespace Mams_App.src.fees;
 
+/// <summary>
+/// Controller for managing the list of fee items, handling fee-related operations and UI interactions.
+/// </summary>
 public class ListFeeController : ABaseController
 {
 
@@ -77,6 +80,10 @@ public class ListFeeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Initializes a new instance of the ListFeeController class.
+    /// Sets up commands and loads the initial list of items.
+    /// </summary>
     public ListFeeController()
     {
         updateListItems();
@@ -88,6 +95,10 @@ public class ListFeeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Sorts the list of items by the specified column.
+    /// </summary>
+    /// <param name="parameter">The column name to sort by.</param>
     private void sortByColumn(object? parameter)
     {
         var result = SortHelper.sortByColumn(parameter, m_list_items, _m_sorted_column, _m_sort_direction);
@@ -99,24 +110,40 @@ public class ListFeeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Updates the list of fee items from the database.
+    /// </summary>
     private void updateListItems()
     {
         m_list_items = _m_item_model.getAllItems().returned_items;
     }
 
 
+    /// <summary>
+    /// Navigates to the save page for creating a new fee item.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToSavePage(object? obj)
     {
         SPageNavigationController.navigateTo(new SaveFeePage());
     }
 
 
+    /// <summary>
+    /// Determines whether an item is currently selected in the list.
+    /// </summary>
+    /// <param name="arg">Command parameter (not used).</param>
+    /// <returns>True if an item is selected; otherwise, false.</returns>
     private bool isItemSelected(object? arg)
     {
         return m_selected_item != null;
     }
 
 
+    /// <summary>
+    /// Navigates to the save page for modifying the selected fee item.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     public void navigateToModifyPage(object? obj)
     {
         if (_m_selected_item != null)
@@ -126,6 +153,10 @@ public class ListFeeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Deletes the selected fee item after user confirmation.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void deleteItem(object? obj)
     {
         if (_m_selected_item != null)

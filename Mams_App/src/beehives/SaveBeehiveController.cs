@@ -8,6 +8,9 @@ using System.Windows.Input;
 
 namespace Mams_App.src.beehives;
 
+/// <summary>
+/// Controller for managing the creation and modification of beehive items.
+/// </summary>
 public class SaveBeehiveController : ABaseController, ICompareState
 {
 
@@ -30,6 +33,10 @@ public class SaveBeehiveController : ABaseController, ICompareState
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the SaveBeehiveController class.
+    /// </summary>
+    /// <param name="id_to_load">Optional ID of an existing beehive to modify. If 0, creates a new beehive.</param>
     public SaveBeehiveController(int id_to_load = 0)
     {
 
@@ -44,6 +51,10 @@ public class SaveBeehiveController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Determines whether the current state matches the original state.
+    /// </summary>
+    /// <returns>True if no changes have been made; otherwise, false.</returns>
     public bool isStateOriginal()
     {
         if (!_m_original_beehive.beehive_id.Equals(_m_beehive.beehive_id)
@@ -57,12 +68,22 @@ public class SaveBeehiveController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Determines whether the beehive can be saved.
+    /// </summary>
+    /// <param name="arg">Command parameter (not used).</param>
+    /// <returns>True if the beehive has a valid name; otherwise, false.</returns>
     private bool canSaveBeehive(object? arg)
     {
         return !string.IsNullOrEmpty(m_beehive.beehive_name);
     }
 
 
+    /// <summary>
+    /// Saves the current beehive to the database.
+    /// If successful, navigates back to the previous page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void saveBeehive(object? obj)
     {
         var result = _m_beehive_model.saveItem(m_beehive);
@@ -79,6 +100,10 @@ public class SaveBeehiveController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Cancels the current operation and navigates back to the previous page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void abortBeehive(object? obj)
     {
         SPageNavigationController.navigateBack(true);

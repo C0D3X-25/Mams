@@ -15,6 +15,9 @@ using System.Windows.Input;
 
 namespace Mams_App.src.profits;
 
+/// <summary>
+/// Controller for managing the creation and modification of profit receipts.
+/// </summary>
 public class SaveProfitController : ABaseController, ICompareState
 {
 
@@ -129,6 +132,10 @@ public class SaveProfitController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Initializes a new instance of the SaveProfitController class.
+    /// </summary>
+    /// <param name="id_to_load">Optional ID of an existing profit receipt to modify. If 0, creates a new profit.</param>
     public SaveProfitController(int id_to_load = 0)
     {
 
@@ -182,6 +189,10 @@ public class SaveProfitController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Initializes the profit receipt data from the database or creates a new empty receipt.
+    /// </summary>
+    /// <param name="id_to_load">The ID of the receipt to load, or 0 for a new receipt.</param>
     private void initializeProfit(int id_to_load)
     {
 
@@ -215,6 +226,11 @@ public class SaveProfitController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Determines whether the profit can be saved based on validation rules.
+    /// </summary>
+    /// <param name="arg">Command parameter (not used).</param>
+    /// <returns>True if the profit has valid data; otherwise, false.</returns>
     private bool canSaveProfit(object? arg)
     {
 
@@ -231,6 +247,11 @@ public class SaveProfitController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Saves the current profit receipt to the database.
+    /// If successful, navigates back to the previous page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void saveProfit(object? obj)
     {
 
@@ -275,18 +296,30 @@ public class SaveProfitController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Cancels the current operation and navigates back to the previous page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void abortProfit(object? obj)
     {
         SPageNavigationController.navigateBack(true);
     }
 
 
+    /// <summary>
+    /// Adds a new empty profit item line to the receipt.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void addProfitItem(object? obj)
     {
         m_list_receipt_product.Add(new ReceiptProductItem());
     }
 
 
+    /// <summary>
+    /// Deletes the specified profit item from the receipt.
+    /// </summary>
+    /// <param name="obj">The ReceiptProductItem to delete.</param>
     private void deleteProfitItem(object? obj)
     {
         if (obj is ReceiptProductItem item)
@@ -296,6 +329,10 @@ public class SaveProfitController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Exports the current profit receipt as a PDF invoice.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void exportInvoicePdf(object? obj)
     {
         SInvoicePdfService.generateAndOpenProfitInvoice(m_profit_receipt_detail.receipt.receipt_id.ToString());

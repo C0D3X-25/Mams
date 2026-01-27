@@ -8,6 +8,9 @@ using System.Windows.Input;
 
 namespace Mams_App.src.productsTypes;
 
+/// <summary>
+/// Controller for managing the creation and modification of product type items.
+/// </summary>
 public class SaveProductTypeController : ABaseController, ICompareState
 {
 
@@ -30,6 +33,10 @@ public class SaveProductTypeController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Initializes a new instance of the SaveProductTypeController class.
+    /// </summary>
+    /// <param name="id_to_load">Optional ID of an existing product type to modify. If 0, creates a new item.</param>
     public SaveProductTypeController(int id_to_load = 0)
     {
 
@@ -43,6 +50,10 @@ public class SaveProductTypeController : ABaseController, ICompareState
         m_abort_command = new RelayCommand(abortProduct);
     }
 
+    /// <summary>
+    /// Determines whether the current state matches the original state.
+    /// </summary>
+    /// <returns>True if no changes have been made; otherwise, false.</returns>
     public bool isStateOriginal()
     {
         if (!_m_original_product_type.product_type_id.Equals(_m_product_type.product_type_id)
@@ -55,12 +66,22 @@ public class SaveProductTypeController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Determines whether the product type can be saved.
+    /// </summary>
+    /// <param name="arg">Command parameter (not used).</param>
+    /// <returns>True if the product type has a valid name; otherwise, false.</returns>
     private bool canSaveProduct(object? arg)
     {
         return !string.IsNullOrEmpty(m_product_type.product_type_name);
     }
 
 
+    /// <summary>
+    /// Saves the current product type to the database.
+    /// If successful, navigates back to the previous page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void saveProduct(object? obj)
     {
         var result = _m_product_type_model.saveItem(m_product_type);
@@ -77,6 +98,10 @@ public class SaveProductTypeController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Cancels the current operation and navigates back to the previous page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void abortProduct(object? obj)
     {
         SPageNavigationController.navigateBack(true);

@@ -15,9 +15,12 @@ using System.Windows.Media;
 
 namespace Mams_App.src.resumes;
 
+/// <summary>
+/// Controller for the Resume page that displays summary of profits, fees, and transaction statistics.
+/// Handles filtering and data aggregation for financial reports.
+/// </summary>
 public class ResumeController : ABaseController
 {
-
     public ICommand m_clear_search_command { get; }
     public ICommand m_double_click_command_profit { get; }
     public ICommand m_double_click_command_fee { get; }
@@ -383,6 +386,10 @@ public class ResumeController : ABaseController
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the ResumeController class.
+    /// Sets up commands and loads filter data and initial display.
+    /// </summary>
     public ResumeController()
     {
         m_clear_search_command = new RelayCommand(clearSelectedItems);
@@ -395,6 +402,10 @@ public class ResumeController : ABaseController
         updateDisplayedProfitsAndFeesLists();
     }
 
+    /// <summary>
+    /// Sorts the profit list by the specified column.
+    /// </summary>
+    /// <param name="parameter">The column name to sort by.</param>
     private void sortProfitByColumn(object? parameter)
     {
         var result = SortHelper.sortByColumn(parameter, m_list_profit_item, _m_profit_sorted_column, _m_profit_sort_direction);
@@ -405,6 +416,10 @@ public class ResumeController : ABaseController
         }
     }
 
+    /// <summary>
+    /// Sorts the fee list by the specified column.
+    /// </summary>
+    /// <param name="parameter">The column name to sort by.</param>
     private void sortFeeByColumn(object? parameter)
     {
         var result = SortHelper.sortByColumn(parameter, m_list_fee_item, _m_fee_sorted_column, _m_fee_sort_direction);
@@ -415,6 +430,10 @@ public class ResumeController : ABaseController
         }
     }
 
+    /// <summary>
+    /// Navigates to the profit details page for the selected profit item.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     public void navigateToProfitDetails(object? obj)
     {
         if (_m_selected_profit_item != null)
@@ -423,6 +442,10 @@ public class ResumeController : ABaseController
         }
     }
 
+    /// <summary>
+    /// Navigates to the fee details page for the selected fee item.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     public void navigateToFeeDetails(object? obj)
     {
         if (_m_selected_fee_item != null)
@@ -431,6 +454,10 @@ public class ResumeController : ABaseController
         }
     }
 
+    /// <summary>
+    /// Clears all selected filter items and resets to default selections.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void clearSelectedItems(object? obj)
     {
         if (m_list_table?.Count > 0)
@@ -452,10 +479,24 @@ public class ResumeController : ABaseController
         updateDisplayedProfitsAndFeesLists();
     }
 
+    /// <summary>
+    /// Determines whether a profit item is currently selected.
+    /// </summary>
+    /// <param name="arg">Command parameter (not used).</param>
+    /// <returns>True if a profit item is selected; otherwise, false.</returns>
     private bool isProfitItemSelected(object? arg) => m_selected_profit_item != null;
 
+    /// <summary>
+    /// Determines whether a fee item is currently selected.
+    /// </summary>
+    /// <param name="arg">Command parameter (not used).</param>
+    /// <returns>True if a fee item is selected; otherwise, false.</returns>
     private bool isFeeItemSelected(object? arg) => m_selected_fee_item != null;
 
+    /// <summary>
+    /// Loads static filter data from the model and sets default selections.
+    /// Initializes tables, filter items, and years if not already set.
+    /// </summary>
     private void loadStaticFilterData()
     {
         if (SFilterModel.m_list_table == null)
@@ -498,6 +539,9 @@ public class ResumeController : ABaseController
         onPropertyChanged(nameof(m_is_filter_item_enabled));
     }
 
+    /// <summary>
+    /// Updates the displayed profit and fee lists based on current filter selections.
+    /// </summary>
     private void updateDisplayedProfitsAndFeesLists()
     {
         var filter_item = m_selected_filter_item ?? new FilterItem();
@@ -516,6 +560,9 @@ public class ResumeController : ABaseController
         updateDisplayedDetailTransactions();
     }
 
+    /// <summary>
+    /// Updates the total transaction amounts and colors based on current data.
+    /// </summary>
     private void updateDisplayedTotalTransactions()
     {
         var transaction_totals = _m_resume_model.calculateTotalTransactions(m_list_profit_item, m_list_fee_item);
@@ -529,6 +576,9 @@ public class ResumeController : ABaseController
         m_total_color = transaction_totals.total < 0 ? SGlobalView.NEGATIVE_VALUE_COLOR : SGlobalView.DEFAULT_TEXT_COLOR;
     }
 
+    /// <summary>
+    /// Updates the detailed transaction statistics (weight, quantity, averages).
+    /// </summary>
     private void updateDisplayedDetailTransactions()
     {
         var transaction_details = _m_resume_model.calculateDetailTransactions(
@@ -543,6 +593,9 @@ public class ResumeController : ABaseController
         m_average_price_per_weight = transaction_details.average_price_per_weight;
     }
 
+    /// <summary>
+    /// Updates the list of filter items based on the selected table.
+    /// </summary>
     private void updateListFilterItems()
     {
         if (m_selected_table != null)

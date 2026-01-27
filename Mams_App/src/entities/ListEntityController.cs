@@ -148,6 +148,10 @@ public class ListEntityController : ABaseController
     }
 
 
+    /// <summary>
+    /// Sorts the list of items by the specified column.
+    /// </summary>
+    /// <param name="parameter">The column name to sort by.</param>
     private void sortByColumn(object? parameter)
     {
         var result = SortHelper.sortByColumn(parameter, m_list_items, _m_sorted_column, _m_sort_direction);

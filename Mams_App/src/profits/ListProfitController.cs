@@ -12,6 +12,9 @@ using System.Windows.Media;
 
 namespace Mams_App.src.profits;
 
+/// <summary>
+/// Controller for managing the list of profit items, handling profit-related operations and UI interactions.
+/// </summary>
 public class ListProfitController : ABaseController
 {
 
@@ -79,6 +82,10 @@ public class ListProfitController : ABaseController
     }
 
 
+    /// <summary>
+    /// Initializes a new instance of the ListProfitController class.
+    /// Sets up commands and loads the initial list of items.
+    /// </summary>
     public ListProfitController()
     {
         updateListItems();
@@ -90,6 +97,10 @@ public class ListProfitController : ABaseController
     }
 
 
+    /// <summary>
+    /// Sorts the list of items by the specified column.
+    /// </summary>
+    /// <param name="parameter">The column name to sort by.</param>
     private void sortByColumn(object? parameter)
     {
         var result = SortHelper.sortByColumn(parameter, m_list_items, _m_sorted_column, _m_sort_direction);
@@ -100,6 +111,10 @@ public class ListProfitController : ABaseController
         }
     }
 
+    /// <summary>
+    /// Navigates to the save page for modifying the selected profit item.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     public void navigateToModifyPage(object? obj)
     {
         if (_m_selected_item != null)
@@ -108,24 +123,40 @@ public class ListProfitController : ABaseController
         }
     }
 
+    /// <summary>
+    /// Updates the list of profit items from the database.
+    /// </summary>
     private void updateListItems()
     {
         m_list_items = _m_item_model.getAllItems().returned_items;
     }
 
 
+    /// <summary>
+    /// Navigates to the save page for creating a new profit item.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToSavePage(object? obj)
     {
         SPageNavigationController.navigateTo(new SaveProfitPage());
     }
 
 
+    /// <summary>
+    /// Determines whether an item is currently selected in the list.
+    /// </summary>
+    /// <param name="arg">Command parameter (not used).</param>
+    /// <returns>True if an item is selected; otherwise, false.</returns>
     private bool isItemSelected(object? arg)
     {
         return m_selected_item != null;
     }
 
 
+    /// <summary>
+    /// Deletes the selected profit item after user confirmation.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void deleteItem(object? obj)
     {
         if (_m_selected_item != null)

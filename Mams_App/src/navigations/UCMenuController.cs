@@ -14,6 +14,9 @@ using System.Windows.Input;
 
 namespace Mams_App.src.navigations;
 
+/// <summary>
+/// Controller for the navigation menu user control, handling navigation commands to various list pages.
+/// </summary>
 public class UCMenuController : INotifyPropertyChanged
 {
     public event PropertyChangedEventHandler? PropertyChanged;
@@ -92,6 +95,10 @@ public class UCMenuController : INotifyPropertyChanged
     public ICommand m_navigate_list_product_type_command { get; set; }
     public ICommand m_navigate_list_product_shape_command { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the UCMenuController class.
+    /// Sets up navigation commands and subscribes to page change events.
+    /// </summary>
     public UCMenuController()
     {
         m_navigate_list_fee_command = new RelayCommand(navigateToListFee);
@@ -107,6 +114,10 @@ public class UCMenuController : INotifyPropertyChanged
         SPageNavigationController.PageChanged += OnPageChanged;
     }
 
+    /// <summary>
+    /// Handles page change events and updates active page indicators.
+    /// </summary>
+    /// <param name="pageType">The type of the new page.</param>
     private void OnPageChanged(Type? pageType)
     {
         m_is_profit_page_active = pageType == typeof(ListProfitPage);
@@ -120,50 +131,90 @@ public class UCMenuController : INotifyPropertyChanged
         m_is_product_shape_page_active = pageType == typeof(ListProductShapePage);
     }
 
+    /// <summary>
+    /// Raises the PropertyChanged event to notify the UI of property value changes.
+    /// </summary>
+    /// <param name="propertyName">The name of the property that changed.</param>
     protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+    /// <summary>
+    /// Navigates to the list fee page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToListFee(object? obj)
     {
         SPageNavigationController.navigateTo(new ListFeePage(), true);
     }
 
+    /// <summary>
+    /// Navigates to the list profit page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToListProfit(object? obj)
     {
         SPageNavigationController.navigateTo(new ListProfitPage(), true);
     }
 
+    /// <summary>
+    /// Navigates to the list entity page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToListEntity(object? obj)
     {
         SPageNavigationController.navigateTo(new ListEntityPage(), true);
     }
+    /// <summary>
+    /// Navigates to the list product page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToListProduct(object? obj)
     {
         SPageNavigationController.navigateTo(new ListProductPage(), true);
     }
 
+    /// <summary>
+    /// Navigates to the list product lot page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToListLot(object? obj)
     {
         SPageNavigationController.navigateTo(new ListProductLotPage(), true);
     }
 
+    /// <summary>
+    /// Navigates to the list beehive page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToListBeehive(object? obj)
     {
         SPageNavigationController.navigateTo(new ListBeehivePage(), true);
     }
 
+    /// <summary>
+    /// Navigates to the list product category page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToListProductCategory(object? obj)
     {
         SPageNavigationController.navigateTo(new ListProductCategoryPage(), true);
     }
 
+    /// <summary>
+    /// Navigates to the list product type page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToListProductType(object? obj)
     {
         SPageNavigationController.navigateTo(new ListProductTypePage(), true);
     }
 
+    /// <summary>
+    /// Navigates to the list product shape page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToListProductShape(object? obj)
     {
         SPageNavigationController.navigateTo(new ListProductShapePage(), true);

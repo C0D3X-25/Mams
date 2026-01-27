@@ -556,10 +556,8 @@ $ErrorActionPreference = 'Stop'
 
 $sourcePath = '{sourcePath.Replace("'", "''")}'
 $targetPath = '{targetPath.Replace("'", "''")}'
-$newVersion = '{newVersion}'
 
 $appExe = Join-Path $targetPath 'Mams_App.exe'
-$versionPath = Join-Path $targetPath 'resources\version.json'
 
 # Wait for the application to close
 Write-Host 'Waiting for application to close...'
@@ -601,9 +599,10 @@ while ($waited -lt $maxWait) {{
 }}
 
 # Folders to preserve during update (user data and runtime)
+# Note: 'resources' is NOT preserved because localization files need to be updated
+# version.json is explicitly updated by this script after copying
 $preserveFolders = @(
     'mariadb',
-    'resources',
     'logs',
     'backups',
     'runtimes'
@@ -657,23 +656,9 @@ foreach ($file in $files) {{
         New-Item -ItemType Directory -Path $destDir -Force | Out-Null
     }}
     
+    
     Copy-Item -Path $file.FullName -Destination $destPath -Force
 }}
-
-# Update version in version.json file and reset startWhenReady to default (false)
-# This ensures the Launcher will be shown after update restart
-Write-Host 'Updating version.json...'
-$versionContent = @{{
-    version = $newVersion
-    startWhenReady = $false
-}}
-
-$versionDir = Split-Path $versionPath -Parent
-if (-not (Test-Path $versionDir)) {{
-    New-Item -ItemType Directory -Path $versionDir -Force | Out-Null
-}}
-
-$versionContent | ConvertTo-Json -Depth 10 | Set-Content $versionPath -Encoding UTF8
 
 # Start the updated application (Launcher will be shown first)
 Write-Host 'Starting updated application...'

@@ -13,6 +13,9 @@ using System.Windows.Media;
 
 namespace Mams_App.src.productsTypes;
 
+/// <summary>
+/// Controller for managing the list of product types, handling CRUD operations and UI interactions.
+/// </summary>
 public class ListProductTypeController : ABaseController
 {
 
@@ -124,6 +127,10 @@ public class ListProductTypeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Initializes a new instance of the ListProductTypeController class.
+    /// Sets up commands and loads the initial list of items.
+    /// </summary>
     public ListProductTypeController()
     {
 
@@ -137,6 +144,10 @@ public class ListProductTypeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Sorts the list of items by the specified column.
+    /// </summary>
+    /// <param name="parameter">The column name to sort by.</param>
     private void sortByColumn(object? parameter)
     {
         var result = SortHelper.sortByColumn(parameter, m_list_items, _m_sorted_column, _m_sort_direction);
@@ -148,6 +159,9 @@ public class ListProductTypeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Updates the list of product type items based on the archive status filter.
+    /// </summary>
     private void updateListItems()
     {
         var all_items = _m_item_model.getAllItems().returned_items;
@@ -197,18 +211,31 @@ public class ListProductTypeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Navigates to the save page for creating a new product type.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToSavePage(object? obj)
     {
         SPageNavigationController.navigateTo(new SaveProductTypePage());
     }
 
 
+    /// <summary>
+    /// Determines whether an item is currently selected in the list.
+    /// </summary>
+    /// <param name="arg">Command parameter (not used).</param>
+    /// <returns>True if an item is selected; otherwise, false.</returns>
     private bool isItemSelected(object? arg)
     {
         return m_selected_item != null;
     }
 
 
+    /// <summary>
+    /// Navigates to the save page for modifying the selected product type.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     public void navigateToModifyPage(object? obj)
     {
         if (_m_selected_item != null)
@@ -218,6 +245,10 @@ public class ListProductTypeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Deletes or restores the selected item based on the current archive filter status.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void deleteOrRestoreItem(object? obj)
     {
         if (_m_selected_item != null)

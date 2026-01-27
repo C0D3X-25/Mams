@@ -15,6 +15,9 @@ using System.Windows.Input;
 
 namespace Mams_App.src.fees;
 
+/// <summary>
+/// Controller for managing the creation and modification of fee receipts.
+/// </summary>
 public class SaveFeeController : ABaseController, ICompareState
 {
 
@@ -128,6 +131,10 @@ public class SaveFeeController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Initializes a new instance of the SaveFeeController class.
+    /// </summary>
+    /// <param name="id_to_load">Optional ID of an existing fee receipt to modify. If 0, creates a new fee.</param>
     public SaveFeeController(int id_to_load = 0)
     {
 
@@ -184,6 +191,10 @@ public class SaveFeeController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Initializes the fee receipt data from the database or creates a new empty receipt.
+    /// </summary>
+    /// <param name="id_to_load">The ID of the receipt to load, or 0 for a new receipt.</param>
     private void initializeFee(int id_to_load)
     {
 
@@ -217,6 +228,11 @@ public class SaveFeeController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Determines whether the fee can be saved based on validation rules.
+    /// </summary>
+    /// <param name="arg">Command parameter (not used).</param>
+    /// <returns>True if the fee has valid data; otherwise, false.</returns>
     private bool canSaveFee(object? arg)
     {
 
@@ -233,6 +249,11 @@ public class SaveFeeController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Saves the current fee receipt to the database.
+    /// If successful, navigates back to the previous page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void saveFee(object? obj)
     {
 
@@ -277,18 +298,30 @@ public class SaveFeeController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Cancels the current operation and navigates back to the previous page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void abortFee(object? obj)
     {
         SPageNavigationController.navigateBack(true);
     }
 
 
+    /// <summary>
+    /// Adds a new empty fee item line to the receipt.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void addFeeItem(object? obj)
     {
         m_list_receipt_product.Add(new ReceiptProductItem());
     }
 
 
+    /// <summary>
+    /// Deletes the specified fee item from the receipt.
+    /// </summary>
+    /// <param name="parameter">The ReceiptProductItem to delete.</param>
     private void DeleteFeeItem(object? parameter)
     {
         if (parameter is ReceiptProductItem item)
@@ -298,6 +331,10 @@ public class SaveFeeController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Exports the current fee receipt as a PDF invoice.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void exportInvoicePdf(object? obj)
     {
         SInvoicePdfService.generateAndOpenFeeInvoice(m_fee_receipt_detail.receipt.receipt_id.ToString());
