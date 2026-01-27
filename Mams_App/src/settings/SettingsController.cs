@@ -1,6 +1,7 @@
 ﻿using Mams_App.src.commands;
 using Mams_App.src.configurations;
 using Mams_App.src.databaseOperations;
+using Mams_App.src.integrities;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.services;
@@ -13,6 +14,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Mams_App.src.settings;
 
@@ -38,6 +40,17 @@ public class SettingsController : INotifyPropertyChanged
     private string m_selectedCurrency = "fr-CH";
     private LanguageItem? m_selectedLanguageItem;
     private CurrencyItem? m_selectedCurrencyItem;
+
+    // Integrity check properties
+    private bool m_isIntegrityCheckRunning;
+    private double m_integrityCheckProgress;
+    private string m_integrityCheckStatus = string.Empty;
+    private bool m_hasIntegrityResult;
+    private string m_integrityResultTitle = string.Empty;
+    private string m_integrityResultMessage = string.Empty;
+    private Brush m_integrityResultBackground = Brushes.Transparent;
+    private ObservableCollection<string> m_problematicFiles = [];
+    private CancellationTokenSource? m_integrityCheckCts;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -203,6 +216,97 @@ public class SettingsController : INotifyPropertyChanged
         }
     }
 
+    // Integrity check properties
+    public bool IsIntegrityCheckRunning
+    {
+        get => m_isIntegrityCheckRunning;
+        private set
+        {
+            m_isIntegrityCheckRunning = value;
+            onPropertyChanged();
+            onPropertyChanged(nameof(CanStartIntegrityCheck));
+            onPropertyChanged(nameof(HasIntegrityStatus));
+        }
+    }
+
+    public bool CanStartIntegrityCheck => !IsIntegrityCheckRunning;
+
+    public double IntegrityCheckProgress
+    {
+        get => m_integrityCheckProgress;
+        private set
+        {
+            m_integrityCheckProgress = value;
+            onPropertyChanged();
+        }
+    }
+
+    public string IntegrityCheckStatus
+    {
+        get => m_integrityCheckStatus;
+        private set
+        {
+            m_integrityCheckStatus = value;
+            onPropertyChanged();
+            onPropertyChanged(nameof(HasIntegrityStatus));
+        }
+    }
+
+    public bool HasIntegrityStatus => !string.IsNullOrEmpty(IntegrityCheckStatus) || IsIntegrityCheckRunning;
+
+    public bool HasIntegrityResult
+    {
+        get => m_hasIntegrityResult;
+        private set
+        {
+            m_hasIntegrityResult = value;
+            onPropertyChanged();
+        }
+    }
+
+    public string IntegrityResultTitle
+    {
+        get => m_integrityResultTitle;
+        private set
+        {
+            m_integrityResultTitle = value;
+            onPropertyChanged();
+        }
+    }
+
+    public string IntegrityResultMessage
+    {
+        get => m_integrityResultMessage;
+        private set
+        {
+            m_integrityResultMessage = value;
+            onPropertyChanged();
+        }
+    }
+
+    public Brush IntegrityResultBackground
+    {
+        get => m_integrityResultBackground;
+        private set
+        {
+            m_integrityResultBackground = value;
+            onPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<string> ProblematicFiles
+    {
+        get => m_problematicFiles;
+        private set
+        {
+            m_problematicFiles = value;
+            onPropertyChanged();
+            onPropertyChanged(nameof(HasProblematicFiles));
+        }
+    }
+
+    public bool HasProblematicFiles => ProblematicFiles.Count > 0;
+
     #endregion
 
     #region Commands
@@ -214,6 +318,8 @@ public class SettingsController : INotifyPropertyChanged
     public ICommand CloseCommand { get; }
     public ICommand SaveUserCommand { get; }
     public ICommand SaveLocalizationCommand { get; }
+    public ICommand StartIntegrityCheckCommand { get; }
+    public ICommand AcknowledgeIntegrityResultCommand { get; }
 
     #endregion
 
@@ -230,6 +336,8 @@ public class SettingsController : INotifyPropertyChanged
         CloseCommand = new RelayCommand(_ => m_window.Close());
         SaveUserCommand = new RelayCommand(_ => saveUser());
         SaveLocalizationCommand = new RelayCommand(_ => saveLocalization());
+        StartIntegrityCheckCommand = new RelayCommand(_ => startIntegrityCheck(), _ => CanStartIntegrityCheck);
+        AcknowledgeIntegrityResultCommand = new RelayCommand(_ => acknowledgeIntegrityResult());
 
         refreshBackups();
         loadUser();
@@ -463,6 +571,107 @@ public class SettingsController : INotifyPropertyChanged
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
         }
+    }
+
+    /// <summary>
+    /// Starts the integrity check operation asynchronously.
+    /// </summary>
+    private async void startIntegrityCheck()
+    {
+        if (IsIntegrityCheckRunning)
+            return;
+
+        // Reset state
+        HasIntegrityResult = false;
+        IntegrityCheckProgress = 0;
+        IntegrityCheckStatus = Loc.Get("Settings.IntegrityCheckInProgress");
+        ProblematicFiles = [];
+        IsIntegrityCheckRunning = true;
+
+        m_integrityCheckCts = new CancellationTokenSource();
+
+        try
+        {
+            var result = await SIntegrityService.verifyAndRepairAsync(
+                requiredOnly: false,
+                verifyChecksums: true,
+                progressCallback: (status, progress) =>
+                {
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        IntegrityCheckStatus = status;
+                        if (progress.HasValue)
+                        {
+                            IntegrityCheckProgress = progress.Value;
+                        }
+                    });
+                },
+                cancellationToken: m_integrityCheckCts.Token);
+
+            // Display results
+            displayIntegrityResult(result);
+        }
+        catch (OperationCanceledException)
+        {
+            IntegrityCheckStatus = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            IntegrityResultTitle = Loc.Get("Settings.IntegrityCheckError");
+            IntegrityResultMessage = ex.Message;
+            IntegrityResultBackground = new SolidColorBrush(Color.FromRgb(254, 226, 226)); // Light red
+            HasIntegrityResult = true;
+        }
+        finally
+        {
+            IsIntegrityCheckRunning = false;
+            IntegrityCheckStatus = string.Empty;
+            m_integrityCheckCts?.Dispose();
+            m_integrityCheckCts = null;
+        }
+    }
+
+    /// <summary>
+    /// Displays the integrity check result to the user.
+    /// </summary>
+    /// <param name="result">The integrity check result.</param>
+    private void displayIntegrityResult(IntegrityCheckResult result)
+    {
+        var problematicFiles = new List<string>();
+        problematicFiles.AddRange(result.MissingFiles);
+        problematicFiles.AddRange(result.CorruptedFiles);
+        problematicFiles.AddRange(result.CorruptedAppFiles);
+        problematicFiles.AddRange(result.FailedRepairs);
+
+        if (result.IsValid && problematicFiles.Count == 0)
+        {
+            // Success
+            IntegrityResultTitle = Loc.Get("Settings.IntegrityCheckSuccess");
+            IntegrityResultMessage = Loc.Get("Settings.IntegrityCheckSuccessMessage");
+            IntegrityResultBackground = new SolidColorBrush(Color.FromRgb(220, 252, 231)); // Light green
+            ProblematicFiles = [];
+        }
+        else
+        {
+            // Failed
+            IntegrityResultTitle = Loc.Get("Settings.IntegrityCheckFailed");
+            IntegrityResultMessage = Loc.Get("Settings.IntegrityCheckFailedMessage");
+            IntegrityResultBackground = new SolidColorBrush(Color.FromRgb(254, 226, 226)); // Light red
+            ProblematicFiles = new ObservableCollection<string>(problematicFiles);
+        }
+
+        HasIntegrityResult = true;
+    }
+
+    /// <summary>
+    /// Acknowledges and hides the integrity result.
+    /// </summary>
+    private void acknowledgeIntegrityResult()
+    {
+        HasIntegrityResult = false;
+        IntegrityResultTitle = string.Empty;
+        IntegrityResultMessage = string.Empty;
+        ProblematicFiles = [];
     }
 
     protected virtual void onPropertyChanged([CallerMemberName] string? propertyName = null)
