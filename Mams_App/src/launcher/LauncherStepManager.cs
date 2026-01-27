@@ -95,7 +95,24 @@ public class LauncherStepManager : IDisposable
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            // Step 2: Check MariaDB installation
+            // Step 2: Verify resources (localization files, etc.)
+            await ExecuteStepAsync(ELauncherStep.VerifyResources, cancellationToken);
+
+            var integrityResult = await SIntegrityService.verifyAndRepairAsync(OnProgressChanged, cancellationToken);
+            if (!integrityResult.IsValid)
+            {
+                Debug.WriteLine($"[LauncherStepManager] Resource verification failed: {integrityResult.ErrorMessage}");
+                // Don't fail startup for missing localizations - app can still work with fallback keys
+                // Just log the issue
+            }
+            else if (integrityResult.RepairedFiles.Count > 0)
+            {
+                Debug.WriteLine($"[LauncherStepManager] Resources repaired: {string.Join(", ", integrityResult.RepairedFiles)}");
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Step 3: Check MariaDB installation
             await ExecuteStepAsync(ELauncherStep.CheckMariaDbInstallation, cancellationToken);
 
             if (!SMariaDbPortableService.isInstalled())
@@ -300,6 +317,7 @@ public class LauncherStepManager : IDisposable
             ELauncherStep.CheckUpdates => Loc.Get("Launcher.CheckingUpdates") ?? "Checking for updates...",
             ELauncherStep.PromptUpdate => Loc.Get("Launcher.UpdateAvailable") ?? "Update available",
             ELauncherStep.DownloadUpdate => Loc.Get("Launcher.DownloadingUpdate") ?? "Downloading update...",
+            ELauncherStep.VerifyResources => Loc.Get("Launcher.VerifyingResources") ?? "Verifying resources...",
             ELauncherStep.Finalize => Loc.Get("Launcher.Starting") ?? "Starting application...",
             ELauncherStep.Ready => Loc.Get("Launcher.Ready") ?? "Application is ready",
             ELauncherStep.Failed => Loc.Get("Launcher.Error") ?? "Error",

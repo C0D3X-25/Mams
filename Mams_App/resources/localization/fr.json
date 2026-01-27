@@ -435,6 +435,7 @@
     "Launcher.StartingMariaDb": "Démarrage du serveur de base de données...",
     "Launcher.CreatingDatabase": "Création de la base de données...",
     "Launcher.CheckingUpdates": "Vérification des mises à jour...",
+    "Launcher.VerifyingResources": "Vérification des ressources...",
     "Launcher.Starting": "Démarrage de l'application...",
     "Launcher.DownloadingMariaDb": "Téléchargement de MariaDB...",
     "Launcher.ExtractingMariaDb": "Extraction de MariaDB...",

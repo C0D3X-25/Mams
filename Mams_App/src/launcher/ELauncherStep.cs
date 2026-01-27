@@ -8,6 +8,7 @@ public enum ELauncherStep
     CheckUpdates,
     PromptUpdate,
     DownloadUpdate,
+    VerifyResources,
     CheckMariaDbInstallation,
     InstallMariaDb,
     InitializeDataDirectory,
