@@ -1,4 +1,5 @@
 using Mams_App.src.configurations;
+using Mams_App.src.integrities;
 using Mams_App.src.localizations;
 using Mams_App.src.services;
 using System.Diagnostics;
@@ -96,18 +97,79 @@ public class LauncherStepManager : IDisposable
             cancellationToken.ThrowIfCancellationRequested();
 
             // Step 2: Verify resources (localization files, etc.)
+            // Run full verification if this is the first startup after an update
+            var needsFullVerification = SVersionService.IsFullVerificationNeeded();
+            if (needsFullVerification)
+            {
+                Debug.WriteLine("[LauncherStepManager] First startup after update - running full verification");
+            }
+
             await ExecuteStepAsync(ELauncherStep.VerifyResources, cancellationToken);
 
-            var integrityResult = await SIntegrityService.verifyAndRepairAsync(OnProgressChanged, cancellationToken);
-            if (!integrityResult.IsValid)
+            var integrityResult = await SIntegrityService.verifyAndRepairAsync(
+                requiredOnly: !needsFullVerification,
+                OnProgressChanged,
+                cancellationToken);
+
+            // Check if app files are corrupted (requires reinstall)
+            if (integrityResult.RequiresReinstall)
+            {
+                Debug.WriteLine($"[LauncherStepManager] App files corrupted: {string.Join(", ", integrityResult.CorruptedAppFiles)}");
+                
+                var reinstallMessage = Loc.Get("Launcher.AppFilesCorrupted.Message") ??
+                    "Some application files are corrupted and cannot be repaired while the application is running.\n\n" +
+                    "Corrupted files:\n" + string.Join("\n", integrityResult.CorruptedAppFiles.Select(f => $"• {f}")) +
+                    "\n\nWould you like to download and reinstall the application?\n" +
+                    "The application will restart after the reinstall.";
+
+                var userWantsReinstall = await RequestUserConfirmationAsync(reinstallMessage, cancellationToken);
+
+                if (userWantsReinstall)
+                {
+                    Debug.WriteLine("[LauncherStepManager] User accepted reinstall, triggering update...");
+                    
+                    // Force fetch release info to get download URL
+                    var releaseInfo = await SUpdateCheckerService.checkForUpdateInfoAsync(cancellationToken);
+                    if (releaseInfo?.DownloadUrl != null)
+                    {
+                        await ExecuteStepAsync(ELauncherStep.DownloadUpdate, cancellationToken);
+                        await SUpdateCheckerService.downloadAndInstallUpdateAsync(releaseInfo, OnProgressChanged, cancellationToken);
+                        return; // App will restart
+                    }
+                    else
+                    {
+                        await FailWithErrorAsync(
+                            Loc.Get("Launcher.ReinstallFailed") ??
+                            "Failed to download application files. Please reinstall manually.",
+                            cancellationToken);
+                        return;
+                    }
+                }
+                else
+                {
+                    Debug.WriteLine("[LauncherStepManager] User declined reinstall");
+                    // Continue anyway - app might still partially work
+                }
+            }
+            else if (!integrityResult.IsValid)
             {
                 Debug.WriteLine($"[LauncherStepManager] Resource verification failed: {integrityResult.ErrorMessage}");
-                // Don't fail startup for missing localizations - app can still work with fallback keys
+                // Don't fail startup for missing resources - app can still work with fallback keys
                 // Just log the issue
             }
-            else if (integrityResult.RepairedFiles.Count > 0)
+            else
             {
-                Debug.WriteLine($"[LauncherStepManager] Resources repaired: {string.Join(", ", integrityResult.RepairedFiles)}");
+                if (integrityResult.RepairedFiles.Count > 0)
+                {
+                    Debug.WriteLine($"[LauncherStepManager] Resources repaired: {string.Join(", ", integrityResult.RepairedFiles)}");
+                }
+
+                // Mark version as verified after successful check
+                if (needsFullVerification)
+                {
+                    SVersionService.MarkVersionAsVerified();
+                    Debug.WriteLine("[LauncherStepManager] Version marked as verified");
+                }
             }
 
             cancellationToken.ThrowIfCancellationRequested();

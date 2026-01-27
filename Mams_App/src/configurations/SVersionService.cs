@@ -56,6 +56,29 @@ public static class SVersionService
         }
     }
 
+    /// <summary>
+    /// Checks if a full integrity verification is needed (after an update).
+    /// </summary>
+    /// <returns>True if the current version differs from the last verified version.</returns>
+    public static bool IsFullVerificationNeeded()
+    {
+        var versionInfo = GetVersionInfo();
+        return versionInfo.LastVerifiedVersion != versionInfo.Version;
+    }
+
+    /// <summary>
+    /// Marks the current version as verified (after a successful full integrity check).
+    /// </summary>
+    public static void MarkVersionAsVerified()
+    {
+        var versionInfo = GetVersionInfo();
+        if (versionInfo.LastVerifiedVersion != versionInfo.Version)
+        {
+            versionInfo.LastVerifiedVersion = versionInfo.Version;
+            SaveVersionInfo(versionInfo);
+        }
+    }
+
     private static VersionInfo GetVersionInfo()
     {
         if (_cachedVersionInfo != null)
@@ -110,4 +133,7 @@ internal class VersionInfo
 
     [JsonPropertyName("startWhenReady")]
     public bool StartWhenReady { get; set; } = false;
+
+    [JsonPropertyName("lastVerifiedVersion")]
+    public string? LastVerifiedVersion { get; set; }
 }

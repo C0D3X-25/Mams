@@ -448,6 +448,8 @@
     "Launcher.MariaDbConnectionFailed": "Le serveur de base de données a démarré mais ne répond pas.\nVeuillez essayer de redémarrer l'application.",
     "Launcher.DatabaseCreationFailed": "Échec de la création de la base de données.\nVeuillez essayer de redémarrer l'application.",
     "Launcher.UpdateAvailable.Message": "Une nouvelle version ({0}) est disponible!\n\nVersion actuelle: v{1}\n\nVoulez-vous télécharger et installer la mise à jour?\nL'application redémarrera après la mise à jour.",
+    "Launcher.AppFilesCorrupted.Message": "Certains fichiers de l'application sont corrompus et ne peuvent pas être réparés pendant que l'application est en cours d'exécution.\n\nVoulez-vous télécharger et réinstaller l'application?\nL'application redémarrera après la réinstallation.",
+    "Launcher.ReinstallFailed": "Échec du téléchargement des fichiers de l'application.\nVeuillez réinstaller manuellement.",
     "Launcher.Error.Title": "Erreur de démarrage",
     "Launcher.Error.Message": "Échec du démarrage de l'application:",
     "Launcher.AppReady": "L'application est prête à être démarrée.\n\nCliquez sur 'Démarrer' pour continuer."

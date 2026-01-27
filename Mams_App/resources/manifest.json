@@ -1,0 +1,84 @@
+{
+    "manifestVersion": "1.0",
+    "description": "Application resource manifest for integrity verification",
+    "files": {
+        "frLocalization": {
+            "path": "resources/localization/fr.json",
+            "required": true,
+            "description": "French localization file",
+            "isAppFile": false
+        },
+        "versionInfo": {
+            "path": "resources/version.json",
+            "required": true,
+            "description": "Application version information",
+            "isAppFile": false
+        },
+        "dbInitScript": {
+            "path": "resources/init.sql",
+            "required": true,
+            "description": "Database initialization script",
+            "isAppFile": false
+        },
+        "manifest": {
+            "path": "resources/manifest.json",
+            "required": true,
+            "description": "Resource manifest file",
+            "isAppFile": false
+        },
+        "appIcon": {
+            "path": "resources/app_icon.ico",
+            "required": false,
+            "description": "Application icon",
+            "isAppFile": false
+        },
+        "invoicePdfLogo": {
+            "path": "resources/invoice_pdf_logo.jpg",
+            "required": false,
+            "description": "Invoice PDF logo",
+            "isAppFile": false
+        },
+        "appExecutable": {
+            "path": "Mams_App.exe",
+            "required": true,
+            "description": "Main application executable",
+            "isAppFile": true
+        },
+        "appDll": {
+            "path": "Mams_App.dll",
+            "required": true,
+            "description": "Main application library",
+            "isAppFile": true
+        },
+        "appRuntimeConfig": {
+            "path": "Mams_App.runtimeconfig.json",
+            "required": true,
+            "description": "Runtime configuration",
+            "isAppFile": true
+        },
+        "appDepsJson": {
+            "path": "Mams_App.deps.json",
+            "required": true,
+            "description": "Dependencies configuration",
+            "isAppFile": true
+        },
+        "mySqlConnector": {
+            "path": "MySqlConnector.dll",
+            "required": true,
+            "description": "MySQL Connector library",
+            "isAppFile": true
+        },
+        "mySqlBackup": {
+            "path": "MySqlBackup.dll",
+            "required": true,
+            "description": "MySQL Backup library",
+            "isAppFile": true
+        },
+        "questPdf": {
+            "path": "QuestPDF.dll",
+            "required": true,
+            "description": "QuestPDF library",
+            "isAppFile": true
+        }
+    }
+}
