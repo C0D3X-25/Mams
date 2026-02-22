@@ -221,6 +221,8 @@ public class SaveProfitController : ABaseController, ICompareState
         }
         else
         {
+            _m_profit_receipt_detail = new();
+            _m_original_profit_receipt_detail = new();
             _m_list_receipt_product.Add(new());
         }
     }

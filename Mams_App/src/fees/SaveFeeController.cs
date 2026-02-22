@@ -223,6 +223,8 @@ public class SaveFeeController : ABaseController, ICompareState
         }
         else
         {
+            _m_fee_receipt_detail = new();
+            _m_original_fee_receipt_detail = new();
             _m_list_receipt_product.Add(new());
         }
     }
