@@ -111,7 +111,7 @@ Title="SaveFeePage">
                             Content="PDF"
                             Command="{Binding m_generate_invoice_pdf_command}"
                             Style="{StaticResource PrimaryButtonStyle}"
-                            Height="30" Width="60"
+                            Height="30" Width="70"
                             HorizontalAlignment="Right" VerticalAlignment="Center"
                             Margin="0,0,50,0"/>
                     </Grid>
@@ -289,7 +289,7 @@ Title="SaveFeePage">
                                                         RelativeSource={RelativeSource AncestorType=ListView}}"
                                             CommandParameter="{Binding}"
                                             Style="{StaticResource DangerButtonStyle}"
-                                            Height="20" Width="20"
+                                            Height="20" Width="50"
                                             Margin="5"/>
                                     </Grid>
                                     </Border>
