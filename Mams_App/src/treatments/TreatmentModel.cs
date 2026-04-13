@@ -35,6 +35,11 @@ public class TreatmentModel : ABaseModel
     private const string _m_COL_REGION_ID = "region_id";
     private const string _m_COL_REGION_NAME = "region_name";
 
+    private const string _m_TBL_DOSE_UNIT = "dose_units";
+    private const string _m_COL_DOSE_UNIT_ID = "dose_unit_id";
+    private const string _m_COL_DOSE_UNIT_NAME = "dose_unit_name";
+    private const string _m_COL_FK_DOSE_UNIT = "fk_dose_unit_id";
+
     /// <summary>
     /// Saves the specified <see cref="TreatmentItem"/> to the database (INSERT or UPDATE).
     /// </summary>
@@ -54,21 +59,22 @@ public class TreatmentModel : ABaseModel
         decimal item_dose_per_hive = item.treatment_dose_per_hive;
         int item_fk_beehive = item.fk_beehive_id;
         int item_fk_product = item.fk_product_id;
+        int item_fk_dose_unit = item.fk_dose_unit_id;
         string query;
 
         bool isInsert = (item_id == 0);
 
         if (isInsert)
         {
-            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_DATE}, {_m_COL_HIVE_COUNT}, {_m_COL_DOSE_PER_HIVE}, {_m_COL_FK_BEEHIVE}, {_m_COL_FK_PRODUCT}) " +
-                $"VALUES (@date, @hive_count, @dose_per_hive, @fk_beehive, @fk_product); " +
+            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_DATE}, {_m_COL_HIVE_COUNT}, {_m_COL_DOSE_PER_HIVE}, {_m_COL_FK_BEEHIVE}, {_m_COL_FK_PRODUCT}, {_m_COL_FK_DOSE_UNIT}) " +
+                $"VALUES (@date, @hive_count, @dose_per_hive, @fk_beehive, @fk_product, @fk_dose_unit); " +
                 $"SELECT LAST_INSERT_ID();";
         }
         else
         {
             query = $"UPDATE {_m_TBL_NAME} " +
                 $"SET {_m_COL_DATE} = @date, {_m_COL_HIVE_COUNT} = @hive_count, {_m_COL_DOSE_PER_HIVE} = @dose_per_hive, " +
-                $"{_m_COL_FK_BEEHIVE} = @fk_beehive, {_m_COL_FK_PRODUCT} = @fk_product " +
+                $"{_m_COL_FK_BEEHIVE} = @fk_beehive, {_m_COL_FK_PRODUCT} = @fk_product, {_m_COL_FK_DOSE_UNIT} = @fk_dose_unit " +
                 $"WHERE {_m_COL_ID} = @id;";
         }
 
@@ -87,6 +93,7 @@ public class TreatmentModel : ABaseModel
                     cmd.Parameters.AddWithValue("@dose_per_hive", item_dose_per_hive);
                     cmd.Parameters.AddWithValue("@fk_beehive", item_fk_beehive);
                     cmd.Parameters.AddWithValue("@fk_product", item_fk_product);
+                    cmd.Parameters.AddWithValue("@fk_dose_unit", item_fk_dose_unit > 0 ? item_fk_dose_unit : DBNull.Value);
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 });
             }
@@ -101,6 +108,7 @@ public class TreatmentModel : ABaseModel
                     cmd.Parameters.AddWithValue("@dose_per_hive", item_dose_per_hive);
                     cmd.Parameters.AddWithValue("@fk_beehive", item_fk_beehive);
                     cmd.Parameters.AddWithValue("@fk_product", item_fk_product);
+                    cmd.Parameters.AddWithValue("@fk_dose_unit", item_fk_dose_unit > 0 ? item_fk_dose_unit : DBNull.Value);
                     cmd.ExecuteNonQuery();
                 });
             }
@@ -145,12 +153,15 @@ public class TreatmentModel : ABaseModel
                 string query = $@"
                     SELECT t.{_m_COL_ID}, t.{_m_COL_DATE}, t.{_m_COL_HIVE_COUNT},
                            t.{_m_COL_DOSE_PER_HIVE}, t.{_m_COL_FK_BEEHIVE}, t.{_m_COL_FK_PRODUCT},
+                           t.{_m_COL_FK_DOSE_UNIT},
                            b.{_m_COL_BEEHIVE_NAME}, b.{_m_COL_BEEHIVE_NUMBER}, p.{_m_COL_PRODUCT_NAME},
-                           COALESCE(r.{_m_COL_REGION_NAME}, '') AS {_m_COL_REGION_NAME}
+                           COALESCE(r.{_m_COL_REGION_NAME}, '') AS {_m_COL_REGION_NAME},
+                           COALESCE(du.{_m_COL_DOSE_UNIT_NAME}, '') AS {_m_COL_DOSE_UNIT_NAME}
                     FROM {_m_TBL_NAME} t
                     JOIN {_m_TBL_BEEHIVE} b ON t.{_m_COL_FK_BEEHIVE} = b.{_m_COL_BEEHIVE_ID}
                     JOIN {_m_TBL_PRODUCT} p ON t.{_m_COL_FK_PRODUCT} = p.{_m_COL_PRODUCT_ID}
                     LEFT JOIN {_m_TBL_REGION} r ON b.{_m_COL_FK_REGION} = r.{_m_COL_REGION_ID}
+                    LEFT JOIN {_m_TBL_DOSE_UNIT} du ON t.{_m_COL_FK_DOSE_UNIT} = du.{_m_COL_DOSE_UNIT_ID}
                     WHERE t.{_m_COL_ID} = @id;";
 
                 using MySqlCommand cmd = new(query, connection);
@@ -183,12 +194,15 @@ public class TreatmentModel : ABaseModel
                 string query = $@"
                     SELECT t.{_m_COL_ID}, t.{_m_COL_DATE}, t.{_m_COL_HIVE_COUNT},
                            t.{_m_COL_DOSE_PER_HIVE}, t.{_m_COL_FK_BEEHIVE}, t.{_m_COL_FK_PRODUCT},
+                           t.{_m_COL_FK_DOSE_UNIT},
                            b.{_m_COL_BEEHIVE_NAME}, b.{_m_COL_BEEHIVE_NUMBER}, p.{_m_COL_PRODUCT_NAME},
-                           COALESCE(r.{_m_COL_REGION_NAME}, '') AS {_m_COL_REGION_NAME}
+                           COALESCE(r.{_m_COL_REGION_NAME}, '') AS {_m_COL_REGION_NAME},
+                           COALESCE(du.{_m_COL_DOSE_UNIT_NAME}, '') AS {_m_COL_DOSE_UNIT_NAME}
                     FROM {_m_TBL_NAME} t
                     JOIN {_m_TBL_BEEHIVE} b ON t.{_m_COL_FK_BEEHIVE} = b.{_m_COL_BEEHIVE_ID}
                     JOIN {_m_TBL_PRODUCT} p ON t.{_m_COL_FK_PRODUCT} = p.{_m_COL_PRODUCT_ID}
                     LEFT JOIN {_m_TBL_REGION} r ON b.{_m_COL_FK_REGION} = r.{_m_COL_REGION_ID}
+                    LEFT JOIN {_m_TBL_DOSE_UNIT} du ON t.{_m_COL_FK_DOSE_UNIT} = du.{_m_COL_DOSE_UNIT_ID}
                     ORDER BY t.{_m_COL_DATE} DESC;";
 
                 using MySqlCommand cmd = new(query, connection);
@@ -227,12 +241,15 @@ public class TreatmentModel : ABaseModel
                 string query = $@"
                     SELECT t.{_m_COL_ID}, t.{_m_COL_DATE}, t.{_m_COL_HIVE_COUNT},
                            t.{_m_COL_DOSE_PER_HIVE}, t.{_m_COL_FK_BEEHIVE}, t.{_m_COL_FK_PRODUCT},
+                           t.{_m_COL_FK_DOSE_UNIT},
                            b.{_m_COL_BEEHIVE_NAME}, b.{_m_COL_BEEHIVE_NUMBER}, p.{_m_COL_PRODUCT_NAME},
-                           COALESCE(r.{_m_COL_REGION_NAME}, '') AS {_m_COL_REGION_NAME}
+                           COALESCE(r.{_m_COL_REGION_NAME}, '') AS {_m_COL_REGION_NAME},
+                           COALESCE(du.{_m_COL_DOSE_UNIT_NAME}, '') AS {_m_COL_DOSE_UNIT_NAME}
                     FROM {_m_TBL_NAME} t
                     JOIN {_m_TBL_BEEHIVE} b ON t.{_m_COL_FK_BEEHIVE} = b.{_m_COL_BEEHIVE_ID}
                     JOIN {_m_TBL_PRODUCT} p ON t.{_m_COL_FK_PRODUCT} = p.{_m_COL_PRODUCT_ID}
                     LEFT JOIN {_m_TBL_REGION} r ON b.{_m_COL_FK_REGION} = r.{_m_COL_REGION_ID}
+                    LEFT JOIN {_m_TBL_DOSE_UNIT} du ON t.{_m_COL_FK_DOSE_UNIT} = du.{_m_COL_DOSE_UNIT_ID}
                     WHERE 1=1";
 
                 using MySqlCommand cmd = new();
@@ -251,6 +268,11 @@ public class TreatmentModel : ABaseModel
                 else if (filterTable == EDatabaseTableName.REGION && filterId > 0)
                 {
                     query += $" AND b.{_m_COL_FK_REGION} = @filterId";
+                    cmd.Parameters.AddWithValue("@filterId", filterId);
+                }
+                else if (filterTable == EDatabaseTableName.DOSE_UNIT && filterId > 0)
+                {
+                    query += $" AND t.{_m_COL_FK_DOSE_UNIT} = @filterId";
                     cmd.Parameters.AddWithValue("@filterId", filterId);
                 }
 
@@ -326,10 +348,12 @@ public class TreatmentModel : ABaseModel
             treatment_dose_per_hive = reader.getSafeValue<decimal>(_m_COL_DOSE_PER_HIVE),
             fk_beehive_id = reader.getSafeValue<int>(_m_COL_FK_BEEHIVE),
             fk_product_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT),
+            fk_dose_unit_id = reader.getSafeValue<int>(_m_COL_FK_DOSE_UNIT),
             beehive_name = reader.getSafeValue(_m_COL_BEEHIVE_NAME, string.Empty),
             beehive_number = reader.getSafeValue(_m_COL_BEEHIVE_NUMBER, string.Empty),
             product_name = reader.getSafeValue(_m_COL_PRODUCT_NAME, string.Empty),
-            region_name = reader.getSafeValue(_m_COL_REGION_NAME, string.Empty)
+            region_name = reader.getSafeValue(_m_COL_REGION_NAME, string.Empty),
+            dose_unit_name = reader.getSafeValue(_m_COL_DOSE_UNIT_NAME, string.Empty)
         };
     }
 }

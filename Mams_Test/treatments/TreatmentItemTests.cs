@@ -17,10 +17,12 @@ public class TreatmentItemTests
         Assert.Equal(0m, item.treatment_dose_per_hive);
         Assert.Equal(0, item.fk_beehive_id);
         Assert.Equal(0, item.fk_product_id);
+        Assert.Equal(0, item.fk_dose_unit_id);
         Assert.Equal(string.Empty, item.beehive_name);
         Assert.Equal(string.Empty, item.beehive_number);
         Assert.Equal(string.Empty, item.product_name);
         Assert.Equal(string.Empty, item.region_name);
+        Assert.Equal(string.Empty, item.dose_unit_name);
         Assert.Equal(0m, item.treatment_dose_total);
     }
 
@@ -37,10 +39,12 @@ public class TreatmentItemTests
         item.treatment_dose_per_hive = 5.5m;
         item.fk_beehive_id = 3;
         item.fk_product_id = 7;
+        item.fk_dose_unit_id = 2;
         item.beehive_name = "Rucher des Alpes";
         item.beehive_number = "CH-001";
         item.product_name = "Acide oxalique";
         item.region_name = "Fribourg";
+        item.dose_unit_name = "ml";
 
         // Assert
         Assert.Equal(1, item.treatment_id);
@@ -49,10 +53,12 @@ public class TreatmentItemTests
         Assert.Equal(5.5m, item.treatment_dose_per_hive);
         Assert.Equal(3, item.fk_beehive_id);
         Assert.Equal(7, item.fk_product_id);
+        Assert.Equal(2, item.fk_dose_unit_id);
         Assert.Equal("Rucher des Alpes", item.beehive_name);
         Assert.Equal("CH-001", item.beehive_number);
         Assert.Equal("Acide oxalique", item.product_name);
         Assert.Equal("Fribourg", item.region_name);
+        Assert.Equal("ml", item.dose_unit_name);
     }
 
     [Fact]

@@ -418,6 +418,31 @@ INSERT INTO `suppliers` VALUES (11,1),(7,2),(13,9),(20,11),(18,12),(19,13),(1,16
 UNLOCK TABLES;
 
 --
+-- Table structure for table `dose_units`
+--
+
+DROP TABLE IF EXISTS `dose_units`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `dose_units` (
+  `dose_unit_id` int NOT NULL AUTO_INCREMENT,
+  `dose_unit_name` varchar(100) NOT NULL,
+  `dose_unit_archive` date DEFAULT NULL,
+  PRIMARY KEY (`dose_unit_id`),
+  KEY `idx_dose_unit_name` (`dose_unit_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `dose_units`
+--
+
+LOCK TABLES `dose_units` WRITE;
+/*!40000 ALTER TABLE `dose_units` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dose_units` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `treatments`
 --
 
@@ -431,12 +456,15 @@ CREATE TABLE `treatments` (
   `treatment_dose_per_hive` decimal(9,2) NOT NULL,
   `fk_beehive_id` int NOT NULL,
   `fk_product_id` int NOT NULL,
+  `fk_dose_unit_id` int DEFAULT NULL,
   PRIMARY KEY (`treatment_id`),
   KEY `idx_treatment_date` (`treatment_date`),
   KEY `fk_beehive_id` (`fk_beehive_id`),
   KEY `fk_product_id` (`fk_product_id`),
+  KEY `fk_dose_unit_id` (`fk_dose_unit_id`),
   CONSTRAINT `treatments_ibfk_1` FOREIGN KEY (`fk_beehive_id`) REFERENCES `beehives` (`beehive_id`),
-  CONSTRAINT `treatments_ibfk_2` FOREIGN KEY (`fk_product_id`) REFERENCES `products` (`product_id`)
+  CONSTRAINT `treatments_ibfk_2` FOREIGN KEY (`fk_product_id`) REFERENCES `products` (`product_id`),
+  CONSTRAINT `treatments_ibfk_3` FOREIGN KEY (`fk_dose_unit_id`) REFERENCES `dose_units` (`dose_unit_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

@@ -1,4 +1,4 @@
-<Page x:Class="Mams_App.src.treatments.ListTreatmentPage"
+﻿<Page x:Class="Mams_App.src.treatments.ListTreatmentPage"
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -176,6 +176,7 @@ Title="ListTreatmentPage">
                                 <GridViewColumn Header="{loc:Translate Column.HiveCount}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding treatment_hive_count}"/>
                                 <GridViewColumn Header="{loc:Translate Column.Product}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_name}"/>
                                 <GridViewColumn Header="{loc:Translate Column.DosePerHive}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding treatment_dose_per_hive}"/>
+                                <GridViewColumn Header="{loc:Translate Column.DoseUnit}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding dose_unit_name}"/>
                                 <GridViewColumn Header="{loc:Translate Column.DoseTotal}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding treatment_dose_total}"/>
                             </GridView>
                         </ListView.View>

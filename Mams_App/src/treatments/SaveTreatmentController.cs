@@ -1,6 +1,7 @@
 ﻿using Mams_App.src.beehives;
 using Mams_App.src.commands;
 using Mams_App.src.controllers;
+using Mams_App.src.doseUnits;
 using Mams_App.src.errors;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
@@ -19,6 +20,7 @@ public class SaveTreatmentController : ABaseController, ICompareState
     private readonly TreatmentModel _m_treatment_model = new();
     private readonly BeehiveModel _m_beehive_model = new();
     private readonly ProductModel _m_product_model = new();
+    private readonly DoseUnitModel _m_dose_unit_model = new();
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
@@ -81,6 +83,29 @@ public class SaveTreatmentController : ABaseController, ICompareState
         }
     }
 
+    private ObservableCollection<DoseUnitItem> _m_list_dose_unit = new();
+    public ObservableCollection<DoseUnitItem> m_list_dose_unit
+    {
+        get { return _m_list_dose_unit; }
+        set
+        {
+            _m_list_dose_unit = value;
+            onPropertyChanged();
+        }
+    }
+
+    private DoseUnitItem _m_selected_dose_unit = new();
+    public DoseUnitItem m_selected_dose_unit
+    {
+        get { return _m_selected_dose_unit; }
+        set
+        {
+            _m_selected_dose_unit = value ?? new();
+            m_treatment.fk_dose_unit_id = _m_selected_dose_unit.dose_unit_id;
+            onPropertyChanged();
+        }
+    }
+
     public int m_treatment_hive_count
     {
         get => _m_treatment.treatment_hive_count;
@@ -113,6 +138,7 @@ public class SaveTreatmentController : ABaseController, ICompareState
     {
         _m_list_beehive = _m_beehive_model.getActiveBeehives();
         _m_list_product = _m_product_model.getActiveProducts();
+        _m_list_dose_unit = _m_dose_unit_model.getActiveDoseUnits();
 
         if (id_to_load != 0)
         {
@@ -124,6 +150,16 @@ public class SaveTreatmentController : ABaseController, ICompareState
 
             _m_selected_product = _m_list_product.FirstOrDefault(p =>
                 p.product_id == _m_treatment.fk_product_id) ?? new();
+
+            _m_selected_dose_unit = _m_list_dose_unit.FirstOrDefault(d =>
+                d.dose_unit_id == _m_treatment.fk_dose_unit_id) ?? new();
+        }
+        else
+        {
+            // Default to first dose unit (ml) for new treatments
+            _m_selected_dose_unit = _m_list_dose_unit.FirstOrDefault() ?? new();
+            _m_treatment.fk_dose_unit_id = _m_selected_dose_unit.dose_unit_id;
+            _m_original_treatment.fk_dose_unit_id = _m_selected_dose_unit.dose_unit_id;
         }
 
         m_save_command = new RelayCommand(saveTreatment, canSaveTreatment);
@@ -142,6 +178,7 @@ public class SaveTreatmentController : ABaseController, ICompareState
             || !_m_original_treatment.treatment_dose_per_hive.Equals(_m_treatment.treatment_dose_per_hive)
             || !_m_original_treatment.fk_beehive_id.Equals(_m_treatment.fk_beehive_id)
             || !_m_original_treatment.fk_product_id.Equals(_m_treatment.fk_product_id)
+            || !_m_original_treatment.fk_dose_unit_id.Equals(_m_treatment.fk_dose_unit_id)
             )
         {
             return false;

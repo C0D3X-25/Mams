@@ -8,6 +8,7 @@ using Mams_App.src.invoices;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
 using Mams_App.src.products;
+using Mams_App.src.doseUnits;
 using Mams_App.src.regions;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -35,6 +36,7 @@ public class ListTreatmentController : ABaseController
     private readonly BeehiveModel _m_beehive_model = new();
     private readonly ProductModel _m_product_model = new();
     private readonly RegionModel _m_region_model = new();
+    private readonly DoseUnitModel _m_dose_unit_model = new();
 
     // Filter tables
     private ObservableCollection<DatabaseTablesNameItem> _m_list_table;
@@ -181,7 +183,8 @@ public class ListTreatmentController : ABaseController
             new(){ m_name_in_database = EDatabaseTableName.NONE, m_name_to_display = string.Empty },
             new(){ m_name_in_database = EDatabaseTableName.BEEHIVE, m_name_to_display = Loc.Get("Search.Beehive") },
             new(){ m_name_in_database = EDatabaseTableName.PRODUCT, m_name_to_display = Loc.Get("Search.Product") },
-            new(){ m_name_in_database = EDatabaseTableName.REGION, m_name_to_display = Loc.Get("Search.Region") }
+            new(){ m_name_in_database = EDatabaseTableName.REGION, m_name_to_display = Loc.Get("Search.Region") },
+            new(){ m_name_in_database = EDatabaseTableName.DOSE_UNIT, m_name_to_display = Loc.Get("Search.DoseUnit") }
         ];
 
         _m_selected_table = _m_list_table[0];
@@ -293,6 +296,16 @@ public class ListTreatmentController : ABaseController
                     {
                         filter_id = item.region_id,
                         filter_item_to_display = item.region_name
+                    });
+                }
+                break;
+            case EDatabaseTableName.DOSE_UNIT:
+                foreach (var item in _m_dose_unit_model.getActiveDoseUnits())
+                {
+                    list.Add(new FilterItem
+                    {
+                        filter_id = item.dose_unit_id,
+                        filter_item_to_display = item.dose_unit_name
                     });
                 }
                 break;

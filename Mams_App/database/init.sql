@@ -132,6 +132,13 @@ CREATE TABLE IF NOT EXISTS receipts_products (
 CREATE INDEX idx_receipt_product_quantity ON receipts_products(receipt_product_quantity);
 CREATE INDEX idx_receipt_product_unity_price ON receipts_products(receipt_product_unity_price);
 
+CREATE TABLE IF NOT EXISTS dose_units (
+    dose_unit_id INT PRIMARY KEY AUTO_INCREMENT,
+    dose_unit_name VARCHAR(100) NOT NULL,
+    dose_unit_archive DATE
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE INDEX idx_dose_unit_name ON dose_units(dose_unit_name);
+
 CREATE TABLE IF NOT EXISTS treatments (
     treatment_id INT PRIMARY KEY AUTO_INCREMENT,
     treatment_date DATE NOT NULL,
@@ -139,8 +146,10 @@ CREATE TABLE IF NOT EXISTS treatments (
     treatment_dose_per_hive DECIMAL(9,2) NOT NULL,
     fk_beehive_id INT NOT NULL,
     fk_product_id INT NOT NULL,
+    fk_dose_unit_id INT,
     FOREIGN KEY (fk_beehive_id) REFERENCES beehives(beehive_id),
-    FOREIGN KEY (fk_product_id) REFERENCES products(product_id)
+    FOREIGN KEY (fk_product_id) REFERENCES products(product_id),
+    FOREIGN KEY (fk_dose_unit_id) REFERENCES dose_units(dose_unit_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_treatment_date ON treatments(treatment_date);
 

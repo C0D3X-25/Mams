@@ -1,6 +1,7 @@
 ﻿using Mams_App.src.commands;
 using Mams_App.src.configurations;
 using Mams_App.src.databaseOperations;
+using Mams_App.src.doseUnits;
 using Mams_App.src.integrities;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
@@ -26,7 +27,6 @@ public class SettingsController : INotifyPropertyChanged
 {
     private readonly Window m_window;
     private readonly UserModel m_userModel;
-    private readonly RegionModel m_regionModel;
     private FileInfo? m_selectedBackup;
     private ObservableCollection<FileInfo> m_backups;
 
@@ -53,11 +53,6 @@ public class SettingsController : INotifyPropertyChanged
     private Brush m_integrityResultBackground = Brushes.Transparent;
     private ObservableCollection<string> m_problematicFiles = [];
     private CancellationTokenSource? m_integrityCheckCts;
-
-    // Region properties
-    private ObservableCollection<RegionItem> m_regionItems = [];
-    private RegionItem? m_selectedRegionItem;
-    private string m_regionEditName = string.Empty;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -302,41 +297,6 @@ public class SettingsController : INotifyPropertyChanged
 
     public bool HasProblematicFiles => ProblematicFiles.Count > 0;
 
-    // Region properties
-    public ObservableCollection<RegionItem> RegionItems
-    {
-        get => m_regionItems;
-        private set
-        {
-            m_regionItems = value;
-            onPropertyChanged();
-        }
-    }
-
-    public RegionItem? SelectedRegionItem
-    {
-        get => m_selectedRegionItem;
-        set
-        {
-            m_selectedRegionItem = value;
-            onPropertyChanged();
-            if (value != null)
-            {
-                RegionEditName = value.region_name;
-            }
-        }
-    }
-
-    public string RegionEditName
-    {
-        get => m_regionEditName;
-        set
-        {
-            m_regionEditName = value;
-            onPropertyChanged();
-        }
-    }
-
     #endregion
 
     #region Commands
@@ -350,9 +310,8 @@ public class SettingsController : INotifyPropertyChanged
     public ICommand SaveLocalizationCommand { get; }
     public ICommand StartIntegrityCheckCommand { get; }
     public ICommand AcknowledgeIntegrityResultCommand { get; }
-    public ICommand AddRegionCommand { get; }
-    public ICommand SaveRegionCommand { get; }
-    public ICommand DeleteRegionCommand { get; }
+    public ICommand OpenRegionsPageCommand { get; }
+    public ICommand OpenDoseUnitsPageCommand { get; }
 
     #endregion
 
@@ -361,7 +320,6 @@ public class SettingsController : INotifyPropertyChanged
         m_window = window;
         m_backups = [];
         m_userModel = new UserModel();
-        m_regionModel = new RegionModel();
 
         // Initialize language and currency collections
         AvailableLanguages =
@@ -389,14 +347,12 @@ public class SettingsController : INotifyPropertyChanged
         SaveLocalizationCommand = new RelayCommand(_ => saveLocalization());
         StartIntegrityCheckCommand = new RelayCommand(_ => startIntegrityCheck(), _ => CanStartIntegrityCheck);
         AcknowledgeIntegrityResultCommand = new RelayCommand(_ => acknowledgeIntegrityResult());
-        AddRegionCommand = new RelayCommand(_ => addRegion(), _ => !string.IsNullOrWhiteSpace(RegionEditName));
-        SaveRegionCommand = new RelayCommand(_ => saveRegion(), _ => SelectedRegionItem != null && !string.IsNullOrWhiteSpace(RegionEditName));
-        DeleteRegionCommand = new RelayCommand(_ => deleteRegion(), _ => SelectedRegionItem != null);
+        OpenRegionsPageCommand = new RelayCommand(_ => openRegionsPage());
+        OpenDoseUnitsPageCommand = new RelayCommand(_ => openDoseUnitsPage());
 
         refreshBackups();
         loadUser();
         loadLocalization();
-        loadRegions();
     }
 
     /// <summary>
@@ -747,95 +703,21 @@ public class SettingsController : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Loads the list of regions from the database.
+    /// Navigates to the regions management page and closes the settings window.
     /// </summary>
-    private void loadRegions()
+    private void openRegionsPage()
     {
-        try
-        {
-            var result = m_regionModel.getAllItems();
-            RegionItems = new ObservableCollection<RegionItem>(
-                result.returned_items.Where(r => !string.IsNullOrEmpty(r.region_name)));
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine($"[SettingsController] Error loading regions: {ex.Message}");
-            RegionItems = [];
-        }
+        m_window.Close();
+        SPageNavigationController.navigateTo(new ListRegionPage());
     }
 
     /// <summary>
-    /// Adds a new region to the database.
+    /// Navigates to the dose units management page and closes the settings window.
     /// </summary>
-    private void addRegion()
+    private void openDoseUnitsPage()
     {
-        var item = new RegionItem { region_name = RegionEditName.Trim() };
-        var result = m_regionModel.saveItem(item);
-        if (result.is_success)
-        {
-            RegionEditName = string.Empty;
-            loadRegions();
-        }
-        else
-        {
-            MessageBox.Show(
-                Loc.Get("Message.SaveError"),
-                Loc.Get("Common.Error"),
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-        }
-    }
-
-    /// <summary>
-    /// Saves (updates) the selected region in the database.
-    /// </summary>
-    private void saveRegion()
-    {
-        if (SelectedRegionItem == null) return;
-
-        var item = new RegionItem
-        {
-            region_id = SelectedRegionItem.region_id,
-            region_name = RegionEditName.Trim()
-        };
-
-        var result = m_regionModel.saveItem(item);
-        if (result.is_success)
-        {
-            loadRegions();
-        }
-        else
-        {
-            MessageBox.Show(
-                Loc.Get("Message.SaveError"),
-                Loc.Get("Common.Error"),
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-        }
-    }
-
-    /// <summary>
-    /// Deletes the selected region from the database.
-    /// </summary>
-    private void deleteRegion()
-    {
-        if (SelectedRegionItem == null) return;
-
-        var result = m_regionModel.deleteItem(SelectedRegionItem.region_id.ToString());
-        if (result.is_success)
-        {
-            SelectedRegionItem = null;
-            RegionEditName = string.Empty;
-            loadRegions();
-        }
-        else
-        {
-            MessageBox.Show(
-                Loc.Get("Message.DeleteErrorOccurred"),
-                Loc.Get("Common.Error"),
-                MessageBoxButton.OK,
-                MessageBoxImage.Error);
-        }
+        m_window.Close();
+        SPageNavigationController.navigateTo(new ListDoseUnitPage());
     }
 
     protected virtual void onPropertyChanged([CallerMemberName] string? propertyName = null)

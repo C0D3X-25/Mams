@@ -336,18 +336,17 @@
                 </StackPanel>
             </TabItem>
 
-            <!-- Advanced Tab (Regions) -->
+            <!-- Advanced Tab (Regions & Dose Units) -->
             <TabItem Header="{loc:Translate Settings.Advanced}">
                 <Grid Margin="15">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <!-- Section Header -->
-                    <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                    <!-- Region Section -->
+                    <StackPanel Grid.Row="0" Margin="0,0,0,20">
                         <TextBlock Text="{loc:Translate Settings.RegionsTitle}" 
                                    FontSize="16" 
                                    FontWeight="SemiBold"/>
@@ -355,49 +354,29 @@
                                    Foreground="Gray"
                                    TextWrapping="Wrap"
                                    Margin="0,5,0,0"/>
+                        <Button Content="{loc:Translate Settings.ManageRegions}" 
+                                Command="{Binding OpenRegionsPageCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                HorizontalAlignment="Left"
+                                Padding="20,10"
+                                Margin="0,10,0,0"/>
                     </StackPanel>
 
-                    <!-- Region List -->
-                    <ListBox Grid.Row="1" 
-                             ItemsSource="{Binding RegionItems}" 
-                             SelectedItem="{Binding SelectedRegionItem}"
-                             Margin="0,0,0,10">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding region_name}" Margin="5,3"/>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-
-                    <!-- Edit Region Name -->
-                    <Grid Grid.Row="2" Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*" MaxWidth="300"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="{loc:Translate Form.Name}" 
-                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
-                        <TextBox Grid.Column="1" 
-                                 Text="{Binding RegionEditName, UpdateSourceTrigger=PropertyChanged}"
-                                 Padding="5,3"/>
-                    </Grid>
-
-                    <!-- Buttons -->
-                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left">
-                        <Button Content="{loc:Translate Common.Add}" 
-                                Command="{Binding AddRegionCommand}"
+                    <!-- Dose Unit Section -->
+                    <StackPanel Grid.Row="1" Margin="0,0,0,20">
+                        <TextBlock Text="{loc:Translate Settings.DoseUnitsTitle}" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="{loc:Translate Settings.DoseUnitsDescription}"
+                                   Foreground="Gray"
+                                   TextWrapping="Wrap"
+                                   Margin="0,5,0,0"/>
+                        <Button Content="{loc:Translate Settings.ManageDoseUnits}" 
+                                Command="{Binding OpenDoseUnitsPageCommand}"
                                 Style="{StaticResource PrimaryButtonStyle}"
-                                Padding="15,8"
-                                Margin="0,0,5,0"/>
-                        <Button Content="{loc:Translate Common.Save}" 
-                                Command="{Binding SaveRegionCommand}"
-                                Style="{StaticResource PrimaryButtonStyle}"
-                                Padding="15,8"
-                                Margin="0,0,5,0"/>
-                        <Button Content="{loc:Translate Common.Delete}" 
-                                Command="{Binding DeleteRegionCommand}"
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Padding="15,8"/>
+                                HorizontalAlignment="Left"
+                                Padding="20,10"
+                                Margin="0,10,0,0"/>
                     </StackPanel>
                 </Grid>
             </TabItem>

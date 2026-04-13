@@ -1,4 +1,4 @@
-using Mams_App.src.databaseOperations;
+﻿using Mams_App.src.databaseOperations;
 
 namespace Mams_Test.databaseOperations;
 
@@ -80,6 +80,8 @@ public class EDatabaseTableNameTests
         Assert.True(Enum.IsDefined(typeof(EDatabaseTableName), EDatabaseTableName.PRODUCT_TYPE));
         Assert.True(Enum.IsDefined(typeof(EDatabaseTableName), EDatabaseTableName.PRODUCT_LOT));
         Assert.True(Enum.IsDefined(typeof(EDatabaseTableName), EDatabaseTableName.BEEHIVE));
+        Assert.True(Enum.IsDefined(typeof(EDatabaseTableName), EDatabaseTableName.REGION));
+        Assert.True(Enum.IsDefined(typeof(EDatabaseTableName), EDatabaseTableName.DOSE_UNIT));
     }
 
     [Fact]
