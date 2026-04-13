@@ -124,7 +124,7 @@ Title="ResumePage">
                        Width="25" Height="25"
                        Content="X"
                        Command="{Binding m_clear_search_command}"
-                       Style="{StaticResource SecondaryButtonStyle}"/>
+                       Style="{StaticResource SecondaryIconButtonStyle}"/>
                 </Grid>
 
                 <!--Resume Views-->

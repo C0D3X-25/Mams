@@ -134,7 +134,6 @@ Title="ListProductPage">
                                     <GridViewColumn Header="{loc:Translate Column.Weight}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_weight}"/>
                                     <GridViewColumn Header="{loc:Translate Column.Type}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_type_name}"/>
                                     <GridViewColumn Header="{loc:Translate Column.Category}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_category_name}"/>
-                                    <GridViewColumn Header="{loc:Translate Column.Shape}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_shape_name}"/>
                                     <GridViewColumn Header="{loc:Translate Column.Archived}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_archive}" Width="{Binding DataContext.m_is_show_archived_checked, RelativeSource={RelativeSource AncestorType=ListView}, Converter={StaticResource BooleanToColumnWidthConverter}}"/>
                                 </GridView>
                             </ListView.View>

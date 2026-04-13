@@ -192,9 +192,10 @@ Title="SaveProductPage">
                                 >
                             </userControls:UCLabelTextBox>
 
-                            <!--Shape-->
+                            <!--Shape (hidden, kept for DB compatibility)-->
                             <Grid
-                                Grid.Column="0" Grid.Row="1">
+                                Grid.Column="0" Grid.Row="1"
+                                Visibility="Collapsed">
                                 <Grid.RowDefinitions>
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>

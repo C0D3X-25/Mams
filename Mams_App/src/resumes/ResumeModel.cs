@@ -87,7 +87,6 @@ public class ResumeModel
         new(){ m_name_in_database = EDatabaseTableName.NONE, m_name_to_display = string.Empty }, // Filter all
         new(){ m_name_in_database = EDatabaseTableName.PRODUCT_CATEGORY, m_name_to_display = Loc.Get("Search.Category") },
         new(){ m_name_in_database = EDatabaseTableName.ENTITY, m_name_to_display = Loc.Get("Search.ClientSupplier") },
-        new(){ m_name_in_database = EDatabaseTableName.PRODUCT_SHAPE, m_name_to_display = Loc.Get("Search.Shape") },
         new(){ m_name_in_database = EDatabaseTableName.PRODUCT_LOT, m_name_to_display = Loc.Get("Search.Lot") },
         new(){ m_name_in_database = EDatabaseTableName.PRODUCT, m_name_to_display = Loc.Get("Search.Product") },
         new(){ m_name_in_database = EDatabaseTableName.BEEHIVE, m_name_to_display = Loc.Get("Search.Beehive") },
