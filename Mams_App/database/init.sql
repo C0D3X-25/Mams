@@ -132,6 +132,18 @@ CREATE TABLE IF NOT EXISTS receipts_products (
 CREATE INDEX idx_receipt_product_quantity ON receipts_products(receipt_product_quantity);
 CREATE INDEX idx_receipt_product_unity_price ON receipts_products(receipt_product_unity_price);
 
+CREATE TABLE IF NOT EXISTS treatments (
+    treatment_id INT PRIMARY KEY AUTO_INCREMENT,
+    treatment_date DATE NOT NULL,
+    treatment_hive_count INT NOT NULL,
+    treatment_dose_per_hive DECIMAL(9,2) NOT NULL,
+    fk_beehive_id INT NOT NULL,
+    fk_product_id INT NOT NULL,
+    FOREIGN KEY (fk_beehive_id) REFERENCES beehives(beehive_id),
+    FOREIGN KEY (fk_product_id) REFERENCES products(product_id)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE INDEX idx_treatment_date ON treatments(treatment_date);
+
 -- User table for invoice generation (stores the app owner's information)
 CREATE TABLE IF NOT EXISTS users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,

@@ -1,5 +1,6 @@
 ﻿using Mams_App.src.databaseOperations;
 using Mams_App.src.errors;
+using Mams_App.src.globals;
 using Mams_App.src.helpers;
 using Mams_App.src.models;
 using MySqlConnector;
@@ -72,12 +73,17 @@ public class BeehiveModel : ABaseModel,
 
                 if (reader.Read())
                 {
+                    var archiveValue = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue);
+                    string archiveStr = (archiveValue == DateOnly.MinValue || archiveValue == new DateOnly(1901, 1, 1))
+                        ? string.Empty
+                        : archiveValue.ToString(SGlobals.g_EU_DATE_FORMAT);
+
                     return ResponseGetItem<BeehiveItem>.Success(new BeehiveItem
                     {
                         beehive_id = reader.getSafeValue<int>(_m_COL_ID),
                         beehive_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
                         beehive_number = reader.getSafeValue(_m_COL_NUMBER, string.Empty),
-                        beehive_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString(),
+                        beehive_archive = archiveStr,
                         fk_region_id = reader.getSafeValue<int>(_m_COL_FK_REGION),
                         region_name = reader.getSafeValue(_m_COL_REGION_NAME, string.Empty)
                     });
@@ -116,9 +122,9 @@ public class BeehiveModel : ABaseModel,
                 while (reader.Read())
                 {
                     var archiveValue = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue);
-                    string archiveStr = archiveValue.ToString();
-                    if (archiveStr == "0001-01-01" || archiveStr == "1901-01-01")
-                        archiveStr = string.Empty;
+                    string archiveStr = (archiveValue == DateOnly.MinValue || archiveValue == new DateOnly(1901, 1, 1))
+                        ? string.Empty
+                        : archiveValue.ToString(SGlobals.g_EU_DATE_FORMAT);
 
                     items.Add(new BeehiveItem
                     {

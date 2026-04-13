@@ -66,6 +66,7 @@
     "Button.GenerateInvoice": "Générer Facture",
     "Button.AddProduct": "Ajouter un produit",
     "Button.AddFee": "Ajouter un frais",
+    "Button.NewTreatment": "Nouveau Traitement",
     
     "_comment_form": "Form - Form field labels",
     "Form.InvoiceNumber": "N° de Facture*",
@@ -88,6 +89,10 @@
     "Form.Type": "Type*",
     "Form.Category": "Catégorie*",
     "Form.Shape": "Forme*",
+    "Form.HiveCount": "Nb de ruches*",
+    "Form.DosePerHive": "Dose/ruche (ml)*",
+    "Form.DoseTotal": "Dose totale (ml)",
+    "Form.TreatmentProduct": "Produit de traitement*",
     
     "_comment_search": "Search - Search filters",
     "Search.Category": "Catégorie",
@@ -97,6 +102,7 @@
     "Search.Product": "Produit",
     "Search.Beehive": "Rucher",
     "Search.Type": "Type",
+    "Search.Treatment": "Traitement",
     
     "_comment_unit": "Unit - Units of measurement",
     "Unit.Kg": "kg",
@@ -124,6 +130,11 @@
     "Column.Email": "Email",
     "Column.City": "Ville",
     "Column.Address": "Adresse",
+    "Column.Date": "Date",
+    "Column.Product": "Produit",
+    "Column.HiveCount": "Ruches traitées",
+    "Column.DosePerHive": "Dose/ruche (ml)",
+    "Column.DoseTotal": "Dose totale (ml)",
     
     "_comment_culture": "Culture - Regional settings",
     "Culture.frCH": "Suisse (CHF)",
@@ -159,6 +170,7 @@
     "Nav.ProductCategories": "Catégories de Produit",
     "Nav.ProductTypes": "Types de Produit",
     "Nav.ProductShapes": "Formes de Produit",
+    "Nav.Treatments": "Traitements",
     "Nav.Resume": "Résumé",
     
     "_comment_menu": "Menu - Top menu bar",
@@ -187,6 +199,8 @@
     "Page.SaveProductCategory": "Enregistrer une Catégorie de Produit",
     "Page.SaveProductShape": "Enregistrer une Forme de Produit",
     "Page.SaveProductLot": "Enregistrer un Lot",
+    "Page.ListTreatments": "Journal des Traitements",
+    "Page.SaveTreatment": "Enregistrer un Traitement",
     
     "_comment_product": "Product - Product related labels",
     "Product.Title": "Produits",
@@ -248,6 +262,15 @@
     "Profit.Amount": "Montant",
     "Profit.Date": "Date",
     "Profit.Description": "Description",
+
+    "_comment_treatment": "Treatment - Treatment log related labels",
+    "Treatment.Title": "Traitements",
+    "Treatment.Date": "Date du traitement",
+    "Treatment.HiveCount": "Nb de ruches traitées",
+    "Treatment.DosePerHive": "Dose/ruche (ml)",
+    "Treatment.DoseTotal": "Dose totale (ml)",
+    "Treatment.Product": "Produit de traitement",
+    "Treatment.Beehive": "Rucher",
     
     "_comment_resume": "Resume - Summary page labels",
     "Resume.Title": "Résumé",
@@ -406,6 +429,8 @@
     "Pdf.ReceiptNotFound": "Reçu non trouvé.",
     "Pdf.FolderName": "Factures Miel",
     "Pdf.Filename": "Facture {0}.pdf",
+    "Pdf.TreatmentTitle": "Journal des Traitements",
+    "Pdf.TreatmentFilename": "Traitements_{0}.pdf",
     
     "_comment_invoice": "Invoice - Invoice template labels",
     "Invoice.Title": "Facture #{0}",

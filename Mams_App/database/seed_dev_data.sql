@@ -1,4 +1,4 @@
-DROP DATABASE IF EXISTS mams_db;
+﻿DROP DATABASE IF EXISTS mams_db;
 CREATE DATABASE IF NOT EXISTS mams_db;
 USE mams_db;
 
@@ -277,3 +277,22 @@ INSERT INTO receipts_products (receipt_product_quantity, receipt_product_unity_p
 (2, 0, 11, 9, 6),
 (6, 17.50, 14, 10, 7),
 (4, 22.45, 16, 10, 8);
+
+CREATE TABLE IF NOT EXISTS treatments (
+    treatment_id INT PRIMARY KEY AUTO_INCREMENT,
+    treatment_date DATE NOT NULL,
+    treatment_hive_count INT NOT NULL,
+    treatment_dose_per_hive DECIMAL(9,2) NOT NULL,
+    fk_beehive_id INT NOT NULL,
+    fk_product_id INT NOT NULL,
+    FOREIGN KEY (fk_beehive_id) REFERENCES beehives(beehive_id),
+    FOREIGN KEY (fk_product_id) REFERENCES products(product_id)
+);
+CREATE INDEX idx_treatment_date ON treatments(treatment_date);
+
+-- Insert data into treatments
+INSERT INTO treatments (treatment_date, treatment_hive_count, treatment_dose_per_hive, fk_beehive_id, fk_product_id) VALUES
+('2025-03-15', 5, 2.50, 2, 1),
+('2025-04-10', 3, 1.75, 4, 5),
+('2025-06-20', 8, 3.00, 6, 1),
+('2025-07-05', 4, 2.00, 8, 5);

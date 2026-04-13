@@ -1,4 +1,4 @@
-using Mams_App.src.beehives;
+﻿using Mams_App.src.beehives;
 using Mams_App.src.commands;
 using Mams_App.src.entities;
 using Mams_App.src.fees;
@@ -8,6 +8,7 @@ using Mams_App.src.productsLots;
 using Mams_App.src.productsShapes;
 using Mams_App.src.productsTypes;
 using Mams_App.src.profits;
+using Mams_App.src.treatments;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -30,6 +31,7 @@ public class UCMenuController : INotifyPropertyChanged
     private bool _m_is_product_category_page_active;
     private bool _m_is_product_type_page_active;
     private bool _m_is_product_shape_page_active;
+    private bool _m_is_treatment_page_active;
 
     public bool m_is_profit_page_active
     {
@@ -85,6 +87,12 @@ public class UCMenuController : INotifyPropertyChanged
         set { _m_is_product_shape_page_active = value; OnPropertyChanged(); }
     }
 
+    public bool m_is_treatment_page_active
+    {
+        get => _m_is_treatment_page_active;
+        set { _m_is_treatment_page_active = value; OnPropertyChanged(); }
+    }
+
     public ICommand m_navigate_list_fee_command { get; set; }
     public ICommand m_navigate_list_profit_command { get; set; }
     public ICommand m_navigate_list_entity_command { get; set; }
@@ -94,6 +102,7 @@ public class UCMenuController : INotifyPropertyChanged
     public ICommand m_navigate_list_product_category_command { get; set; }
     public ICommand m_navigate_list_product_type_command { get; set; }
     public ICommand m_navigate_list_product_shape_command { get; set; }
+    public ICommand m_navigate_list_treatment_command { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the UCMenuController class.
@@ -110,6 +119,7 @@ public class UCMenuController : INotifyPropertyChanged
         m_navigate_list_product_category_command = new RelayCommand(navigateToListProductCategory);
         m_navigate_list_product_type_command = new RelayCommand(navigateToListProductType);
         m_navigate_list_product_shape_command = new RelayCommand(navigateToListProductShape);
+        m_navigate_list_treatment_command = new RelayCommand(navigateToListTreatment);
 
         SPageNavigationController.PageChanged += OnPageChanged;
     }
@@ -129,6 +139,7 @@ public class UCMenuController : INotifyPropertyChanged
         m_is_product_category_page_active = pageType == typeof(ListProductCategoryPage);
         m_is_product_type_page_active = pageType == typeof(ListProductTypePage);
         m_is_product_shape_page_active = pageType == typeof(ListProductShapePage);
+        m_is_treatment_page_active = pageType == typeof(ListTreatmentPage);
     }
 
     /// <summary>
@@ -218,5 +229,14 @@ public class UCMenuController : INotifyPropertyChanged
     private void navigateToListProductShape(object? obj)
     {
         SPageNavigationController.navigateTo(new ListProductShapePage(), true);
+    }
+
+    /// <summary>
+    /// Navigates to the list treatment page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
+    private void navigateToListTreatment(object? obj)
+    {
+        SPageNavigationController.navigateTo(new ListTreatmentPage(), true);
     }
 }

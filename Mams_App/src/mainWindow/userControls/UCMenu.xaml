@@ -1,4 +1,4 @@
-<UserControl x:Class="Mams_App.src.mainWindow.userControls.UCMenu"
+﻿<UserControl x:Class="Mams_App.src.mainWindow.userControls.UCMenu"
 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -27,6 +27,7 @@ x:Name="root">
               MinHeight="400" MaxHeight="600" 
               VerticalAlignment="Top">
             <Grid.RowDefinitions>
+                <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -77,18 +78,23 @@ x:Name="root">
             Command="{Binding m_navigate_list_beehive_command}"
             IsCurrentPage="{Binding m_is_beehive_page_active}"/>
             <local:UCPageNavigationMenuButton 
-            Content="{loc:Translate Nav.ProductCategories}"
+            Content="{loc:Translate Nav.Treatments}"
             Grid.Row="7"
+            Command="{Binding m_navigate_list_treatment_command}"
+            IsCurrentPage="{Binding m_is_treatment_page_active}"/>
+            <local:UCPageNavigationMenuButton 
+            Content="{loc:Translate Nav.ProductCategories}"
+            Grid.Row="8"
             Command="{Binding m_navigate_list_product_category_command}"
             IsCurrentPage="{Binding m_is_product_category_page_active}"/>
             <local:UCPageNavigationMenuButton 
             Content="{loc:Translate Nav.ProductTypes}"
-            Grid.Row="8"
+            Grid.Row="9"
             Command="{Binding m_navigate_list_product_type_command}"
             IsCurrentPage="{Binding m_is_product_type_page_active}"/>
             <local:UCPageNavigationMenuButton 
             Content="{loc:Translate Nav.ProductShapes}"
-            Grid.Row="9"
+            Grid.Row="10"
             Command="{Binding m_navigate_list_product_shape_command}"
             IsCurrentPage="{Binding m_is_product_shape_page_active}"/>
         </Grid>
