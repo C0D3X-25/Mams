@@ -31,10 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="doc\MLD.simp.user" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MySqlBackup.NET.MySqlConnector" Version="2.6.5" />
     <PackageReference Include="MySqlConnector" Version="2.4.0" />
     <PackageReference Include="QuestPDF" Version="2025.7.0" />

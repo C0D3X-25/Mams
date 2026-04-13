@@ -335,6 +335,72 @@
                                Margin="0,15,0,0"/>
                 </StackPanel>
             </TabItem>
+
+            <!-- Advanced Tab (Regions) -->
+            <TabItem Header="{loc:Translate Settings.Advanced}">
+                <Grid Margin="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Section Header -->
+                    <StackPanel Grid.Row="0" Margin="0,0,0,10">
+                        <TextBlock Text="{loc:Translate Settings.RegionsTitle}" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="{loc:Translate Settings.RegionsDescription}"
+                                   Foreground="Gray"
+                                   TextWrapping="Wrap"
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <!-- Region List -->
+                    <ListBox Grid.Row="1" 
+                             ItemsSource="{Binding RegionItems}" 
+                             SelectedItem="{Binding SelectedRegionItem}"
+                             Margin="0,0,0,10">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding region_name}" Margin="5,3"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <!-- Edit Region Name -->
+                    <Grid Grid.Row="2" Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" MaxWidth="300"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="{loc:Translate Form.Name}" 
+                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBox Grid.Column="1" 
+                                 Text="{Binding RegionEditName, UpdateSourceTrigger=PropertyChanged}"
+                                 Padding="5,3"/>
+                    </Grid>
+
+                    <!-- Buttons -->
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <Button Content="{loc:Translate Common.Add}" 
+                                Command="{Binding AddRegionCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Padding="15,8"
+                                Margin="0,0,5,0"/>
+                        <Button Content="{loc:Translate Common.Save}" 
+                                Command="{Binding SaveRegionCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Padding="15,8"
+                                Margin="0,0,5,0"/>
+                        <Button Content="{loc:Translate Common.Delete}" 
+                                Command="{Binding DeleteRegionCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
+                                Padding="15,8"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
         </TabControl>
 
         <!-- Footer -->

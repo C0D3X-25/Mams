@@ -3,6 +3,8 @@ using Mams_App.src.controllers;
 using Mams_App.src.errors;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
+using Mams_App.src.regions;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 
@@ -15,6 +17,7 @@ public class SaveBeehiveController : ABaseController, ICompareState
 {
 
     private readonly BeehiveModel _m_beehive_model = new();
+    private readonly RegionModel _m_region_model = new();
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
@@ -33,6 +36,32 @@ public class SaveBeehiveController : ABaseController, ICompareState
         }
     }
 
+
+    private ObservableCollection<RegionItem> _m_list_region = new();
+    public ObservableCollection<RegionItem> m_list_region
+    {
+        get { return _m_list_region; }
+        set
+        {
+            _m_list_region = value;
+            onPropertyChanged();
+        }
+    }
+
+
+    private RegionItem _m_selected_region = new();
+    public RegionItem m_selected_region
+    {
+        get { return _m_selected_region; }
+        set
+        {
+            _m_selected_region = value;
+            m_beehive.fk_region_id = _m_selected_region.region_id;
+            onPropertyChanged();
+        }
+    }
+
+
     /// <summary>
     /// Initializes a new instance of the SaveBeehiveController class.
     /// </summary>
@@ -40,10 +69,16 @@ public class SaveBeehiveController : ABaseController, ICompareState
     public SaveBeehiveController(int id_to_load = 0)
     {
 
+        _m_list_region = _m_region_model.getActiveRegions();
+
         if (id_to_load != 0)
         {
             _m_beehive = _m_beehive_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
             _m_original_beehive = _m_beehive_model.getItemByID(id_to_load.ToString()).returned_item ?? new();
+
+            // Find the matching region in the list and set it as selected
+            _m_selected_region = _m_list_region.FirstOrDefault(r =>
+                r.region_id == _m_beehive.fk_region_id) ?? new();
         }
 
         m_save_command = new RelayCommand(saveBeehive, canSaveBeehive);
@@ -59,7 +94,9 @@ public class SaveBeehiveController : ABaseController, ICompareState
     {
         if (!_m_original_beehive.beehive_id.Equals(_m_beehive.beehive_id)
             || !_m_original_beehive.beehive_name.Equals(_m_beehive.beehive_name, StringComparison.Ordinal)
+            || !_m_original_beehive.beehive_number.Equals(_m_beehive.beehive_number, StringComparison.Ordinal)
             || !_m_original_beehive.beehive_archive.Equals(_m_beehive.beehive_archive, StringComparison.Ordinal)
+            || !_m_original_beehive.fk_region_id.Equals(_m_beehive.fk_region_id)
             )
         {
             return false;

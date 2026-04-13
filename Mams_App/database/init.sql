@@ -1,4 +1,4 @@
--- DROP DATABASE IF EXISTS mams_db;
+﻿-- DROP DATABASE IF EXISTS mams_db;
 CREATE DATABASE IF NOT EXISTS mams_db
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
@@ -75,10 +75,20 @@ CREATE TABLE IF NOT EXISTS products_shapes (
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_product_shape_name ON products_shapes(product_shape_name);
 
+CREATE TABLE IF NOT EXISTS regions (
+    region_id INT PRIMARY KEY AUTO_INCREMENT,
+    region_name VARCHAR(100) NOT NULL,
+    region_archive DATE
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE INDEX idx_region_name ON regions(region_name);
+
 CREATE TABLE IF NOT EXISTS beehives (
     beehive_id INT PRIMARY KEY AUTO_INCREMENT,
     beehive_name VARCHAR(50) NOT NULL,
-    beehive_archive DATE
+    beehive_number VARCHAR(50),
+    beehive_archive DATE,
+    fk_region_id INT,
+    FOREIGN KEY (fk_region_id) REFERENCES regions(region_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_beehive_name ON beehives(beehive_name);
 
@@ -135,7 +145,39 @@ CREATE TABLE IF NOT EXISTS users (
 -- Insert default data to avoid NULL values in foreign keys
 INSERT INTO products_shapes (product_shape_name, product_shape_archive) VALUES
 ('', '1901-01-01');
-INSERT INTO beehives (beehive_name, beehive_archive) VALUES
+INSERT INTO regions (region_name, region_archive) VALUES
 ('', '1901-01-01');
+
+-- Insert all Swiss cantons (regions)
+INSERT INTO regions (region_name) VALUES
+('Argovie'),
+('Appenzell Rhodes-Intérieures'),
+('Appenzell Rhodes-Extérieures'),
+('Berne'),
+('Bâle-Campagne'),
+('Bâle-Ville'),
+('Fribourg'),
+('Genève'),
+('Glaris'),
+('Grisons'),
+('Jura'),
+('Lucerne'),
+('Neuchâtel'),
+('Nidwald'),
+('Obwald'),
+('Saint-Gall'),
+('Schaffhouse'),
+('Soleure'),
+('Schwyz'),
+('Thurgovie'),
+('Tessin'),
+('Uri'),
+('Vaud'),
+('Valais'),
+('Zoug'),
+('Zurich');
+
+INSERT INTO beehives (beehive_name, beehive_archive, fk_region_id) VALUES
+('', '1901-01-01', 1);
 INSERT INTO products_lots (product_lot_name, product_lot_year, fk_beehive_id, product_lot_archive) VALUES
 ('', 0, 1, '1901-01-01');

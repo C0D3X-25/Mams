@@ -131,6 +131,8 @@ Title="ListBeehivePage">
                             <GridView>
                                     <!--<GridViewColumn Header="ID" DisplayMemberBinding="{Binding beehive_id}"/>-->
                                     <GridViewColumn Header="{loc:Translate Column.Name}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding beehive_name}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Number}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding beehive_number}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Region}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding region_name}"/>
                                     <GridViewColumn Header="{loc:Translate Column.Archived}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding beehive_archive}" Width="{Binding DataContext.m_is_show_archived_checked, RelativeSource={RelativeSource AncestorType=ListView}, Converter={StaticResource BooleanToColumnWidthConverter}}"/>
                                 </GridView>
                             </ListView.View>

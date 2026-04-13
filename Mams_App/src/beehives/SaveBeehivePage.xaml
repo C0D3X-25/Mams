@@ -60,7 +60,9 @@ Title="SaveBeehivePage">
                               Margin="0,0,25,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="1*"/>
-                                <RowDefinition Height="7*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="5*"/>
                             </Grid.RowDefinitions>
 
                             <!--Name-->
@@ -68,8 +70,46 @@ Title="SaveBeehivePage">
                                 Grid.Row="0"
                                 label="{loc:Translate Beehive.Name}"
                                 text="{Binding m_beehive.beehive_name, UpdateSourceTrigger=PropertyChanged}"
-                            
+
                             ></userControls:UCLabelTextBox>
+
+                            <!--Number (legal reference)-->
+                            <userControls:UCLabelTextBox
+                                Grid.Row="1"
+                                label="{loc:Translate Beehive.Number}"
+                                text="{Binding m_beehive.beehive_number, UpdateSourceTrigger=PropertyChanged}"
+
+                            ></userControls:UCLabelTextBox>
+
+                            <!--Region-->
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+
+                                <Label
+                                    Grid.Column="0" 
+                                    Content="{loc:Translate Beehive.Region}"
+                                    FontSize="16" 
+                                    VerticalAlignment="Center" HorizontalAlignment="Right">
+                                </Label>
+
+                                <ComboBox
+                                    Grid.Column="1" 
+                                    Margin="5,0,5,0" 
+                                    FontSize="16" 
+                                    VerticalAlignment="Center"
+                                    MinHeight="25" MinWidth="200"
+                                    ItemsSource="{Binding m_list_region, UpdateSourceTrigger=PropertyChanged}"
+                                    SelectedItem="{Binding m_selected_region, UpdateSourceTrigger=PropertyChanged}">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding region_name, UpdateSourceTrigger=PropertyChanged}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </Grid>
                         </Grid>
 
                         <!--Right Grid-->

@@ -18,7 +18,13 @@ public class BeehiveModel : ABaseModel,
     private const string _m_TBL_NAME = "beehives";
     private const string _m_COL_ID = "beehive_id";
     private const string _m_COL_NAME = "beehive_name";
+    private const string _m_COL_NUMBER = "beehive_number";
     private const string _m_COL_ARCHIVE = "beehive_archive";
+    private const string _m_COL_FK_REGION = "fk_region_id";
+
+    private const string _m_TBL_REGION = "regions";
+    private const string _m_COL_REGION_ID = "region_id";
+    private const string _m_COL_REGION_NAME = "region_name";
 
     private const string _m_DEFAULT_ARCHIVE = "1901-01-01";
 
@@ -53,9 +59,11 @@ public class BeehiveModel : ABaseModel,
             try
             {
                 using MySqlCommand cmd = new(
-                    $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE} " +
-                    $"FROM {_m_TBL_NAME} " +
-                    $"WHERE {_m_COL_ID} = @id;",
+                    $"SELECT b.{_m_COL_ID}, b.{_m_COL_NAME}, b.{_m_COL_NUMBER}, b.{_m_COL_ARCHIVE}, " +
+                    $"b.{_m_COL_FK_REGION}, COALESCE(r.{_m_COL_REGION_NAME}, '') AS {_m_COL_REGION_NAME} " +
+                    $"FROM {_m_TBL_NAME} b " +
+                    $"LEFT JOIN {_m_TBL_REGION} r ON b.{_m_COL_FK_REGION} = r.{_m_COL_REGION_ID} " +
+                    $"WHERE b.{_m_COL_ID} = @id;",
                     connection
                 );
 
@@ -68,7 +76,10 @@ public class BeehiveModel : ABaseModel,
                     {
                         beehive_id = reader.getSafeValue<int>(_m_COL_ID),
                         beehive_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
-                        beehive_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
+                        beehive_number = reader.getSafeValue(_m_COL_NUMBER, string.Empty),
+                        beehive_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString(),
+                        fk_region_id = reader.getSafeValue<int>(_m_COL_FK_REGION),
+                        region_name = reader.getSafeValue(_m_COL_REGION_NAME, string.Empty)
                     });
                 }
                 return ResponseGetItem<BeehiveItem>.NotFound();
@@ -86,8 +97,48 @@ public class BeehiveModel : ABaseModel,
     /// <returns>A <see cref="ResponseGetAllItems{BeehiveItem}"/> containing all beehive items and any error message.</returns>
     public ResponseGetAllItems<BeehiveItem> getAllItems()
     {
-        var items = SDatabaseModel.getAllRowsInTable<BeehiveItem>(_m_TBL_NAME, _m_COL_NAME, _m_COL_ARCHIVE);
-        return ResponseGetAllItems<BeehiveItem>.Success(items);
+        return executeWithConnection(connection =>
+        {
+            try
+            {
+                string query = $@"
+                    SELECT b.{_m_COL_ID}, b.{_m_COL_NAME}, b.{_m_COL_NUMBER}, b.{_m_COL_ARCHIVE},
+                           b.{_m_COL_FK_REGION}, COALESCE(r.{_m_COL_REGION_NAME}, '') AS {_m_COL_REGION_NAME}
+                    FROM {_m_TBL_NAME} b
+                    LEFT JOIN {_m_TBL_REGION} r ON b.{_m_COL_FK_REGION} = r.{_m_COL_REGION_ID}
+                    ORDER BY b.{_m_COL_NAME} ASC;";
+
+                using MySqlCommand cmd = new(query, connection);
+                using MySqlDataReader reader = cmd.ExecuteReader();
+
+                ObservableCollection<BeehiveItem> items = [];
+
+                while (reader.Read())
+                {
+                    var archiveValue = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue);
+                    string archiveStr = archiveValue.ToString();
+                    if (archiveStr == "0001-01-01" || archiveStr == "1901-01-01")
+                        archiveStr = string.Empty;
+
+                    items.Add(new BeehiveItem
+                    {
+                        beehive_id = reader.getSafeValue<int>(_m_COL_ID),
+                        beehive_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                        beehive_number = reader.getSafeValue(_m_COL_NUMBER, string.Empty),
+                        beehive_archive = archiveStr,
+                        fk_region_id = reader.getSafeValue<int>(_m_COL_FK_REGION),
+                        region_name = reader.getSafeValue(_m_COL_REGION_NAME, string.Empty)
+                    });
+                }
+
+                return ResponseGetAllItems<BeehiveItem>.Success(items);
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return ResponseGetAllItems<BeehiveItem>.Success([]);
+            }
+        });
     }
 
     /// <summary>
@@ -101,10 +152,12 @@ public class BeehiveModel : ABaseModel,
             try
             {
                 string query = $@"
-                    SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_ARCHIVE}
-                    FROM {_m_TBL_NAME}
-                    WHERE {_m_COL_ARCHIVE} = '{_m_DEFAULT_ARCHIVE}' OR {_m_COL_ARCHIVE} IS NULL
-                    ORDER BY {_m_COL_NAME} ASC;";
+                    SELECT b.{_m_COL_ID}, b.{_m_COL_NAME}, b.{_m_COL_NUMBER}, b.{_m_COL_ARCHIVE},
+                           b.{_m_COL_FK_REGION}, COALESCE(r.{_m_COL_REGION_NAME}, '') AS {_m_COL_REGION_NAME}
+                    FROM {_m_TBL_NAME} b
+                    LEFT JOIN {_m_TBL_REGION} r ON b.{_m_COL_FK_REGION} = r.{_m_COL_REGION_ID}
+                    WHERE b.{_m_COL_ARCHIVE} = '{_m_DEFAULT_ARCHIVE}' OR b.{_m_COL_ARCHIVE} IS NULL
+                    ORDER BY b.{_m_COL_NAME} ASC;";
 
                 using MySqlCommand cmd = new(query, connection);
                 using MySqlDataReader reader = cmd.ExecuteReader();
@@ -117,7 +170,10 @@ public class BeehiveModel : ABaseModel,
                     {
                         beehive_id = reader.getSafeValue<int>(_m_COL_ID),
                         beehive_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
-                        beehive_archive = string.Empty
+                        beehive_number = reader.getSafeValue(_m_COL_NUMBER, string.Empty),
+                        beehive_archive = string.Empty,
+                        fk_region_id = reader.getSafeValue<int>(_m_COL_FK_REGION),
+                        region_name = reader.getSafeValue(_m_COL_REGION_NAME, string.Empty)
                     });
                 }
 
@@ -159,6 +215,8 @@ public class BeehiveModel : ABaseModel,
 
         int item_id = item.beehive_id;
         string item_name = item.beehive_name.Trim();
+        string item_number = item.beehive_number.Trim();
+        int item_region_id = item.fk_region_id;
         string query;
 
         // Determine if we're inserting or updating
@@ -173,14 +231,14 @@ public class BeehiveModel : ABaseModel,
                     $"BeehiveModel.saveItem: Beehive with name '{item.beehive_name}' already exists");
             }
 
-            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}) " +
-                $"VALUES (@name); " +
+            query = $"INSERT INTO {_m_TBL_NAME} ({_m_COL_NAME}, {_m_COL_NUMBER}, {_m_COL_FK_REGION}) " +
+                $"VALUES (@name, @number, @region_id); " +
                 $"SELECT LAST_INSERT_ID();";
         }
         else
         {
             query = $"UPDATE {_m_TBL_NAME} " +
-                $"SET {_m_COL_NAME} = @name " +
+                $"SET {_m_COL_NAME} = @name, {_m_COL_NUMBER} = @number, {_m_COL_FK_REGION} = @region_id " +
                 $"WHERE {_m_COL_ID} = @id;";
         }
 
@@ -198,6 +256,8 @@ public class BeehiveModel : ABaseModel,
                 {
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@name", item_name);
+                    cmd.Parameters.AddWithValue("@number", item_number);
+                    cmd.Parameters.AddWithValue("@region_id", item_region_id > 0 ? item_region_id : DBNull.Value);
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 });
             }
@@ -209,6 +269,8 @@ public class BeehiveModel : ABaseModel,
                     using MySqlCommand cmd = new(query, connection, m_transaction);
                     cmd.Parameters.AddWithValue("@id", item_id);
                     cmd.Parameters.AddWithValue("@name", item_name);
+                    cmd.Parameters.AddWithValue("@number", item_number);
+                    cmd.Parameters.AddWithValue("@region_id", item_region_id > 0 ? item_region_id : DBNull.Value);
                     cmd.ExecuteNonQuery();
                 });
             }

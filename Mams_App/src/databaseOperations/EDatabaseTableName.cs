@@ -1,4 +1,4 @@
-namespace Mams_App.src.databaseOperations;
+﻿namespace Mams_App.src.databaseOperations;
 
 public enum EDatabaseTableName
 {
@@ -11,5 +11,6 @@ public enum EDatabaseTableName
     PRODUCT_SHAPE,
     PRODUCT_TYPE,
     PRODUCT_LOT,
-    BEEHIVE
+    BEEHIVE,
+    REGION
 }

@@ -1,4 +1,4 @@
--- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
+﻿-- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
 --
 -- Host: localhost    Database: mams_db
 -- ------------------------------------------------------
@@ -16,6 +16,32 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `regions`
+--
+
+DROP TABLE IF EXISTS `regions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `regions` (
+  `region_id` int NOT NULL AUTO_INCREMENT,
+  `region_name` varchar(100) NOT NULL,
+  `region_archive` date DEFAULT NULL,
+  PRIMARY KEY (`region_id`),
+  KEY `idx_region_name` (`region_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `regions`
+--
+
+LOCK TABLES `regions` WRITE;
+/*!40000 ALTER TABLE `regions` DISABLE KEYS */;
+INSERT INTO `regions` VALUES (1,'','1901-01-01'),(2,'Argovie',NULL),(3,'Appenzell Rhodes-Intérieures',NULL),(4,'Appenzell Rhodes-Extérieures',NULL),(5,'Berne',NULL),(6,'Bâle-Campagne',NULL),(7,'Bâle-Ville',NULL),(8,'Fribourg',NULL),(9,'Genève',NULL),(10,'Glaris',NULL),(11,'Grisons',NULL),(12,'Jura',NULL),(13,'Lucerne',NULL),(14,'Neuchâtel',NULL),(15,'Nidwald',NULL),(16,'Obwald',NULL),(17,'Saint-Gall',NULL),(18,'Schaffhouse',NULL),(19,'Soleure',NULL),(20,'Schwyz',NULL),(21,'Thurgovie',NULL),(22,'Tessin',NULL),(23,'Uri',NULL),(24,'Vaud',NULL),(25,'Valais',NULL),(26,'Zoug',NULL),(27,'Zurich',NULL);
+/*!40000 ALTER TABLE `regions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `beehives`
 --
 
@@ -25,10 +51,14 @@ DROP TABLE IF EXISTS `beehives`;
 CREATE TABLE `beehives` (
   `beehive_id` int NOT NULL AUTO_INCREMENT,
   `beehive_name` varchar(50) NOT NULL,
+  `beehive_number` varchar(50) DEFAULT NULL,
   `beehive_archive` date DEFAULT NULL,
+  `fk_region_id` int DEFAULT NULL,
   PRIMARY KEY (`beehive_id`),
-  KEY `idx_beehives_beehive_name` (`beehive_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `idx_beehive_name` (`beehive_name`),
+  KEY `fk_region_id` (`fk_region_id`),
+  CONSTRAINT `beehives_ibfk_1` FOREIGN KEY (`fk_region_id`) REFERENCES `regions` (`region_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +67,7 @@ CREATE TABLE `beehives` (
 
 LOCK TABLES `beehives` WRITE;
 /*!40000 ALTER TABLE `beehives` DISABLE KEYS */;
-INSERT INTO `beehives` VALUES (1,'','1901-01-01'),(2,'La Côte',NULL),(3,'Le Laret',NULL),(4,'Petit Belmont',NULL);
+INSERT INTO `beehives` VALUES (1,'',NULL,'1901-01-01',1),(2,'La Côte',NULL,NULL,NULL),(3,'Le Laret',NULL,NULL,NULL),(4,'Petit Belmont',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `beehives` ENABLE KEYS */;
 UNLOCK TABLES;
 
