@@ -15,7 +15,8 @@ public abstract class IntegrationTestBase : IDisposable
         _fixture = fixture;
 
         // Ensure no leftover transaction from a previous failed test
-        if (ABaseModel.isTransactionActive())
+        // Use while-loop to fully unwind nested transactions (depth > 1)
+        while (ABaseModel.isTransactionActive())
         {
             ABaseModel.rollbackTransaction();
         }
@@ -27,7 +28,7 @@ public abstract class IntegrationTestBase : IDisposable
     public void Dispose()
     {
         // Safety net: rollback any uncommitted transaction left by the test
-        if (ABaseModel.isTransactionActive())
+        while (ABaseModel.isTransactionActive())
         {
             ABaseModel.rollbackTransaction();
         }

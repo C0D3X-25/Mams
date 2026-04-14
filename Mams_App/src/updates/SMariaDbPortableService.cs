@@ -26,9 +26,17 @@ public static class SMariaDbPortableService
     private static CancellationTokenSource? s_downloadCancellationTokenSource;
 
     /// <summary>
+    /// Internal override for the base directory, used by integration tests
+    /// to point to the app's output directory where MariaDB is installed.
+    /// </summary>
+    internal static string? TestBaseDirectoryOverride { get; set; }
+
+    private static string BaseDirectory => TestBaseDirectoryOverride ?? AppDomain.CurrentDomain.BaseDirectory;
+
+    /// <summary>
     /// Gets the path to the MariaDB portable installation folder.
     /// </summary>
-    public static string MariaDbPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, MARIADB_FOLDER_NAME);
+    public static string MariaDbPath => Path.Combine(BaseDirectory, MARIADB_FOLDER_NAME);
 
     /// <summary>
     /// Gets the path to the MariaDB bin folder.

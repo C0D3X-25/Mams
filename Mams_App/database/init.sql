@@ -21,12 +21,14 @@ CREATE INDEX idx_entity_name ON entities(entity_name);
 CREATE TABLE IF NOT EXISTS suppliers (
     supplier_id INT PRIMARY KEY AUTO_INCREMENT,
     fk_entity_id INT NOT NULL,
+    supplier_archive DATE,
     FOREIGN KEY (fk_entity_id) REFERENCES entities(entity_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS clients (
     client_id INT PRIMARY KEY AUTO_INCREMENT,
     fk_entity_id INT NOT NULL,
+    client_archive DATE,
     FOREIGN KEY (fk_entity_id) REFERENCES entities(entity_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

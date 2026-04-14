@@ -323,7 +323,7 @@ public class TreatmentStockModel : ABaseModel
                         )
                     WHERE {_m_COL_ID} = @id;";
 
-                using MySqlCommand cmd = new(query, connection);
+                using MySqlCommand cmd = new(query, connection, m_transaction);
                 cmd.Parameters.AddWithValue("@id", stockId);
                 cmd.ExecuteNonQuery();
             }

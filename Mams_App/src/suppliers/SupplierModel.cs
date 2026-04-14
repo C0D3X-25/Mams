@@ -1,4 +1,4 @@
-using Mams_App.src.databaseOperations;
+﻿using Mams_App.src.databaseOperations;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
 using Mams_App.src.models;
@@ -17,6 +17,7 @@ public class SupplierModel : ABaseModel,
     private const string _m_TBL_NAME = "suppliers";
     private const string _m_COL_ID = "supplier_id";
     private const string _m_COL_FK_ENTITY = "fk_entity_id";
+    private const string _m_COL_ARCHIVE = "supplier_archive";
 
     /// <summary>
     /// Deletes an item from the database based on the specified identifier and delete operation type.
@@ -28,7 +29,7 @@ public class SupplierModel : ABaseModel,
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
     public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE)
     {
-        return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
     /// <summary>
@@ -49,7 +50,7 @@ public class SupplierModel : ABaseModel,
             try
             {
                 using MySqlCommand cmd = new(
-                    $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
+                    $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY}, {_m_COL_ARCHIVE} " +
                     $"FROM {_m_TBL_NAME} " +
                     $"WHERE {_m_COL_ID} = @id;",
                     connection,
@@ -64,7 +65,8 @@ public class SupplierModel : ABaseModel,
                     return ResponseGetItem<SupplierItem>.Success(new SupplierItem
                     {
                         supplier_id = reader.getSafeValue<int>(_m_COL_ID),
-                        fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY, 0)
+                        fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY, 0),
+                        supplier_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                     });
                 }
                 return ResponseGetItem<SupplierItem>.NotFound();
@@ -183,7 +185,7 @@ public class SupplierModel : ABaseModel,
                 SupplierItem item = new();
 
                 using MySqlCommand cmd = new(
-                    $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
+                    $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY}, {_m_COL_ARCHIVE} " +
                     $"FROM {_m_TBL_NAME} " +
                     $"WHERE {_m_COL_FK_ENTITY} = @fk_entity;",
                     connection,
@@ -197,6 +199,7 @@ public class SupplierModel : ABaseModel,
                 {
                     item.supplier_id = reader.getSafeValue<int>(_m_COL_ID);
                     item.fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY);
+                    item.supplier_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString();
                     return item;
                 }
 

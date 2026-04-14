@@ -1,20 +1,20 @@
 ﻿using Mams_App.src.errors;
 using Mams_App.src.models;
-using Mams_App.src.productsCategories;
+using Mams_App.src.productsLots;
 using MySqlConnector;
 
-namespace Mams_Test.integration.productsCategories;
+namespace Mams_Test.integration.productsLots;
 
 /// <summary>
-/// Integration tests for <see cref="ProductCategoryModel"/> that verify
+/// Integration tests for <see cref="ProductLotModel"/> that verify
 /// database operations including transactional behavior.
 /// </summary>
 [Collection("Database")]
-public class ProductCategoryModelIntegrationTests : IntegrationTestBase
+public class ProductLotModelIntegrationTests : IntegrationTestBase
 {
-    private readonly ProductCategoryModel _model = new();
+    private readonly ProductLotModel _model = new();
 
-    public ProductCategoryModelIntegrationTests(DatabaseFixture fixture) : base(fixture) { }
+    public ProductLotModelIntegrationTests(DatabaseFixture fixture) : base(fixture) { }
 
     // ─────────────────────────────────────────────
     //  saveItem – INSERT
@@ -23,7 +23,11 @@ public class ProductCategoryModelIntegrationTests : IntegrationTestBase
     [Fact]
     public void SaveItem_Insert_ReturnsNewId()
     {
-        var item = new ProductCategoryItem { product_category_name = "Miel" };
+        var item = new ProductLotItem
+        {
+            product_lot_name = "Lot Printemps",
+            product_lot_year = 2025
+        };
 
         var response = _model.saveItem(item);
 
@@ -34,10 +38,10 @@ public class ProductCategoryModelIntegrationTests : IntegrationTestBase
     [Fact]
     public void SaveItem_InsertDuplicate_ReturnsAlreadyExists()
     {
-        var item = new ProductCategoryItem { product_category_name = "Miel" };
+        var item = new ProductLotItem { product_lot_name = "Lot Printemps", product_lot_year = 2025 };
         _model.saveItem(item);
 
-        var duplicate = new ProductCategoryItem { product_category_name = "Miel" };
+        var duplicate = new ProductLotItem { product_lot_name = "Lot Printemps", product_lot_year = 2025 };
         var response = _model.saveItem(duplicate);
 
         Assert.False(response.is_success);
@@ -51,22 +55,22 @@ public class ProductCategoryModelIntegrationTests : IntegrationTestBase
     [Fact]
     public void SaveItem_Update_ModifiesExistingRow()
     {
-        var item = new ProductCategoryItem { product_category_name = "Miel" };
+        var item = new ProductLotItem { product_lot_name = "Lot Printemps", product_lot_year = 2025 };
         var insertResponse = _model.saveItem(item);
 
-        var updated = new ProductCategoryItem
+        var updated = new ProductLotItem
         {
-            product_category_id = insertResponse.returned_id,
-            product_category_name = "Cire"
+            product_lot_id = insertResponse.returned_id,
+            product_lot_name = "Lot Été",
+            product_lot_year = 2025
         };
         var updateResponse = _model.saveItem(updated);
 
         Assert.True(updateResponse.is_success);
 
-        // Verify the name was changed
         var fetched = _model.getItemByID(insertResponse.returned_id.ToString());
         Assert.True(fetched.is_success);
-        Assert.Equal("Cire", fetched.returned_item!.product_category_name);
+        Assert.Equal("Lot Été", fetched.returned_item!.product_lot_name);
     }
 
     // ─────────────────────────────────────────────
@@ -78,16 +82,15 @@ public class ProductCategoryModelIntegrationTests : IntegrationTestBase
     {
         ABaseModel.startTransaction();
 
-        var item = new ProductCategoryItem { product_category_name = "Propolis" };
+        var item = new ProductLotItem { product_lot_name = "Lot Printemps", product_lot_year = 2025 };
         var response = _model.saveItem(item);
         Assert.True(response.is_success);
 
         ABaseModel.commitTransaction();
 
-        // Row should be persisted after outer commit
         var fetched = _model.getItemByID(response.returned_id.ToString());
         Assert.True(fetched.is_success);
-        Assert.Equal("Propolis", fetched.returned_item!.product_category_name);
+        Assert.Equal("Lot Printemps", fetched.returned_item!.product_lot_name);
     }
 
     [Fact]
@@ -95,13 +98,12 @@ public class ProductCategoryModelIntegrationTests : IntegrationTestBase
     {
         ABaseModel.startTransaction();
 
-        var item = new ProductCategoryItem { product_category_name = "Propolis" };
+        var item = new ProductLotItem { product_lot_name = "Lot Printemps", product_lot_year = 2025 };
         var response = _model.saveItem(item);
         Assert.True(response.is_success);
 
         ABaseModel.rollbackTransaction();
 
-        // Row should NOT exist after rollback
         var fetched = _model.getItemByID(response.returned_id.ToString());
         Assert.False(fetched.is_success);
     }
@@ -113,15 +115,16 @@ public class ProductCategoryModelIntegrationTests : IntegrationTestBase
     [Fact]
     public void GetItemByID_ExistingId_ReturnsItem()
     {
-        var item = new ProductCategoryItem { product_category_name = "Gelée royale" };
+        var item = new ProductLotItem { product_lot_name = "Lot Printemps", product_lot_year = 2025 };
         var saved = _model.saveItem(item);
 
         var response = _model.getItemByID(saved.returned_id.ToString());
 
         Assert.True(response.is_success);
         Assert.NotNull(response.returned_item);
-        Assert.Equal("Gelée royale", response.returned_item.product_category_name);
-        Assert.Equal(saved.returned_id, response.returned_item.product_category_id);
+        Assert.Equal("Lot Printemps", response.returned_item.product_lot_name);
+        Assert.Equal(2025, response.returned_item.product_lot_year);
+        Assert.Equal(saved.returned_id, response.returned_item.product_lot_id);
     }
 
     [Fact]
@@ -133,90 +136,55 @@ public class ProductCategoryModelIntegrationTests : IntegrationTestBase
     }
 
     // ─────────────────────────────────────────────
-    //  getCategoryIdByName
+    //  saveItem – with beehive FK
     // ─────────────────────────────────────────────
 
     [Fact]
-    public void GetCategoryIdByName_ExistingName_ReturnsId()
+    public void SaveItem_WithBeehiveFK_StoresBeehiveReference()
     {
-        var item = new ProductCategoryItem { product_category_name = "Traitement" };
+        // Insert a beehive first
+        int beehiveId;
+        using (var conn = new MySqlConnection(DatabaseFixture.TestConnectionString))
+        {
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "INSERT INTO beehives (beehive_name, beehive_number) VALUES ('Ruche Alpha', 'R001')";
+            cmd.ExecuteNonQuery();
+            beehiveId = (int)cmd.LastInsertedId;
+        }
+
+        var item = new ProductLotItem
+        {
+            product_lot_name = "Lot Printemps",
+            product_lot_year = 2025,
+            fk_beehive_id = beehiveId
+        };
         var saved = _model.saveItem(item);
 
-        int id = _model.getCategoryIdByName("Traitement");
-
-        Assert.Equal(saved.returned_id, id);
-    }
-
-    [Fact]
-    public void GetCategoryIdByName_NonExistingName_ReturnsZero()
-    {
-        int id = _model.getCategoryIdByName("NonExistant");
-
-        Assert.Equal(0, id);
-    }
-
-    /// <summary>
-    /// This is the exact scenario that caused the transaction bug:
-    /// calling <see cref="ProductCategoryModel.getCategoryIdByName"/> while
-    /// an outer transaction is active.
-    /// </summary>
-    [Fact]
-    public void GetCategoryIdByName_InsideActiveTransaction_DoesNotThrow()
-    {
-        // Pre-insert a category outside any transaction
-        var item = new ProductCategoryItem { product_category_name = "Traitement" };
-        var saved = _model.saveItem(item);
-
-        // Now start an outer transaction (simulating ReceiptHandlerModel.saveItem)
-        ABaseModel.startTransaction();
-
-        // This call previously threw because the MySqlCommand was not
-        // associated with the active transaction
-        int id = _model.getCategoryIdByName("Traitement");
-
-        ABaseModel.commitTransaction();
-
-        Assert.Equal(saved.returned_id, id);
-    }
-
-    [Fact]
-    public void GetCategoryIdByName_InsideNestedTransaction_DoesNotThrow()
-    {
-        var item = new ProductCategoryItem { product_category_name = "Traitement" };
-        var saved = _model.saveItem(item);
-
-        // Simulate double-nesting (outer handler → inner model)
-        ABaseModel.startTransaction();
-        ABaseModel.startTransaction();
-
-        int id = _model.getCategoryIdByName("Traitement");
-
-        ABaseModel.commitTransaction();
-        ABaseModel.commitTransaction();
-
-        Assert.Equal(saved.returned_id, id);
+        var fetched = _model.getItemByID(saved.returned_id.ToString());
+        Assert.True(fetched.is_success);
+        Assert.Equal(beehiveId, fetched.returned_item!.fk_beehive_id);
+        Assert.Equal("Ruche Alpha", fetched.returned_item.beehive_name);
     }
 
     // ─────────────────────────────────────────────
-    //  getActiveProductCategories
+    //  getActiveProductLots
     // ─────────────────────────────────────────────
 
     [Fact]
-    public void GetActiveProductCategories_ReturnsOnlyNonArchived()
+    public void GetActiveProductLots_ReturnsOnlyNonArchived()
     {
-        // Insert an active category
-        var active = new ProductCategoryItem { product_category_name = "Miel" };
+        var active = new ProductLotItem { product_lot_name = "Lot Printemps", product_lot_year = 2025 };
         _model.saveItem(active);
 
-        // Insert another and archive it
-        var archived = new ProductCategoryItem { product_category_name = "Cire" };
+        var archived = new ProductLotItem { product_lot_name = "Lot Ancien", product_lot_year = 2020 };
         var archivedSave = _model.saveItem(archived);
         _model.deleteItem(archivedSave.returned_id.ToString());
 
-        var categories = _model.getActiveProductCategories();
+        var lots = _model.getActiveProductLots();
 
-        Assert.Single(categories);
-        Assert.Equal("Miel", categories[0].product_category_name);
+        Assert.Contains(lots, l => l.product_lot_name == "Lot Printemps");
+        Assert.DoesNotContain(lots, l => l.product_lot_name == "Lot Ancien");
     }
 
     // ─────────────────────────────────────────────
@@ -226,20 +194,28 @@ public class ProductCategoryModelIntegrationTests : IntegrationTestBase
     [Fact]
     public void DeleteItem_SafeDelete_ArchivesRow()
     {
-        var item = new ProductCategoryItem { product_category_name = "Miel" };
+        var item = new ProductLotItem { product_lot_name = "Lot Printemps", product_lot_year = 2025 };
         var saved = _model.saveItem(item);
 
-        // Create a product referencing this category so SAFE_DELETE triggers
-        // SOFT_DELETE (archive) instead of HARD_DELETE (permanent removal).
+        // Create a receipt product referencing this lot so SAFE_DELETE triggers archive
         using (var conn = new MySqlConnection(DatabaseFixture.TestConnectionString))
         {
             conn.Open();
             using var cmd = conn.CreateCommand();
             cmd.CommandText = "INSERT INTO products_types (product_type_name) VALUES ('TestType')";
             cmd.ExecuteNonQuery();
+            long typeId = cmd.LastInsertedId;
+            cmd.CommandText = "INSERT INTO products_categories (product_category_name) VALUES ('TestCat')";
+            cmd.ExecuteNonQuery();
+            long catId = cmd.LastInsertedId;
+            cmd.CommandText = $"INSERT INTO products (product_name, fk_product_type_id, fk_product_category_id) VALUES ('TestProduct', {typeId}, {catId})";
+            cmd.ExecuteNonQuery();
+            long productId = cmd.LastInsertedId;
+            cmd.CommandText = "INSERT INTO receipts (receipt_number, receipt_total_price, receipt_date_created) VALUES ('R001', 100.00, '2025-01-01')";
+            cmd.ExecuteNonQuery();
             cmd.CommandText =
-                $"INSERT INTO products (product_name, fk_product_type_id, fk_product_category_id) " +
-                $"VALUES ('TestProduct', LAST_INSERT_ID(), {saved.returned_id})";
+                $"INSERT INTO receipts_products (receipt_product_quantity, receipt_product_unity_price, fk_product_id, fk_receipt_id, fk_product_lot_id) " +
+                $"VALUES (1, 10.00, {productId}, LAST_INSERT_ID(), {saved.returned_id})";
             cmd.ExecuteNonQuery();
         }
 
@@ -247,9 +223,8 @@ public class ProductCategoryModelIntegrationTests : IntegrationTestBase
 
         Assert.True(response.is_success);
 
-        // The item should still exist but be archived (not returned by getActive)
         var fetched = _model.getItemByID(saved.returned_id.ToString());
         Assert.True(fetched.is_success);
-        Assert.NotEqual(string.Empty, fetched.returned_item!.product_category_archive);
+        Assert.NotEqual(string.Empty, fetched.returned_item!.product_lot_archive);
     }
 }
