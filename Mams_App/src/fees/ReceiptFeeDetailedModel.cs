@@ -1,11 +1,14 @@
 ﻿using Mams_App.src.databaseOperations;
 using Mams_App.src.entities;
 using Mams_App.src.errors;
+using Mams_App.src.globals;
 using Mams_App.src.helpers;
 using Mams_App.src.models;
 using Mams_App.src.products;
+using Mams_App.src.productsCategories;
 using Mams_App.src.receipts;
 using Mams_App.src.suppliers;
+using Mams_App.src.treatmentStocks;
 using MySqlConnector;
 using System.Collections.ObjectModel;
 
@@ -22,6 +25,8 @@ public class ReceiptFeeDetailedModel : ABaseModel,
     private readonly EntityModel _m_entity_model = new();
     private readonly SupplierModel _m_supplier_model = new();
     private readonly ProductModel _m_product_model = new();
+    private readonly TreatmentStockModel _m_treatment_stock_model = new();
+    private readonly ProductCategoryModel _m_product_category_model = new();
 
 
     private const string _m_TBL_RECEIPTS = "receipts";
@@ -382,6 +387,8 @@ public class ReceiptFeeDetailedModel : ABaseModel,
                 throw new InvalidOperationException($"Failed to save receipt. Error: {result.error}. Detail: {result.error_message_detail}");
             }
 
+            autoCreateTreatmentStocks(item);
+
             commitTransaction();
             return result;
         }
@@ -418,6 +425,45 @@ public class ReceiptFeeDetailedModel : ABaseModel,
         };
         var result = _m_supplier_model.saveItem(new_supplier);
         return result.returned_id;
+    }
+
+    /// <summary>
+    /// Automatically creates treatment stock entries for receipt products that belong to the "Traitement" category.
+    /// Called after a fee receipt is successfully saved. For each qualifying product line, a new
+    /// <see cref="TreatmentStockItem"/> is inserted with the purchase date, quantity, product, and supplier
+    /// from the receipt.
+    /// </summary>
+    /// <param name="item">The saved fee receipt detail containing products and supplier information.</param>
+    private void autoCreateTreatmentStocks(ReceiptFeeDetailedItem item)
+    {
+        int treatmentCategoryId = _m_product_category_model.getCategoryIdByName(
+            SGlobals.g_TREATMENT_CATEGORY_NAME);
+
+        if (treatmentCategoryId == 0)
+        {
+            return;
+        }
+
+        string purchaseDate = item.receipt.receipt_date_created;
+        int supplierId = item.supplier.supplier_id;
+
+        foreach (var receiptProduct in item.receipt_products)
+        {
+            if (receiptProduct.product_item.fk_product_category_id != treatmentCategoryId)
+            {
+                continue;
+            }
+
+            var stockItem = new TreatmentStockItem
+            {
+                treatment_stock_purchase_date = purchaseDate,
+                treatment_stock_initial_quantity = receiptProduct.receipt_product_quantity,
+                fk_product_id = receiptProduct.product_item.product_id,
+                fk_supplier_id = supplierId
+            };
+
+            _m_treatment_stock_model.saveItem(stockItem);
+        }
     }
 
     /// <summary>

@@ -16,13 +16,15 @@ public class TreatmentItemTests
         Assert.Equal(0, item.treatment_hive_count);
         Assert.Equal(0m, item.treatment_dose_per_hive);
         Assert.Equal(0, item.fk_beehive_id);
-        Assert.Equal(0, item.fk_product_id);
-        Assert.Equal(0, item.fk_dose_unit_id);
+        Assert.Equal(0, item.fk_treatment_stock_id);
         Assert.Equal(string.Empty, item.beehive_name);
         Assert.Equal(string.Empty, item.beehive_number);
         Assert.Equal(string.Empty, item.product_name);
         Assert.Equal(string.Empty, item.region_name);
         Assert.Equal(string.Empty, item.dose_unit_name);
+        Assert.Equal(string.Empty, item.supplier_name);
+        Assert.Equal(0m, item.stock_initial_quantity);
+        Assert.Equal(0m, item.stock_remaining_quantity);
         Assert.Equal(0m, item.treatment_dose_total);
     }
 
@@ -38,13 +40,15 @@ public class TreatmentItemTests
         item.treatment_hive_count = 10;
         item.treatment_dose_per_hive = 5.5m;
         item.fk_beehive_id = 3;
-        item.fk_product_id = 7;
-        item.fk_dose_unit_id = 2;
+        item.fk_treatment_stock_id = 5;
         item.beehive_name = "Rucher des Alpes";
         item.beehive_number = "CH-001";
         item.product_name = "Acide oxalique";
         item.region_name = "Fribourg";
         item.dose_unit_name = "ml";
+        item.supplier_name = "Fournisseur A";
+        item.stock_initial_quantity = 300m;
+        item.stock_remaining_quantity = 245m;
 
         // Assert
         Assert.Equal(1, item.treatment_id);
@@ -52,13 +56,15 @@ public class TreatmentItemTests
         Assert.Equal(10, item.treatment_hive_count);
         Assert.Equal(5.5m, item.treatment_dose_per_hive);
         Assert.Equal(3, item.fk_beehive_id);
-        Assert.Equal(7, item.fk_product_id);
-        Assert.Equal(2, item.fk_dose_unit_id);
+        Assert.Equal(5, item.fk_treatment_stock_id);
         Assert.Equal("Rucher des Alpes", item.beehive_name);
         Assert.Equal("CH-001", item.beehive_number);
         Assert.Equal("Acide oxalique", item.product_name);
         Assert.Equal("Fribourg", item.region_name);
         Assert.Equal("ml", item.dose_unit_name);
+        Assert.Equal("Fournisseur A", item.supplier_name);
+        Assert.Equal(300m, item.stock_initial_quantity);
+        Assert.Equal(245m, item.stock_remaining_quantity);
     }
 
     [Fact]

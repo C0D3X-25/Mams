@@ -10,6 +10,7 @@ using Mams_App.src.navigations;
 using Mams_App.src.products;
 using Mams_App.src.doseUnits;
 using Mams_App.src.regions;
+using Mams_App.src.treatmentStocks;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
@@ -37,6 +38,7 @@ public class ListTreatmentController : ABaseController
     private readonly ProductModel _m_product_model = new();
     private readonly RegionModel _m_region_model = new();
     private readonly DoseUnitModel _m_dose_unit_model = new();
+    private readonly TreatmentStockModel _m_treatment_stock_model = new();
 
     // Filter tables
     private ObservableCollection<DatabaseTablesNameItem> _m_list_table;
@@ -184,7 +186,8 @@ public class ListTreatmentController : ABaseController
             new(){ m_name_in_database = EDatabaseTableName.BEEHIVE, m_name_to_display = Loc.Get("Search.Beehive") },
             new(){ m_name_in_database = EDatabaseTableName.PRODUCT, m_name_to_display = Loc.Get("Search.Product") },
             new(){ m_name_in_database = EDatabaseTableName.REGION, m_name_to_display = Loc.Get("Search.Region") },
-            new(){ m_name_in_database = EDatabaseTableName.DOSE_UNIT, m_name_to_display = Loc.Get("Search.DoseUnit") }
+            new(){ m_name_in_database = EDatabaseTableName.DOSE_UNIT, m_name_to_display = Loc.Get("Search.DoseUnit") },
+            new(){ m_name_in_database = EDatabaseTableName.TREATMENT_STOCK, m_name_to_display = Loc.Get("Search.TreatmentStock") }
         ];
 
         _m_selected_table = _m_list_table[0];
@@ -309,6 +312,20 @@ public class ListTreatmentController : ABaseController
                     });
                 }
                 break;
+            case EDatabaseTableName.TREATMENT_STOCK:
+                var stockResult = _m_treatment_stock_model.getAllItems();
+                if (stockResult.is_success && stockResult.returned_items != null)
+                {
+                    foreach (var item in stockResult.returned_items)
+                    {
+                        list.Add(new FilterItem
+                        {
+                            filter_id = item.treatment_stock_id,
+                            filter_item_to_display = item.display_name
+                        });
+                    }
+                }
+                break;
             default:
                 break;
         }
@@ -371,12 +388,17 @@ public class ListTreatmentController : ABaseController
     {
         if (_m_selected_item != null)
         {
+            int stockId = _m_selected_item.fk_treatment_stock_id;
             var result = _m_treatment_model.deleteItem(_m_selected_item.treatment_id.ToString());
 
             if (!result.is_success)
             {
                 MessageBox.Show(Loc.Get("Message.DeleteErrorOccurred"),
                     Loc.Get("Common.Error"), MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                _m_treatment_stock_model.updateUsageDates(stockId);
             }
 
             updateDisplayedItems();

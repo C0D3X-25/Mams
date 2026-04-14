@@ -139,17 +139,29 @@ CREATE TABLE IF NOT EXISTS dose_units (
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_dose_unit_name ON dose_units(dose_unit_name);
 
+CREATE TABLE IF NOT EXISTS treatment_stocks (
+    treatment_stock_id INT PRIMARY KEY AUTO_INCREMENT,
+    treatment_stock_purchase_date DATE NOT NULL,
+    treatment_stock_initial_quantity DECIMAL(9,2) NOT NULL,
+    treatment_stock_first_used_date DATE,
+    treatment_stock_last_used_date DATE,
+    fk_product_id INT NOT NULL,
+    fk_dose_unit_id INT,
+    fk_supplier_id INT,
+    FOREIGN KEY (fk_product_id) REFERENCES products(product_id),
+    FOREIGN KEY (fk_dose_unit_id) REFERENCES dose_units(dose_unit_id),
+    FOREIGN KEY (fk_supplier_id) REFERENCES suppliers(supplier_id)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS treatments (
     treatment_id INT PRIMARY KEY AUTO_INCREMENT,
     treatment_date DATE NOT NULL,
     treatment_hive_count INT NOT NULL,
     treatment_dose_per_hive DECIMAL(9,2) NOT NULL,
     fk_beehive_id INT NOT NULL,
-    fk_product_id INT NOT NULL,
-    fk_dose_unit_id INT,
+    fk_treatment_stock_id INT NOT NULL,
     FOREIGN KEY (fk_beehive_id) REFERENCES beehives(beehive_id),
-    FOREIGN KEY (fk_product_id) REFERENCES products(product_id),
-    FOREIGN KEY (fk_dose_unit_id) REFERENCES dose_units(dose_unit_id)
+    FOREIGN KEY (fk_treatment_stock_id) REFERENCES treatment_stocks(treatment_stock_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_treatment_date ON treatments(treatment_date);
 
@@ -168,6 +180,10 @@ INSERT INTO products_shapes (product_shape_name, product_shape_archive) VALUES
 ('', '1901-01-01');
 INSERT INTO regions (region_name, region_archive) VALUES
 ('', '1901-01-01');
+
+-- Insert default product category for treatments
+INSERT INTO products_categories (product_category_name) VALUES
+('Traitement');
 
 -- Insert all Swiss cantons (regions)
 INSERT INTO regions (region_name) VALUES

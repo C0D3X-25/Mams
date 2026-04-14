@@ -1,11 +1,10 @@
 ﻿using Mams_App.src.beehives;
 using Mams_App.src.commands;
 using Mams_App.src.controllers;
-using Mams_App.src.doseUnits;
 using Mams_App.src.errors;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
-using Mams_App.src.products;
+using Mams_App.src.treatmentStocks;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
@@ -19,8 +18,7 @@ public class SaveTreatmentController : ABaseController, ICompareState
 {
     private readonly TreatmentModel _m_treatment_model = new();
     private readonly BeehiveModel _m_beehive_model = new();
-    private readonly ProductModel _m_product_model = new();
-    private readonly DoseUnitModel _m_dose_unit_model = new();
+    private readonly TreatmentStockModel _m_treatment_stock_model = new();
 
     public ICommand m_save_command { get; set; }
     public ICommand m_abort_command { get; set; }
@@ -60,49 +58,27 @@ public class SaveTreatmentController : ABaseController, ICompareState
         }
     }
 
-    private ObservableCollection<ProductItem> _m_list_product = new();
-    public ObservableCollection<ProductItem> m_list_product
+    private ObservableCollection<TreatmentStockItem> _m_list_treatment_stock = new();
+    public ObservableCollection<TreatmentStockItem> m_list_treatment_stock
     {
-        get { return _m_list_product; }
+        get { return _m_list_treatment_stock; }
         set
         {
-            _m_list_product = value;
+            _m_list_treatment_stock = value;
             onPropertyChanged();
         }
     }
 
-    private ProductItem _m_selected_product = new();
-    public ProductItem m_selected_product
+    private TreatmentStockItem _m_selected_treatment_stock = new();
+    public TreatmentStockItem m_selected_treatment_stock
     {
-        get { return _m_selected_product; }
+        get { return _m_selected_treatment_stock; }
         set
         {
-            _m_selected_product = value ?? new();
-            m_treatment.fk_product_id = _m_selected_product.product_id;
+            _m_selected_treatment_stock = value ?? new();
+            m_treatment.fk_treatment_stock_id = _m_selected_treatment_stock.treatment_stock_id;
             onPropertyChanged();
-        }
-    }
-
-    private ObservableCollection<DoseUnitItem> _m_list_dose_unit = new();
-    public ObservableCollection<DoseUnitItem> m_list_dose_unit
-    {
-        get { return _m_list_dose_unit; }
-        set
-        {
-            _m_list_dose_unit = value;
-            onPropertyChanged();
-        }
-    }
-
-    private DoseUnitItem _m_selected_dose_unit = new();
-    public DoseUnitItem m_selected_dose_unit
-    {
-        get { return _m_selected_dose_unit; }
-        set
-        {
-            _m_selected_dose_unit = value ?? new();
-            m_treatment.fk_dose_unit_id = _m_selected_dose_unit.dose_unit_id;
-            onPropertyChanged();
+            onPropertyChanged(nameof(m_stock_remaining_ui));
         }
     }
 
@@ -130,6 +106,11 @@ public class SaveTreatmentController : ABaseController, ICompareState
 
     public string m_treatment_dose_total_ui => $"{_m_treatment.treatment_dose_total:F2}";
 
+    public string m_stock_remaining_ui =>
+        _m_selected_treatment_stock.treatment_stock_id > 0
+            ? $"{_m_selected_treatment_stock.treatment_stock_remaining_quantity:F2} {_m_selected_treatment_stock.dose_unit_name}"
+            : string.Empty;
+
     /// <summary>
     /// Initializes a new instance of the SaveTreatmentController class.
     /// </summary>
@@ -137,8 +118,7 @@ public class SaveTreatmentController : ABaseController, ICompareState
     public SaveTreatmentController(int id_to_load = 0)
     {
         _m_list_beehive = _m_beehive_model.getActiveBeehives();
-        _m_list_product = _m_product_model.getActiveProducts();
-        _m_list_dose_unit = _m_dose_unit_model.getActiveDoseUnits();
+        _m_list_treatment_stock = _m_treatment_stock_model.getAvailableStocks();
 
         if (id_to_load != 0)
         {
@@ -148,18 +128,19 @@ public class SaveTreatmentController : ABaseController, ICompareState
             _m_selected_beehive = _m_list_beehive.FirstOrDefault(b =>
                 b.beehive_id == _m_treatment.fk_beehive_id) ?? new();
 
-            _m_selected_product = _m_list_product.FirstOrDefault(p =>
-                p.product_id == _m_treatment.fk_product_id) ?? new();
-
-            _m_selected_dose_unit = _m_list_dose_unit.FirstOrDefault(d =>
-                d.dose_unit_id == _m_treatment.fk_dose_unit_id) ?? new();
-        }
-        else
-        {
-            // Default to first dose unit (ml) for new treatments
-            _m_selected_dose_unit = _m_list_dose_unit.FirstOrDefault() ?? new();
-            _m_treatment.fk_dose_unit_id = _m_selected_dose_unit.dose_unit_id;
-            _m_original_treatment.fk_dose_unit_id = _m_selected_dose_unit.dose_unit_id;
+            // Ensure the current stock is in the list even if it's exhausted
+            var currentStock = _m_list_treatment_stock.FirstOrDefault(s =>
+                s.treatment_stock_id == _m_treatment.fk_treatment_stock_id);
+            if (currentStock == null)
+            {
+                var stockResult = _m_treatment_stock_model.getItemByID(_m_treatment.fk_treatment_stock_id.ToString());
+                if (stockResult.is_success && stockResult.returned_item != null)
+                {
+                    _m_list_treatment_stock.Insert(0, stockResult.returned_item);
+                    currentStock = stockResult.returned_item;
+                }
+            }
+            _m_selected_treatment_stock = currentStock ?? new();
         }
 
         m_save_command = new RelayCommand(saveTreatment, canSaveTreatment);
@@ -177,8 +158,7 @@ public class SaveTreatmentController : ABaseController, ICompareState
             || !_m_original_treatment.treatment_hive_count.Equals(_m_treatment.treatment_hive_count)
             || !_m_original_treatment.treatment_dose_per_hive.Equals(_m_treatment.treatment_dose_per_hive)
             || !_m_original_treatment.fk_beehive_id.Equals(_m_treatment.fk_beehive_id)
-            || !_m_original_treatment.fk_product_id.Equals(_m_treatment.fk_product_id)
-            || !_m_original_treatment.fk_dose_unit_id.Equals(_m_treatment.fk_dose_unit_id)
+            || !_m_original_treatment.fk_treatment_stock_id.Equals(_m_treatment.fk_treatment_stock_id)
             )
         {
             return false;
@@ -193,7 +173,7 @@ public class SaveTreatmentController : ABaseController, ICompareState
     {
         return !string.IsNullOrEmpty(m_treatment.treatment_date)
             && m_treatment.fk_beehive_id > 0
-            && m_treatment.fk_product_id > 0
+            && m_treatment.fk_treatment_stock_id > 0
             && m_treatment.treatment_hive_count > 0
             && m_treatment.treatment_dose_per_hive > 0;
     }

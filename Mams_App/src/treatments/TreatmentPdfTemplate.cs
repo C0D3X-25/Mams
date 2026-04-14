@@ -91,9 +91,11 @@ public class TreatmentPdfTemplate : IDocument
                 columns.RelativeColumn(2);      // Région
                 columns.RelativeColumn();       // Ruches
                 columns.RelativeColumn(2);      // Produit
+                columns.RelativeColumn(2);      // Fournisseur
                 columns.RelativeColumn();       // Unité
                 columns.RelativeColumn(1.5f);   // Dose/ruche
                 columns.RelativeColumn(1.5f);   // Dose tot
+                columns.RelativeColumn(1.5f);   // Restant
             });
 
             table.Header(header =>
@@ -105,11 +107,13 @@ public class TreatmentPdfTemplate : IDocument
                 header.Cell().Text(Loc.Get("Column.Region")).Style(header_style);
                 header.Cell().AlignRight().Text(Loc.Get("Column.HiveCount")).Style(header_style);
                 header.Cell().Text(Loc.Get("Column.Product")).Style(header_style);
+                header.Cell().Text(Loc.Get("Column.Supplier")).Style(header_style);
                 header.Cell().Text(Loc.Get("Column.DoseUnit")).Style(header_style);
                 header.Cell().AlignRight().Text(Loc.Get("Column.DosePerHive")).Style(header_style);
                 header.Cell().AlignRight().Text(Loc.Get("Column.DoseTotal")).Style(header_style);
+                header.Cell().AlignRight().Text(Loc.Get("Column.RemainingQuantity")).Style(header_style);
 
-                header.Cell().ColumnSpan(10).PaddingTop(5).BorderBottom(1).BorderColor(Colors.Black);
+                header.Cell().ColumnSpan(12).PaddingTop(5).BorderBottom(1).BorderColor(Colors.Black);
             });
 
             foreach (var item in _m_items)
@@ -123,9 +127,11 @@ public class TreatmentPdfTemplate : IDocument
                 table.Cell().Element(CellStyle).Text(item.region_name);
                 table.Cell().Element(CellStyle).AlignRight().Text($"{item.treatment_hive_count}");
                 table.Cell().Element(CellStyle).Text(item.product_name);
+                table.Cell().Element(CellStyle).Text(item.supplier_name);
                 table.Cell().Element(CellStyle).Text(item.dose_unit_name);
                 table.Cell().Element(CellStyle).AlignRight().Text($"{item.treatment_dose_per_hive:F2}");
                 table.Cell().Element(CellStyle).AlignRight().Text($"{item.treatment_dose_total:F2}");
+                table.Cell().Element(CellStyle).AlignRight().Text($"{item.stock_remaining_quantity:F2}");
 
                 static IContainer CellStyle(IContainer container) => container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(5);
             }

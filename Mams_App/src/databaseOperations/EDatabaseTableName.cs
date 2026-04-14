@@ -13,5 +13,6 @@ public enum EDatabaseTableName
     PRODUCT_LOT,
     BEEHIVE,
     REGION,
-    DOSE_UNIT
+    DOSE_UNIT,
+    TREATMENT_STOCK
 }

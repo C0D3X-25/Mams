@@ -37,6 +37,7 @@ x:Name="root">
                 <RowDefinition/>
                 <RowDefinition/>
                 <RowDefinition/>
+                <RowDefinition/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -83,18 +84,23 @@ x:Name="root">
             Command="{Binding m_navigate_list_treatment_command}"
             IsCurrentPage="{Binding m_is_treatment_page_active}"/>
             <local:UCPageNavigationMenuButton 
-            Content="{loc:Translate Nav.ProductCategories}"
+            Content="{loc:Translate Nav.TreatmentStocks}"
             Grid.Row="8"
+            Command="{Binding m_navigate_list_treatment_stock_command}"
+            IsCurrentPage="{Binding m_is_treatment_stock_page_active}"/>
+            <local:UCPageNavigationMenuButton 
+            Content="{loc:Translate Nav.ProductCategories}"
+            Grid.Row="9"
             Command="{Binding m_navigate_list_product_category_command}"
             IsCurrentPage="{Binding m_is_product_category_page_active}"/>
             <local:UCPageNavigationMenuButton 
             Content="{loc:Translate Nav.ProductTypes}"
-            Grid.Row="9"
+            Grid.Row="10"
             Command="{Binding m_navigate_list_product_type_command}"
             IsCurrentPage="{Binding m_is_product_type_page_active}"/>
             <local:UCPageNavigationMenuButton 
             Content="{loc:Translate Nav.ProductShapes}"
-            Grid.Row="10"
+            Grid.Row="11"
             Command="{Binding m_navigate_list_product_shape_command}"
             IsCurrentPage="{Binding m_is_product_shape_page_active}"
             Visibility="Collapsed"/>

@@ -67,6 +67,7 @@
     "Button.AddProduct": "Ajouter un produit",
     "Button.AddFee": "Ajouter un frais",
     "Button.NewTreatment": "Nouveau Traitement",
+    "Button.NewTreatmentStock": "Nouveau Stock",
     "Button.NewRegion": "Nouvelle Région",
     "Button.NewDoseUnit": "Nouvelle Unité de dose",
     
@@ -96,6 +97,10 @@
     "Form.DoseTotal": "Dose totale",
     "Form.DoseUnit": "Unité de dose*",
     "Form.TreatmentProduct": "Produit de traitement*",
+    "Form.TreatmentStock": "Stock de traitement*",
+    "Form.StockRemaining": "Quantité restante",
+    "Form.PurchaseDate": "Date d'achat*",
+    "Form.InitialQuantity": "Quantité initiale*",
     
     "_comment_search": "Search - Search filters",
     "Search.Category": "Catégorie",
@@ -106,6 +111,7 @@
     "Search.Beehive": "Rucher",
     "Search.Type": "Type",
     "Search.Treatment": "Traitement",
+    "Search.TreatmentStock": "Stock de traitement",
     
     "_comment_unit": "Unit - Units of measurement",
     "Unit.Kg": "kg",
@@ -139,6 +145,12 @@
     "Column.DosePerHive": "Dose/ruche",
     "Column.DoseUnit": "Unité",
     "Column.DoseTotal": "Dose totale",
+    "Column.Supplier": "Fournisseur",
+    "Column.InitialQuantity": "Qté initiale",
+    "Column.UsedQuantity": "Qté utilisée",
+    "Column.RemainingQuantity": "Qté restante",
+    "Column.FirstUsed": "1ère utilisation",
+    "Column.LastUsed": "Dernière utilisation",
     
     "_comment_culture": "Culture - Regional settings",
     "Culture.frCH": "Suisse (CHF)",
@@ -175,6 +187,7 @@
     "Nav.ProductTypes": "Types de Produit",
     "Nav.ProductShapes": "Formes de Produit",
     "Nav.Treatments": "Traitements",
+    "Nav.TreatmentStocks": "Stocks Traitement",
     "Nav.Resume": "Résumé",
     
     "_comment_menu": "Menu - Top menu bar",
@@ -205,6 +218,8 @@
     "Page.SaveProductLot": "Enregistrer un Lot",
     "Page.ListTreatments": "Journal des Traitements",
     "Page.SaveTreatment": "Enregistrer un Traitement",
+    "Page.ListTreatmentStocks": "Stocks de Traitement",
+    "Page.SaveTreatmentStock": "Enregistrer un Stock de Traitement",
     "Page.ListRegions": "Liste des Régions",
     "Page.SaveRegion": "Enregistrer une Région",
     "Page.ListDoseUnits": "Liste des Unités de dose",
@@ -289,6 +304,15 @@
     "Treatment.DoseUnit": "Unité de dose",
     "Treatment.Product": "Produit de traitement",
     "Treatment.Beehive": "Rucher",
+
+    "_comment_treatment_stock": "TreatmentStock - Treatment stock related labels",
+    "TreatmentStock.Title": "Stocks de Traitement",
+    "TreatmentStock.PurchaseDate": "Date d'achat",
+    "TreatmentStock.InitialQuantity": "Quantité initiale",
+    "TreatmentStock.RemainingQuantity": "Quantité restante",
+    "TreatmentStock.Product": "Produit",
+    "TreatmentStock.Supplier": "Fournisseur",
+    "TreatmentStock.DoseUnit": "Unité de dose",
     
     "_comment_resume": "Resume - Summary page labels",
     "Resume.Title": "Résumé",

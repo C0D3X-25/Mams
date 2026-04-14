@@ -133,6 +133,40 @@ public class ProductCategoryModel :
     }
 
     /// <summary>
+    /// Retrieves the category ID for the given category name.
+    /// </summary>
+    /// <param name="categoryName">The name of the product category to look up.</param>
+    /// <returns>The category ID if found; otherwise, 0.</returns>
+    public int getCategoryIdByName(string categoryName)
+    {
+        if (string.IsNullOrWhiteSpace(categoryName))
+        {
+            return 0;
+        }
+
+        return executeWithConnection(connection =>
+        {
+            try
+            {
+                string query = $@"
+                    SELECT {_m_COL_ID}
+                    FROM {_m_TBL_NAME}
+                    WHERE {_m_COL_NAME} = @name
+                    LIMIT 1;";
+
+                using MySqlCommand cmd = new(query, connection);
+                cmd.Parameters.AddWithValue("@name", categoryName);
+                var result = cmd.ExecuteScalar();
+                return result != null ? Convert.ToInt32(result) : 0;
+            }
+            catch (MySqlException)
+            {
+                return 0;
+            }
+        });
+    }
+
+    /// <summary>
     /// Determines whether a product category can be permanently deleted or will be archived due to foreign key references.
     /// </summary>
     /// <param name="id">The unique identifier of the product category to check.</param>
