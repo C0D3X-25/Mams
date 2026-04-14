@@ -154,7 +154,7 @@ public class ProductCategoryModel :
                     WHERE {_m_COL_NAME} = @name
                     LIMIT 1;";
 
-                using MySqlCommand cmd = new(query, connection);
+                using MySqlCommand cmd = new(query, connection, m_transaction);
                 cmd.Parameters.AddWithValue("@name", categoryName);
                 var result = cmd.ExecuteScalar();
                 return result != null ? Convert.ToInt32(result) : 0;

@@ -17,7 +17,7 @@ namespace Mams_App.src.beehives;
 /// Provides functionality for managing a list of beehive items, including adding, modifying, deleting, and restoring
 /// items. Supports filtering between archived and active items.
 /// </summary>
-public class ListBeehiveController : ABaseController
+public class ListBeehiveController : ABaseController, IRefreshable
 {
 
     private SolidColorBrush _m_delete_button_color = SGlobalView.DELETE_BUTTON_COLOR;
@@ -158,6 +158,11 @@ public class ListBeehiveController : ABaseController
         }
     }
 
+
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => updateListItems();
 
     /// <summary>
     /// Updates the list of beehive items based on the archive status filter.

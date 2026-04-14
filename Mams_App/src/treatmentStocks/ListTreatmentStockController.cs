@@ -13,7 +13,7 @@ namespace Mams_App.src.treatmentStocks;
 /// <summary>
 /// Controller for the treatment stock list page that displays and manages treatment stocks.
 /// </summary>
-public class ListTreatmentStockController : ABaseController
+public class ListTreatmentStockController : ABaseController, IRefreshable
 {
     public ICommand m_add_command { get; set; }
     public ICommand m_modify_command { get; set; }
@@ -95,6 +95,11 @@ public class ListTreatmentStockController : ABaseController
             m_sort_direction = result.Value.Direction;
         }
     }
+
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => loadItems();
 
     /// <summary>
     /// Loads all treatment stock items.

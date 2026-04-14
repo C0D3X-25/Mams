@@ -1,4 +1,4 @@
-using Mams_App.src.controllers;
+﻿using Mams_App.src.controllers;
 using Mams_App.src.localizations;
 using Mams_App.src.resumes;
 using System.Windows;
@@ -158,6 +158,12 @@ public static class SPageNavigationController
         _m_current_page = previous_page;
         _m_frame?.Navigate(previous_page);
         PageChanged?.Invoke(previous_page.GetType());
+
+        // Refresh data if the page's DataContext supports it
+        if (previous_page.DataContext is IRefreshable refreshable)
+        {
+            refreshable.refreshData();
+        }
     }
 
     /// <summary>

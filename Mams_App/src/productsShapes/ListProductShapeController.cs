@@ -16,7 +16,7 @@ namespace Mams_App.src.productsShapes;
 /// <summary>
 /// Controller for managing the list of product shapes, handling CRUD operations and UI interactions.
 /// </summary>
-public class ListProductShapeController : ABaseController
+public class ListProductShapeController : ABaseController, IRefreshable
 {
 
 
@@ -160,6 +160,11 @@ public class ListProductShapeController : ABaseController
         }
     }
 
+
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => updateListItems();
 
     /// <summary>
     /// Updates the list of product shape items based on the archive status filter.

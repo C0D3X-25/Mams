@@ -7,12 +7,16 @@
   <ImplicitUsings>enable</ImplicitUsings>
   <UseWPF>true</UseWPF>
   <ApplicationIcon>resources\app_icon.ico</ApplicationIcon>
-    
+
   <!-- Application Info -->
   <Product>Mams</Product>
   <Company>ThJo</Company>
   <Authors>ThJo</Authors>
 </PropertyGroup>
+
+<ItemGroup>
+  <InternalsVisibleTo Include="Mams_Test" />
+</ItemGroup>
 
   <ItemGroup>
     <Compile Remove=".github\**" />

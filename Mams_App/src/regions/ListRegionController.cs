@@ -16,7 +16,7 @@ namespace Mams_App.src.regions;
 /// <summary>
 /// Controller for managing the list of regions, handling CRUD operations and UI interactions.
 /// </summary>
-public class ListRegionController : ABaseController
+public class ListRegionController : ABaseController, IRefreshable
 {
 
     private SolidColorBrush _m_delete_button_color = SGlobalView.DELETE_BUTTON_COLOR;
@@ -159,6 +159,11 @@ public class ListRegionController : ABaseController
         }
     }
 
+
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => updateListItems();
 
     /// <summary>
     /// Updates the list of region items based on the archive status filter.

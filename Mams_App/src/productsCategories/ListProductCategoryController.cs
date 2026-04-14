@@ -16,7 +16,7 @@ namespace Mams_App.src.productsCategories;
 /// <summary>
 /// Controller for managing the list of product categories, handling CRUD operations and UI interactions.
 /// </summary>
-public class ListProductCategoryController : ABaseController
+public class ListProductCategoryController : ABaseController, IRefreshable
 {
 
 
@@ -160,6 +160,11 @@ public class ListProductCategoryController : ABaseController
         }
     }
 
+
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => updateListItems();
 
     /// <summary>
     /// Updates the list of product category items based on the archive status filter.

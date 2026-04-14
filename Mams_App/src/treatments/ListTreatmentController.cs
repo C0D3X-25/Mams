@@ -21,7 +21,7 @@ namespace Mams_App.src.treatments;
 /// <summary>
 /// Controller for the treatment list page that displays and manages treatments with filtering.
 /// </summary>
-public class ListTreatmentController : ABaseController
+public class ListTreatmentController : ABaseController, IRefreshable
 {
     public ICommand m_add_command { get; set; }
     public ICommand m_modify_command { get; set; }
@@ -230,6 +230,11 @@ public class ListTreatmentController : ABaseController
         }
         _m_selected_year = _m_list_year[0];
     }
+
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => updateDisplayedItems();
 
     /// <summary>
     /// Updates the displayed treatment list based on current filter selections.

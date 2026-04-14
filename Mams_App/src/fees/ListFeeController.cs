@@ -15,7 +15,7 @@ namespace Mams_App.src.fees;
 /// <summary>
 /// Controller for managing the list of fee items, handling fee-related operations and UI interactions.
 /// </summary>
-public class ListFeeController : ABaseController
+public class ListFeeController : ABaseController, IRefreshable
 {
 
     public SolidColorBrush m_delete_button_color { get; } = SGlobalView.DELETE_BUTTON_COLOR;
@@ -109,6 +109,11 @@ public class ListFeeController : ABaseController
         }
     }
 
+
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => updateListItems();
 
     /// <summary>
     /// Updates the list of fee items from the database.

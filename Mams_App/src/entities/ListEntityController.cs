@@ -16,7 +16,7 @@ namespace Mams_App.src.entities;
 /// <summary>
 /// Controller for managing the list of clients page, handling client-related operations and UI interactions.
 /// </summary>
-public class ListEntityController : ABaseController
+public class ListEntityController : ABaseController, IRefreshable
 {
 
     private SolidColorBrush _m_delete_button_color = SGlobalView.DELETE_BUTTON_COLOR;
@@ -162,6 +162,11 @@ public class ListEntityController : ABaseController
         }
     }
 
+
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => updateListItems();
 
     /// <summary>
     /// Updates the list of clients based on the archive status filter

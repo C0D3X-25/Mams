@@ -16,7 +16,7 @@ namespace Mams_App.src.productsTypes;
 /// <summary>
 /// Controller for managing the list of product types, handling CRUD operations and UI interactions.
 /// </summary>
-public class ListProductTypeController : ABaseController
+public class ListProductTypeController : ABaseController, IRefreshable
 {
 
     private SolidColorBrush _m_delete_button_color = SGlobalView.DELETE_BUTTON_COLOR;
@@ -158,6 +158,11 @@ public class ListProductTypeController : ABaseController
         }
     }
 
+
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => updateListItems();
 
     /// <summary>
     /// Updates the list of product type items based on the archive status filter.

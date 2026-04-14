@@ -15,7 +15,7 @@ namespace Mams_App.src.profits;
 /// <summary>
 /// Controller for managing the list of profit items, handling profit-related operations and UI interactions.
 /// </summary>
-public class ListProfitController : ABaseController
+public class ListProfitController : ABaseController, IRefreshable
 {
 
 
@@ -122,6 +122,11 @@ public class ListProfitController : ABaseController
             SPageNavigationController.navigateTo(new SaveProfitPage(_m_selected_item.receipt.receipt_id));
         }
     }
+
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => updateListItems();
 
     /// <summary>
     /// Updates the list of profit items from the database.

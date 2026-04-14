@@ -1,4 +1,4 @@
-using Mams_App.src.localizations;
+﻿using Mams_App.src.localizations;
 using MySqlConnector;
 using System.Diagnostics;
 using System.IO;
@@ -46,9 +46,16 @@ public static class SMariaDbPortableService
     public static string InitSqlPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "resources", INIT_SQL_FILENAME);
 
     /// <summary>
+    /// Internal override for the connection string, used by integration tests
+    /// to point to a dedicated test database.
+    /// </summary>
+    internal static string? TestConnectionStringOverride { get; set; }
+
+    /// <summary>
     /// Gets the connection string for the portable MariaDB instance.
     /// </summary>
-    public static string ConnectionString => $"server=localhost;port={MARIADB_PORT};uid=root;pwd=;database={DATABASE_NAME};charset=utf8mb4;pooling=true;min pool size=5;max pool size=50;";
+    public static string ConnectionString => TestConnectionStringOverride
+        ?? $"server=localhost;port={MARIADB_PORT};uid=root;pwd=;database={DATABASE_NAME};charset=utf8mb4;pooling=true;min pool size=5;max pool size=50;";
 
     /// <summary>
     /// Gets the connection string without database specified (for initial setup).
