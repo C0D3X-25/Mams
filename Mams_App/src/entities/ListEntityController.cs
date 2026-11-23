@@ -1,13 +1,13 @@
 ﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
 using Mams_App.src.databaseOperations;
+using Mams_App.src.globals;
+using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
-using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -16,7 +16,7 @@ namespace Mams_App.src.entities;
 /// <summary>
 /// Controller for managing the list of clients page, handling client-related operations and UI interactions.
 /// </summary>
-public class ListEntityController : ABaseController
+public class ListEntityController : ABaseController, IRefreshable
 {
 
     private SolidColorBrush _m_delete_button_color = SGlobalView.DELETE_BUTTON_COLOR;
@@ -149,31 +149,24 @@ public class ListEntityController : ABaseController
 
 
     /// <summary>
-    /// Sorts the list items by the specified column name
+    /// Sorts the list of items by the specified column.
     /// </summary>
-    /// <param name="parameter">The column name to sort by</param>
+    /// <param name="parameter">The column name to sort by.</param>
     private void sortByColumn(object? parameter)
     {
-        if (parameter is not string columnName || m_list_items == null)
-            return;
-
-        ListSortDirection direction = ListSortDirection.Ascending;
-
-        if (_m_sorted_column == columnName)
+        var result = SortHelper.sortByColumn(parameter, m_list_items, _m_sorted_column, _m_sort_direction);
+        if (result.HasValue)
         {
-            direction = _m_sort_direction == ListSortDirection.Ascending
-                ? ListSortDirection.Descending
-                : ListSortDirection.Ascending;
+            m_sorted_column = result.Value.ColumnName;
+            m_sort_direction = result.Value.Direction;
         }
-
-        ICollectionView view = CollectionViewSource.GetDefaultView(m_list_items);
-        view.SortDescriptions.Clear();
-        view.SortDescriptions.Add(new SortDescription(columnName, direction));
-
-        m_sorted_column = columnName;
-        m_sort_direction = direction;
     }
 
+
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => updateListItems();
 
     /// <summary>
     /// Updates the list of clients based on the archive status filter
@@ -214,7 +207,7 @@ public class ListEntityController : ABaseController
         {
             var selectedId = _m_selected_item.entity_id;
             bool canHardDelete = await Task.Run(() => _m_item_model.canBeHardDeleted(selectedId.ToString()));
-            
+
             // Verify the selection hasn't changed while we were checking
             if (_m_selected_item?.entity_id == selectedId)
             {

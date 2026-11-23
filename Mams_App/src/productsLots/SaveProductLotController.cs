@@ -11,6 +11,9 @@ using System.Windows.Input;
 
 namespace Mams_App.src.productsLots;
 
+/// <summary>
+/// Controller for managing the creation and modification of product lot items.
+/// </summary>
 public class SaveProductLotController : ABaseController, ICompareState
 {
 
@@ -59,6 +62,10 @@ public class SaveProductLotController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Initializes a new instance of the SaveProductLotController class.
+    /// </summary>
+    /// <param name="id_to_load">Optional ID of an existing product lot to modify. If 0, creates a new item.</param>
     public SaveProductLotController(int id_to_load = 0)
     {
 
@@ -78,6 +85,10 @@ public class SaveProductLotController : ABaseController, ICompareState
         m_abort_command = new RelayCommand(abortProduct);
     }
 
+    /// <summary>
+    /// Determines whether the current state matches the original state.
+    /// </summary>
+    /// <returns>True if no changes have been made; otherwise, false.</returns>
     public bool isStateOriginal()
     {
         if (!_m_original_product_lot.product_lot_id.Equals(_m_product_lot.product_lot_id)
@@ -93,6 +104,11 @@ public class SaveProductLotController : ABaseController, ICompareState
 
     }
 
+    /// <summary>
+    /// Determines whether the product lot can be saved.
+    /// </summary>
+    /// <param name="arg">Command parameter (not used).</param>
+    /// <returns>True if the product lot has valid data; otherwise, false.</returns>
     private bool canSaveProduct(object? arg)
     {
         return !string.IsNullOrEmpty(m_product_lot.product_lot_name)
@@ -100,6 +116,11 @@ public class SaveProductLotController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Saves the current product lot to the database.
+    /// If successful, navigates back to the previous page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void saveProduct(object? obj)
     {
         if (m_selected_beehive != null)
@@ -122,6 +143,10 @@ public class SaveProductLotController : ABaseController, ICompareState
     }
 
 
+    /// <summary>
+    /// Cancels the current operation and navigates back to the previous page.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void abortProduct(object? obj)
     {
         SPageNavigationController.navigateBack(true);

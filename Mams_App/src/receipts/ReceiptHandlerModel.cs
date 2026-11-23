@@ -1,4 +1,4 @@
-using Mams_App.src.databaseOperations;
+﻿using Mams_App.src.databaseOperations;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
 using Mams_App.src.models;
@@ -201,7 +201,7 @@ public class ReceiptHandlerModel : ABaseModel,
                 }
 
                 commitTransaction();
-                return ResponseSaveItem.Success(clientResult.returned_id);
+                return ResponseSaveItem.Success(receipt_id);
             }
             // Or save the supplier
             else if (item.receipt_supplier_item.fk_supplier_id > 0)
@@ -215,7 +215,7 @@ public class ReceiptHandlerModel : ABaseModel,
                 }
 
                 commitTransaction();
-                return ResponseSaveItem.Success(supplierResult.returned_id);
+                return ResponseSaveItem.Success(receipt_id);
             }
 
             throw new InvalidOperationException("No client or supplier specified for the receipt.");

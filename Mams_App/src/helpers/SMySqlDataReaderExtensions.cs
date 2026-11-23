@@ -4,14 +4,14 @@ namespace Mams_App.src.helpers;
 
 public static class SMySqlDataReaderExtensions
 {
-
     /// <summary>
     /// Retrieves the value of the specified column from a <see cref="MySqlDataReader"/> as the specified type. If the
     /// column value is <see langword="null"/> or cannot be converted to the specified type, a default value is
     /// returned.
     /// </summary>
-    /// <remarks>This method provides special handling for common types such as <see cref="string"/>, <see
-    /// cref="int"/>, <see cref="DateOnly"/>, <see cref="double"/>, and <see cref="decimal"/>. For unsupported types,
+    /// <remarks>This method provides special handling for common types and their nullable equivalents including
+    /// <see cref="string"/>, <see cref="int"/>, <see cref="long"/>, <see cref="bool"/>, <see cref="DateOnly"/>, <see
+    /// cref="DateTime"/>, <see cref="float"/>, <see cref="double"/>, and <see cref="decimal"/>. For unsupported types,
     /// the method attempts to retrieve the value using <see cref="MySqlDataReader.GetValue(int)"/>.</remarks>
     /// <typeparam name="T">The type to which the column value should be converted.</typeparam>
     /// <param name="reader">The <see cref="MySqlDataReader"/> instance from which to retrieve the column value.</param>
@@ -29,18 +29,22 @@ public static class SMySqlDataReaderExtensions
             return default_value;
         }
 
-        // Special handling for different types
-        if (typeof(T) == typeof(string))
-            return (T)(object)reader.GetString(ordinal);
-        if (typeof(T) == typeof(int))
-            return (T)(object)reader.GetInt32(ordinal);
-        if (typeof(T) == typeof(DateOnly))
-            return (T)(object)reader.GetDateOnly(ordinal);
-        if (typeof(T) == typeof(double))
-            return (T)(object)reader.GetDouble(ordinal);
-        if (typeof(T) == typeof(decimal))
-            return (T)(object)reader.GetDecimal(ordinal);
+        var targetType = Nullable.GetUnderlyingType(typeof(T)) ?? typeof(T);
 
-        return (T)reader.GetValue(ordinal);
+        object value = targetType switch
+        {
+            Type t when t == typeof(string) => reader.GetString(ordinal),
+            Type t when t == typeof(int) => reader.GetInt32(ordinal),
+            Type t when t == typeof(long) => reader.GetInt64(ordinal),
+            Type t when t == typeof(bool) => reader.GetBoolean(ordinal),
+            Type t when t == typeof(DateOnly) => reader.GetDateOnly(ordinal),
+            Type t when t == typeof(DateTime) => reader.GetDateTime(ordinal),
+            Type t when t == typeof(float) => reader.GetFloat(ordinal),
+            Type t when t == typeof(double) => reader.GetDouble(ordinal),
+            Type t when t == typeof(decimal) => reader.GetDecimal(ordinal),
+            _ => reader.GetValue(ordinal)
+        };
+
+        return (T)value;
     }
 }

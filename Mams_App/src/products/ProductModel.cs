@@ -323,6 +323,75 @@ public class ProductModel : ABaseModel,
     }
 
     /// <summary>
+    /// Retrieves all active (non-archived) products whose category matches the specified category name.
+    /// </summary>
+    /// <param name="categoryName">The name of the product category to filter by.</param>
+    /// <returns>An <see cref="ObservableCollection{ProductItem}"/> containing matching products, ordered by name.</returns>
+    public ObservableCollection<ProductItem> getActiveProductsByCategoryName(string categoryName)
+    {
+        if (string.IsNullOrWhiteSpace(categoryName))
+        {
+            return [];
+        }
+
+        return executeWithConnection(connection =>
+        {
+            try
+            {
+                string query = $@"
+                    SELECT 
+                        p.{_m_COL_ID}, 
+                        p.{_m_COL_NAME}, 
+                        p.{_m_COL_WEIGHT}, 
+                        p.{_m_COL_FK_PRODUCT_TYPE}, 
+                        p.{_m_COL_FK_PRODUCT_CATEGORY}, 
+                        p.{_m_COL_FK_PRODUCT_SHAPE}, 
+                        p.{_m_COL_ARCHIVE},
+                        pt.product_type_name,
+                        pc.product_category_name,
+                        ps.product_shape_name
+                    FROM {_m_TBL_NAME} p
+                    LEFT JOIN products_types pt ON p.{_m_COL_FK_PRODUCT_TYPE} = pt.product_type_id
+                    INNER JOIN products_categories pc ON p.{_m_COL_FK_PRODUCT_CATEGORY} = pc.product_category_id
+                    LEFT JOIN products_shapes ps ON p.{_m_COL_FK_PRODUCT_SHAPE} = ps.product_shape_id
+                    WHERE (p.{_m_COL_ARCHIVE} = '{_m_DEFAULT_ARCHIVE}' OR p.{_m_COL_ARCHIVE} IS NULL)
+                      AND pc.product_category_name = @categoryName
+                    ORDER BY p.{_m_COL_NAME} ASC;";
+
+                using MySqlCommand cmd = new(query, connection);
+                cmd.Parameters.AddWithValue("@categoryName", categoryName);
+                using MySqlDataReader reader = cmd.ExecuteReader();
+
+                ObservableCollection<ProductItem> items = [];
+
+                while (reader.Read())
+                {
+                    items.Add(new ProductItem
+                    {
+                        product_id = reader.getSafeValue<int>(_m_COL_ID),
+                        product_name = reader.getSafeValue(_m_COL_NAME, string.Empty),
+                        product_weight = reader.getSafeValue(_m_COL_WEIGHT, 0),
+                        fk_product_type_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_TYPE, 0),
+                        fk_product_category_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_CATEGORY, 0),
+                        fk_product_shape_id = reader.getSafeValue<int>(_m_COL_FK_PRODUCT_SHAPE, 0),
+                        product_archive = string.Empty,
+                        product_type_name = reader.getSafeValue("product_type_name", string.Empty),
+                        product_category_name = reader.getSafeValue("product_category_name", string.Empty),
+                        product_shape_name = reader.getSafeValue("product_shape_name", string.Empty)
+                    });
+                }
+
+                return items;
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show($"MySQL error code: {ex.ErrorCode} - {ex.Message}");
+                return [];
+            }
+        });
+    }
+
+    /// <summary>
     /// Determines whether a product can be permanently deleted or will be archived due to foreign key references.
     /// </summary>
     /// <param name="id">The unique identifier of the product to check.</param>

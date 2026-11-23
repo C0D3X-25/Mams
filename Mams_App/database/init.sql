@@ -1,4 +1,4 @@
--- DROP DATABASE IF EXISTS mams_db;
+﻿-- DROP DATABASE IF EXISTS mams_db;
 CREATE DATABASE IF NOT EXISTS mams_db
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
@@ -21,12 +21,14 @@ CREATE INDEX idx_entity_name ON entities(entity_name);
 CREATE TABLE IF NOT EXISTS suppliers (
     supplier_id INT PRIMARY KEY AUTO_INCREMENT,
     fk_entity_id INT NOT NULL,
+    supplier_archive DATE,
     FOREIGN KEY (fk_entity_id) REFERENCES entities(entity_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS clients (
     client_id INT PRIMARY KEY AUTO_INCREMENT,
     fk_entity_id INT NOT NULL,
+    client_archive DATE,
     FOREIGN KEY (fk_entity_id) REFERENCES entities(entity_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -75,10 +77,20 @@ CREATE TABLE IF NOT EXISTS products_shapes (
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_product_shape_name ON products_shapes(product_shape_name);
 
+CREATE TABLE IF NOT EXISTS regions (
+    region_id INT PRIMARY KEY AUTO_INCREMENT,
+    region_name VARCHAR(100) NOT NULL,
+    region_archive DATE
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE INDEX idx_region_name ON regions(region_name);
+
 CREATE TABLE IF NOT EXISTS beehives (
     beehive_id INT PRIMARY KEY AUTO_INCREMENT,
     beehive_name VARCHAR(50) NOT NULL,
-    beehive_archive DATE
+    beehive_number VARCHAR(50),
+    beehive_archive DATE,
+    fk_region_id INT,
+    FOREIGN KEY (fk_region_id) REFERENCES regions(region_id)
 ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE INDEX idx_beehive_name ON beehives(beehive_name);
 
@@ -122,6 +134,39 @@ CREATE TABLE IF NOT EXISTS receipts_products (
 CREATE INDEX idx_receipt_product_quantity ON receipts_products(receipt_product_quantity);
 CREATE INDEX idx_receipt_product_unity_price ON receipts_products(receipt_product_unity_price);
 
+CREATE TABLE IF NOT EXISTS dose_units (
+    dose_unit_id INT PRIMARY KEY AUTO_INCREMENT,
+    dose_unit_name VARCHAR(100) NOT NULL,
+    dose_unit_archive DATE
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE INDEX idx_dose_unit_name ON dose_units(dose_unit_name);
+
+CREATE TABLE IF NOT EXISTS treatment_stocks (
+    treatment_stock_id INT PRIMARY KEY AUTO_INCREMENT,
+    treatment_stock_purchase_date DATE NOT NULL,
+    treatment_stock_initial_quantity DECIMAL(9,2) NOT NULL,
+    treatment_stock_first_used_date DATE,
+    treatment_stock_last_used_date DATE,
+    fk_product_id INT NOT NULL,
+    fk_dose_unit_id INT,
+    fk_supplier_id INT,
+    FOREIGN KEY (fk_product_id) REFERENCES products(product_id),
+    FOREIGN KEY (fk_dose_unit_id) REFERENCES dose_units(dose_unit_id),
+    FOREIGN KEY (fk_supplier_id) REFERENCES suppliers(supplier_id)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS treatments (
+    treatment_id INT PRIMARY KEY AUTO_INCREMENT,
+    treatment_date DATE NOT NULL,
+    treatment_hive_count INT NOT NULL,
+    treatment_dose_per_hive DECIMAL(9,2) NOT NULL,
+    fk_beehive_id INT NOT NULL,
+    fk_treatment_stock_id INT NOT NULL,
+    FOREIGN KEY (fk_beehive_id) REFERENCES beehives(beehive_id),
+    FOREIGN KEY (fk_treatment_stock_id) REFERENCES treatment_stocks(treatment_stock_id)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE INDEX idx_treatment_date ON treatments(treatment_date);
+
 -- User table for invoice generation (stores the app owner's information)
 CREATE TABLE IF NOT EXISTS users (
     user_id INT PRIMARY KEY AUTO_INCREMENT,
@@ -135,7 +180,43 @@ CREATE TABLE IF NOT EXISTS users (
 -- Insert default data to avoid NULL values in foreign keys
 INSERT INTO products_shapes (product_shape_name, product_shape_archive) VALUES
 ('', '1901-01-01');
-INSERT INTO beehives (beehive_name, beehive_archive) VALUES
+INSERT INTO regions (region_name, region_archive) VALUES
 ('', '1901-01-01');
+
+-- Insert default product category for treatments
+INSERT INTO products_categories (product_category_name) VALUES
+('Traitement');
+
+-- Insert all Swiss cantons (regions)
+INSERT INTO regions (region_name) VALUES
+('Argovie'),
+('Appenzell Rhodes-Intérieures'),
+('Appenzell Rhodes-Extérieures'),
+('Berne'),
+('Bâle-Campagne'),
+('Bâle-Ville'),
+('Fribourg'),
+('Genève'),
+('Glaris'),
+('Grisons'),
+('Jura'),
+('Lucerne'),
+('Neuchâtel'),
+('Nidwald'),
+('Obwald'),
+('Saint-Gall'),
+('Schaffhouse'),
+('Soleure'),
+('Schwyz'),
+('Thurgovie'),
+('Tessin'),
+('Uri'),
+('Vaud'),
+('Valais'),
+('Zoug'),
+('Zurich');
+
+INSERT INTO beehives (beehive_name, beehive_archive, fk_region_id) VALUES
+('', '1901-01-01', 1);
 INSERT INTO products_lots (product_lot_name, product_lot_year, fk_beehive_id, product_lot_archive) VALUES
 ('', 0, 1, '1901-01-01');

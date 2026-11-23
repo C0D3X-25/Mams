@@ -1,4 +1,4 @@
-using Mams_App.src.databaseOperations;
+﻿using Mams_App.src.databaseOperations;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
 using Mams_App.src.models;
@@ -17,6 +17,7 @@ public class ClientModel : ABaseModel,
     private const string _m_TBL_NAME = "clients";
     private const string _m_COL_ID = "client_id";
     private const string _m_COL_FK_ENTITY = "fk_entity_id";
+    private const string _m_COL_ARCHIVE = "client_archive";
 
     /// <summary>
     /// Deletes an item from the database based on the specified identifier and delete operation type.
@@ -28,7 +29,7 @@ public class ClientModel : ABaseModel,
     /// <returns>A <see cref="ResponseDeleteItem"/> containing the result of the delete operation and any error message.</returns>
     public ResponseDeleteItem deleteItem(string id, EDeleteItemOperation delete_type = EDeleteItemOperation.SAFE_DELETE)
     {
-        return SDatabaseModel.deleteRow(id, _m_COL_ID, string.Empty, _m_TBL_NAME, delete_type);
+        return SDatabaseModel.deleteRow(id, _m_COL_ID, _m_COL_ARCHIVE, _m_TBL_NAME, delete_type);
     }
 
     /// <summary>
@@ -49,10 +50,11 @@ public class ClientModel : ABaseModel,
             try
             {
                 using MySqlCommand cmd = new(
-                    $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
+                    $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY}, {_m_COL_ARCHIVE} " +
                     $"FROM {_m_TBL_NAME} " +
                     $"WHERE {_m_COL_ID} = @id;",
-                    connection
+                    connection,
+                    m_transaction
                 );
 
                 cmd.Parameters.AddWithValue("@id", id);
@@ -63,7 +65,8 @@ public class ClientModel : ABaseModel,
                     return ResponseGetItem<ClientItem>.Success(new ClientItem
                     {
                         client_id = reader.getSafeValue<int>(_m_COL_ID),
-                        fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY, 0)
+                        fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY, 0),
+                        client_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                     });
                 }
                 return ResponseGetItem<ClientItem>.NotFound();
@@ -180,7 +183,7 @@ public class ClientModel : ABaseModel,
             try
             {
                 using MySqlCommand cmd = new(
-                    $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY} " +
+                    $"SELECT {_m_COL_ID}, {_m_COL_FK_ENTITY}, {_m_COL_ARCHIVE} " +
                     $"FROM {_m_TBL_NAME} " +
                     $"WHERE {_m_COL_FK_ENTITY} = @fk_entity;",
                     connection,
@@ -195,7 +198,8 @@ public class ClientModel : ABaseModel,
                     return new ClientItem
                     {
                         client_id = reader.getSafeValue<int>(_m_COL_ID),
-                        fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY)
+                        fk_entity_id = reader.getSafeValue<int>(_m_COL_FK_ENTITY),
+                        client_archive = reader.getSafeValue(_m_COL_ARCHIVE, DateOnly.MinValue).ToString()
                     };
                 }
 

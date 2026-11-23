@@ -1,0 +1,175 @@
+﻿<Page 
+x:Class="Mams_App.src.doseUnits.ListDoseUnitPage"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+xmlns:local="clr-namespace:Mams_App.src.doseUnits"
+xmlns:userControls="clr-namespace:Mams_App.src.mainWindow.userControls"
+xmlns:commands="clr-namespace:Mams_App.src.commands"
+xmlns:globalView="clr-namespace:Mams_App.src.globals"
+xmlns:loc="clr-namespace:Mams_App.src.localizations"
+xmlns:converters="clr-namespace:Mams_App.src.converters"
+xmlns:helpers="clr-namespace:Mams_App.src.helpers"
+mc:Ignorable="d" 
+d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
+d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
+Title="ListDoseUnitPage">
+
+    <Page.Resources>
+        <converters:SortArrowConverter x:Key="SortArrowConverter"/>
+        <converters:BooleanToColumnWidthConverter x:Key="BooleanToColumnWidthConverter"/>
+    </Page.Resources>
+
+    <Grid Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" MaxHeight="50"/>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="1*" MaxHeight="25"/>
+        </Grid.RowDefinitions>
+
+        <!--Header-->
+        <userControls:UCHeader 
+            Grid.Row="0"
+            title="{loc:Translate Page.ListDoseUnits}"
+
+        ></userControls:UCHeader>
+
+        <!--Body-->
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" MaxWidth="200"/>
+                <!--For menu-->
+                <ColumnDefinition Width="10*"/>
+                <!--For content-->
+            </Grid.ColumnDefinitions>
+
+            <!--Menu-->
+            <userControls:UCMenu>
+
+            </userControls:UCMenu>
+
+            <!--Content-->
+            <Grid 
+                Grid.Column="1" 
+                Background="{x:Static globalView:SGlobalView.PAGE_BODY_COLOR}" 
+                Margin="3,3,10,3">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="1" Margin="5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="10*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!--CheckBox Archived-->
+                    <CheckBox 
+                    Grid.Row="0"
+                    Content="{loc:Translate Common.ShowArchived}"
+                    IsChecked="{Binding m_is_show_archived_checked, UpdateSourceTrigger=PropertyChanged}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    Margin="0,0,50,0"
+                    FontSize="16">
+
+                    </CheckBox>
+
+                    <!--List of Dose Units-->
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="10*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <ListView 
+                            Grid.Column="1" 
+                            Margin="0,0,0,10"
+                            MinWidth="500"
+                            FontSize="14"
+                            ItemsSource="{Binding m_list_items}"
+                            SelectedItem="{Binding m_selected_item}"
+                            commands:MouseCommand.MouseDoubleClickCommand="{Binding m_double_click_command}">
+                            <ListView.Resources>
+                                <Style TargetType="GridViewColumnHeader">
+                                    <Setter Property="Command" Value="{Binding DataContext.m_sort_command, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column}"/>
+                                </Style>
+                                
+                                <DataTemplate x:Key="HeaderTemplateWithArrow">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding}"/>
+                                        <TextBlock>
+                                            <TextBlock.Text>
+                                                <MultiBinding Converter="{StaticResource SortArrowConverter}">
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.DisplayMemberBinding.Path.Path"/>
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sorted_column"/>
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sort_direction"/>
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.(helpers:SortPathAttached.SortPath)"/>
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.Resources>
+                            <ListView.View>
+                            <GridView>
+                                    <GridViewColumn Header="{loc:Translate Column.Name}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding dose_unit_name}"/>
+                                    <GridViewColumn Header="{loc:Translate Column.Archived}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding dose_unit_archive}" Width="{Binding DataContext.m_is_show_archived_checked, RelativeSource={RelativeSource AncestorType=ListView}, Converter={StaticResource BooleanToColumnWidthConverter}}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Grid>
+
+                    <!--Delete Buttons-->
+                    <Button 
+                        Grid.Row="2"
+                        Content="{Binding m_delete_button_text}"
+                        Command="{Binding m_delete_item_command}"
+                        Style="{StaticResource DangerButtonStyle}"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"
+                        Margin="50,0,0,0"/>
+
+                    <!--Edit and Add Buttons-->
+                    <StackPanel 
+                        Grid.Row="2" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Center"
+                        Margin="0,0,50,0">
+                        <Button 
+                            Content="{loc:Translate Common.Edit}"
+                            Command="{Binding m_modify_item_command}"
+                            Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button 
+                            Content="{loc:Translate Button.NewDoseUnit}"
+                            Command="{Binding m_add_new_item_command}"
+                            Style="{StaticResource PrimaryButtonStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <!--Footer-->
+        <userControls:UCFooter 
+            Grid.Row="2">
+
+        </userControls:UCFooter>
+    </Grid>
+</Page>

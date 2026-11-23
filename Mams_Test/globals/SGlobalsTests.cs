@@ -1,4 +1,4 @@
-using Mams_App.src.globals;
+﻿using Mams_App.src.globals;
 
 namespace Mams_Test.globals;
 
@@ -37,5 +37,12 @@ public class SGlobalsTests
 
         // Assert
         Assert.Equal("25.12.2024", result);
+    }
+
+    [Fact]
+    public void TreatmentCategoryName_ShouldBeCorrectValue()
+    {
+        // Assert
+        Assert.Equal("Traitement", SGlobals.g_TREATMENT_CATEGORY_NAME);
     }
 }

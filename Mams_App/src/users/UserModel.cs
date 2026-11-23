@@ -1,4 +1,4 @@
-using Mams_App.src.databaseOperations;
+﻿using Mams_App.src.databaseOperations;
 using Mams_App.src.errors;
 using Mams_App.src.helpers;
 using Mams_App.src.models;
@@ -35,7 +35,8 @@ public class UserModel : ABaseModel
                     $"SELECT {_m_COL_ID}, {_m_COL_NAME}, {_m_COL_PHONE}, {_m_COL_EMAIL}, {_m_COL_CITY}, {_m_COL_ADDRESS} " +
                     $"FROM {_m_TBL_NAME} " +
                     $"WHERE {_m_COL_ID} = 1 ",
-                    connection
+                    connection,
+                    m_transaction
                 );
 
                 using MySqlDataReader reader = cmd.ExecuteReader();

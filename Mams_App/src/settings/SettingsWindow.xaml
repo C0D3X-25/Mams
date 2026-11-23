@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mams_App.src.settings"
-        xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
+        xmlns:globalView="clr-namespace:Mams_App.src.globals"
         xmlns:loc="clr-namespace:Mams_App.src.localizations"
         mc:Ignorable="d"
         Title="{loc:Translate Settings.Title}"
@@ -112,6 +112,7 @@
                     <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left">
                         <Button Content="{loc:Translate Common.Save}" 
                                 Command="{Binding SaveUserCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"
                                 Padding="15,8"
                                 FontWeight="SemiBold"/>
                     </StackPanel>
@@ -119,7 +120,7 @@
             </TabItem>
 
             <!-- Localisation Tab -->
-            <TabItem Header="{loc:Translate Settings.Localization}">
+            <TabItem Header="{loc:Translate Settings.Localization}" Height="20" VerticalAlignment="Top">
                 <Grid Margin="15">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -140,9 +141,10 @@
                                    Margin="0,5,0,0"/>
                     </StackPanel>
 
-                    <!-- Currency Selection -->
-                    <Grid Grid.Row="1" Margin="0,10,0,20">
+                    <!-- Language Selection -->
+                    <Grid Grid.Row="1" Margin="0,10,0,10">
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
@@ -150,11 +152,20 @@
                             <ColumnDefinition Width="*" MaxWidth="300"/>
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Column="0" Text="{loc:Translate Settings.CurrencyRegion}" 
+                        <!-- Language -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="{loc:Translate Settings.Language}" 
                                    VerticalAlignment="Center" Margin="0,5"/>
-                        <ComboBox Grid.Column="1" 
-                                  ItemsSource="{Binding AvailableCultures}"
-                                  SelectedItem="{Binding SelectedCultureItem}"
+                        <ComboBox Grid.Row="0" Grid.Column="1" 
+                                  ItemsSource="{Binding AvailableLanguages}"
+                                  SelectedItem="{Binding SelectedLanguageItem}"
+                                  Margin="5" Padding="5"/>
+
+                        <!-- Currency -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="{loc:Translate Settings.Currency}" 
+                                   VerticalAlignment="Center" Margin="0,5"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1" 
+                                  ItemsSource="{Binding AvailableCurrencies}"
+                                  SelectedItem="{Binding SelectedCurrencyItem}"
                                   Margin="5" Padding="5"/>
                     </Grid>
 
@@ -167,24 +178,17 @@
                                    Margin="0,3,0,0"/>
                         <Button Content="{loc:Translate Settings.OpenFolder}" 
                                 Command="{Binding OpenSettingsFolderCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
                                 HorizontalAlignment="Left"
                                 Padding="15,5"
                                 Margin="0,8,0,0"/>
                     </StackPanel>
 
-                    <!-- Info message -->
-                    <TextBlock Grid.Row="3" 
-                               Text="{loc:Translate Settings.LocalizationNote}"
-                               Foreground="Gray"
-                               FontStyle="Italic"
-                               TextWrapping="Wrap"
-                               VerticalAlignment="Top"
-                               Margin="0,10,0,0"/>
-
                     <!-- Save Button -->
                     <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Left">
                         <Button Content="{loc:Translate Common.Save}" 
                                 Command="{Binding SaveLocalizationCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"
                                 Padding="20,10"
                                 FontWeight="SemiBold"/>
                     </StackPanel>
@@ -221,6 +225,7 @@
                                    Margin="0,3,0,0"/>
                         <Button Content="{loc:Translate Settings.OpenFolder}" 
                                 Command="{Binding OpenBackupFolderCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
                                 HorizontalAlignment="Left"
                                 Padding="15,5"
                                 Margin="0,8,0,0"/>
@@ -244,7 +249,7 @@
                                                        Text="{Binding Name}" 
                                                        FontWeight="Medium"/>
                                             <TextBlock Grid.Column="1" 
-                                                       Text="{Binding LastWriteTime, StringFormat='{}{0:dd/MM/yyyy HH:mm}'}"
+                                                       Text="{Binding LastWriteTime, StringFormat='dd/MM/yyyy HH:mm'}"
                                                        Foreground="Gray"
                                                        Margin="20,0,10,0"/>
                                             <TextBlock Grid.Column="2" 
@@ -271,13 +276,47 @@
                     <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left">
                         <Button Content="{loc:Translate Settings.RestoreSelectedBackup}" 
                                 Command="{Binding RestoreBackupCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"
                                 IsEnabled="{Binding CanRestoreBackup}"
                                 Padding="20,10"
                                 FontWeight="SemiBold"/>
                         <Button Content="{loc:Translate Settings.RefreshList}" 
                                 Command="{Binding RefreshBackupsCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}"
                                 Padding="15,10"
                                 Margin="10,0,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Integrity Tab -->
+            <TabItem Header="{loc:Translate Settings.Integrity}">
+                <Grid Margin="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Integrity Section Header -->
+                    <StackPanel Grid.Row="0" Margin="0,0,0,15">
+                        <TextBlock Text="{loc:Translate Settings.IntegrityCheck}" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="{loc:Translate Settings.IntegrityCheckDescription}"
+                                   Foreground="Gray"
+                                   TextWrapping="Wrap"
+                                   Margin="0,5,0,0"/>
+                    </StackPanel>
+
+                    <!-- Check Button -->
+                    <StackPanel Grid.Row="1" Margin="0,0,0,15">
+                        <Button Content="{loc:Translate Settings.StartIntegrityCheck}" 
+                                Command="{Binding StartIntegrityCheckCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                HorizontalAlignment="Left"
+                                Padding="20,10"
+                                FontWeight="SemiBold"
+                                IsEnabled="{Binding CanStartIntegrityCheck}"/>
                     </StackPanel>
                 </Grid>
             </TabItem>
@@ -296,6 +335,51 @@
                                Margin="0,15,0,0"/>
                 </StackPanel>
             </TabItem>
+
+            <!-- Advanced Tab (Regions & Dose Units) -->
+            <TabItem Header="{loc:Translate Settings.Advanced}">
+                <Grid Margin="15">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Region Section -->
+                    <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                        <TextBlock Text="{loc:Translate Settings.RegionsTitle}" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="{loc:Translate Settings.RegionsDescription}"
+                                   Foreground="Gray"
+                                   TextWrapping="Wrap"
+                                   Margin="0,5,0,0"/>
+                        <Button Content="{loc:Translate Settings.ManageRegions}" 
+                                Command="{Binding OpenRegionsPageCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                HorizontalAlignment="Left"
+                                Padding="20,10"
+                                Margin="0,10,0,0"/>
+                    </StackPanel>
+
+                    <!-- Dose Unit Section -->
+                    <StackPanel Grid.Row="1" Margin="0,0,0,20">
+                        <TextBlock Text="{loc:Translate Settings.DoseUnitsTitle}" 
+                                   FontSize="16" 
+                                   FontWeight="SemiBold"/>
+                        <TextBlock Text="{loc:Translate Settings.DoseUnitsDescription}"
+                                   Foreground="Gray"
+                                   TextWrapping="Wrap"
+                                   Margin="0,5,0,0"/>
+                        <Button Content="{loc:Translate Settings.ManageDoseUnits}" 
+                                Command="{Binding OpenDoseUnitsPageCommand}"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                HorizontalAlignment="Left"
+                                Padding="20,10"
+                                Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
         </TabControl>
 
         <!-- Footer -->
@@ -305,6 +389,7 @@
                     Margin="0,10,0,0">
             <Button Content="{loc:Translate Common.Close}" 
                     Command="{Binding CloseCommand}"
+                    Style="{StaticResource SecondaryButtonStyle}"
                     Padding="25,10"
                     IsCancel="True"/>
         </StackPanel>

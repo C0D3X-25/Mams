@@ -1,0 +1,17 @@
+<UserControl x:Class="Mams_App.src.launcher.userControls.UCProgressBar"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+xmlns:globalView="clr-namespace:Mams_App.src.globals"
+mc:Ignorable="d" 
+d:DesignHeight="30" d:DesignWidth="400">
+    
+    <ProgressBar Height="6"
+                 IsIndeterminate="{Binding IsProgressIndeterminate}"
+                 Value="{Binding ProgressValue}"
+                 Visibility="{Binding ProgressBarVisibility}"
+                 Margin="0,15,0,10"
+                 Background="{x:Static globalView:SGlobalView.PAGE_FRAME_COLOR}"
+                 Foreground="{x:Static globalView:SGlobalView.HEADER_TOP_COLOR}"/>
+</UserControl>

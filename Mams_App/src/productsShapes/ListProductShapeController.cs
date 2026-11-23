@@ -1,19 +1,22 @@
 ﻿using Mams_App.src.commands;
 using Mams_App.src.controllers;
 using Mams_App.src.databaseOperations;
+using Mams_App.src.globals;
+using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.navigations;
-using Mams_App.src.views.globalView;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 
 namespace Mams_App.src.productsShapes;
 
-public class ListProductShapeController : ABaseController
+/// <summary>
+/// Controller for managing the list of product shapes, handling CRUD operations and UI interactions.
+/// </summary>
+public class ListProductShapeController : ABaseController, IRefreshable
 {
 
 
@@ -125,6 +128,10 @@ public class ListProductShapeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Initializes a new instance of the ListProductShapeController class.
+    /// Sets up commands and loads the initial list of items.
+    /// </summary>
     public ListProductShapeController()
     {
 
@@ -139,29 +146,29 @@ public class ListProductShapeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Sorts the list of items by the specified column.
+    /// </summary>
+    /// <param name="parameter">The column name to sort by.</param>
     private void sortByColumn(object? parameter)
     {
-        if (parameter is not string columnName || m_list_items == null)
-            return;
-
-        ListSortDirection direction = ListSortDirection.Ascending;
-
-        if (_m_sorted_column == columnName)
+        var result = SortHelper.sortByColumn(parameter, m_list_items, _m_sorted_column, _m_sort_direction);
+        if (result.HasValue)
         {
-            direction = _m_sort_direction == ListSortDirection.Ascending
-                ? ListSortDirection.Descending
-                : ListSortDirection.Ascending;
+            m_sorted_column = result.Value.ColumnName;
+            m_sort_direction = result.Value.Direction;
         }
-
-        ICollectionView view = CollectionViewSource.GetDefaultView(m_list_items);
-        view.SortDescriptions.Clear();
-        view.SortDescriptions.Add(new SortDescription(columnName, direction));
-
-        m_sorted_column = columnName;
-        m_sort_direction = direction;
     }
 
 
+    /// <summary>
+    /// Refreshes the list data from the database.
+    /// </summary>
+    public void refreshData() => updateListItems();
+
+    /// <summary>
+    /// Updates the list of product shape items based on the archive status filter.
+    /// </summary>
     private void updateListItems()
     {
         var all_items = _m_item_model.getAllItems().returned_items;
@@ -198,7 +205,7 @@ public class ListProductShapeController : ABaseController
         {
             var selectedId = _m_selected_item.product_shape_id;
             bool canHardDelete = await Task.Run(() => _m_item_model.canBeHardDeleted(selectedId.ToString()));
-            
+
             if (_m_selected_item?.product_shape_id == selectedId)
             {
                 m_delete_button_text = canHardDelete ? Loc.Get("Common.Delete") : Loc.Get("Common.Archive");
@@ -211,18 +218,31 @@ public class ListProductShapeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Navigates to the save page for creating a new product shape.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void navigateToSavePage(object? obj)
     {
         SPageNavigationController.navigateTo(new SaveProductShapePage());
     }
 
 
+    /// <summary>
+    /// Determines whether an item is currently selected in the list.
+    /// </summary>
+    /// <param name="arg">Command parameter (not used).</param>
+    /// <returns>True if an item is selected; otherwise, false.</returns>
     private bool isItemSelected(object? arg)
     {
         return m_selected_item != null;
     }
 
 
+    /// <summary>
+    /// Navigates to the save page for modifying the selected product shape.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     public void navigateToModifyPage(object? obj)
     {
         if (_m_selected_item != null)
@@ -232,6 +252,10 @@ public class ListProductShapeController : ABaseController
     }
 
 
+    /// <summary>
+    /// Deletes or restores the selected item based on the current archive filter status.
+    /// </summary>
+    /// <param name="obj">Command parameter (not used).</param>
     private void deleteOrRestoreItem(object? obj)
     {
         if (_m_selected_item != null)

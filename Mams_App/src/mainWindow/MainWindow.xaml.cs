@@ -1,0 +1,169 @@
+using Mams_App.src.configurations;
+using Mams_App.src.filters;
+using Mams_App.src.localizations;
+using Mams_App.src.navigations;
+using Mams_App.src.settings;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Navigation;
+
+namespace Mams_App.src.mainWindow;
+
+/// <summary>
+/// Interaction logic for MainWindow.xaml
+/// </summary>
+public partial class MainWindow : Window
+{
+
+    public MainWindow()
+    {
+        InitializeComponent();
+        SPageNavigationController.initialize(MainFrame);
+        SFilterModel.initialize();
+
+        loadWindowSettings();
+
+        // Disable default navigation commands on the Frame
+        MainFrame.Navigating += MainFrame_Navigating;
+
+        Closing += MainWindow_Closing;
+    }
+
+    #region Menu Event Handlers
+
+    /// <summary>
+    /// Opens the Settings window.
+    /// </summary>
+    private void MenuItem_Settings_Click(object sender, RoutedEventArgs e)
+    {
+        SettingsWindow.ShowSettings(this);
+    }
+
+    /// <summary>
+    /// Exits the application.
+    /// </summary>
+    private void MenuItem_Exit_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
+    /// <summary>
+    /// Shows the About dialog.
+    /// </summary>
+    private void MenuItem_About_Click(object sender, RoutedEventArgs e)
+    {
+        var version = SVersionService.GetVersion();
+        var message = $"{Loc.Get("Settings.AppName")}\n\n{Loc.Get("Settings.Version")} {version}\n\n{Loc.Get("Settings.AppDescription")}";
+        var title = Loc.Get("Menu.About");
+
+        MessageBox.Show(
+            message,
+            title,
+            MessageBoxButton.OK,
+            MessageBoxImage.Information);
+    }
+
+    #endregion
+
+    /// <summary>
+    /// Loads window position and size from the configuration file.
+    /// </summary>
+    private void loadWindowSettings()
+    {
+        var config = SAppConfigService.loadConfig();
+        var windowConfig = config.m_window;
+
+        // Validate that the window position is within screen bounds
+        var screenWidth = SystemParameters.VirtualScreenWidth;
+        var screenHeight = SystemParameters.VirtualScreenHeight;
+
+        if (windowConfig.m_left >= 0 && windowConfig.m_left < screenWidth)
+        {
+            Left = windowConfig.m_left;
+        }
+
+        if (windowConfig.m_top >= 0 && windowConfig.m_top < screenHeight)
+        {
+            Top = windowConfig.m_top;
+        }
+
+        if (windowConfig.m_width >= MinWidth && windowConfig.m_width <= screenWidth)
+        {
+            Width = windowConfig.m_width;
+        }
+
+        if (windowConfig.m_height >= MinHeight && windowConfig.m_height <= screenHeight)
+        {
+            Height = windowConfig.m_height;
+        }
+
+        if (windowConfig.m_is_maximized)
+        {
+            WindowState = WindowState.Maximized;
+        }
+    }
+
+    /// <summary>
+    /// Saves window position and size to the configuration file when closing.
+    /// </summary>
+    private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+    {
+        var config = SAppConfigService.loadConfig();
+        var windowConfig = config.m_window;
+
+        // Save the restore bounds if maximized, otherwise save current bounds
+        if (WindowState == WindowState.Maximized)
+        {
+            windowConfig.m_left = RestoreBounds.Left;
+            windowConfig.m_top = RestoreBounds.Top;
+            windowConfig.m_width = RestoreBounds.Width;
+            windowConfig.m_height = RestoreBounds.Height;
+            windowConfig.m_is_maximized = true;
+        }
+        else
+        {
+            windowConfig.m_left = Left;
+            windowConfig.m_top = Top;
+            windowConfig.m_width = Width;
+            windowConfig.m_height = Height;
+            windowConfig.m_is_maximized = false;
+        }
+
+        SAppConfigService.saveConfig(config);
+    }
+
+    /// <summary>
+    /// Cancels Back and Forward navigation initiated by WPF's built-in navigation system.
+    /// </summary>
+    private void MainFrame_Navigating(object sender, NavigatingCancelEventArgs e)
+    {
+        // Cancel navigation initiated by Back/Forward commands (not from our controller)
+        if (e.NavigationMode == NavigationMode.Back || e.NavigationMode == NavigationMode.Forward)
+        {
+            e.Cancel = true;
+        }
+    }
+
+    /// <summary>
+    /// Handles mouse button 4 (back) and mouse button 5 (forward) for navigation.
+    /// </summary>
+    private void Window_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == MouseButton.XButton1) // Mouse back button
+        {
+            e.Handled = true; // Always handle to prevent WPF default navigation
+            if (SPageNavigationController.canNavigateBack())
+            {
+                SPageNavigationController.navigateBack(compare_original: true);
+            }
+        }
+        else if (e.ChangedButton == MouseButton.XButton2) // Mouse forward button
+        {
+            e.Handled = true; // Always handle to prevent WPF default navigation
+            if (SPageNavigationController.canNavigateForward())
+            {
+                SPageNavigationController.navigateForward(compare_original: true);
+            }
+        }
+    }
+}
