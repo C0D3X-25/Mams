@@ -167,7 +167,7 @@ dotnet publish Mams_App/Mams_App.csproj `
   -p:Version=1.0.0
 ```
 
-Output location: `Mams_App/bin/Release/net9.0-windows/win-x64/publish/`
+Output location: `Mams_App/bin/Release/net10.0-windows/win-x64/publish/`
 
 ---
 
