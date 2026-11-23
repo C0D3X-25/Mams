@@ -4,11 +4,12 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 xmlns:local="clr-namespace:Mams_App.src.products"
-xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
+xmlns:userControls="clr-namespace:Mams_App.src.mainWindow.userControls"
 xmlns:commands="clr-namespace:Mams_App.src.commands"
-xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
+xmlns:globalView="clr-namespace:Mams_App.src.globals"
 xmlns:loc="clr-namespace:Mams_App.src.localizations"
 xmlns:converters="clr-namespace:Mams_App.src.converters"
+xmlns:helpers="clr-namespace:Mams_App.src.helpers"
 mc:Ignorable="d" 
 d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
 d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
@@ -107,7 +108,7 @@ Title="ListProductPage">
                             <ListView.Resources>
                                 <Style TargetType="GridViewColumnHeader">
                                     <Setter Property="Command" Value="{Binding DataContext.m_sort_command, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column.DisplayMemberBinding.Path.Path}"/>
+                                    <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column}"/>
                                 </Style>
                                 
                                 <DataTemplate x:Key="HeaderTemplateWithArrow">
@@ -119,6 +120,7 @@ Title="ListProductPage">
                                                     <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.DisplayMemberBinding.Path.Path"/>
                                                     <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sorted_column"/>
                                                     <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_sort_direction"/>
+                                                    <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.(helpers:SortPathAttached.SortPath)"/>
                                                 </MultiBinding>
                                             </TextBlock.Text>
                                         </TextBlock>
@@ -132,7 +134,6 @@ Title="ListProductPage">
                                     <GridViewColumn Header="{loc:Translate Column.Weight}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_weight}"/>
                                     <GridViewColumn Header="{loc:Translate Column.Type}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_type_name}"/>
                                     <GridViewColumn Header="{loc:Translate Column.Category}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_category_name}"/>
-                                    <GridViewColumn Header="{loc:Translate Column.Shape}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_shape_name}"/>
                                     <GridViewColumn Header="{loc:Translate Column.Archived}" HeaderTemplate="{StaticResource HeaderTemplateWithArrow}" DisplayMemberBinding="{Binding product_archive}" Width="{Binding DataContext.m_is_show_archived_checked, RelativeSource={RelativeSource AncestorType=ListView}, Converter={StaticResource BooleanToColumnWidthConverter}}"/>
                                 </GridView>
                             </ListView.View>
@@ -144,42 +145,26 @@ Title="ListProductPage">
                         Grid.Row="2"
                         Content="{Binding m_delete_button_text}"
                         Command="{Binding m_delete_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="left" VerticalAlignment="Center"
-                        Margin="50,0,0,0"
-                        FontSize="16"
-                        Background="{Binding m_delete_button_color}"
-                        Foreground="{Binding m_delete_button_text_color}"
-                    ></Button>
+                        Style="{StaticResource DangerButtonStyle}"
+                        HorizontalAlignment="Left" VerticalAlignment="Center"
+                        Margin="50,0,0,0"/>
 
-                    <!--Modifiy Buttons-->
-                    <Button 
-                        Grid.Row="2"
-                        Content="{loc:Translate Common.Edit}"
-                        Command="{Binding m_modify_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Margin="0,0,200,0"
-                        FontSize="16"
-                        Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
-                        Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"                            
-                    ></Button>
-
-                    <!--Add new Broduct Buttons-->
-                    <Button 
-                        Grid.Row="2"
-                        Content="{loc:Translate Button.NewProduct}"
-                        Command="{Binding m_add_new_item_command}"
-                        Height="30" Width="130"
-                        MaxHeight="30" MaxWidth="130"
-                        HorizontalAlignment="Right" VerticalAlignment="Center"
-                        Margin="0,0,50,0"
-                        FontSize="16"
-                        Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
-                        Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"                            
-                    ></Button>
+                    <!--Edit and Add Buttons-->
+                    <StackPanel 
+                        Grid.Row="2" 
+                        Orientation="Horizontal" 
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Center"
+                        Margin="0,0,50,0">
+                        <Button 
+                            Content="{loc:Translate Common.Edit}"
+                            Command="{Binding m_modify_item_command}"
+                            Style="{StaticResource PrimaryButtonStyle}"/>
+                        <Button 
+                            Content="{loc:Translate Button.NewProduct}"
+                            Command="{Binding m_add_new_item_command}"
+                            Style="{StaticResource PrimaryButtonStyle}"/>
+                    </StackPanel>
                 </Grid>
             </Grid>
             <!--Content-->

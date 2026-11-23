@@ -2,7 +2,7 @@
 
 ## Description
 This project will only work on Windows.
-You need DotNet 9.0 to to run it.
+You need .NET 10.0 to run it.
 
 ## External Libraries
 - MySqlConnector

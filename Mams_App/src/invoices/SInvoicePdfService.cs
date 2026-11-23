@@ -1,7 +1,9 @@
-using Mams_App.src.helpers;
+﻿using Mams_App.src.helpers;
 using Mams_App.src.localizations;
 using Mams_App.src.receipts;
+using Mams_App.src.treatments;
 using QuestPDF.Fluent;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
@@ -120,5 +122,21 @@ public static class SInvoicePdfService
             }
         };
         p.Start();
+    }
+
+    /// <summary>
+    /// Generates a treatment log PDF and opens it using the default PDF viewer.
+    /// </summary>
+    /// <param name="items">The collection of treatment items to include in the PDF.</param>
+    public static void generateAndOpenTreatmentPdf(ObservableCollection<TreatmentItem> items)
+    {
+        string filename = Loc.Get("Pdf.TreatmentFilename", DateTime.Now.ToString("yyyyMMdd_HHmmss"));
+        string savePath = getInvoiceSavePath(filename);
+
+        ensureDirectoryExists();
+
+        TreatmentPdfTemplate document = new(items);
+        document.GeneratePdf(savePath);
+        openInvoice(savePath);
     }
 }

@@ -5,11 +5,12 @@ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 xmlns:local="clr-namespace:Mams_App.src.resumes"
-xmlns:userControls="clr-namespace:Mams_App.src.views.UserControls"
+xmlns:userControls="clr-namespace:Mams_App.src.mainWindow.userControls"
 xmlns:commands="clr-namespace:Mams_App.src.commands"
-xmlns:globalView="clr-namespace:Mams_App.src.views.globalView"
+xmlns:globalView="clr-namespace:Mams_App.src.globals"
 xmlns:loc="clr-namespace:Mams_App.src.localizations"
 xmlns:converters="clr-namespace:Mams_App.src.converters"
+xmlns:helpers="clr-namespace:Mams_App.src.helpers"
 mc:Ignorable="d" 
 d:DesignHeight="{x:Static globalView:SGlobalView.PAGE_DESIGN_HEIGHT}" 
 d:DesignWidth="{x:Static globalView:SGlobalView.PAGE_DESIGN_WIDTH}"
@@ -85,11 +86,12 @@ Title="ResumePage">
                        Margin="5,0,5,0" 
                        FontSize="16" 
                        VerticalAlignment="Center"
-                       ItemsSource="{Binding m_list_search_item}"
-                       SelectedItem="{Binding m_selected_search_item}">
+                       IsEnabled="{Binding m_is_filter_item_enabled}"
+                       ItemsSource="{Binding m_list_filter_item}"
+                       SelectedItem="{Binding m_selected_filter_item}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding search_item_to_display}"/>
+                                <TextBlock Text="{Binding filter_item_to_display}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
@@ -109,7 +111,7 @@ Title="ResumePage">
                        SelectedItem="{Binding m_selected_year}">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding search_year}"/>
+                                <TextBlock Text="{Binding filter_year}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
@@ -117,15 +119,12 @@ Title="ResumePage">
                     <!--Clear Search Button-->
                     <Button Grid.Column="5"
                        Margin="5,0,5,0" 
-                       FontSize="16" 
                        VerticalAlignment="Center" 
                        HorizontalAlignment="Center"
                        Width="25" Height="25"
-                       MaxWidth="25" MaxHeight="25"
                        Content="X"
                        Command="{Binding m_clear_search_command}"
-                       Background="{x:Static globalView:SGlobalView.PAGE_BUTTON_COLOR_1}"
-                       Foreground="{x:Static globalView:SGlobalView.PAGE_BUTTON_TEXT_COLOR}"/>
+                       Style="{StaticResource SecondaryIconButtonStyle}"/>
                 </Grid>
 
                 <!--Resume Views-->
@@ -158,7 +157,7 @@ Title="ResumePage">
                         <ListView.Resources>
                             <Style TargetType="GridViewColumnHeader">
                                 <Setter Property="Command" Value="{Binding DataContext.m_sort_profit_command, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column.DisplayMemberBinding.Path.Path}"/>
+                                <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column}"/>
                             </Style>
                             
                             <DataTemplate x:Key="ProfitHeaderTemplateWithArrow">
@@ -170,6 +169,7 @@ Title="ResumePage">
                                                 <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.DisplayMemberBinding.Path.Path"/>
                                                 <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_profit_sorted_column"/>
                                                 <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_profit_sort_direction"/>
+                                                <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.(helpers:SortPathAttached.SortPath)"/>
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
@@ -180,7 +180,7 @@ Title="ResumePage">
                             <GridView>
                                 <GridViewColumn Header="{loc:Translate Common.Number}" HeaderTemplate="{StaticResource ProfitHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
                                 <GridViewColumn Header="{loc:Translate Common.Client}" HeaderTemplate="{StaticResource ProfitHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity.entity_name}"/>
-                                <GridViewColumn Header="{loc:Translate Common.Date}" HeaderTemplate="{StaticResource ProfitHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                <GridViewColumn Header="{loc:Translate Common.Date}" HeaderTemplate="{StaticResource ProfitHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_date_created}" helpers:SortPathAttached.SortPath="receipt.receipt_date_created_value"/>
                                 <GridViewColumn Header="{loc:Translate Common.TotalPrice}" HeaderTemplate="{StaticResource ProfitHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
                             </GridView>
                         </ListView.View>
@@ -205,7 +205,7 @@ Title="ResumePage">
                         <ListView.Resources>
                             <Style TargetType="GridViewColumnHeader">
                                 <Setter Property="Command" Value="{Binding DataContext.m_sort_fee_command, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column.DisplayMemberBinding.Path.Path}"/>
+                                <Setter Property="CommandParameter" Value="{Binding RelativeSource={RelativeSource Self}, Path=Column}"/>
                             </Style>
                             
                             <DataTemplate x:Key="FeeHeaderTemplateWithArrow">
@@ -217,6 +217,7 @@ Title="ResumePage">
                                                 <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.DisplayMemberBinding.Path.Path"/>
                                                 <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_fee_sorted_column"/>
                                                 <Binding RelativeSource="{RelativeSource AncestorType=ListView}" Path="DataContext.m_fee_sort_direction"/>
+                                                <Binding RelativeSource="{RelativeSource AncestorType=GridViewColumnHeader}" Path="Column.(helpers:SortPathAttached.SortPath)"/>
                                             </MultiBinding>
                                         </TextBlock.Text>
                                     </TextBlock>
@@ -227,7 +228,7 @@ Title="ResumePage">
                             <GridView>
                                 <GridViewColumn Header="{loc:Translate Common.Number}" HeaderTemplate="{StaticResource FeeHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_number}"/>
                                 <GridViewColumn Header="{loc:Translate Common.Supplier}" HeaderTemplate="{StaticResource FeeHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding entity.entity_name}"/>
-                                <GridViewColumn Header="{loc:Translate Common.Date}" HeaderTemplate="{StaticResource FeeHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_date_created}"/>
+                                <GridViewColumn Header="{loc:Translate Common.Date}" HeaderTemplate="{StaticResource FeeHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_date_created}" helpers:SortPathAttached.SortPath="receipt.receipt_date_created_value"/>
                                 <GridViewColumn Header="{loc:Translate Common.TotalPrice}" HeaderTemplate="{StaticResource FeeHeaderTemplateWithArrow}" DisplayMemberBinding="{Binding receipt.receipt_total_price}"/>
                             </GridView>
                         </ListView.View>

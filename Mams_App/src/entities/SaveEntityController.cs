@@ -52,6 +52,10 @@ public class SaveEntityController : ABaseController, ICompareState
         m_abort_command = new RelayCommand(abortClient);
     }
 
+    /// <summary>
+    /// Determines whether the current state matches the original state.
+    /// </summary>
+    /// <returns>True if no changes have been made; otherwise, false.</returns>
     public bool isStateOriginal()
     {
 

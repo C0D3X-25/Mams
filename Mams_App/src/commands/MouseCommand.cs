@@ -1,6 +1,7 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Mams_App.src.commands;
 
@@ -65,11 +66,84 @@ public static class MouseCommand
         {
             return;
         }
+
+        if (e.OriginalSource is not DependencyObject source)
+        {
+            return;
+        }
+
+        // Check if the click originated from a GridViewColumnHeader
+        if (IsClickOnHeader(source))
+        {
+            return;
+        }
+
+        // Check if the click originated from an actual ListViewItem
+        if (!IsClickOnItem(source))
+        {
+            return;
+        }
+
         var command = GetMouseDoubleClickCommand(element);
 
         if (command != null && command.CanExecute(null))
         {
             command.Execute(null);
         }
+    }
+
+    /// <summary>
+    /// Determines whether the click originated from within a ListViewItem.
+    /// </summary>
+    private static bool IsClickOnItem(DependencyObject source)
+    {
+        // Handle non-visual elements like Run (from TextBlock.Inlines)
+        while (source is FrameworkContentElement contentElement)
+        {
+            source = contentElement.Parent;
+            if (source == null)
+            {
+                return false;
+            }
+        }
+
+        // Traverse the visual tree to find a ListViewItem
+        while (source != null)
+        {
+            if (source is ListViewItem)
+            {
+                return true;
+            }
+            source = VisualTreeHelper.GetParent(source);
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Determines whether the click originated from a GridViewColumnHeader.
+    /// </summary>
+    private static bool IsClickOnHeader(DependencyObject source)
+    {
+        // Handle non-visual elements like Run (from TextBlock.Inlines)
+        // by first navigating to their visual parent via the logical tree
+        while (source is FrameworkContentElement contentElement)
+        {
+            source = contentElement.Parent;
+            if (source == null)
+            {
+                return false;
+            }
+        }
+
+        // Now traverse the visual tree
+        while (source != null)
+        {
+            if (source is GridViewColumnHeader)
+            {
+                return true;
+            }
+            source = VisualTreeHelper.GetParent(source);
+        }
+        return false;
     }
 }

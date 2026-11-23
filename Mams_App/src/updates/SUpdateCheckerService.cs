@@ -34,6 +34,18 @@ public static class SUpdateCheckerService
     }
 
     /// <summary>
+    /// Contains information about an available update.
+    /// </summary>
+    public class UpdateInfo
+    {
+        public bool IsUpdateAvailable { get; set; }
+        public string? LatestVersion { get; set; }
+        public string? DownloadUrl { get; set; }
+        public string? AssetName { get; set; }
+        internal GitHubRelease? Release { get; set; }
+    }
+
+    /// <summary>
     /// Checks for updates asynchronously and offers to download and install if available.
     /// </summary>
     public static async Task checkForUpdatesAsync(bool showNoUpdateMessage = false)
@@ -115,6 +127,204 @@ public static class SUpdateCheckerService
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
+        }
+    }
+
+    private static CancellationTokenSource? s_downloadCancellationTokenSource;
+
+    /// <summary>
+    /// Cancels any ongoing download operation.
+    /// </summary>
+    public static void cancelDownload()
+    {
+        s_downloadCancellationTokenSource?.Cancel();
+    }
+
+    /// <summary>
+    /// Checks for updates and returns information about any available update.
+    /// Does not show any UI - caller is responsible for prompting user.
+    /// </summary>
+    /// <returns>UpdateInfo with IsUpdateAvailable=true if an update exists, null if check failed.</returns>
+    public static async Task<UpdateInfo?> checkForUpdateInfoAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            Debug.WriteLine($"[UpdateChecker] Checking for updates at: {GITHUB_API_URL}");
+            Debug.WriteLine($"[UpdateChecker] Current version: {getCurrentVersion()}");
+
+            var latestRelease = await getLatestReleaseAsync(cancellationToken);
+            if (latestRelease == null)
+            {
+                Debug.WriteLine("[UpdateChecker] No release found or API request failed");
+                return null;
+            }
+
+            Debug.WriteLine($"[UpdateChecker] Latest release found: {latestRelease.TagName}");
+
+            var currentVersion = getCurrentVersion();
+            var latestVersion = parseVersion(latestRelease.TagName);
+
+            Debug.WriteLine($"[UpdateChecker] Comparing: current={currentVersion} vs latest={latestVersion}");
+
+            var zipAsset = latestRelease.Assets?.FirstOrDefault(a =>
+                a.Name?.Contains("Portable", StringComparison.OrdinalIgnoreCase) == true &&
+                a.Name?.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) == true);
+
+            return new UpdateInfo
+            {
+                IsUpdateAvailable = latestVersion > currentVersion,
+                LatestVersion = latestRelease.TagName?.TrimStart('v', 'V'),
+                DownloadUrl = zipAsset?.DownloadUrl,
+                AssetName = zipAsset?.Name,
+                Release = latestRelease
+            };
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.WriteLine("[UpdateChecker] Update check cancelled");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[UpdateChecker] Update check failed: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Downloads and installs the update with progress reporting.
+    /// </summary>
+    /// <param name="updateInfo">Update information from checkForUpdateInfoAsync</param>
+    /// <param name="progressCallback">Callback for progress updates (status message, percentage 0-100 or null for indeterminate)</param>
+    /// <param name="cancellationToken">Cancellation token to cancel the operation</param>
+    public static async Task downloadAndInstallUpdateAsync(UpdateInfo updateInfo, Action<string, double?>? progressCallback = null, CancellationToken cancellationToken = default)
+    {
+        if (updateInfo.Release == null || string.IsNullOrEmpty(updateInfo.DownloadUrl))
+        {
+            Debug.WriteLine("[UpdateChecker] No valid update info provided");
+            return;
+        }
+
+        s_downloadCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        var linkedToken = s_downloadCancellationTokenSource.Token;
+
+        try
+        {
+            var release = updateInfo.Release;
+
+            Debug.WriteLine($"[UpdateChecker] Found asset: {updateInfo.AssetName} at {updateInfo.DownloadUrl}");
+
+            // Create temp directory for update
+            var tempDir = Path.Combine(Path.GetTempPath(), UPDATE_FOLDER_NAME);
+            if (Directory.Exists(tempDir))
+            {
+                Directory.Delete(tempDir, true);
+            }
+            Directory.CreateDirectory(tempDir);
+
+            var zipPath = Path.Combine(tempDir, "update.zip");
+            var extractPath = Path.Combine(tempDir, "extracted");
+
+            // Download the ZIP file with progress
+            Debug.WriteLine($"[UpdateChecker] Downloading from: {updateInfo.DownloadUrl}");
+            progressCallback?.Invoke(Loc.Get("Launcher.DownloadingUpdate") ?? "Downloading update...", null);
+
+            using var response = await s_httpClient.GetAsync(updateInfo.DownloadUrl, HttpCompletionOption.ResponseHeadersRead, linkedToken);
+            response.EnsureSuccessStatusCode();
+
+            var totalBytes = response.Content.Headers.ContentLength ?? -1;
+            var canReportProgress = totalBytes > 0;
+
+            await using var contentStream = await response.Content.ReadAsStreamAsync(linkedToken);
+            await using var fileStream = new FileStream(zipPath, FileMode.Create, FileAccess.Write, FileShare.None, 65536, true);
+
+            var buffer = new byte[65536];
+            long downloadedBytes = 0;
+            long lastReportedBytes = 0;
+            const long progressReportInterval = 102400;
+            int bytesRead;
+
+            while ((bytesRead = await contentStream.ReadAsync(buffer, linkedToken)) > 0)
+            {
+                linkedToken.ThrowIfCancellationRequested();
+                await fileStream.WriteAsync(buffer.AsMemory(0, bytesRead), linkedToken);
+                downloadedBytes += bytesRead;
+
+                if (downloadedBytes - lastReportedBytes >= progressReportInterval)
+                {
+                    lastReportedBytes = downloadedBytes;
+
+                    if (canReportProgress)
+                    {
+                        var percentage = (double)downloadedBytes / totalBytes * 100;
+                        var statusText = $"{Loc.Get("Launcher.DownloadingUpdate") ?? "Downloading update..."}\n{percentage:F1}% ({formatBytes(downloadedBytes)} / {formatBytes(totalBytes)})";
+                        progressCallback?.Invoke(statusText, percentage);
+                    }
+                    else
+                    {
+                        progressCallback?.Invoke($"{Loc.Get("Launcher.DownloadingUpdate") ?? "Downloading update..."}\n{formatBytes(downloadedBytes)}", null);
+                    }
+
+                    await Task.Yield();
+                }
+            }
+
+            Debug.WriteLine($"[UpdateChecker] Download complete: {downloadedBytes} bytes");
+
+            linkedToken.ThrowIfCancellationRequested();
+
+            // Extract phase
+            progressCallback?.Invoke(Loc.Get("Launcher.ExtractingUpdate") ?? "Extracting update...", null);
+            await Task.Delay(100, linkedToken);
+
+            // Close file stream before extracting
+            await fileStream.DisposeAsync();
+
+            // Extract the ZIP - run on background thread to keep UI responsive
+            Debug.WriteLine($"[UpdateChecker] Extracting to: {extractPath}");
+            await Task.Run(() => ZipFile.ExtractToDirectory(zipPath, extractPath, true), linkedToken);
+
+            linkedToken.ThrowIfCancellationRequested();
+
+            // Get the new version from the release tag
+            var newVersion = release.TagName?.TrimStart('v', 'V') ?? "1.0.0";
+
+            // Create the updater script
+            var appDir = AppDomain.CurrentDomain.BaseDirectory;
+            var scriptPath = Path.Combine(tempDir, UPDATER_SCRIPT_NAME);
+            var scriptContent = generateUpdaterScript(extractPath, appDir, newVersion);
+            await File.WriteAllTextAsync(scriptPath, scriptContent, linkedToken);
+
+            Debug.WriteLine($"[UpdateChecker] Launching updater script: {scriptPath}");
+
+            // Launch the updater script
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = "powershell.exe",
+                Arguments = $"-ExecutionPolicy Bypass -File \"{scriptPath}\"",
+                UseShellExecute = true,
+                CreateNoWindow = false,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+
+            Process.Start(startInfo);
+
+            // Close the application to allow update - the Launcher will be shown first after restart
+            Application.Current.Shutdown();
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.WriteLine("[UpdateChecker] Update download cancelled");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[UpdateChecker] Update download failed: {ex.Message}");
+            throw;
+        }
+        finally
+        {
+            s_downloadCancellationTokenSource?.Dispose();
+            s_downloadCancellationTokenSource = null;
         }
     }
 
@@ -274,9 +484,9 @@ public static class SUpdateCheckerService
                 progressWindow.Close();
             }
 
-            // Extract the ZIP
+            // Extract the ZIP - run on background thread to keep UI responsive
             Debug.WriteLine($"[UpdateChecker] Extracting to: {extractPath}");
-            ZipFile.ExtractToDirectory(zipPath, extractPath, true);
+            await Task.Run(() => ZipFile.ExtractToDirectory(zipPath, extractPath, true));
 
             // Get the new version from the release tag
             var newVersion = release.TagName?.TrimStart('v', 'V') ?? "1.0.0";
@@ -301,7 +511,7 @@ public static class SUpdateCheckerService
 
             Process.Start(startInfo);
 
-            // Close the application to allow update
+            // Close the application to allow update - the Launcher will be shown first after restart
             Application.Current.Shutdown();
         }
         catch (Exception ex)
@@ -346,10 +556,8 @@ $ErrorActionPreference = 'Stop'
 
 $sourcePath = '{sourcePath.Replace("'", "''")}'
 $targetPath = '{targetPath.Replace("'", "''")}'
-$newVersion = '{newVersion}'
 
 $appExe = Join-Path $targetPath 'Mams_App.exe'
-$versionPath = Join-Path $targetPath 'resources\version.json'
 
 # Wait for the application to close
 Write-Host 'Waiting for application to close...'
@@ -391,9 +599,10 @@ while ($waited -lt $maxWait) {{
 }}
 
 # Folders to preserve during update (user data and runtime)
+# Note: 'resources' is NOT preserved because localization files need to be updated
+# version.json is explicitly updated by this script after copying
 $preserveFolders = @(
     'mariadb',
-    'resources',
     'logs',
     'backups',
     'runtimes'
@@ -447,23 +656,11 @@ foreach ($file in $files) {{
         New-Item -ItemType Directory -Path $destDir -Force | Out-Null
     }}
     
+    
     Copy-Item -Path $file.FullName -Destination $destPath -Force
 }}
 
-# Update version in version.json file
-Write-Host 'Updating version...'
-$versionContent = @{{
-    version = $newVersion
-}}
-
-$versionDir = Split-Path $versionPath -Parent
-if (-not (Test-Path $versionDir)) {{
-    New-Item -ItemType Directory -Path $versionDir -Force | Out-Null
-}}
-
-$versionContent | ConvertTo-Json -Depth 10 | Set-Content $versionPath -Encoding UTF8
-
-# Start the updated application
+# Start the updated application (Launcher will be shown first)
 Write-Host 'Starting updated application...'
 Start-Process -FilePath $appExe
 
@@ -478,25 +675,31 @@ Write-Host 'Update complete!'
 ";
     }
 
+
     /// <summary>
     /// Gets the latest release information from GitHub.
     /// </summary>
-    private static async Task<GitHubRelease?> getLatestReleaseAsync()
+    private static async Task<GitHubRelease?> getLatestReleaseAsync(CancellationToken cancellationToken = default)
     {
         try
         {
-            var response = await s_httpClient.GetAsync(GITHUB_API_URL);
+            var response = await s_httpClient.GetAsync(GITHUB_API_URL, cancellationToken);
 
             Debug.WriteLine($"[UpdateChecker] GitHub API response: {response.StatusCode}");
 
             if (!response.IsSuccessStatusCode)
             {
-                var content = await response.Content.ReadAsStringAsync();
+                var content = await response.Content.ReadAsStringAsync(cancellationToken);
                 Debug.WriteLine($"[UpdateChecker] GitHub API error: {content}");
                 return null;
             }
 
-            return await response.Content.ReadFromJsonAsync<GitHubRelease>();
+            return await response.Content.ReadFromJsonAsync<GitHubRelease>(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            Debug.WriteLine("[UpdateChecker] API request cancelled");
+            return null;
         }
         catch (Exception ex)
         {
@@ -556,10 +759,11 @@ Write-Host 'Update complete!'
     /// <summary>
     /// Represents a GitHub release response.
     /// </summary>
-    private class GitHubRelease
+    internal class GitHubRelease
     {
         [JsonPropertyName("tag_name")]
         public string? TagName { get; set; }
+
 
         [JsonPropertyName("name")]
         public string? Name { get; set; }
@@ -577,7 +781,7 @@ Write-Host 'Update complete!'
     /// <summary>
     /// Represents a GitHub release asset.
     /// </summary>
-    private class GitHubAsset
+    internal class GitHubAsset
     {
         [JsonPropertyName("name")]
         public string? Name { get; set; }

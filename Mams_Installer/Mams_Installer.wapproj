@@ -45,10 +45,39 @@
       <Platform>AnyCPU</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <!--
+    Microsoft.DesktopBridge.* ships with Visual Studio's MSIX Packaging Tools
+    (Microsoft.VisualStudio.ComponentGroup.MSIX.Packaging), not with the .NET SDK.
+    Finding the files is not enough. Those targets call GetFrameworkSdkPackages,
+    which the .NET SDK MSBuild host (MSBuildRuntimeType=Core) does not provide,
+    so importing them fails with MSB4036. Import them only for a .NET Framework
+    MSBuild host, which can load that task. Otherwise skip packaging so
+    `dotnet build` of the solution still succeeds.
+  -->
   <PropertyGroup>
-    <WapProjPath Condition="'$(WapProjPath)'==''">$(MSBuildExtensionsPath)\Microsoft\DesktopBridge\</WapProjPath>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(WapProjPath)Microsoft.DesktopBridge.props') and Exists('$(WapProjPath)Microsoft.DesktopBridge.targets')">$(WapProjPath)</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(WapProjPath)\Microsoft.DesktopBridge.props') and Exists('$(WapProjPath)\Microsoft.DesktopBridge.targets')">$(WapProjPath)\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(MSBuildExtensionsPath)\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(MSBuildExtensionsPath)\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(MSBuildExtensionsPath32)\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(MSBuildExtensionsPath32)\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(VsInstallRoot)\MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(VsInstallRoot)\MSBuild\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(ProgramW6432)\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(ProgramW6432)\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(ProgramW6432)\Microsoft Visual Studio\18\Professional\MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(ProgramW6432)\Microsoft Visual Studio\18\Professional\MSBuild\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(ProgramW6432)\Microsoft Visual Studio\18\Enterprise\MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(ProgramW6432)\Microsoft Visual Studio\18\Enterprise\MSBuild\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(ProgramW6432)\Microsoft Visual Studio\18\BuildTools\MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(ProgramW6432)\Microsoft Visual Studio\18\BuildTools\MSBuild\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(ProgramW6432)\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(ProgramW6432)\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(ProgramW6432)\Microsoft Visual Studio\2022\Professional\MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(ProgramW6432)\Microsoft Visual Studio\2022\Professional\MSBuild\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(ProgramW6432)\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(ProgramW6432)\Microsoft Visual Studio\2022\Enterprise\MSBuild\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(ProgramW6432)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(ProgramW6432)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(MSBuildProgramFiles32)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(MSBuildProgramFiles32)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Microsoft\DesktopBridge\</_WapCandidate>
+    <_WapCandidate Condition="'$(_WapCandidate)' == '' and Exists('$(MSBuildProgramFiles32)\Microsoft Visual Studio\18\BuildTools\MSBuild\Microsoft\DesktopBridge\Microsoft.DesktopBridge.props')">$(MSBuildProgramFiles32)\Microsoft Visual Studio\18\BuildTools\MSBuild\Microsoft\DesktopBridge\</_WapCandidate>
+    <WapProjPath Condition="'$(_WapCandidate)' != ''">$(_WapCandidate)</WapProjPath>
+    <DesktopBridgePropsPath>$(WapProjPath)Microsoft.DesktopBridge.props</DesktopBridgePropsPath>
+    <DesktopBridgeTargetsPath>$(WapProjPath)Microsoft.DesktopBridge.targets</DesktopBridgeTargetsPath>
+    <!-- Core is the `dotnet` SDK host. Full is Visual Studio's .NET Framework MSBuild, which can load GetFrameworkSdkPackages. -->
+    <DesktopBridgeHostCanRunTasks Condition="'$(MSBuildRuntimeType)' != 'Core'">true</DesktopBridgeHostCanRunTasks>
+    <DesktopBridgeAvailable Condition="'$(DesktopBridgeHostCanRunTasks)' == 'true' and Exists('$(DesktopBridgePropsPath)') and Exists('$(DesktopBridgeTargetsPath)')">true</DesktopBridgeAvailable>
   </PropertyGroup>
-  <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.props" />
+  <Import Project="$(DesktopBridgePropsPath)" Condition="'$(DesktopBridgeAvailable)' == 'true'" />
   <PropertyGroup>
     <ProjectGuid>2ff51643-60d1-4ec3-8d3e-e45beca12ff0</ProjectGuid>
     <TargetPlatformVersion>10.0.26100.0</TargetPlatformVersion>
@@ -123,7 +152,8 @@
     <Content Include="Images\Wide310x150Logo.scale-400.png" />
     <None Include="Mams_Installer_TemporaryKey.pfx" />
   </ItemGroup>
-  <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
+  <Import Project="$(DesktopBridgeTargetsPath)" Condition="'$(DesktopBridgeAvailable)' == 'true'" />
+  <Import Project="DesktopBridgeMissing.targets" Condition="'$(DesktopBridgeAvailable)' != 'true'" />
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" PrivateAssets="all" />
   </ItemGroup>

@@ -41,6 +41,12 @@ public class InvoiceProfitTemplate : IDocument
 
         // QuestPDF licence NEED to be present
         QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+        // QuestPDF 2026.9 disables system fonts and throws when a glyph is missing.
+        // Keep the 2025.7 defaults so existing invoices render the same way.
+        QuestPDF.Settings.UseSystemFonts = true;
+        QuestPDF.Settings.ThrowOnMissingFontFamilies = false;
+        QuestPDF.Settings.ThrowOnMissingTextGlyphs = false;
+        QuestPDF.Settings.EnableDetailedLayoutErrors = false;
 
         _m_receipt_item = receipt_item;
     }

@@ -1,4 +1,4 @@
-using Mams_App.src.controllers;
+﻿using Mams_App.src.controllers;
 using Mams_App.src.localizations;
 using Mams_App.src.resumes;
 using System.Windows;
@@ -14,6 +14,11 @@ public static class SPageNavigationController
     private static Page? _m_current_page;
     private static readonly Stack<Page> _m_back_stack = new();
     private static readonly Stack<Page> _m_forward_stack = new();
+
+    /// <summary>
+    /// Event raised when the current page changes. Provides the Type of the new page.
+    /// </summary>
+    public static event Action<Type?>? PageChanged;
 
     /// <summary>
     /// Initializes the application with the specified frame and navigates to the home page.
@@ -94,6 +99,7 @@ public static class SPageNavigationController
 
         _m_current_page = page;
         _m_frame?.Navigate(page);
+        PageChanged?.Invoke(page.GetType());
     }
 
     /// <summary>
@@ -151,6 +157,13 @@ public static class SPageNavigationController
 
         _m_current_page = previous_page;
         _m_frame?.Navigate(previous_page);
+        PageChanged?.Invoke(previous_page.GetType());
+
+        // Refresh data if the page's DataContext supports it
+        if (previous_page.DataContext is IRefreshable refreshable)
+        {
+            refreshable.refreshData();
+        }
     }
 
     /// <summary>
@@ -198,6 +211,7 @@ public static class SPageNavigationController
 
         _m_current_page = forward_page;
         _m_frame?.Navigate(forward_page);
+        PageChanged?.Invoke(forward_page.GetType());
     }
 
     /// <summary>

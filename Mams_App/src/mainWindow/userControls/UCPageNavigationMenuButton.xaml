@@ -1,0 +1,130 @@
+﻿<UserControl x:Class="Mams_App.src.mainWindow.userControls.UCPageNavigationMenuButton"
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+xmlns:local="clr-namespace:Mams_App.src.mainWindow.userControls"
+xmlns:globalView="clr-namespace:Mams_App.src.globals"
+             mc:Ignorable="d" 
+             d:DesignHeight="40" d:DesignWidth="180"
+             x:Name="root">
+    <UserControl.Resources>
+        <!-- Navigation Button Style (Inactive) -->
+        <Style x:Key="NavigationMenuButtonStyle" TargetType="Button">
+            <Setter Property="MinHeight" Value="30"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,6"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Background" Value="{x:Static globalView:SGlobalView.BUTTON_PRIMARY_BACKGROUND}"/>
+            <Setter Property="Foreground" Value="{x:Static globalView:SGlobalView.BUTTON_PRIMARY_FOREGROUND}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter x:Name="contentPresenter" 
+                                              HorizontalAlignment="Left" 
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"
+                                              RecognizesAccessKey="True"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{x:Static globalView:SGlobalView.BUTTON_PRIMARY_BACKGROUND_HOVER}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{x:Static globalView:SGlobalView.BUTTON_PRIMARY_BACKGROUND_PRESSED}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- Active Navigation Button Style (Current Page) -->
+        <Style x:Key="NavigationMenuButtonActiveStyle" TargetType="Button">
+            <Setter Property="MinHeight" Value="30"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="15,6"/>
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Background" Value="{x:Static globalView:SGlobalView.BUTTON_NAV_ACTIVE_BACKGROUND}"/>
+            <Setter Property="Foreground" Value="{x:Static globalView:SGlobalView.BUTTON_NAV_ACTIVE_FOREGROUND}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter x:Name="contentPresenter" 
+                                              HorizontalAlignment="Left" 
+                                              VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"
+                                              RecognizesAccessKey="True"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{x:Static globalView:SGlobalView.BUTTON_NAV_ACTIVE_BACKGROUND_HOVER}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="{x:Static globalView:SGlobalView.BUTTON_NAV_ACTIVE_BACKGROUND_PRESSED}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid>
+        <!-- Default (Inactive) Button -->
+        <Button x:Name="inactiveButton"
+                Content="{Binding Content, RelativeSource={RelativeSource AncestorType={x:Type local:UCPageNavigationMenuButton}}}"
+                Command="{Binding Command, RelativeSource={RelativeSource AncestorType={x:Type local:UCPageNavigationMenuButton}}}"
+                Style="{StaticResource NavigationMenuButtonStyle}">
+            <Button.Visibility>
+                <Binding Path="IsCurrentPage" RelativeSource="{RelativeSource AncestorType={x:Type local:UCPageNavigationMenuButton}}">
+                    <Binding.Converter>
+                        <local:InverseBooleanToVisibilityConverter/>
+                    </Binding.Converter>
+                </Binding>
+            </Button.Visibility>
+        </Button>
+        
+        <!-- Active (Current Page) Button -->
+        <Button x:Name="activeButton"
+                Content="{Binding Content, RelativeSource={RelativeSource AncestorType={x:Type local:UCPageNavigationMenuButton}}}"
+                Command="{Binding Command, RelativeSource={RelativeSource AncestorType={x:Type local:UCPageNavigationMenuButton}}}"
+                Style="{StaticResource NavigationMenuButtonActiveStyle}">
+            <Button.Visibility>
+                <Binding Path="IsCurrentPage" RelativeSource="{RelativeSource AncestorType={x:Type local:UCPageNavigationMenuButton}}">
+                    <Binding.Converter>
+                        <BooleanToVisibilityConverter/>
+                    </Binding.Converter>
+                </Binding>
+            </Button.Visibility>
+        </Button>
+    </Grid>
+</UserControl>
