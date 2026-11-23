@@ -122,12 +122,13 @@ Title="SaveProfitPage">
                         </Grid.ColumnDefinitions>
 
                         <!--Profit Item-->
-                        <!-- Item-unit virtualization estimates one row height. These rows are not
-                             uniform (min 50, max 75), so once about 15 lines exceed the viewport
-                             the wheel and the scrollbar jump to the wrong index. Pixel scrolling
-                             keeps the offset in real pixels, and Standard mode avoids recycling
-                             a row's ComboBox onto the next item. -->
+                        <!-- Keep the add action outside the bounded, scrollable item list. -->
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
                         <ListView 
+                            Grid.Row="0"
                             Grid.Column="1" 
                             ItemsSource="{Binding m_list_receipt_product}"
                             ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -135,26 +136,6 @@ Title="SaveProfitPage">
                             VirtualizingPanel.ScrollUnit="Pixel"
                             VirtualizingPanel.VirtualizationMode="Standard"
                             HorizontalContentAlignment="Stretch">
-                            <ListView.Template>
-                                <ControlTemplate TargetType="ListView">
-                                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
-                                        <ScrollViewer Padding="{TemplateBinding Padding}" VerticalScrollBarVisibility="Auto">
-                                            <StackPanel>
-                                                <ItemsPresenter/>
-                                                <!--Create Product Profit Button-->
-                                                <Button 
-                                                    Content="+"
-                                                    VerticalContentAlignment="Center"
-                                                    Command="{Binding m_add_profit_item_command}"
-                                                    Style="{StaticResource PrimaryButtonStyle}"
-                                                    Height="25" Width="100"
-                                                    HorizontalAlignment="Center"
-                                                    Margin="0,10,0,10"/>
-                                            </StackPanel>
-                                        </ScrollViewer>
-                                    </Border>
-                                </ControlTemplate>
-                            </ListView.Template>
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -301,6 +282,16 @@ Title="SaveProfitPage">
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
+                        <Button
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Content="+"
+                            VerticalContentAlignment="Center"
+                            Command="{Binding m_add_profit_item_command}"
+                            Style="{StaticResource PrimaryButtonStyle}"
+                            Height="25" Width="100"
+                            HorizontalAlignment="Center"
+                            Margin="0,10,0,10"/>
                     </Grid>
 
                     <!--Abort & Save Buttons-->
