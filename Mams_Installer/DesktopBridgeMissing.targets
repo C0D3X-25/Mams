@@ -1,0 +1,24 @@
+<Project>
+  <!--
+    Used when Microsoft.DesktopBridge.props is not installed.
+    Those targets ship with Visual Studio's MSIX Packaging Tools
+    (component Microsoft.VisualStudio.ComponentGroup.MSIX.Packaging),
+    not with the .NET SDK. Keep Build/Clean/Restore so `dotnet build`
+    of the solution succeeds. This does not produce an MSIX package.
+  -->
+  <PropertyGroup>
+    <DesktopBridgeMissingMessage>Mams_Installer was not packaged. Microsoft.DesktopBridge.props was not found. The .NET SDK does not include the Windows Application Packaging targets. Install Visual Studio's MSIX Packaging Tools component (Microsoft.VisualStudio.ComponentGroup.MSIX.Packaging) and build this project with that MSBuild to produce the MSIX package.</DesktopBridgeMissingMessage>
+  </PropertyGroup>
+
+  <Target Name="Build">
+    <Warning Text="$(DesktopBridgeMissingMessage)" />
+  </Target>
+
+  <Target Name="Rebuild" DependsOnTargets="Build" />
+
+  <Target Name="Clean" />
+
+  <Target Name="Restore" />
+
+  <Target Name="Publish" DependsOnTargets="Build" />
+</Project>
