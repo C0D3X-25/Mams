@@ -1,13 +1,14 @@
 <Project>
   <!--
-    Used when Microsoft.DesktopBridge.props is not installed.
-    Those targets ship with Visual Studio's MSIX Packaging Tools
-    (component Microsoft.VisualStudio.ComponentGroup.MSIX.Packaging),
-    not with the .NET SDK. Keep Build/Clean/Restore so `dotnet build`
-    of the solution succeeds. This does not produce an MSIX package.
+    Used when MSIX packaging cannot run in this build.
+    Either Microsoft.DesktopBridge.props is not installed, or this host is the
+    .NET SDK (MSBuildRuntimeType=Core) and cannot load GetFrameworkSdkPackages.
+    Keep Build/Clean/Restore so `dotnet build` of the solution succeeds.
+    This does not produce an MSIX package.
   -->
   <PropertyGroup>
-    <DesktopBridgeMissingMessage>Mams_Installer was not packaged. Microsoft.DesktopBridge.props was not found. The .NET SDK does not include the Windows Application Packaging targets. Install Visual Studio's MSIX Packaging Tools component (Microsoft.VisualStudio.ComponentGroup.MSIX.Packaging) and build this project with that MSBuild to produce the MSIX package.</DesktopBridgeMissingMessage>
+    <DesktopBridgeMissingMessage Condition="'$(DesktopBridgeHostCanRunTasks)' != 'true'">Mams_Installer was not packaged. This MSBuild host is the .NET SDK (MSBuildRuntimeType=$(MSBuildRuntimeType)), which does not provide the GetFrameworkSdkPackages task. Desktop Bridge targets were not imported, so the solution can still build. To produce the MSIX package, build this project with Visual Studio's .NET Framework MSBuild.</DesktopBridgeMissingMessage>
+    <DesktopBridgeMissingMessage Condition="'$(DesktopBridgeHostCanRunTasks)' == 'true'">Mams_Installer was not packaged. Microsoft.DesktopBridge.props was not found. The .NET SDK does not include the Windows Application Packaging targets. Install Visual Studio's MSIX Packaging Tools component (Microsoft.VisualStudio.ComponentGroup.MSIX.Packaging) and build this project with Visual Studio's MSBuild to produce the MSIX package.</DesktopBridgeMissingMessage>
   </PropertyGroup>
 
   <Target Name="Build">
