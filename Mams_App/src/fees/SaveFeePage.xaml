@@ -129,10 +129,18 @@ Title="SaveFeePage">
                         </Grid.ColumnDefinitions>
 
                         <!--Fee Item-->
+                        <!-- Item-unit virtualization estimates one row height. These rows are not
+                             uniform (min 50, max 75), so once about 15 lines exceed the viewport
+                             the wheel and the scrollbar jump to the wrong index. Pixel scrolling
+                             keeps the offset in real pixels, and Standard mode avoids recycling
+                             a row's ComboBox onto the next item. -->
                         <ListView 
                             Grid.Column="1" 
                             ItemsSource="{Binding m_list_receipt_product}"
                             ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            ScrollViewer.CanContentScroll="True"
+                            VirtualizingPanel.ScrollUnit="Pixel"
+                            VirtualizingPanel.VirtualizationMode="Standard"
                             HorizontalContentAlignment="Stretch">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
